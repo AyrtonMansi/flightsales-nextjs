@@ -6,6 +6,9 @@ const nextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
   },
+  experimental: {
+    serverComponentsExternalPackages: ['playwright-core'],
+  },
   images: {
     domains: [
       'localhost',

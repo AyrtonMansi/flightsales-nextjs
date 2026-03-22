@@ -1,4 +1,3 @@
-import { chromium } from 'playwright-core';
 import { supabase } from '@/lib/supabase';
 
 // CASA Aircraft Register scraper with caching
@@ -64,6 +63,9 @@ export async function GET(request) {
 }
 
 async function scrapeCASA(rego) {
+  // Dynamic import playwright (server-side only)
+  const { chromium } = await import('playwright-core');
+  
   // Launch browser
   const browser = await chromium.launch({
     headless: true,
