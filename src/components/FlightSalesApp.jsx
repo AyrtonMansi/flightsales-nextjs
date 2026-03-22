@@ -1161,13 +1161,134 @@ const EnquiryModal = ({ listing, onClose, user }) => {
 };
 
 // --- PAGES ---
-const HomePage = ({ setPage, setSelectedListing, savedIds, onSave }) => {
+const HomePage = ({ setPage, setSelectedListing, savedIds, onSave, setSearchFilters }) => {
   const [searchCat, setSearchCat] = useState("");
   const [searchMake, setSearchMake] = useState("");
   const [searchState, setSearchState] = useState("");
-  
+  const [aiQuery, setAiQuery] = useState("");
+
   const featured = SAMPLE_LISTINGS.filter(l => l.featured).slice(0, 4);
   const latest = [...SAMPLE_LISTINGS].sort((a, b) => new Date(b.created) - new Date(a.created)).slice(0, 4);
+
+  // Parse AI search query and extract filters
+  const parseAiQuery = (query) => {
+    const q = query.toLowerCase().trim();
+    const filters = {
+      cat: "",
+      make: "",
+      state: "",
+      minPrice: "",
+      maxPrice: "",
+      maxHours: "",
+      ifrOnly: false,
+      glassOnly: false,
+      cond: "",
+      query: query
+    };
+
+    // Location / State
+    if (/\b(vic|victoria|melbourne)\b/.test(q)) filters.state = "VIC";
+    else if (/\b(nsw|new south wales|sydney)\b/.test(q)) filters.state = "NSW";
+    else if (/\b(qld|queensland|brisbane)\b/.test(q)) filters.state = "QLD";
+    else if (/\b(wa|western australia|perth)\b/.test(q)) filters.state = "WA";
+    else if (/\b(sa|south australia|adelaide)\b/.test(q)) filters.state = "SA";
+    else if (/\b(tas|tasmania|hobart)\b/.test(q)) filters.state = "TAS";
+    else if (/\b(nt|northern territory|darwin)\b/.test(q)) filters.state = "NT";
+    else if (/\b(act|canberra)\b/.test(q)) filters.state = "ACT";
+
+    // Manufacturer
+    if (/\b(cessna|182|172|152|206)\b/.test(q)) filters.make = "Cessna";
+    else if (/\b(cirrus|sr22|sr20)\b/.test(q)) filters.make = "Cirrus";
+    else if (/\b(piper|pa-28|pa28|archer|warrior)\b/.test(q)) filters.make = "Piper";
+    else if (/\b(diamond|da40|da42)\b/.test(q)) filters.make = "Diamond";
+    else if (/\b(robinson|r44|r22)\b/.test(q)) filters.make = "Robinson";
+    else if (/\b(sling|tsi)\b/.test(q)) filters.make = "Sling";
+    else if (/\b(pilatus|pc-12|pc12)\b/.test(q)) filters.make = "Pilatus";
+    else if (/\b(beech|beechcraft|baron|bonanza)\b/.test(q)) filters.make = "Beechcraft";
+    else if (/\b(jabiru)\b/.test(q)) filters.make = "Jabiru";
+    else if (/\b(mooney)\b/.test(q)) filters.make = "Mooney";
+    else if (/\b(tecnama?)\b/.test(q)) filters.make = "Tecnam";
+    else if (/\b(bristell)\b/.test(q)) filters.make = "BRM Aero";
+    else if (/\b(pipistrel)\b/.test(q)) filters.make = "Pipistrel";
+
+    // Category
+    if (/\b(helicopter|heli|chopper|rotor)\b/.test(q)) filters.cat = "Helicopter";
+    else if (/\b(single.engine|singleengine|single-engine|sep)\b/.test(q)) filters.cat = "Single Engine Piston";
+    else if (/\b(multi.engine|multiengine|multi-engine|twin.engine|twin-engine|twin)\b/.test(q)) filters.cat = "Multi Engine Piston";
+    else if (/\b(turboprop)\b/.test(q)) filters.cat = "Turboprop";
+    else if (/\b(light.jet|midsize.jet|heavy.jet|business.jet|jet)\b/.test(q)) {
+      if (/\bmidsize\b/.test(q)) filters.cat = "Midsize Jet";
+      else if (/\bheavy\b/.test(q)) filters.cat = "Heavy Jet";
+      else filters.cat = "Light Jet";
+    }
+    else if (/\b(lsa|light.sport|sport.aircraft|ultralight|trainer)\b/.test(q)) filters.cat = "LSA";
+    else if (/\b(glider|sailplane)\b/.test(q)) filters.cat = "Glider";
+    else if (/\b(gyrocopter|gyro|autogyro)\b/.test(q)) filters.cat = "Gyrocopter";
+
+    // Price - Under
+    const underPriceK = q.match(/(?:under|less than|below|up to|max|maximum)\s*\$?(\d+)\s*k/i);
+    const underPriceM = q.match(/(?:under|less than|below|up to|max|maximum)\s*\$?(\d+(?:\.\d+)?)\s*m/i);
+    if (underPriceK) filters.maxPrice = String(parseInt(underPriceK[1]) * 1000);
+    else if (underPriceM) filters.maxPrice = String(Math.round(parseFloat(underPriceM[1]) * 1000000));
+
+    // Price - Over
+    const overPriceK = q.match(/(?:over|more than|above|at least|min|minimum)\s*\$?(\d+)\s*k/i);
+    const overPriceM = q.match(/(?:over|more than|above|at least|min|minimum)\s*\$?(\d+(?:\.\d+)?)\s*m/i);
+    if (overPriceK) filters.minPrice = String(parseInt(overPriceK[1]) * 1000);
+    else if (overPriceM) filters.minPrice = String(Math.round(parseFloat(overPriceM[1]) * 1000000));
+
+    // Price Range
+    const priceRange = q.match(/\$?(\d+(?:\.\d+)?)\s*k?\s*(?:to|-|)\s*\$?(\d+(?:\.\d+)?)\s*(k|m)?/i);
+    if (priceRange && !underPriceK && !underPriceM && !overPriceK && !overPriceM) {
+      let min = parseFloat(priceRange[1]);
+      let max = parseFloat(priceRange[2]);
+      const suffix = (priceRange[3] || '').toLowerCase();
+      if (suffix === 'k' || (min < 100 && !suffix)) { min *= 1000; max *= 1000; }
+      else if (suffix === 'm' || min > 100) { min *= 1000000; max *= 1000000; }
+      else { min *= 1000; max *= 1000; }
+      filters.minPrice = String(Math.round(min));
+      filters.maxPrice = String(Math.round(max));
+    }
+
+    // Relative price terms
+    if (/\b(cheap|budget|affordable|inexpensive)\b/.test(q) && !filters.maxPrice) {
+      filters.maxPrice = "300000";
+    } else if (/\b(expensive|luxury|premium|high.end)\b/.test(q) && !filters.minPrice) {
+      filters.minPrice = "1000000";
+    }
+
+    // Hours
+    const underHours = q.match(/(?:under|less than|below|max|maximum)\s*(\d+)\s*(?:hours?|hrs?|ttaf)/i);
+    if (underHours) filters.maxHours = underHours[1];
+    else if (/\b(low hours?|low.time)\b/i.test(q)) filters.maxHours = "1000";
+
+    // Features
+    if (/\bifr|instrument\b/i.test(q)) filters.ifrOnly = true;
+    if (/\bglass|g1000|garmin\b/i.test(q)) filters.glassOnly = true;
+    if (/\bnew\b/i.test(q) && !/\bnews\b/i.test(q)) filters.cond = "New";
+    if (/\b(pre-owned|used|second.hand)\b/i.test(q)) filters.cond = "Pre-Owned";
+
+    return filters;
+  };
+
+  const handleAiSearch = (query) => {
+    if (!query.trim()) return;
+    const filters = parseAiQuery(query);
+    // Pass filters to parent to persist across page navigation
+    if (setSearchFilters) setSearchFilters(filters);
+    setPage("buy");
+  };
+
+  const handleManualSearch = () => {
+    const filters = {
+      cat: searchCat,
+      make: searchMake,
+      state: searchState,
+      query: ""
+    };
+    if (setSearchFilters) setSearchFilters(filters);
+    setPage("buy");
+  };
 
   return (
     <>
@@ -1178,27 +1299,18 @@ const HomePage = ({ setPage, setSelectedListing, savedIds, onSave }) => {
           <p className="fs-hero-sub">
             Search thousands of aircraft for sale across Australia. Verified dealers, transparent data, real pricing.
           </p>
-          
+
           <div className="fs-search-bar">
             <div className="fs-search-ai">
               <div className="fs-search-ai-icon">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M12 2a4 4 0 0 0-4 4v2H6a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V10a2 2 0 0 0-2-2h-2V6a4 4 0 0 0-4-4z"/><circle cx="12" cy="15" r="2"/></svg>
               </div>
-              <input className="fs-search-ai-input" placeholder='Try "4-seat IFR under $500k in VIC" or "best trainer aircraft"' 
-                onKeyDown={e => { if (e.key === "Enter" && e.target.value) { 
-                  const q = e.target.value.toLowerCase();
-                  if (q.includes("vic")) setSearchState("VIC");
-                  if (q.includes("nsw")) setSearchState("NSW");
-                  if (q.includes("qld")) setSearchState("QLD");
-                  if (q.includes("cessna")) setSearchMake("Cessna");
-                  if (q.includes("cirrus")) setSearchMake("Cirrus");
-                  if (q.includes("helicopter")) setSearchCat("Helicopter");
-                  if (q.includes("single")) setSearchCat("Single Engine Piston");
-                  if (q.includes("multi")) setSearchCat("Multi Engine Piston");
-                  if (q.includes("turbo")) setSearchCat("Turboprop");
-                  if (q.includes("lsa") || q.includes("trainer") || q.includes("light sport")) setSearchCat("LSA");
-                  setPage("buy");
-                }}}
+              <input
+                className="fs-search-ai-input"
+                placeholder='Try "4-seat IFR under $500k in VIC" or "best trainer aircraft"'
+                value={aiQuery}
+                onChange={e => setAiQuery(e.target.value)}
+                onKeyDown={e => { if (e.key === "Enter") handleAiSearch(e.target.value); }}
               />
             </div>
             <div className="fs-search-fields-row">
@@ -1224,7 +1336,7 @@ const HomePage = ({ setPage, setSelectedListing, savedIds, onSave }) => {
                 </select>
               </div>
             </div>
-            <button className="fs-search-btn" onClick={() => setPage("buy")}>
+            <button className="fs-search-btn" onClick={handleManualSearch}>
               {Icons.search} Search Aircraft
             </button>
           </div>
@@ -1354,54 +1466,184 @@ const HomePage = ({ setPage, setSelectedListing, savedIds, onSave }) => {
   );
 };
 
-const BuyPage = ({ setSelectedListing, savedIds, onSave }) => {
-  const [search, setSearch] = useState("");
-  const [aiQuery, setAiQuery] = useState("");
+const BuyPage = ({ setSelectedListing, savedIds, onSave, initialFilters }) => {
+  const [search, setSearch] = useState(initialFilters?.query || "");
+  const [aiQuery, setAiQuery] = useState(initialFilters?.query || "");
   const [sortBy, setSortBy] = useState("newest");
-  const [catFilter, setCatFilter] = useState("");
-  const [stateFilter, setStateFilter] = useState("");
-  const [makeFilter, setMakeFilter] = useState("");
-  const [condFilter, setCondFilter] = useState("");
-  const [minPrice, setMinPrice] = useState("");
-  const [maxPrice, setMaxPrice] = useState("");
-  const [maxHours, setMaxHours] = useState("");
-  const [ifrOnly, setIfrOnly] = useState(false);
-  const [glassOnly, setGlassOnly] = useState(false);
+  const [catFilter, setCatFilter] = useState(initialFilters?.cat || "");
+  const [stateFilter, setStateFilter] = useState(initialFilters?.state || "");
+  const [makeFilter, setMakeFilter] = useState(initialFilters?.make || "");
+  const [condFilter, setCondFilter] = useState(initialFilters?.cond || "");
+  const [minPrice, setMinPrice] = useState(initialFilters?.minPrice || "");
+  const [maxPrice, setMaxPrice] = useState(initialFilters?.maxPrice || "");
+  const [maxHours, setMaxHours] = useState(initialFilters?.maxHours || "");
+  const [ifrOnly, setIfrOnly] = useState(initialFilters?.ifrOnly || false);
+  const [glassOnly, setGlassOnly] = useState(initialFilters?.glassOnly || false);
   const [sideOpen, setSideOpen] = useState(false);
 
   const handleAiSearch = (query) => {
-    const q = query.toLowerCase();
-    if (q.includes("vic")) setStateFilter("VIC");
-    if (q.includes("nsw")) setStateFilter("NSW");
-    if (q.includes("qld")) setStateFilter("QLD");
-    if (q.includes("wa")) setStateFilter("WA");
-    if (q.includes("sa")) setStateFilter("SA");
-    if (q.includes("tas")) setStateFilter("TAS");
-    if (q.includes("cessna")) setMakeFilter("Cessna");
-    if (q.includes("cirrus")) setMakeFilter("Cirrus");
-    if (q.includes("piper")) setMakeFilter("Piper");
-    if (q.includes("diamond")) setMakeFilter("Diamond");
-    if (q.includes("robinson")) setMakeFilter("Robinson");
-    if (q.includes("sling")) setMakeFilter("Sling");
-    if (q.includes("pilatus")) setMakeFilter("Pilatus");
-    if (q.includes("beech")) setMakeFilter("Beechcraft");
-    if (q.includes("jabiru")) setMakeFilter("Jabiru");
-    if (q.includes("helicopter") || q.includes("heli") || q.includes("chopper")) setCatFilter("Helicopter");
-    if (q.includes("single engine") || q.includes("single-engine") || q.includes("sep")) setCatFilter("Single Engine Piston");
-    if (q.includes("multi") || q.includes("twin")) setCatFilter("Multi Engine Piston");
-    if (q.includes("turboprop") || q.includes("turbo prop")) setCatFilter("Turboprop");
-    if (q.includes("jet")) setCatFilter("Jet");
-    if (q.includes("lsa") || q.includes("light sport") || q.includes("trainer") || q.includes("ultralight")) setCatFilter("LSA");
-    if (q.includes("ifr")) setIfrOnly(true);
-    if (q.includes("glass")) setGlassOnly(true);
-    if (q.includes("new") && !q.includes("news")) setCondFilter("New");
-    const priceMatch = q.match(/under\s*\$?(\d+)\s*k/);
-    if (priceMatch) setMaxPrice(String(parseInt(priceMatch[1]) * 1000));
-    const priceMatchM = q.match(/under\s*\$?(\d+\.?\d*)\s*m/);
-    if (priceMatchM) setMaxPrice(String(Math.round(parseFloat(priceMatchM[1]) * 1000000)));
-    const hoursMatch = q.match(/under\s*(\d+)\s*hours/);
-    if (hoursMatch) setMaxHours(hoursMatch[1]);
+    const q = query.toLowerCase().trim();
+    if (!q) return;
+    
+    // Reset filters first for a clean search
+    resetFilters();
+    
+    // ===== LOCATION / STATE DETECTION =====
+    const statePatterns = [
+      { pattern: /\b(vic|victoria|melbourne)\b/, state: "VIC" },
+      { pattern: /\b(nsw|new south wales|sydney)\b/, state: "NSW" },
+      { pattern: /\b(qld|queensland|brisbane)\b/, state: "QLD" },
+      { pattern: /\b(wa|western australia|perth)\b/, state: "WA" },
+      { pattern: /\b(sa|south australia|adelaide)\b/, state: "SA" },
+      { pattern: /\b(tas|tasmania|hobart)\b/, state: "TAS" },
+      { pattern: /\b(nt|northern territory|darwin)\b/, state: "NT" },
+      { pattern: /\b(act|canberra)\b/, state: "ACT" }
+    ];
+    
+    for (const { pattern, state } of statePatterns) {
+      if (pattern.test(q)) {
+        setStateFilter(state);
+        break;
+      }
+    }
+    
+    // ===== MANUFACTURER DETECTION =====
+    const makePatterns = [
+      { pattern: /\b(cessna|182|172|152|206)\b/, make: "Cessna" },
+      { pattern: /\b(cirrus|sr22|sr20)\b/, make: "Cirrus" },
+      { pattern: /\b(piper|pa-28|pa28|archer|warrior)\b/, make: "Piper" },
+      { pattern: /\b(diamond|da40|da42)\b/, make: "Diamond" },
+      { pattern: /\b(robinson|r44|r22)\b/, make: "Robinson" },
+      { pattern: /\b(sling|tsi)\b/, make: "Sling" },
+      { pattern: /\b(pilatus|pc-12|pc12)\b/, make: "Pilatus" },
+      { pattern: /\b(beech|beechcraft|baron|bonanza)\b/, make: "Beechcraft" },
+      { pattern: /\b(jabiru)\b/, make: "Jabiru" },
+      { pattern: /\b(mooney)\b/, make: "Mooney" },
+      { pattern: /\b(tecnama?)\b/, make: "Tecnam" },
+      { pattern: /\b(bristell)\b/, make: "BRM Aero" },
+      { pattern: /\b(pipistrel)\b/, make: "Pipistrel" }
+    ];
+    
+    for (const { pattern, make } of makePatterns) {
+      if (pattern.test(q)) {
+        setMakeFilter(make);
+        break;
+      }
+    }
+    
+    // ===== CATEGORY DETECTION =====
+    if (/\b(helicopter|heli|chopper|rotor)\b/.test(q)) {
+      setCatFilter("Helicopter");
+    } else if (/\b(single.engine|singleengine|single-engine|sep)\b/.test(q)) {
+      setCatFilter("Single Engine Piston");
+    } else if (/\b(multi.engine|multiengine|multi-engine|twin.engine|twin-engine|twin)\b/.test(q)) {
+      setCatFilter("Multi Engine Piston");
+    } else if (/\b(turboprop)\b/.test(q)) {
+      setCatFilter("Turboprop");
+    } else if (/\b(light.jet|midsize.jet|heavy.jet|business.jet)\b/.test(q)) {
+      setCatFilter(/\bmidsize\b/.test(q) ? "Midsize Jet" : /\bheavy\b/.test(q) ? "Heavy Jet" : "Light Jet");
+    } else if (/\b(lsa|light.sport|sport.aircraft|ultralight)\b/.test(q)) {
+      setCatFilter("LSA");
+    } else if (/\b(glider|sailplane)\b/.test(q)) {
+      setCatFilter("Glider");
+    } else if (/\b(gyrocopter|gyro|autogyro)\b/.test(q)) {
+      setCatFilter("Gyrocopter");
+    }
+    
+    // ===== PRICE DETECTION =====
+    // "under $500k", "less than 300k", "up to $1m"
+    const underPriceK = q.match(/(?:under|less than|below|up to|max|maximum)\s*\$?(\d+)\s*k/i);
+    const underPriceM = q.match(/(?:under|less than|below|up to|max|maximum)\s*\$?(\d+(?:\.\d+)?)\s*m/i);
+    const overPriceK = q.match(/(?:over|more than|above|at least|min|minimum)\s*\$?(\d+)\s*k/i);
+    const overPriceM = q.match(/(?:over|more than|above|at least|min|minimum)\s*\$?(\d+(?:\.\d+)?)\s*m/i);
+    const priceRange = q.match(/\$?(\d+(?:\.\d+)?)\s*k?\s*(?:to|-|)\s*\$?(\d+(?:\.\d+)?)\s*(k|m)?/i);
+    
+    if (underPriceK) {
+      setMaxPrice(String(parseInt(underPriceK[1]) * 1000));
+    } else if (underPriceM) {
+      setMaxPrice(String(Math.round(parseFloat(underPriceM[1]) * 1000000)));
+    }
+    
+    if (overPriceK) {
+      setMinPrice(String(parseInt(overPriceK[1]) * 1000));
+    } else if (overPriceM) {
+      setMinPrice(String(Math.round(parseFloat(overPriceM[1]) * 1000000)));
+    }
+    
+    // Price range: "$200k to $500k" or "300k-600k"
+    if (priceRange && !underPriceK && !underPriceM && !overPriceK && !overPriceM) {
+      let min = parseFloat(priceRange[1]);
+      let max = parseFloat(priceRange[2]);
+      const suffix = (priceRange[3] || '').toLowerCase();
+      
+      // Determine scale from suffix or magnitude
+      if (suffix === 'k' || (min < 100 && !suffix)) {
+        min *= 1000;
+        max *= 1000;
+      } else if (suffix === 'm' || min > 100) {
+        min *= 1000000;
+        max *= 1000000;
+      } else if (!suffix && max > 1000) {
+        // Already in dollars
+      } else {
+        min *= 1000;
+        max *= 1000;
+      }
+      
+      setMinPrice(String(Math.round(min)));
+      setMaxPrice(String(Math.round(max)));
+    }
+    
+    // "Cheap" or "expensive" relative terms
+    if (/\bcheap|budget|affordable|inexpensive\b/.test(q) && !minPrice && !maxPrice) {
+      setMaxPrice("300000"); // Under $300k
+    } else if (/\bexpensive|luxury|premium|high.end\b/.test(q) && !minPrice) {
+      setMinPrice("1000000"); // Over $1M
+    }
+    
+    // ===== HOURS / TIME DETECTION =====
+    const underHours = q.match(/(?:under|less than|below|max|maximum)\s*(\d+)\s*(?:hours?|hrs?|ttaf)/i);
+    const overHours = q.match(/(?:over|more than|above)\s*(\d+)\s*(?:hours?|hrs?|ttaf)/i);
+    const lowHours = /\blow hours?|low.time\b/i.test(q);
+    
+    if (underHours) {
+      setMaxHours(underHours[1]);
+    } else if (lowHours) {
+      setMaxHours("1000"); // Low hours = under 1000
+    }
+    
+    // ===== YEAR DETECTION =====
+    const yearMatch = q.match(/\b(20\d{2})\b/);
+    if (yearMatch) {
+      const year = parseInt(yearMatch[1]);
+      // Could implement year filtering when available
+    }
+    
+    // ===== FEATURE DETECTION =====
+    if (/\bifr|instrument\b/i.test(q)) {
+      setIfrOnly(true);
+    }
+    if (/\bglass|cirrus|g1000|garmin\b/i.test(q)) {
+      setGlassOnly(true);
+    }
+    if (/\bnew\b/i.test(q) && !/\bnews\b/i.test(q)) {
+      setCondFilter("New");
+    }
+    if (/\b(pre-owned|used|second.hand)\b/i.test(q)) {
+      setCondFilter("Pre-Owned");
+    }
+    
+    // ===== SEAT COUNT =====
+    const seatMatch = q.match(/\b(\d)[\s-]?(?:seat|passenger|pax|place)\b/i);
+    if (seatMatch) {
+      // Could add seat count filter when available
+    }
+    
+    // Set the display query
     setAiQuery(query);
+    
+    // Also set the text search for title/manufacturer matching
+    setSearch(query);
   };
 
   const resetFilters = () => {
@@ -3438,13 +3680,14 @@ export default function FlightSalesApp() {
   const [savedIds, setSavedIds] = useState(new Set());
   const [toast, setToast] = useState(null);
   const [user, setUser] = useState(null); // null = not logged in, object = logged in
+  const [searchFilters, setSearchFilters] = useState(null); // Persist search filters across pages
 
   const setSelectedListing = (l) => {
     setSelectedListingRaw(l);
     setPage("detail");
     window.scrollTo(0, 0);
   };
-  
+
   const setPageWrap = (p) => {
     setPage(p);
     setSelectedListingRaw(null);
@@ -3469,9 +3712,9 @@ export default function FlightSalesApp() {
     <>
       <style>{STYLES}</style>
       <Nav page={page} setPage={setPageWrap} setMobileOpen={setMobileOpen} mobileOpen={mobileOpen} user={user} />
-      
-      {page === "home" && <HomePage setPage={setPageWrap} setSelectedListing={setSelectedListing} savedIds={savedIds} onSave={onSave} />}
-      {page === "buy" && <BuyPage setSelectedListing={setSelectedListing} savedIds={savedIds} onSave={onSave} />}
+
+      {page === "home" && <HomePage setPage={setPageWrap} setSelectedListing={setSelectedListing} savedIds={savedIds} onSave={onSave} setSearchFilters={setSearchFilters} />}
+      {page === "buy" && <BuyPage setSelectedListing={setSelectedListing} savedIds={savedIds} onSave={onSave} initialFilters={searchFilters} />}
       {page === "detail" && <ListingDetail listing={selectedListing} onBack={() => setPageWrap("buy")} savedIds={savedIds} onSave={onSave} user={user} />}
       {page === "sell" && <SellPage user={user} setPage={setPageWrap} />}
       {page === "dealers" && <DealersPage />}
@@ -3483,9 +3726,9 @@ export default function FlightSalesApp() {
       {page === "login" && <LoginPage setPage={setPageWrap} setUser={setUser} />}
       {page === "dashboard" && <DashboardPage user={user} setPage={setPageWrap} setUser={setUser} savedIds={savedIds} onSave={onSave} />}
       {page === "admin" && <AdminPage user={user} setPage={setPageWrap} setUser={setUser} />}
-      
+
       <Footer setPage={setPageWrap} />
-      
+
       {toast && (
         <div className="fs-toast">
           {Icons.check} {toast}
