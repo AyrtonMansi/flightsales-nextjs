@@ -122,25 +122,57 @@ const Icons = {
   info: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>,
 };
 
-// --- AIRCRAFT IMAGE GENERATOR (Solid black with white aircraft logo) ---
-const AircraftImage = ({ listing, className = "", size = "md" }) => {
+// --- UNSPLASH AIRCRAFT IMAGES ---
+const AIRCRAFT_IMAGES = {
+  1: "https://images.unsplash.com/photo-1474302770737-173ee21bab63?w=800&q=80",   // Cirrus SR22 - small plane
+  2: "https://images.unsplash.com/photo-1529074963764-98f45c47344b?w=800&q=80",   // Cessna - single engine
+  3: "https://images.unsplash.com/photo-1559087867-ce4c91325525?w=800&q=80",      // Twin engine
+  4: "https://images.unsplash.com/photo-1540962351504-03099e0a754b?w=800&q=80",   // Diamond Twin Star
+  5: "https://images.unsplash.com/photo-1508614589041-895b8c9d7ef5?w=800&q=80",   // Electric/LSA
+  6: "https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=800&q=80",   // Helicopter
+  7: "https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=800&q=80",    // Sling/LSA
+  8: "https://images.unsplash.com/photo-1529311046623-f34e1fe4a0bb?w=800&q=80",    // Baron - twin
+  9: "https://images.unsplash.com/photo-1521727857535-28d2047314ac?w=800&q=80",   // Jabiru/LSA
+  10: "https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?w=800&q=80",     // Pilatus/executive
+  11: "https://images.unsplash.com/photo-1524592714635-d77511a4834d?w=800&q=80",   // Bristell/LSA
+  12: "https://images.unsplash.com/photo-1483304528321-0674f0040030?w=800&q=80",   // Mooney
+};
+
+// --- AIRCRAFT IMAGE COMPONENT (Unsplash) ---
+const AircraftImage = ({ listing, className = "", size = "md", style = {} }) => {
   const heights = { sm: "140px", md: "220px", lg: "400px", full: "100%" };
+  const imageUrl = AIRCRAFT_IMAGES[listing.id] || AIRCRAFT_IMAGES[1];
   
   return (
     <div className={className} style={{
-      height: heights[size], background: '#000000',
-      display: "flex", alignItems: "center", justifyContent: "center", position: "relative", overflow: "hidden"
+      height: heights[size],
+      position: "relative",
+      overflow: "hidden",
+      borderRadius: style.borderRadius || 0,
+      background: '#1a1a1a',
+      ...style
     }}>
-      <div style={{ color: "white", display: "flex", flexDirection: "column", alignItems: "center", gap: "6px" }}>
-        <svg width={size === "sm" ? "40" : size === "lg" || size === "full" ? "72" : "56"} height={size === "sm" ? "40" : size === "lg" || size === "full" ? "72" : "56"} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.4-.1.9.3 1.1l5.6 3.3-3.5 3.5-2.3-.8c-.4-.1-.8 0-1.1.3l-.1.1c-.3.3-.3.7-.1 1.1l1.8 2.7 2.7 1.8c.3.2.8.2 1.1-.1l.1-.1c.3-.3.4-.7.3-1.1l-.8-2.3 3.5-3.5 3.3 5.6c.2.4.7.5 1.1.3l.5-.3c.4-.2.6-.6.5-1.1Z"/>
-        </svg>
-        {(size === "lg" || size === "full") && (
-          <span style={{ fontSize: "13px", fontWeight: 500, opacity: 0.7, marginTop: "4px" }}>
-            {listing.images} photos
-          </span>
-        )}
-      </div>
+      <img 
+        src={imageUrl} 
+        alt={listing.title}
+        style={{
+          width: "100%",
+          height: "100%",
+          objectFit: "cover",
+          transition: "transform 0.3s ease"
+        }}
+        onError={(e) => {
+          // Fallback to black placeholder if image fails
+          e.target.style.display = 'none';
+          e.target.parentElement.style.background = '#000';
+        }}
+      />
+      <div style={{
+        position: "absolute",
+        inset: 0,
+        background: "linear-gradient(to bottom, transparent 0%, transparent 60%, rgba(0,0,0,0.4) 100%)",
+        pointerEvents: "none"
+      }} />
       {listing.featured && (
         <div style={{
           position: "absolute", top: size === "sm" ? "8px" : "12px", left: size === "sm" ? "8px" : "12px",
@@ -150,8 +182,9 @@ const AircraftImage = ({ listing, className = "", size = "md" }) => {
       )}
       <div style={{
         position: "absolute", bottom: size === "sm" ? "8px" : "12px", right: size === "sm" ? "8px" : "12px",
-        background: "rgba(0,0,0,0.6)", color: "white", fontSize: "11px",
-        padding: "3px 7px", borderRadius: "4px", display: "flex", alignItems: "center", gap: "4px"
+        background: "rgba(0,0,0,0.7)", color: "white", fontSize: "11px",
+        padding: "4px 8px", borderRadius: "4px", display: "flex", alignItems: "center", gap: "4px",
+        backdropFilter: "blur(4px)"
       }}>
         {Icons.camera} {listing.images}
       </div>
