@@ -810,7 +810,7 @@ const Nav = ({ page, setPage, setMobileOpen, mobileOpen }) => (
     <div className="fs-container fs-nav-inner">
       <div className="fs-nav-logo" onClick={() => setPage("home")}>
         <span style={{ color: "var(--fs-gray-900)" }}>{Icons.plane}</span>
-        <span className="fs-nav-logo-text">FlightSales<span>.au</span></span>
+        <span className="fs-nav-logo-text">Flightsales<span>.com.au</span></span>
       </div>
       <div className={`fs-nav-links${mobileOpen ? " open" : ""}`}>
         {[["buy", "Buy"], ["sell", "Sell"], ["dealers", "Dealers"], ["finance", "Finance"], ["news", "News"], ["valuate", "Valuation"]].map(([p, label]) => (
@@ -833,7 +833,7 @@ const Footer = ({ setPage }) => (
     <div className="fs-container">
       <div className="fs-footer-grid">
         <div>
-          <div className="fs-footer-brand">FlightSales<span>.au</span></div>
+          <div className="fs-footer-brand">Flightsales<span>.com.au</span></div>
           <p className="fs-footer-desc">Australia's premier aircraft marketplace. Buy and sell aircraft with confidence — from single-engine pistons to turboprops and helicopters.</p>
           <div style={{ display: "flex", gap: "8px" }}>
             <span className="fs-tag fs-tag-green">{Icons.shield} Verified Dealers</span>
@@ -862,7 +862,7 @@ const Footer = ({ setPage }) => (
         </div>
       </div>
       <div className="fs-footer-bottom">
-        <span>&copy; 2026 FlightSales Pty Ltd. ABN 12 345 678 901. All rights reserved.</span>
+        <span>&copy; 2026 Flightsales Pty Ltd. ABN 12 345 678 901. All rights reserved.</span>
         <span>Made in Australia</span>
       </div>
     </div>
@@ -1679,7 +1679,7 @@ const DealersPage = () => (
           ))}
         </div>
         <div style={{ textAlign: "center", marginTop: 40, padding: "32px", background: "var(--fs-gray-50)", borderRadius: "var(--fs-radius-lg)" }}>
-          <h3 style={{ fontSize: 20, fontWeight: 700, marginBottom: 8 }}>Become a FlightSales Dealer</h3>
+          <h3 style={{ fontSize: 20, fontWeight: 700, marginBottom: 8 }}>Become a Flightsales Dealer</h3>
           <p style={{ fontSize: 14, color: "var(--fs-gray-500)", marginBottom: 16, maxWidth: 500, margin: "0 auto 16px" }}>
             Get a branded storefront, lead management tools, and access to Australia's largest aviation audience.
           </p>
@@ -1850,7 +1850,7 @@ const AboutPage = () => (
   <>
     <div className="fs-about-hero" style={{ padding: "72px 0" }}>
       <div className="fs-container">
-        <h1 style={{ fontFamily: "var(--fs-font-serif)", fontSize: 40, marginBottom: 12 }}>About FlightSales</h1>
+        <h1 style={{ fontFamily: "var(--fs-font-serif)", fontSize: 40, marginBottom: 12 }}>About Flightsales</h1>
         <p style={{ color: "rgba(255,255,255,0.6)", maxWidth: 600, margin: "0 auto", fontSize: 16, lineHeight: 1.7 }}>
           We're building Australia's most trusted aircraft marketplace. A place where pilots, owners, and dealers can buy and sell with transparency, confidence, and fair pricing.
         </p>
@@ -1881,7 +1881,7 @@ const ContactPage = () => (
     <div className="fs-about-hero">
       <div className="fs-container">
         <h1 style={{ fontFamily: "var(--fs-font-serif)", fontSize: 36 }}>Contact Us</h1>
-        <p style={{ color: "rgba(255,255,255,0.6)", marginTop: 8 }}>Get in touch with the FlightSales team</p>
+        <p style={{ color: "rgba(255,255,255,0.6)", marginTop: 8 }}>Get in touch with the Flightsales team</p>
       </div>
     </div>
     <section className="fs-section">
@@ -1943,7 +1943,7 @@ const LoginPage = ({ setPage }) => (
       <div style={{ textAlign: "center", marginBottom: 32 }}>
         <div style={{ color: "var(--fs-sky)" }}>{Icons.plane}</div>
         <h1 style={{ fontFamily: "var(--fs-font-serif)", fontSize: 28, marginTop: 12 }}>Welcome back</h1>
-        <p style={{ fontSize: 14, color: "var(--fs-gray-500)", marginTop: 4 }}>Sign in to your FlightSales account</p>
+        <p style={{ fontSize: 14, color: "var(--fs-gray-500)", marginTop: 4 }}>Sign in to your Flightsales account</p>
       </div>
       <div className="fs-detail-specs" style={{ boxShadow: "var(--fs-shadow-md)" }}>
         <button style={{ width: "100%", padding: "12px", border: "1px solid var(--fs-gray-200)", borderRadius: "var(--fs-radius-sm)", background: "white", fontSize: 14, fontWeight: 600, cursor: "pointer", fontFamily: "var(--fs-font)", marginBottom: 16, display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
