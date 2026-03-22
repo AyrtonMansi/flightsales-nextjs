@@ -1547,6 +1547,78 @@ const ListingDetail = ({ listing, onBack, savedIds, onSave }) => {
 
 const SellPage = () => {
   const [step, setStep] = useState(1);
+  const [formData, setFormData] = useState({
+    manufacturer: '',
+    model: '',
+    year: '',
+    category: '',
+    rego: '',
+    condition: '',
+    price: '',
+    state: '',
+    ttaf: '',
+    eng_hours: '',
+    engineType: '',
+    propeller: '',
+    avionics: '',
+    description: ''
+  });
+  const [isLookingUp, setIsLookingUp] = useState(false);
+  const [lookupError, setLookupError] = useState(null);
+  const [autoFilled, setAutoFilled] = useState(false);
+
+  const lookupCASA = async () => {
+    const rego = formData.rego.toUpperCase().trim();
+    
+    // Validate format
+    if (!rego.match(/^VH-[A-Z]{3}$/)) {
+      setLookupError('Invalid format. Use VH-ABC (3 letters)');
+      return;
+    }
+    
+    setIsLookingUp(true);
+    setLookupError(null);
+    setAutoFilled(false);
+    
+    try {
+      const response = await fetch(`/api/casa-lookup?rego=${rego}`);
+      const data = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(data.error || 'Lookup failed');
+      }
+      
+      // Map CASA data to form fields
+      const updates = {};
+      if (data.manufacturer) updates.manufacturer = data.manufacturer;
+      if (data.model) updates.model = data.model;
+      if (data.year) updates.year = data.year;
+      if (data.category) updates.category = data.category;
+      if (data.engineType) updates.engineType = data.engineType;
+      if (data.mtow_kg) updates.mtow = data.mtow_kg;
+      if (data.seats) updates.seats = data.seats;
+      
+      setFormData(prev => ({ ...prev, ...updates }));
+      setAutoFilled(true);
+      
+      // Show toast
+      setToast?.('Aircraft details found and auto-filled!');
+      
+    } catch (error) {
+      setLookupError(error.message || 'Aircraft not found in CASA register');
+    } finally {
+      setIsLookingUp(false);
+    }
+  };
+
+  const handleInputChange = (field, value) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
+    if (field === 'rego') {
+      setLookupError(null);
+      setAutoFilled(false);
+    }
+  };
+
   return (
     <>
       <div className="fs-about-hero">
@@ -1567,38 +1639,126 @@ const SellPage = () => {
           {step === 1 && (
             <div className="fs-detail-specs" style={{ boxShadow: "var(--fs-shadow-md)" }}>
               <h3 style={{ fontSize: 18 }}>Aircraft Details</h3>
+              
+              {/* CASA Rego Lookup */}
+              <div className="fs-form-group" style={{ marginBottom: 24, padding: 16, background: 'var(--fs-gray-50)', borderRadius: 'var(--fs-radius)', border: '1px solid var(--fs-gray-200)' }}>
+                <label className="fs-form-label" style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                  {Icons.shield} CASA Registration Lookup
+                </label>
+                <p style={{ fontSize: 12, color: 'var(--fs-gray-500)', marginBottom: 12 }}>
+                  Enter your VH registration to auto-fill aircraft details from the CASA Aircraft Register
+                </p>
+                <div style={{ display: "flex", gap: 8 }}>
+                  <input 
+                    className="fs-form-input" 
+                    placeholder="VH-ABC"
+                    value={formData.rego}
+                    onChange={e => handleInputChange('rego', e.target.value.toUpperCase())}
+                    style={{ textTransform: 'uppercase', fontWeight: 600, letterSpacing: '0.05em' }}
+                    maxLength={6}
+                  />
+                  <button 
+                    type="button"
+                    onClick={lookupCASA}
+                    disabled={isLookingUp || formData.rego.length < 6}
+                    className="fs-nav-btn-primary"
+                    style={{ whiteSpace: 'nowrap', minWidth: 100 }}
+                  >
+                    {isLookingUp ? 'Searching...' : '🔍 Lookup'}
+                  </button>
+                </div>
+                {lookupError && (
+                  <p style={{ fontSize: 12, color: 'var(--fs-red)', marginTop: 8 }}>{lookupError}</p>
+                )}
+                {autoFilled && (
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 8, fontSize: 12, color: 'var(--fs-green)' }}>
+                    {Icons.check} Auto-filled from CASA register. Please verify details.
+                  </div>
+                )}
+              </div>
+              
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
                 <div className="fs-form-group">
                   <label className="fs-form-label">Manufacturer *</label>
-                  <select className="fs-form-select"><option>Select...</option>{MANUFACTURERS.map(m => <option key={m}>{m}</option>)}</select>
+                  <select 
+                    className="fs-form-select"
+                    value={formData.manufacturer}
+                    onChange={e => handleInputChange('manufacturer', e.target.value)}
+                  >
+                    <option value="">Select...</option>
+                    {MANUFACTURERS.map(m => <option key={m} value={m}>{m}</option>)}
+                  </select>
                 </div>
                 <div className="fs-form-group">
                   <label className="fs-form-label">Model *</label>
-                  <input className="fs-form-input" placeholder="e.g. SR22T, C182T" />
+                  <input 
+                    className="fs-form-input" 
+                    placeholder="e.g. SR22T, C182T"
+                    value={formData.model}
+                    onChange={e => handleInputChange('model', e.target.value)}
+                  />
                 </div>
                 <div className="fs-form-group">
                   <label className="fs-form-label">Year *</label>
-                  <input className="fs-form-input" type="number" placeholder="2020" />
+                  <input 
+                    className="fs-form-input" 
+                    type="number" 
+                    placeholder="2020"
+                    value={formData.year}
+                    onChange={e => handleInputChange('year', e.target.value)}
+                  />
                 </div>
                 <div className="fs-form-group">
                   <label className="fs-form-label">Category *</label>
-                  <select className="fs-form-select"><option>Select...</option>{CATEGORIES.map(c => <option key={c}>{c}</option>)}</select>
+                  <select 
+                    className="fs-form-select"
+                    value={formData.category}
+                    onChange={e => handleInputChange('category', e.target.value)}
+                  >
+                    <option value="">Select...</option>
+                    {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
+                  </select>
                 </div>
                 <div className="fs-form-group">
                   <label className="fs-form-label">Registration *</label>
-                  <input className="fs-form-input" placeholder="VH-XXX" />
+                  <input 
+                    className="fs-form-input" 
+                    placeholder="VH-XXX"
+                    value={formData.rego}
+                    onChange={e => handleInputChange('rego', e.target.value.toUpperCase())}
+                    style={{ textTransform: 'uppercase' }}
+                  />
                 </div>
                 <div className="fs-form-group">
                   <label className="fs-form-label">Condition *</label>
-                  <select className="fs-form-select">{CONDITIONS.map(c => <option key={c}>{c}</option>)}</select>
+                  <select 
+                    className="fs-form-select"
+                    value={formData.condition}
+                    onChange={e => handleInputChange('condition', e.target.value)}
+                  >
+                    {CONDITIONS.map(c => <option key={c} value={c}>{c}</option>)}
+                  </select>
                 </div>
                 <div className="fs-form-group">
                   <label className="fs-form-label">Asking Price (AUD) *</label>
-                  <input className="fs-form-input" type="number" placeholder="350000" />
+                  <input 
+                    className="fs-form-input" 
+                    type="number" 
+                    placeholder="350000"
+                    value={formData.price}
+                    onChange={e => handleInputChange('price', e.target.value)}
+                  />
                 </div>
                 <div className="fs-form-group">
                   <label className="fs-form-label">Location (State) *</label>
-                  <select className="fs-form-select"><option>Select...</option>{STATES.map(s => <option key={s}>{s}</option>)}</select>
+                  <select 
+                    className="fs-form-select"
+                    value={formData.state}
+                    onChange={e => handleInputChange('state', e.target.value)}
+                  >
+                    <option value="">Select...</option>
+                    {STATES.map(s => <option key={s} value={s}>{s}</option>)}
+                  </select>
                 </div>
               </div>
               <button className="fs-form-submit" onClick={() => setStep(2)} style={{ marginTop: 16 }}>Continue to Specs</button>
@@ -1611,19 +1771,41 @@ const SellPage = () => {
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
                 <div className="fs-form-group">
                   <label className="fs-form-label">Total Time Airframe *</label>
-                  <input className="fs-form-input" type="number" placeholder="Hours" />
+                  <input 
+                    className="fs-form-input" 
+                    type="number" 
+                    placeholder="Hours"
+                    value={formData.ttaf}
+                    onChange={e => handleInputChange('ttaf', e.target.value)}
+                  />
                 </div>
                 <div className="fs-form-group">
                   <label className="fs-form-label">Engine Hours (SMOH) *</label>
-                  <input className="fs-form-input" type="number" placeholder="Hours" />
+                  <input 
+                    className="fs-form-input" 
+                    type="number" 
+                    placeholder="Hours"
+                    value={formData.eng_hours}
+                    onChange={e => handleInputChange('eng_hours', e.target.value)}
+                  />
                 </div>
                 <div className="fs-form-group">
                   <label className="fs-form-label">Engine Type</label>
-                  <input className="fs-form-input" placeholder="e.g. Lycoming IO-540" />
+                  <input 
+                    className="fs-form-input" 
+                    placeholder="e.g. Lycoming IO-540"
+                    value={formData.engineType}
+                    onChange={e => handleInputChange('engineType', e.target.value)}
+                  />
                 </div>
                 <div className="fs-form-group">
                   <label className="fs-form-label">Propeller</label>
-                  <input className="fs-form-input" placeholder="e.g. Hartzell 3-blade" />
+                  <input 
+                    className="fs-form-input" 
+                    placeholder="e.g. Hartzell 3-blade"
+                    value={formData.propeller}
+                    onChange={e => handleInputChange('propeller', e.target.value)}
+                  />
                 </div>
                 <div className="fs-form-group" style={{ gridColumn: "span 2" }}>
                   <label className="fs-form-label">Avionics</label>

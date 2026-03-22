@@ -215,6 +215,27 @@ CREATE POLICY "Published news is viewable by everyone"
   USING (published = true);
 
 -- ============================================
+-- CASA CACHE TABLE
+-- ============================================
+CREATE TABLE casa_cache (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  rego TEXT UNIQUE NOT NULL,
+  data JSONB NOT NULL,
+  cached_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+CREATE INDEX idx_casa_cache_rego ON casa_cache(rego);
+CREATE INDEX idx_casa_cache_time ON casa_cache(cached_at);
+
+-- Enable RLS
+ALTER TABLE casa_cache ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "CASA cache is viewable by everyone" 
+  ON casa_cache FOR SELECT 
+  TO anon, authenticated 
+  USING (true);
+
+-- ============================================
 -- FUNCTIONS
 -- ============================================
 
