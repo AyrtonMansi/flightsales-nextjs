@@ -86,32 +86,21 @@ const Icons = {
   info: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>,
 };
 
-// --- AIRCRAFT IMAGE GENERATOR (Deterministic gradient based on listing) ---
+// --- AIRCRAFT IMAGE GENERATOR (Solid black with white aircraft logo) ---
 const AircraftImage = ({ listing, className = "", size = "md" }) => {
-  const colors = [
-    ["#1a365d", "#2563eb", "#60a5fa"],
-    ["#1e3a5f", "#0891b2", "#67e8f9"],
-    ["#2d1b4e", "#7c3aed", "#a78bfa"],
-    ["#1a2e1a", "#059669", "#6ee7b7"],
-    ["#3b1a1a", "#dc2626", "#fca5a5"],
-    ["#3d2b1a", "#d97706", "#fcd34d"],
-  ];
-  const ci = listing.id % colors.length;
-  const [c1, c2, c3] = colors[ci];
   const heights = { sm: "140px", md: "220px", lg: "400px", full: "100%" };
   
   return (
     <div className={className} style={{
-      height: heights[size], background: `linear-gradient(135deg, ${c1} 0%, ${c2} 60%, ${c3} 100%)`,
+      height: heights[size], background: '#000000',
       display: "flex", alignItems: "center", justifyContent: "center", position: "relative", overflow: "hidden"
     }}>
-      <div style={{ position: "absolute", inset: 0, opacity: 0.06, backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")` }} />
-      <div style={{ color: "white", opacity: 0.9, display: "flex", flexDirection: "column", alignItems: "center", gap: "4px" }}>
-        <svg width={size === "sm" ? "32" : size === "lg" || size === "full" ? "56" : "40"} height={size === "sm" ? "32" : size === "lg" || size === "full" ? "56" : "40"} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round">
+      <div style={{ color: "white", display: "flex", flexDirection: "column", alignItems: "center", gap: "6px" }}>
+        <svg width={size === "sm" ? "40" : size === "lg" || size === "full" ? "72" : "56"} height={size === "sm" ? "40" : size === "lg" || size === "full" ? "72" : "56"} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
           <path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.4-.1.9.3 1.1l5.6 3.3-3.5 3.5-2.3-.8c-.4-.1-.8 0-1.1.3l-.1.1c-.3.3-.3.7-.1 1.1l1.8 2.7 2.7 1.8c.3.2.8.2 1.1-.1l.1-.1c.3-.3.4-.7.3-1.1l-.8-2.3 3.5-3.5 3.3 5.6c.2.4.7.5 1.1.3l.5-.3c.4-.2.6-.6.5-1.1Z"/>
         </svg>
         {(size === "lg" || size === "full") && (
-          <span style={{ fontSize: "13px", fontWeight: 500, opacity: 0.8, marginTop: "4px" }}>
+          <span style={{ fontSize: "13px", fontWeight: 500, opacity: 0.7, marginTop: "4px" }}>
             {listing.images} photos
           </span>
         )}
