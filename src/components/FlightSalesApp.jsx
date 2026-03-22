@@ -841,7 +841,7 @@ a { color: inherit; text-decoration: none; }
 `;
 
 // --- COMPONENTS ---
-const Nav = ({ page, setPage, setMobileOpen, mobileOpen }) => (
+const Nav = ({ page, setPage, setMobileOpen, mobileOpen, user }) => (
   <nav className="fs-nav">
     <div className="fs-container fs-nav-inner">
       <div className="fs-nav-logo" onClick={() => setPage("home")}>
@@ -854,8 +854,36 @@ const Nav = ({ page, setPage, setMobileOpen, mobileOpen }) => (
         ))}
       </div>
       <div className={`fs-nav-actions${mobileOpen ? " open" : ""}`}>
-        <button className="fs-nav-btn fs-nav-btn-ghost" onClick={() => setPage("login")}>{Icons.user}</button>
-        <button className="fs-nav-btn fs-nav-btn-primary" onClick={() => setPage("sell")}>List Aircraft</button>
+        {user ? (
+          <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+            <button 
+              onClick={() => setPage('dashboard')}
+              style={{ 
+                display: "flex", 
+                alignItems: "center", 
+                gap: 8,
+                background: "none",
+                border: "none",
+                cursor: "pointer",
+                padding: "4px 8px",
+                borderRadius: "var(--fs-radius-sm)"
+              }}
+            >
+              <img 
+                src={user.avatar} 
+                alt={user.full_name}
+                style={{ width: 32, height: 32, borderRadius: "50%" }}
+              />
+              <span style={{ fontSize: 14, fontWeight: 500 }}>{user.full_name?.split(' ')[0]}</span>
+            </button>
+            <button className="fs-nav-btn fs-nav-btn-primary" onClick={() => setPage("sell")}>List Aircraft</button>
+          </div>
+        ) : (
+          <>
+            <button className="fs-nav-btn fs-nav-btn-ghost" onClick={() => setPage("login")}>{Icons.user}</button>
+            <button className="fs-nav-btn fs-nav-btn-primary" onClick={() => setPage("sell")}>List Aircraft</button>
+          </>
+        )}
       </div>
       <button className="fs-nav-mobile-toggle" onClick={() => setMobileOpen(!mobileOpen)}>
         {mobileOpen ? Icons.x : Icons.menu}
@@ -2251,39 +2279,626 @@ const ContactPage = () => (
   </>
 );
 
-const LoginPage = ({ setPage }) => (
-  <section className="fs-section" style={{ minHeight: "60vh", display: "flex", alignItems: "center" }}>
-    <div className="fs-container" style={{ maxWidth: 420, margin: "0 auto" }}>
-      <div style={{ textAlign: "center", marginBottom: 32 }}>
-        <div style={{ color: "var(--fs-sky)" }}>{Icons.plane}</div>
-        <h1 style={{ fontFamily: "var(--fs-font-serif)", fontSize: 28, marginTop: 12 }}>Welcome back</h1>
-        <p style={{ fontSize: 14, color: "var(--fs-gray-500)", marginTop: 4 }}>Sign in to your Flightsales account</p>
+const LoginPage = ({ setPage, setUser }) => {
+  const [mode, setMode] = useState('login'); // 'login' | 'register'
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [fullName, setFullName] = useState('');
+  const [phone, setPhone] = useState('');
+  const [accountType, setAccountType] = useState('private'); // 'private' | 'dealer'
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  const handleGoogleAuth = async () => {
+    setLoading(true);
+    // In production, this would redirect to Google OAuth
+    // For demo, simulate successful login
+    setTimeout(() => {
+      const mockUser = {
+        id: 'google-123',
+        email: 'demo@flightsales.com',
+        full_name: 'Demo User',
+        role: 'private',
+        avatar: 'https://ui-avatars.com/api/?name=Demo+User&background=random',
+        created_at: new Date().toISOString()
+      };
+      setUser(mockUser);
+      setPage('dashboard');
+      setLoading(false);
+    }, 1000);
+  };
+
+  const handleEmailAuth = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setError(null);
+    
+    // Simulate auth
+    setTimeout(() => {
+      if (mode === 'login') {
+        // Login simulation
+        const mockUser = {
+          id: 'user-123',
+          email: email,
+          full_name: email.split('@')[0],
+          role: email.includes('dealer') ? 'dealer' : email.includes('admin') ? 'admin' : 'private',
+          avatar: `https://ui-avatars.com/api/?name=${email.split('@')[0]}&background=random`,
+          created_at: new Date().toISOString()
+        };
+        setUser(mockUser);
+        setPage('dashboard');
+      } else {
+        // Registration simulation
+        const mockUser = {
+          id: 'user-new',
+          email: email,
+          full_name: fullName,
+          role: accountType,
+          phone: phone,
+          avatar: `https://ui-avatars.com/api/?name=${fullName}&background=random`,
+          created_at: new Date().toISOString()
+        };
+        setUser(mockUser);
+        setPage('dashboard');
+      }
+      setLoading(false);
+    }, 1000);
+  };
+
+  return (
+    <section className="fs-section" style={{ minHeight: "70vh", display: "flex", alignItems: "center", padding: "48px 0" }}>
+      <div className="fs-container" style={{ maxWidth: 480, margin: "0 auto" }}>
+        <div style={{ textAlign: "center", marginBottom: 32 }}>
+          <div style={{ 
+            width: 64, 
+            height: 64, 
+            borderRadius: "50%", 
+            background: "var(--fs-blue)", 
+            display: "flex", 
+            alignItems: "center", 
+            justifyContent: "center",
+            margin: "0 auto 16px"
+          }}>
+            <span style={{ color: "white", fontSize: 28 }}>{Icons.user}</span>
+          </div>
+          <h1 style={{ fontFamily: "var(--fs-font-serif)", fontSize: 28, marginBottom: 8 }}>
+            {mode === 'login' ? 'Welcome back' : 'Create your account'}
+          </h1>
+          <p style={{ fontSize: 14, color: "var(--fs-gray-500)" }}>
+            {mode === 'login' ? 'Sign in to manage your listings and saved aircraft' : 'Join Flightsales to buy and sell aircraft'}
+          </p>
+        </div>
+
+        <div className="fs-detail-specs" style={{ boxShadow: "var(--fs-shadow-lg)", padding: 32 }}>
+          {/* Google Auth */}
+          <button 
+            onClick={handleGoogleAuth}
+            disabled={loading}
+            style={{ 
+              width: "100%", 
+              padding: "14px", 
+              border: "1px solid var(--fs-gray-200)", 
+              borderRadius: "var(--fs-radius-sm)", 
+              background: "white", 
+              fontSize: 15, 
+              fontWeight: 600, 
+              cursor: loading ? "not-allowed" : "pointer", 
+              fontFamily: "var(--fs-font)", 
+              marginBottom: 24, 
+              display: "flex", 
+              alignItems: "center", 
+              justifyContent: "center", 
+              gap: 12,
+              opacity: loading ? 0.7 : 1
+            }}
+          >
+            <svg width="20" height="20" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+            Continue with Google
+          </button>
+
+          <div style={{ textAlign: "center", color: "var(--fs-gray-400)", fontSize: 13, margin: "20px 0", position: "relative" }}>
+            <span style={{ background: "white", padding: "0 12px", position: "relative", zIndex: 1 }}>or continue with email</span>
+            <div style={{ position: "absolute", left: 0, right: 0, top: "50%", height: 1, background: "var(--fs-gray-200)" }} />
+          </div>
+
+          {error && (
+            <div style={{ 
+              padding: "12px 16px", 
+              background: "#fef2f2", 
+              borderRadius: 6, 
+              marginBottom: 16,
+              border: "1px solid #fecaca"
+            }}>
+              <p style={{ fontSize: 13, color: "#dc2626", margin: 0 }}>{error}</p>
+            </div>
+          )}
+
+          <form onSubmit={handleEmailAuth}>
+            {mode === 'register' && (
+              <>
+                <div className="fs-form-group">
+                  <label className="fs-form-label">Account Type *</label>
+                  <div style={{ display: "flex", gap: 12 }}>
+                    <label 
+                      onClick={() => setAccountType('private')}
+                      style={{ 
+                        flex: 1, 
+                        padding: "12px 16px", 
+                        borderRadius: "var(--fs-radius-sm)",
+                        border: accountType === 'private' ? "2px solid var(--fs-blue)" : "1px solid var(--fs-gray-200)",
+                        background: accountType === 'private' ? "#eff6ff" : "white",
+                        cursor: "pointer",
+                        textAlign: "center"
+                      }}
+                    >
+                      <input type="radio" name="accountType" checked={accountType === 'private'} onChange={() => setAccountType('private')} style={{ marginRight: 8 }} />
+                      Private Seller
+                    </label>
+                    <label 
+                      onClick={() => setAccountType('dealer')}
+                      style={{ 
+                        flex: 1, 
+                        padding: "12px 16px", 
+                        borderRadius: "var(--fs-radius-sm)",
+                        border: accountType === 'dealer' ? "2px solid var(--fs-blue)" : "1px solid var(--fs-gray-200)",
+                        background: accountType === 'dealer' ? "#eff6ff" : "white",
+                        cursor: "pointer",
+                        textAlign: "center"
+                      }}
+                    >
+                      <input type="radio" name="accountType" checked={accountType === 'dealer'} onChange={() => setAccountType('dealer')} style={{ marginRight: 8 }} />
+                      Dealer
+                    </label>
+                  </div>
+                </div>
+
+                <div className="fs-form-group">
+                  <label className="fs-form-label">Full Name *</label>
+                  <input 
+                    className="fs-form-input" 
+                    type="text" 
+                    placeholder="John Smith"
+                    value={fullName}
+                    onChange={e => setFullName(e.target.value)}
+                    required
+                  />
+                </div>
+
+                <div className="fs-form-group">
+                  <label className="fs-form-label">Phone Number</label>
+                  <input 
+                    className="fs-form-input" 
+                    type="tel" 
+                    placeholder="04XX XXX XXX"
+                    value={phone}
+                    onChange={e => setPhone(e.target.value)}
+                  />
+                </div>
+              </>
+            )}
+
+            <div className="fs-form-group">
+              <label className="fs-form-label">Email *</label>
+              <input 
+                className="fs-form-input" 
+                type="email" 
+                placeholder="you@email.com"
+                value={email}
+                onChange={e => setEmail(e.target.value)}
+                required
+              />
+            </div>
+
+            <div className="fs-form-group">
+              <label className="fs-form-label">Password *</label>
+              <input 
+                className="fs-form-input" 
+                type="password" 
+                placeholder="••••••••"
+                value={password}
+                onChange={e => setPassword(e.target.value)}
+                required
+                minLength={8}
+              />
+              {mode === 'register' && (
+                <p style={{ fontSize: 11, color: "var(--fs-gray-400)", marginTop: 4 }}>Must be at least 8 characters</p>
+              )}
+            </div>
+
+            <button 
+              type="submit" 
+              className="fs-form-submit"
+              disabled={loading}
+              style={{ opacity: loading ? 0.7 : 1 }}
+            >
+              {loading ? 'Please wait...' : (mode === 'login' ? 'Sign In' : 'Create Account')}
+            </button>
+          </form>
+
+          <p style={{ fontSize: 13, textAlign: "center", marginTop: 24, color: "var(--fs-gray-500)" }}>
+            {mode === 'login' ? "Don't have an account? " : "Already have an account? "}
+            <button 
+              onClick={() => {
+                setMode(mode === 'login' ? 'register' : 'login');
+                setError(null);
+              }}
+              style={{ 
+                color: "var(--fs-blue)", 
+                fontWeight: 600, 
+                cursor: "pointer",
+                background: "none",
+                border: "none",
+                padding: 0,
+                fontSize: 13
+              }}
+            >
+              {mode === 'login' ? 'Create one' : 'Sign in'}
+            </button>
+          </p>
+
+          {mode === 'register' && (
+            <p style={{ fontSize: 11, textAlign: "center", marginTop: 16, color: "var(--fs-gray-400)", lineHeight: 1.5 }}>
+              By creating an account, you agree to our Terms of Service and Privacy Policy. 
+              Dealer accounts require verification before listings go live.
+            </p>
+          )}
+        </div>
       </div>
-      <div className="fs-detail-specs" style={{ boxShadow: "var(--fs-shadow-md)" }}>
-        <button style={{ width: "100%", padding: "12px", border: "1px solid var(--fs-gray-200)", borderRadius: "var(--fs-radius-sm)", background: "white", fontSize: 14, fontWeight: 600, cursor: "pointer", fontFamily: "var(--fs-font)", marginBottom: 16, display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
-          <svg width="18" height="18" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
-          Continue with Google
-        </button>
-        <div style={{ textAlign: "center", color: "var(--fs-gray-400)", fontSize: 12, margin: "16px 0", position: "relative" }}>
-          <span style={{ background: "white", padding: "0 12px", position: "relative", zIndex: 1 }}>or</span>
-          <div style={{ position: "absolute", left: 0, right: 0, top: "50%", height: 1, background: "var(--fs-gray-200)" }} />
+    </section>
+  );
+};
+
+const DashboardPage = ({ user, setPage }) => {
+  if (!user) {
+    setPage('login');
+    return null;
+  }
+
+  const isDealer = user.role === 'dealer';
+  const isAdmin = user.role === 'admin';
+
+  if (isAdmin) {
+    setPage('admin');
+    return null;
+  }
+
+  return (
+    <>
+      <div className="fs-about-hero" style={{ padding: "48px 0" }}>
+        <div className="fs-container">
+          <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
+            <img 
+              src={user.avatar} 
+              alt={user.full_name}
+              style={{ width: 64, height: 64, borderRadius: "50%", border: "3px solid white" }}
+            />
+            <div>
+              <h1 style={{ fontFamily: "var(--fs-font-serif)", fontSize: 32, marginBottom: 4 }}>
+                {user.full_name}
+              </h1>
+              <p style={{ color: "rgba(255,255,255,0.6)", fontSize: 14 }}>
+                {isDealer ? 'Verified Dealer' : 'Private Seller'} • {user.email}
+              </p>
+            </div>
+          </div>
         </div>
-        <div className="fs-form-group">
-          <label className="fs-form-label">Email</label>
-          <input className="fs-form-input" type="email" placeholder="you@email.com" />
-        </div>
-        <div className="fs-form-group">
-          <label className="fs-form-label">Password</label>
-          <input className="fs-form-input" type="password" placeholder="••••••••" />
-        </div>
-        <button className="fs-form-submit">Sign In</button>
-        <p style={{ fontSize: 13, textAlign: "center", marginTop: 16, color: "var(--fs-gray-500)" }}>
-          Don't have an account? <span style={{ color: "var(--fs-blue)", fontWeight: 600, cursor: "pointer" }}>Create one</span>
-        </p>
       </div>
-    </div>
-  </section>
-);
+
+      <section className="fs-section">
+        <div className="fs-container">
+          <div style={{ display: "grid", gridTemplateColumns: "280px 1fr", gap: 32 }}>
+            {/* Sidebar */}
+            <div>
+              <div className="fs-detail-specs" style={{ padding: 0, overflow: "hidden" }}>
+                <div style={{ padding: "20px", borderBottom: "1px solid var(--fs-gray-100)" }}>
+                  <p style={{ fontSize: 12, color: "var(--fs-gray-500)", marginBottom: 4 }}>Account Type</p>
+                  <p style={{ fontSize: 14, fontWeight: 600 }}>{isDealer ? 'Dealer Account' : 'Private Seller'}</p>
+                </div>
+                
+                <nav style={{ padding: "12px 0" }}>
+                  {[
+                    { id: 'listings', label: 'My Listings', icon: Icons.plane },
+                    { id: 'saved', label: 'Saved Aircraft', icon: Icons.heart },
+                    { id: 'enquiries', label: 'Enquiries', icon: Icons.mail },
+                    { id: 'profile', label: 'Profile Settings', icon: Icons.user },
+                  ].map(item => (
+                    <button
+                      key={item.id}
+                      style={{
+                        width: "100%",
+                        padding: "12px 20px",
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 12,
+                        background: "none",
+                        border: "none",
+                        cursor: "pointer",
+                        fontSize: 14,
+                        color: "var(--fs-gray-700)",
+                        textAlign: "left"
+                      }}
+                    >
+                      <span style={{ color: "var(--fs-gray-400)" }}>{item.icon}</span>
+                      {item.label}
+                    </button>
+                  ))}
+                </nav>
+
+                <div style={{ padding: "16px 20px", borderTop: "1px solid var(--fs-gray-100)" }}>
+                  <button 
+                    className="fs-nav-btn-primary"
+                    onClick={() => setPage('sell')}
+                    style={{ width: "100%" }}
+                  >
+                    + List New Aircraft
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {/* Main Content */}
+            <div>
+              {/* Stats */}
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 16, marginBottom: 24 }}>
+                <div className="fs-detail-specs" style={{ textAlign: "center", padding: "24px" }}>
+                  <p style={{ fontSize: 32, fontWeight: 800, color: "var(--fs-blue)" }}>0</p>
+                  <p style={{ fontSize: 13, color: "var(--fs-gray-500)" }}>Active Listings</p>
+                </div>
+                <div className="fs-detail-specs" style={{ textAlign: "center", padding: "24px" }}>
+                  <p style={{ fontSize: 32, fontWeight: 800, color: "var(--fs-green)" }}>0</p>
+                  <p style={{ fontSize: 13, color: "var(--fs-gray-500)" }}>Enquiries</p>
+                </div>
+                <div className="fs-detail-specs" style={{ textAlign: "center", padding: "24px" }}>
+                  <p style={{ fontSize: 32, fontWeight: 800, color: "var(--fs-gray-900)" }}>0</p>
+                  <p style={{ fontSize: 13, color: "var(--fs-gray-500)" }}>Saved</p>
+                </div>
+              </div>
+
+              {/* Empty State */}
+              <div className="fs-detail-specs" style={{ padding: "48px", textAlign: "center" }}>
+                <div style={{ fontSize: 48, marginBottom: 16 }}>✈️</div>
+                <h3 style={{ fontSize: 18, fontWeight: 700, marginBottom: 8 }}>No active listings</h3>
+                <p style={{ fontSize: 14, color: "var(--fs-gray-500)", marginBottom: 24 }}>
+                  Get started by listing your first aircraft. It only takes a few minutes.
+                </p>
+                <button 
+                  className="fs-nav-btn-primary"
+                  onClick={() => setPage('sell')}
+                >
+                  List Your Aircraft
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </>
+  );
+};
+
+const AdminPage = ({ user, setPage, setUser }) => {
+  if (!user || user.role !== 'admin') {
+    setPage('login');
+    return null;
+  }
+
+  const [activeTab, setActiveTab] = useState('listings');
+
+  const mockListings = [
+    { id: 1, title: '2018 Cirrus SR22T', price: 895000, seller: 'Southern Aviation', status: 'pending', date: '2026-03-22' },
+    { id: 2, title: '2005 Cessna 182T', price: 385000, seller: 'Private', status: 'active', date: '2026-03-21' },
+  ];
+
+  const mockUsers = [
+    { id: 1, name: 'John Smith', email: 'john@example.com', role: 'private', listings: 2 },
+    { id: 2, name: 'Southern Aviation', email: 'sales@southernav.com', role: 'dealer', listings: 14 },
+  ];
+
+  return (
+    <>
+      <div className="fs-about-hero" style={{ padding: "32px 0", background: "#1a1a1a" }}>
+        <div className="fs-container">
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
+              <div style={{ 
+                width: 48, 
+                height: 48, 
+                borderRadius: "50%", 
+                background: "var(--fs-red)", 
+                display: "flex", 
+                alignItems: "center", 
+                justifyContent: "center",
+                fontSize: 20
+              }}>
+                {Icons.shield}
+              </div>
+              <div>
+                <h1 style={{ fontFamily: "var(--fs-font-serif)", fontSize: 24, marginBottom: 4 }}>
+                  Admin Dashboard
+                </h1>
+                <p style={{ color: "rgba(255,255,255,0.6)", fontSize: 13 }}>
+                  Manage listings, users, and platform settings
+                </p>
+              </div>
+            </div>
+            <button 
+              onClick={() => { setUser(null); setPage('home'); }}
+              style={{ 
+                padding: "8px 16px", 
+                background: "rgba(255,255,255,0.1)", 
+                border: "1px solid rgba(255,255,255,0.2)",
+                borderRadius: "var(--fs-radius-sm)",
+                color: "white",
+                cursor: "pointer",
+                fontSize: 13
+              }}
+            >
+              Logout
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <section className="fs-section" style={{ padding: "32px 0" }}>
+        <div className="fs-container">
+          {/* Stats Row */}
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 16, marginBottom: 32 }}>
+            {[
+              { label: 'Total Listings', value: '156', color: 'var(--fs-blue)' },
+              { label: 'Pending Review', value: '12', color: 'var(--fs-amber)' },
+              { label: 'Active Users', value: '89', color: 'var(--fs-green)' },
+              { label: 'Dealers', value: '24', color: 'var(--fs-gray-900)' },
+            ].map(stat => (
+              <div key={stat.label} className="fs-detail-specs" style={{ padding: "20px" }}>
+                <p style={{ fontSize: 28, fontWeight: 800, color: stat.color }}>{stat.value}</p>
+                <p style={{ fontSize: 12, color: "var(--fs-gray-500)" }}>{stat.label}</p>
+              </div>
+            ))}
+          </div>
+
+          {/* Tabs */}
+          <div style={{ display: "flex", gap: 4, marginBottom: 24, borderBottom: "1px solid var(--fs-gray-200)" }}>
+            {[
+              { id: 'listings', label: 'Listings' },
+              { id: 'users', label: 'Users' },
+              { id: 'dealers', label: 'Dealer Applications' },
+              { id: 'enquiries', label: 'Enquiries' },
+            ].map(tab => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                style={{
+                  padding: "12px 20px",
+                  border: "none",
+                  borderBottom: activeTab === tab.id ? "2px solid var(--fs-blue)" : "2px solid transparent",
+                  background: "none",
+                  cursor: "pointer",
+                  fontSize: 14,
+                  fontWeight: activeTab === tab.id ? 600 : 400,
+                  color: activeTab === tab.id ? "var(--fs-blue)" : "var(--fs-gray-500)"
+                }}
+              >
+                {tab.label}
+              </button>
+            ))}
+          </div>
+
+          {/* Content */}
+          <div className="fs-detail-specs" style={{ padding: 0 }}>
+            {activeTab === 'listings' && (
+              <table style={{ width: "100%", borderCollapse: "collapse" }}>
+                <thead>
+                  <tr style={{ borderBottom: "1px solid var(--fs-gray-200)" }}>
+                    <th style={{ padding: "16px", textAlign: "left", fontSize: 12, fontWeight: 600, color: "var(--fs-gray-500)", textTransform: "uppercase" }}>Aircraft</th>
+                    <th style={{ padding: "16px", textAlign: "left", fontSize: 12, fontWeight: 600, color: "var(--fs-gray-500)", textTransform: "uppercase" }}>Price</th>
+                    <th style={{ padding: "16px", textAlign: "left", fontSize: 12, fontWeight: 600, color: "var(--fs-gray-500)", textTransform: "uppercase" }}>Seller</th>
+                    <th style={{ padding: "16px", textAlign: "left", fontSize: 12, fontWeight: 600, color: "var(--fs-gray-500)", textTransform: "uppercase" }}>Status</th>
+                    <th style={{ padding: "16px", textAlign: "left", fontSize: 12, fontWeight: 600, color: "var(--fs-gray-500)", textTransform: "uppercase" }}>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {mockListings.map(listing => (
+                    <tr key={listing.id} style={{ borderBottom: "1px solid var(--fs-gray-100)" }}>
+                      <td style={{ padding: "16px", fontWeight: 500 }}>{listing.title}</td>
+                      <td style={{ padding: "16px" }}>${listing.price.toLocaleString()}</td>
+                      <td style={{ padding: "16px", color: "var(--fs-gray-600)" }}>{listing.seller}</td>
+                      <td style={{ padding: "16px" }}>
+                        <span style={{ 
+                          padding: "4px 12px", 
+                          borderRadius: 4, 
+                          fontSize: 12, 
+                          fontWeight: 500,
+                          background: listing.status === 'active' ? '#dcfce7' : '#fef3c7',
+                          color: listing.status === 'active' ? '#166534' : '#92400e'
+                        }}>
+                          {listing.status}
+                        </span>
+                      </td>
+                      <td style={{ padding: "16px" }}>
+                        <button style={{ 
+                          padding: "6px 12px", 
+                          background: "var(--fs-blue)", 
+                          color: "white",
+                          border: "none",
+                          borderRadius: 4,
+                          fontSize: 12,
+                          cursor: "pointer"
+                        }}>
+                          Review
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
+
+            {activeTab === 'users' && (
+              <table style={{ width: "100%", borderCollapse: "collapse" }}>
+                <thead>
+                  <tr style={{ borderBottom: "1px solid var(--fs-gray-200)" }}>
+                    <th style={{ padding: "16px", textAlign: "left", fontSize: 12, fontWeight: 600, color: "var(--fs-gray-500)", textTransform: "uppercase" }}>User</th>
+                    <th style={{ padding: "16px", textAlign: "left", fontSize: 12, fontWeight: 600, color: "var(--fs-gray-500)", textTransform: "uppercase" }}>Role</th>
+                    <th style={{ padding: "16px", textAlign: "left", fontSize: 12, fontWeight: 600, color: "var(--fs-gray-500)", textTransform: "uppercase" }}>Listings</th>
+                    <th style={{ padding: "16px", textAlign: "left", fontSize: 12, fontWeight: 600, color: "var(--fs-gray-500)", textTransform: "uppercase" }}>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {mockUsers.map(u => (
+                    <tr key={u.id} style={{ borderBottom: "1px solid var(--fs-gray-100)" }}>
+                      <td style={{ padding: "16px" }}>
+                        <p style={{ fontWeight: 500 }}>{u.name}</p>
+                        <p style={{ fontSize: 12, color: "var(--fs-gray-500)" }}>{u.email}</p>
+                      </td>
+                      <td style={{ padding: "16px" }}>
+                        <span style={{ 
+                          padding: "4px 12px", 
+                          borderRadius: 4, 
+                          fontSize: 12,
+                          background: u.role === 'dealer' ? '#eff6ff' : '#f3f4f6',
+                          color: u.role === 'dealer' ? 'var(--fs-blue)' : 'var(--fs-gray-600)',
+                          textTransform: "capitalize"
+                        }}>
+                          {u.role}
+                        </span>
+                      </td>
+                      <td style={{ padding: "16px" }}>{u.listings}</td>
+                      <td style={{ padding: "16px" }}>
+                        <button style={{ 
+                          padding: "6px 12px", 
+                          background: "var(--fs-gray-100)", 
+                          color: "var(--fs-gray-700)",
+                          border: "none",
+                          borderRadius: 4,
+                          fontSize: 12,
+                          cursor: "pointer"
+                        }}>
+                          View
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
+
+            {activeTab === 'dealers' && (
+              <div style={{ padding: "48px", textAlign: "center" }}>
+                <p style={{ color: "var(--fs-gray-500)" }}>No pending dealer applications</p>
+              </div>
+            )}
+
+            {activeTab === 'enquiries' && (
+              <div style={{ padding: "48px", textAlign: "center" }}>
+                <p style={{ color: "var(--fs-gray-500)" }}>No new enquiries</p>
+              </div>
+            )}
+          </div>
+        </div>
+      </section>
+    </>
+  );
+};
 
 // --- APP ---
 export default function FlightSalesApp() {
@@ -2336,6 +2951,8 @@ export default function FlightSalesApp() {
       {page === "about" && <AboutPage />}
       {page === "contact" && <ContactPage />}
       {page === "login" && <LoginPage setPage={setPageWrap} setUser={setUser} />}
+      {page === "dashboard" && <DashboardPage user={user} setPage={setPageWrap} />}
+      {page === "admin" && <AdminPage user={user} setPage={setPageWrap} setUser={setUser} />}
       
       <Footer setPage={setPageWrap} />
       
