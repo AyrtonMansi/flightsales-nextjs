@@ -120,6 +120,9 @@ const Icons = {
   bell: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>,
   dollar: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>,
   info: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>,
+  home: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>,
+  eye: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>,
+  alert: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>,
 };
 
 // --- UNSPLASH AIRCRAFT IMAGES ---
@@ -3096,8 +3099,11 @@ const DashboardPage = ({ user, setPage, setUser, savedIds, onSave }) => {
     return null;
   }
 
-  const [activeTab, setActiveTab] = useState('listings');
+  // State management
+  const [activeTab, setActiveTab] = useState('overview');
   const [editProfile, setEditProfile] = useState(false);
+  const [selectedEnquiry, setSelectedEnquiry] = useState(null);
+  const [replyText, setReplyText] = useState('');
   const [profileData, setProfileData] = useState({
     full_name: user.full_name || '',
     email: user.email || '',
@@ -3105,16 +3111,92 @@ const DashboardPage = ({ user, setPage, setUser, savedIds, onSave }) => {
     location: user.location || ''
   });
 
-  // Mock data for user's listings
-  const myListings = [];
-  
-  // Mock enquiries received
-  const myEnquiries = [
-    { id: 1, aircraft: '2018 Cirrus SR22T', from: 'John Smith', email: 'john@email.com', phone: '0412 345 678', message: 'Is this aircraft still available? I would like to arrange an inspection.', date: '2026-03-22', status: 'new' },
-  ];
+  // Mock data - in production this comes from API
+  const [myListings, setMyListings] = useState([
+    { 
+      id: 1, 
+      title: '2018 Cirrus SR22T GTS', 
+      price: 895000, 
+      status: 'active',
+      views: 1247,
+      enquiries: 8,
+      watchers: 42,
+      daysListed: 12,
+      featured: true,
+      image: AIRCRAFT_IMAGES[1]
+    },
+    { 
+      id: 2, 
+      title: '2005 Cessna 182T', 
+      price: 385000, 
+      status: 'pending',
+      views: 523,
+      enquiries: 3,
+      watchers: 18,
+      daysListed: 5,
+      featured: false,
+      image: AIRCRAFT_IMAGES[2]
+    },
+  ]);
 
-  // Get saved aircraft from sample listings
+  const [myEnquiries, setMyEnquiries] = useState([
+    { 
+      id: 1, 
+      aircraft: '2018 Cirrus SR22T', 
+      aircraftId: 1,
+      from: 'John Smith', 
+      email: 'john@email.com', 
+      phone: '0412 345 678', 
+      message: 'Is this aircraft still available? I would like to arrange an inspection this weekend if possible. I\'m a serious buyer with finance pre-approved.',
+      date: '2026-03-22T14:30:00',
+      status: 'new',
+      replies: []
+    },
+    { 
+      id: 2, 
+      aircraft: '2018 Cirrus SR22T', 
+      aircraftId: 1,
+      from: 'Sarah Chen', 
+      email: 'sarah@aviation.com', 
+      phone: '0433 999 111', 
+      message: 'Hi, I\'m interested in the Cirrus. Can you tell me more about the maintenance history and last annual? Also, is the price negotiable?',
+      date: '2026-03-21T09:15:00',
+      status: 'contacted',
+      replies: [
+        { from: 'me', message: 'Hi Sarah, thanks for your interest. The last annual was in September 2025. I\'ll send you the full maintenance logs via email.', date: '2026-03-21T11:30:00' }
+      ]
+    },
+    { 
+      id: 3, 
+      aircraft: '2005 Cessna 182T', 
+      aircraftId: 2,
+      from: 'Mike Johnson', 
+      email: 'mike@outlook.com', 
+      phone: '0400 222 444', 
+      message: 'Is this aircraft IFR certified? I\'m looking for something I can use for instrument training.',
+      date: '2026-03-20T16:45:00',
+      status: 'negotiating',
+      replies: []
+    },
+  ]);
+
+  const [activities, setActivities] = useState([
+    { id: 1, type: 'enquiry', message: 'New enquiry on VH-XRT from John Smith', time: '2 mins ago', icon: Icons.mail },
+    { id: 2, type: 'view', message: 'Your Cessna 182T was viewed 12 times today', time: '1 hour ago', icon: Icons.eye },
+    { id: 3, type: 'alert', message: 'Price drop suggestion: Your listing is 10% above market average', time: '3 hours ago', icon: Icons.alert },
+    { id: 4, type: 'save', message: 'Someone saved your Cirrus SR22T to their watchlist', time: '5 hours ago', icon: Icons.heart },
+  ]);
+
   const savedAircraft = SAMPLE_LISTINGS.filter(l => savedIds.has(l.id));
+
+  // Stats calculation
+  const stats = {
+    totalViews: myListings.reduce((sum, l) => sum + l.views, 0),
+    totalEnquiries: myListings.reduce((sum, l) => sum + l.enquiries, 0),
+    activeListings: myListings.filter(l => l.status === 'active').length,
+    totalWatchers: myListings.reduce((sum, l) => sum + l.watchers, 0),
+    newEnquiries: myEnquiries.filter(e => e.status === 'new').length
+  };
 
   const handleLogout = () => {
     setUser(null);
@@ -3122,69 +3204,159 @@ const DashboardPage = ({ user, setPage, setUser, savedIds, onSave }) => {
   };
 
   const handleSaveProfile = () => {
-    // In real app, save to backend
     setEditProfile(false);
   };
 
+  const handleEnquiryStatusChange = (enquiryId, newStatus) => {
+    setMyEnquiries(prev => prev.map(e => 
+      e.id === enquiryId ? { ...e, status: newStatus } : e
+    ));
+  };
+
+  const handleReplySubmit = (enquiryId) => {
+    if (!replyText.trim()) return;
+    
+    setMyEnquiries(prev => prev.map(e => 
+      e.id === enquiryId ? { 
+        ...e, 
+        status: 'contacted',
+        replies: [...e.replies, { from: 'me', message: replyText, date: new Date().toISOString() }]
+      } : e
+    ));
+    setReplyText('');
+  };
+
+  const handleMarkSpam = (enquiryId) => {
+    setMyEnquiries(prev => prev.map(e => 
+      e.id === enquiryId ? { ...e, status: 'spam' } : e
+    ));
+  };
+
+  const formatTimeAgo = (dateString) => {
+    const date = new Date(dateString);
+    const now = new Date('2026-03-22T20:00:00');
+    const diff = Math.floor((now - date) / 1000 / 60);
+    
+    if (diff < 1) return 'Just now';
+    if (diff < 60) return `${diff} mins ago`;
+    if (diff < 1440) return `${Math.floor(diff / 60)} hours ago`;
+    return `${Math.floor(diff / 1440)} days ago`;
+  };
+
+  const getStatusBadge = (status) => {
+    const styles = {
+      new: { bg: '#dcfce7', color: '#166534', label: 'New' },
+      contacted: { bg: '#dbeafe', color: '#1e40af', label: 'Contacted' },
+      negotiating: { bg: '#fef3c7', color: '#92400e', label: 'Negotiating' },
+      sold: { bg: '#e0e7ff', color: '#3730a3', label: 'Sold' },
+      archived: { bg: '#f3f4f6', color: '#6b7280', label: 'Archived' },
+      spam: { bg: '#fee2e2', color: '#991b1b', label: 'Spam' }
+    };
+    const s = styles[status] || styles.new;
+    return (
+      <span style={{ 
+        padding: "4px 12px", 
+        borderRadius: 4, 
+        fontSize: 12,
+        fontWeight: 500,
+        background: s.bg,
+        color: s.color
+      }}>
+        {s.label}
+      </span>
+    );
+  };
+
+  const sidebarItems = [
+    { id: 'overview', label: 'Overview', icon: Icons.home },
+    { id: 'listings', label: 'My Listings', icon: Icons.plane, count: myListings.length },
+    { id: 'enquiries', label: 'Enquiries', icon: Icons.mail, count: stats.newEnquiries },
+    { id: 'saved', label: 'Saved Aircraft', icon: Icons.heart, count: savedAircraft.length },
+    { id: 'profile', label: 'Settings', icon: Icons.user },
+  ];
+
   return (
     <>
-      <div className="fs-about-hero" style={{ padding: "48px 0" }}>
+      {/* Header */}
+      <div className="fs-about-hero" style={{ padding: "40px 0" }}>
         <div className="fs-container">
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-            <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
-              <img 
-                src={user.avatar} 
-                alt={user.full_name}
-                style={{ width: 64, height: 64, borderRadius: "50%", border: "3px solid white" }}
-              />
+            <div style={{ display: "flex", alignItems: "center", gap: 20 }}>
+              <div style={{ position: 'relative' }}>
+                <img 
+                  src={user.avatar} 
+                  alt={user.full_name}
+                  style={{ width: 72, height: 72, borderRadius: "50%", border: "3px solid white" }}
+                />
+                {isDealer && (
+                  <span style={{
+                    position: 'absolute',
+                    bottom: 0,
+                    right: 0,
+                    background: '#10b981',
+                    color: 'white',
+                    fontSize: 10,
+                    padding: '2px 6px',
+                    borderRadius: 10,
+                    fontWeight: 600
+                  }}>✓</span>
+                )}
+              </div>
               <div>
-                <h1 style={{ fontFamily: "var(--fs-font-serif)", fontSize: 32, marginBottom: 4 }}>
-                  {user.full_name}
+                <h1 style={{ fontFamily: "var(--fs-font-serif)", fontSize: 32, marginBottom: 6 }}>
+                  Welcome back, {user.full_name?.split(' ')[0]}
                 </h1>
-                <p style={{ color: "rgba(255,255,255,0.6)", fontSize: 14 }}>
-                  {isDealer ? 'Verified Dealer' : 'Private Seller'} • {user.email}
+                <p style={{ color: "rgba(255,255,255,0.7)", fontSize: 15 }}>
+                  {isDealer ? 'Verified Dealer Account' : 'Private Seller'} • Member since 2026
                 </p>
               </div>
             </div>
-            <button 
-              onClick={handleLogout}
-              style={{ 
-                padding: "10px 20px", 
-                background: "rgba(255,255,255,0.1)", 
-                border: "1px solid rgba(255,255,255,0.2)",
-                borderRadius: "var(--fs-radius-sm)",
-                color: "white",
-                cursor: "pointer",
-                fontSize: 14
-              }}
-            >
-              Logout
-            </button>
+            <div style={{ display: "flex", gap: 12 }}>
+              <button 
+                className="fs-nav-btn-primary"
+                onClick={() => setPage('sell')}
+                style={{ background: 'white', color: 'var(--fs-gray-900)' }}
+              >
+                + List Aircraft
+              </button>
+              <button 
+                onClick={handleLogout}
+                style={{ 
+                  padding: "12px 20px", 
+                  background: "rgba(255,255,255,0.1)", 
+                  border: "1px solid rgba(255,255,255,0.2)",
+                  borderRadius: "var(--fs-radius-sm)",
+                  color: "white",
+                  cursor: "pointer",
+                  fontSize: 14
+                }}
+              >
+                Logout
+              </button>
+            </div>
           </div>
         </div>
       </div>
 
-      <section className="fs-section">
+      <section className="fs-section" style={{ padding: "32px 0" }}>
         <div className="fs-container">
-          <div style={{ display: "grid", gridTemplateColumns: "280px 1fr", gap: 32 }}>
+          <div style={{ display: "grid", gridTemplateColumns: "260px 1fr", gap: 32 }}>
             {/* Sidebar */}
             <div>
-              <div className="fs-detail-specs" style={{ padding: 0, overflow: "hidden" }}>
+              <div className="fs-detail-specs" style={{ padding: 0, overflow: "hidden", borderRadius: 12 }}>
                 <div style={{ padding: "20px", borderBottom: "1px solid var(--fs-gray-100)" }}>
-                  <p style={{ fontSize: 12, color: "var(--fs-gray-500)", marginBottom: 4 }}>Account Type</p>
-                  <p style={{ fontSize: 14, fontWeight: 600 }}>{isDealer ? 'Verified Dealer' : 'Private Seller'}</p>
+                  <p style={{ fontSize: 12, color: "var(--fs-gray-500)", marginBottom: 4, textTransform: 'uppercase', letterSpacing: 0.5 }}>Account Type</p>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <p style={{ fontSize: 15, fontWeight: 600 }}>{isDealer ? 'Verified Dealer' : 'Private Seller'}</p>
+                    {isDealer && <span style={{ color: '#10b981' }}>✓</span>}
+                  </div>
                 </div>
                 
-                <nav style={{ padding: "12px 0" }}>
-                  {[
-                    { id: 'listings', label: 'My Listings', icon: Icons.plane, count: myListings.length },
-                    { id: 'saved', label: 'Saved Aircraft', icon: Icons.heart, count: savedAircraft.length },
-                    { id: 'enquiries', label: 'Enquiries', icon: Icons.mail, count: myEnquiries.length },
-                    { id: 'profile', label: 'Profile Settings', icon: Icons.user },
-                  ].map(item => (
+                <nav style={{ padding: "8px 0" }}>
+                  {sidebarItems.map(item => (
                     <button
                       key={item.id}
-                      onClick={() => setActiveTab(item.id)}
+                      onClick={() => { setActiveTab(item.id); setSelectedEnquiry(null); }}
                       style={{
                         width: "100%",
                         padding: "12px 20px",
@@ -3198,18 +3370,20 @@ const DashboardPage = ({ user, setPage, setUser, savedIds, onSave }) => {
                         fontSize: 14,
                         color: activeTab === item.id ? "var(--fs-blue)" : "var(--fs-gray-700)",
                         fontWeight: activeTab === item.id ? 600 : 400,
-                        textAlign: "left"
+                        textAlign: "left",
+                        transition: 'all 0.15s ease'
                       }}
                     >
-                      <span style={{ color: activeTab === item.id ? "var(--fs-blue)" : "var(--fs-gray-400)" }}>{item.icon}</span>
+                      <span style={{ color: activeTab === item.id ? "var(--fs-blue)" : "var(--fs-gray-400)", width: 20 }}>{item.icon}</span>
                       <span style={{ flex: 1 }}>{item.label}</span>
                       {item.count > 0 && (
                         <span style={{ 
-                          background: 'var(--fs-blue)', 
-                          color: 'white', 
+                          background: activeTab === item.id ? 'var(--fs-blue)' : 'var(--fs-gray-200)', 
+                          color: activeTab === item.id ? 'white' : 'var(--fs-gray-600)', 
                           fontSize: 11, 
                           padding: '2px 8px', 
-                          borderRadius: 10 
+                          borderRadius: 10,
+                          fontWeight: 600
                         }}>
                           {item.count}
                         </span>
@@ -3218,57 +3392,238 @@ const DashboardPage = ({ user, setPage, setUser, savedIds, onSave }) => {
                   ))}
                 </nav>
 
-                <div style={{ padding: "16px 20px", borderTop: "1px solid var(--fs-gray-100)" }}>
-                  <button 
-                    className="fs-nav-btn-primary"
-                    onClick={() => setPage('sell')}
-                    style={{ width: "100%" }}
-                  >
-                    + List New Aircraft
-                  </button>
-                </div>
+                {isDealer && (
+                  <div style={{ padding: "16px 20px", borderTop: "1px solid var(--fs-gray-100)", background: '#fafafa' }}>
+                    <p style={{ fontSize: 11, color: "var(--fs-gray-500)", marginBottom: 8 }}>Plan: Professional</p>
+                    <div style={{ height: 4, background: '#e5e5e5', borderRadius: 2, marginBottom: 8 }}>
+                      <div style={{ height: '100%', width: '65%', background: 'var(--fs-blue)', borderRadius: 2 }} />
+                    </div>
+                    <p style={{ fontSize: 11, color: "var(--fs-gray-400)" }}>13 of 20 listings used</p>
+                  </div>
+                )}
               </div>
             </div>
 
             {/* Main Content */}
             <div>
-              {/* MY LISTINGS TAB */}
+              {/* OVERVIEW TAB */}
+              {activeTab === 'overview' && (
+                <>
+                  {/* Stats Row */}
+                  <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 16, marginBottom: 24 }}>
+                    {[
+                      { label: 'Total Views', value: stats.totalViews.toLocaleString(), change: '+23%', color: 'var(--fs-blue)' },
+                      { label: 'Enquiries', value: stats.totalEnquiries, change: `+${stats.newEnquiries} new`, color: 'var(--fs-green)' },
+                      { label: 'Active Listings', value: stats.activeListings, change: '2 pending', color: 'var(--fs-gray-900)' },
+                      { label: 'Watchers', value: stats.totalWatchers, change: '+12 this week', color: 'var(--fs-amber)' },
+                    ].map((stat, i) => (
+                      <div key={i} className="fs-detail-specs" style={{ padding: "20px", borderRadius: 12 }}>
+                        <p style={{ fontSize: 28, fontWeight: 800, color: stat.color, marginBottom: 4 }}>{stat.value}</p>
+                        <p style={{ fontSize: 12, color: "var(--fs-gray-500)", marginBottom: 4 }}>{stat.label}</p>
+                        <p style={{ fontSize: 11, color: "#10b981", fontWeight: 500 }}>{stat.change}</p>
+                      </div>
+                    ))}
+                  </div>
+
+                  <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr", gap: 24 }}>
+                    {/* Recent Activity */}
+                    <div className="fs-detail-specs" style={{ padding: 0, borderRadius: 12, overflow: 'hidden' }}>
+                      <div style={{ padding: "20px", borderBottom: "1px solid var(--fs-gray-100)", display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <h3 style={{ fontSize: 16, fontWeight: 700 }}>Recent Activity</h3>
+                        <button style={{ fontSize: 13, color: 'var(--fs-blue)', background: 'none', border: 'none', cursor: 'pointer' }}>View All</button>
+                      </div>
+                      <div style={{ padding: "8px 0" }}>
+                        {activities.map(activity => (
+                          <div key={activity.id} style={{ padding: "16px 20px", display: 'flex', alignItems: 'flex-start', gap: 12, borderBottom: "1px solid var(--fs-gray-50)" }}>
+                            <div style={{ 
+                              width: 36, 
+                              height: 36, 
+                              borderRadius: 8, 
+                              background: activity.type === 'enquiry' ? '#dcfce7' : activity.type === 'alert' ? '#fef3c7' : '#eff6ff',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              color: activity.type === 'enquiry' ? '#166534' : activity.type === 'alert' ? '#92400e' : 'var(--fs-blue)',
+                              flexShrink: 0
+                            }}>
+                              {activity.icon}
+                            </div>
+                            <div style={{ flex: 1 }}>
+                              <p style={{ fontSize: 14, marginBottom: 2 }}>{activity.message}</p>
+                              <p style={{ fontSize: 12, color: 'var(--fs-gray-400)' }}>{activity.time}</p>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Quick Actions */}
+                    <div>
+                      <div className="fs-detail-specs" style={{ padding: "20px", borderRadius: 12, marginBottom: 16 }}>
+                        <h3 style={{ fontSize: 16, fontWeight: 700, marginBottom: 16 }}>Quick Actions</h3>
+                        <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                          <button 
+                            onClick={() => setPage('sell')}
+                            style={{ 
+                              padding: "12px 16px", 
+                              background: "var(--fs-gray-900)", 
+                              color: "white",
+                              border: "none",
+                              borderRadius: 8,
+                              fontSize: 14,
+                              cursor: "pointer",
+                              textAlign: 'left',
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: 10
+                            }}
+                          >
+                            <span>+</span> List New Aircraft
+                          </button>
+                          <button 
+                            onClick={() => setActiveTab('enquiries')}
+                            style={{ 
+                              padding: "12px 16px", 
+                              background: "var(--fs-gray-100)", 
+                              color: "var(--fs-gray-900)",
+                              border: "none",
+                              borderRadius: 8,
+                              fontSize: 14,
+                              cursor: "pointer",
+                              textAlign: 'left'
+                            }}
+                          >
+                            {stats.newEnquiries > 0 ? `📬 ${stats.newEnquiries} New Enquiries` : '📬 View Enquiries'}
+                          </button>
+                        </div>
+                      </div>
+
+                      {/* Tips Card */}
+                      <div className="fs-detail-specs" style={{ padding: "20px", borderRadius: 12, background: 'linear-gradient(135deg, #eff6ff 0%, #ffffff 100%)' }}>
+                        <h3 style={{ fontSize: 14, fontWeight: 700, marginBottom: 8 }}>💡 Selling Tip</h3>
+                        <p style={{ fontSize: 13, color: 'var(--fs-gray-600)', lineHeight: 1.5 }}>
+                          Aircraft with 10+ photos get 3x more enquiries. Add more photos to your listings to increase visibility.
+                        </p>
+                        <button 
+                          onClick={() => setActiveTab('listings')}
+                          style={{ 
+                            marginTop: 12,
+                            fontSize: 13, 
+                            color: 'var(--fs-blue)', 
+                            background: 'none', 
+                            border: 'none', 
+                            cursor: 'pointer',
+                            fontWeight: 600
+                          }}
+                        >
+                          Update Listings →
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </>
+              )}
+
+              {/* LISTINGS TAB - TABLE VIEW */}
               {activeTab === 'listings' && (
                 <>
-                  <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 16, marginBottom: 24 }}>
-                    <div className="fs-detail-specs" style={{ textAlign: "center", padding: "24px" }}>
-                      <p style={{ fontSize: 32, fontWeight: 800, color: "var(--fs-blue)" }}>{myListings.length}</p>
-                      <p style={{ fontSize: 13, color: "var(--fs-gray-500)" }}>Active Listings</p>
-                    </div>
-                    <div className="fs-detail-specs" style={{ textAlign: "center", padding: "24px" }}>
-                      <p style={{ fontSize: 32, fontWeight: 800, color: "var(--fs-green)" }}>{myEnquiries.length}</p>
-                      <p style={{ fontSize: 13, color: "var(--fs-gray-500)" }}>Enquiries</p>
-                    </div>
-                    <div className="fs-detail-specs" style={{ textAlign: "center", padding: "24px" }}>
-                      <p style={{ fontSize: 32, fontWeight: 800, color: "var(--fs-gray-900)" }}>{savedAircraft.length}</p>
-                      <p style={{ fontSize: 13, color: "var(--fs-gray-500)" }}>Saved</p>
-                    </div>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
+                    <h3 style={{ fontSize: 20, fontWeight: 700 }}>My Listings</h3>
+                    <button 
+                      className="fs-nav-btn-primary"
+                      onClick={() => setPage('sell')}
+                    >
+                      + Add Listing
+                    </button>
                   </div>
 
                   {myListings.length === 0 ? (
-                    <div className="fs-detail-specs" style={{ padding: "48px", textAlign: "center" }}>
-                      <div style={{ fontSize: 48, marginBottom: 16 }}>✈️</div>
-                      <h3 style={{ fontSize: 18, fontWeight: 700, marginBottom: 8 }}>No active listings</h3>
-                      <p style={{ fontSize: 14, color: "var(--fs-gray-500)", marginBottom: 24 }}>
-                        Get started by listing your first aircraft. It only takes a few minutes.
+                    <div className="fs-detail-specs" style={{ padding: "64px", textAlign: "center", borderRadius: 12 }}>
+                      <div style={{ fontSize: 56, marginBottom: 20, opacity: 0.5 }}>✈️</div>
+                      <h3 style={{ fontSize: 20, fontWeight: 700, marginBottom: 8 }}>No active listings</h3>
+                      <p style={{ fontSize: 15, color: "var(--fs-gray-500)", marginBottom: 24, maxWidth: 400, margin: '0 auto 24px' }}>
+                        Get started by listing your first aircraft. It only takes a few minutes and you'll reach thousands of qualified buyers.
                       </p>
                       <button 
                         className="fs-nav-btn-primary"
                         onClick={() => setPage('sell')}
+                        style={{ fontSize: 15, padding: '14px 28px' }}
                       >
                         List Your Aircraft
                       </button>
                     </div>
                   ) : (
-                    <div className="fs-grid">
-                      {myListings.map(listing => (
-                        <ListingCard key={listing.id} listing={listing} onClick={() => {}} onSave={onSave} saved={savedIds.has(listing.id)} />
-                      ))}
+                    <div className="fs-detail-specs" style={{ padding: 0, borderRadius: 12, overflow: 'hidden' }}>
+                      <table style={{ width: "100%", borderCollapse: "collapse" }}>
+                        <thead>
+                          <tr style={{ borderBottom: "1px solid var(--fs-gray-200)", background: '#fafafa' }}>
+                            <th style={{ padding: "16px", textAlign: "left", fontSize: 12, fontWeight: 600, color: "var(--fs-gray-500)", textTransform: "uppercase", letterSpacing: 0.5 }}>Aircraft</th>
+                            <th style={{ padding: "16px", textAlign: "left", fontSize: 12, fontWeight: 600, color: "var(--fs-gray-500)", textTransform: "uppercase", letterSpacing: 0.5 }}>Price</th>
+                            <th style={{ padding: "16px", textAlign: "center", fontSize: 12, fontWeight: 600, color: "var(--fs-gray-500)", textTransform: "uppercase", letterSpacing: 0.5 }}>Views</th>
+                            <th style={{ padding: "16px", textAlign: "center", fontSize: 12, fontWeight: 600, color: "var(--fs-gray-500)", textTransform: "uppercase", letterSpacing: 0.5 }}>Enquiries</th>
+                            <th style={{ padding: "16px", textAlign: "center", fontSize: 12, fontWeight: 600, color: "var(--fs-gray-500)", textTransform: "uppercase", letterSpacing: 0.5 }}>Status</th>
+                            <th style={{ padding: "16px", textAlign: "right", fontSize: 12, fontWeight: 600, color: "var(--fs-gray-500)", textTransform: "uppercase", letterSpacing: 0.5 }}>Actions</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {myListings.map(listing => (
+                            <tr key={listing.id} style={{ borderBottom: "1px solid var(--fs-gray-100)" }}>
+                              <td style={{ padding: "16px" }}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                                  <img src={listing.image} alt={listing.title} style={{ width: 60, height: 40, objectFit: 'cover', borderRadius: 6 }} />
+                                  <div>
+                                    <p style={{ fontWeight: 600, fontSize: 14, marginBottom: 2 }}>{listing.title}</p>
+                                    <p style={{ fontSize: 12, color: 'var(--fs-gray-400)' }}>{listing.daysListed} days listed</p>
+                                  </div>
+                                  {listing.featured && (
+                                    <span style={{ 
+                                      padding: "2px 8px", 
+                                      borderRadius: 4, 
+                                      fontSize: 10,
+                                      background: '#fef3c7',
+                                      color: '#92400e',
+                                      fontWeight: 600
+                                    }}>FEATURED</span>
+                                  )}
+                                </div>
+                              </td>
+                              <td style={{ padding: "16px", fontWeight: 600 }}>${listing.price.toLocaleString()}</td>
+                              <td style={{ padding: "16px", textAlign: "center" }}>{listing.views.toLocaleString()}</td>
+                              <td style={{ padding: "16px", textAlign: "center" }}>
+                                <span style={{ 
+                                  padding: "4px 10px", 
+                                  borderRadius: 10, 
+                                  fontSize: 12,
+                                  fontWeight: 600,
+                                  background: listing.enquiries > 0 ? '#dcfce7' : 'transparent',
+                                  color: listing.enquiries > 0 ? '#166534' : 'var(--fs-gray-500)'
+                                }}>
+                                  {listing.enquiries}
+                                </span>
+                              </td>
+                              <td style={{ padding: "16px", textAlign: "center" }}>
+                                <span style={{ 
+                                  padding: "4px 12px", 
+                                  borderRadius: 4, 
+                                  fontSize: 12, 
+                                  fontWeight: 500,
+                                  background: listing.status === 'active' ? '#dcfce7' : '#fef3c7',
+                                  color: listing.status === 'active' ? '#166534' : '#92400e',
+                                  textTransform: 'capitalize'
+                                }}>
+                                  {listing.status}
+                                </span>
+                              </td>
+                              <td style={{ padding: "16px", textAlign: "right" }}>
+                                <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
+                                  <button style={{ padding: "6px 12px", background: "var(--fs-gray-100)", border: "none", borderRadius: 6, fontSize: 12, cursor: "pointer" }}>Edit</button>
+                                  <button style={{ padding: "6px 12px", background: "var(--fs-blue)", color: 'white', border: "none", borderRadius: 6, fontSize: 12, cursor: "pointer" }}>Boost</button>
+                                </div>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
                     </div>
                   )}
                 </>
@@ -3302,53 +3657,298 @@ const DashboardPage = ({ user, setPage, setUser, savedIds, onSave }) => {
                 </>
               )}
 
-              {/* ENQUIRIES TAB */}
+              {/* ENQUIRIES TAB - CRM STYLE */}
               {activeTab === 'enquiries' && (
                 <>
-                  <h3 style={{ fontSize: 20, fontWeight: 700, marginBottom: 16 }}>Enquiries</h3>
-                  {myEnquiries.length === 0 ? (
-                    <div className="fs-detail-specs" style={{ padding: "48px", textAlign: "center" }}>
-                      <div style={{ fontSize: 48, marginBottom: 16 }}>{Icons.mail}</div>
-                      <h3 style={{ fontSize: 18, fontWeight: 700, marginBottom: 8 }}>No enquiries yet</h3>
-                      <p style={{ fontSize: 14, color: "var(--fs-gray-500)" }}>
-                        When buyers contact you about your listings, they'll appear here.
-                      </p>
-                    </div>
-                  ) : (
-                    <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-                      {myEnquiries.map(enquiry => (
-                        <div key={enquiry.id} className="fs-detail-specs" style={{ padding: "20px" }}>
-                          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 12 }}>
-                            <div>
-                              <h4 style={{ fontSize: 16, fontWeight: 600, marginBottom: 4 }}>{enquiry.aircraft}</h4>
-                              <p style={{ fontSize: 13, color: "var(--fs-gray-500)" }}>From: {enquiry.from}</p>
-                            </div>
-                            <span style={{ 
-                              padding: "4px 12px", 
-                              borderRadius: 4, 
-                              fontSize: 12,
-                              background: enquiry.status === 'new' ? '#dcfce7' : '#f3f4f6',
-                              color: enquiry.status === 'new' ? '#166534' : '#6b7280'
-                            }}>
-                              {enquiry.status === 'new' ? 'New' : 'Replied'}
-                            </span>
-                          </div>
-                          <p style={{ fontSize: 14, color: "var(--fs-gray-700)", marginBottom: 16, lineHeight: 1.5 }}>
-                            "{enquiry.message}"
-                          </p>
-                          <div style={{ display: "flex", gap: 12, flexWrap: "wrap", padding: "12px", background: "var(--fs-gray-50)", borderRadius: "var(--fs-radius-sm)" }}>
-                            <a href={`mailto:${enquiry.email}`} style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 13, color: "var(--fs-blue)" }}>
-                              {Icons.mail} {enquiry.email}
-                            </a>
-                            <a href={`tel:${enquiry.phone}`} style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 13, color: "var(--fs-blue)" }}>
-                              {Icons.phone} {enquiry.phone}
-                            </a>
-                          </div>
-                          <p style={{ fontSize: 11, color: "var(--fs-gray-400)", marginTop: 12 }}>
-                            Received: {enquiry.date}
+                  {!selectedEnquiry ? (
+                    <>
+                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
+                        <div>
+                          <h3 style={{ fontSize: 20, fontWeight: 700, marginBottom: 4 }}>Enquiries</h3>
+                          <p style={{ fontSize: 14, color: 'var(--fs-gray-500)' }}>Manage leads and respond to buyer questions</p>
+                        </div>
+                        <div style={{ display: 'flex', gap: 8 }}>
+                          {['all', 'new', 'contacted', 'negotiating'].map(filter => (
+                            <button 
+                              key={filter}
+                              style={{ 
+                                padding: "8px 16px", 
+                                background: "var(--fs-gray-100)", 
+                                border: "none",
+                                borderRadius: 6,
+                                fontSize: 13,
+                                cursor: "pointer",
+                                textTransform: 'capitalize'
+                              }}
+                            >
+                              {filter}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+
+                      {myEnquiries.filter(e => e.status !== 'spam').length === 0 ? (
+                        <div className="fs-detail-specs" style={{ padding: "64px", textAlign: "center", borderRadius: 12 }}>
+                          <div style={{ fontSize: 56, marginBottom: 20, opacity: 0.5 }}>{Icons.mail}</div>
+                          <h3 style={{ fontSize: 20, fontWeight: 700, marginBottom: 8 }}>No enquiries yet</h3>
+                          <p style={{ fontSize: 15, color: "var(--fs-gray-500)", maxWidth: 400, margin: '0 auto' }}>
+                            When buyers contact you about your listings, they'll appear here. Make sure your listings have great photos and descriptions!
                           </p>
                         </div>
-                      ))}
+                      ) : (
+                        <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                          {myEnquiries.filter(e => e.status !== 'spam').map(enquiry => (
+                            <div 
+                              key={enquiry.id} 
+                              className="fs-detail-specs" 
+                              style={{ padding: "20px", borderRadius: 12, cursor: 'pointer', transition: 'all 0.15s' }}
+                              onClick={() => setSelectedEnquiry(enquiry)}
+                              onMouseEnter={e => e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.08)'}
+                              onMouseLeave={e => e.currentTarget.style.boxShadow = 'var(--fs-shadow)'}
+                            >
+                              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 12 }}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                                  <div style={{ 
+                                    width: 44, 
+                                    height: 44, 
+                                    borderRadius: '50%', 
+                                    background: 'var(--fs-gray-100)',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    fontSize: 18,
+                                    fontWeight: 600,
+                                    color: 'var(--fs-gray-600)'
+                                  }}>
+                                    {enquiry.from.charAt(0)}
+                                  </div>
+                                  <div>
+                                    <h4 style={{ fontSize: 16, fontWeight: 600, marginBottom: 2 }}>{enquiry.from}</h4>
+                                    <p style={{ fontSize: 13, color: "var(--fs-gray-500)" }}>Re: {enquiry.aircraft}</p>
+                                  </div>
+                                </div>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                                  {getStatusBadge(enquiry.status)}
+                                  <span style={{ fontSize: 12, color: 'var(--fs-gray-400)' }}>{formatTimeAgo(enquiry.date)}</span>
+                                </div>
+                              </div>
+                              <p style={{ fontSize: 14, color: "var(--fs-gray-700)", marginBottom: 16, lineHeight: 1.5, paddingLeft: 56 }}>
+                                "{enquiry.message.substring(0, 120)}{enquiry.message.length > 120 ? '...' : ''}"
+                              </p>
+                              {enquiry.replies.length > 0 && (
+                                <div style={{ paddingLeft: 56, marginTop: 8 }}>
+                                  <span style={{ fontSize: 12, color: '#10b981', fontWeight: 500 }}>
+                                    ✓ You replied {formatTimeAgo(enquiry.replies[enquiry.replies.length - 1].date)}
+                                  </span>
+                                </div>
+                              )}
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </>
+                  ) : (
+                    /* Enquiry Detail View */
+                    <div>
+                      <button 
+                        onClick={() => setSelectedEnquiry(null)}
+                        style={{ 
+                          marginBottom: 16,
+                          fontSize: 14, 
+                          color: 'var(--fs-gray-500)', 
+                          background: 'none', 
+                          border: 'none', 
+                          cursor: 'pointer',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: 6
+                        }}
+                      >
+                        ← Back to enquiries
+                      </button>
+
+                      <div style={{ display: "grid", gridTemplateColumns: "1fr 320px", gap: 24 }}>
+                        {/* Message Thread */}
+                        <div className="fs-detail-specs" style={{ padding: 0, borderRadius: 12, overflow: 'hidden' }}>
+                          <div style={{ padding: "20px", borderBottom: "1px solid var(--fs-gray-100)" }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 12 }}>
+                              <div style={{ 
+                                width: 48, 
+                                height: 48, 
+                                borderRadius: '50%', 
+                                background: 'var(--fs-gray-100)',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                fontSize: 20,
+                                fontWeight: 600,
+                                color: 'var(--fs-gray-600)'
+                              }}>
+                                {selectedEnquiry.from.charAt(0)}
+                              </div>
+                              <div>
+                                <h3 style={{ fontSize: 18, fontWeight: 700 }}>{selectedEnquiry.from}</h3>
+                                <p style={{ fontSize: 13, color: 'var(--fs-gray-500)' }}>Re: {selectedEnquiry.aircraft}</p>
+                              </div>
+                            </div>
+                            {getStatusBadge(selectedEnquiry.status)}
+                          </div>
+
+                          <div style={{ padding: "20px", maxHeight: 400, overflowY: 'auto' }}>
+                            {/* Original Message */}
+                            <div style={{ marginBottom: 20 }}>
+                              <div style={{ display: 'flex', gap: 12 }}>
+                                <div style={{ 
+                                  width: 32, 
+                                  height: 32, 
+                                  borderRadius: '50%', 
+                                  background: 'var(--fs-gray-100)',
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  justifyContent: 'center',
+                                  fontSize: 14,
+                                  fontWeight: 600,
+                                  color: 'var(--fs-gray-600)',
+                                  flexShrink: 0
+                                }}>
+                                  {selectedEnquiry.from.charAt(0)}
+                                </div>
+                                <div style={{ flex: 1 }}>
+                                  <div style={{ background: '#f3f4f6', padding: 12, borderRadius: 12, borderBottomLeftRadius: 4 }}>
+                                    <p style={{ fontSize: 14, lineHeight: 1.6 }}>{selectedEnquiry.message}</p>
+                                  </div>
+                                  <p style={{ fontSize: 11, color: 'var(--fs-gray-400)', marginTop: 4 }}>{formatTimeAgo(selectedEnquiry.date)}</p>
+                                </div>
+                              </div>
+                            </div>
+
+                            {/* Replies */}
+                            {selectedEnquiry.replies.map((reply, idx) => (
+                              <div key={idx} style={{ marginBottom: 20 }}>
+                                <div style={{ display: 'flex', gap: 12, flexDirection: 'row-reverse' }}>
+                                  <div style={{ 
+                                    width: 32, 
+                                    height: 32, 
+                                    borderRadius: '50%', 
+                                    background: 'var(--fs-blue)',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    fontSize: 14,
+                                    fontWeight: 600,
+                                    color: 'white',
+                                    flexShrink: 0
+                                  }}>
+                                    You
+                                  </div>
+                                  <div style={{ flex: 1 }}>
+                                    <div style={{ background: '#eff6ff', padding: 12, borderRadius: 12, borderBottomRightRadius: 4 }}>
+                                      <p style={{ fontSize: 14, lineHeight: 1.6 }}>{reply.message}</p>
+                                    </div>
+                                    <p style={{ fontSize: 11, color: 'var(--fs-gray-400)', marginTop: 4, textAlign: 'right' }}>{formatTimeAgo(reply.date)}</p>
+                                  </div>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+
+                          {/* Reply Input */}
+                          <div style={{ padding: "20px", borderTop: "1px solid var(--fs-gray-100)" }}>
+                            <textarea
+                              className="fs-form-textarea"
+                              placeholder="Type your reply..."
+                              value={replyText}
+                              onChange={e => setReplyText(e.target.value)}
+                              style={{ minHeight: 80, marginBottom: 12 }}
+                            />
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                              <span style={{ fontSize: 12, color: 'var(--fs-gray-400)' }}>Buyer will be notified by email</span>
+                              <button 
+                                onClick={() => handleReplySubmit(selectedEnquiry.id)}
+                                disabled={!replyText.trim()}
+                                className="fs-form-submit"
+                                style={{ width: 'auto', padding: '10px 24px' }}
+                              >
+                                Send Reply
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Sidebar */}
+                        <div>
+                          {/* Buyer Info */}
+                          <div className="fs-detail-specs" style={{ padding: "20px", borderRadius: 12, marginBottom: 16 }}>
+                            <h4 style={{ fontSize: 14, fontWeight: 700, marginBottom: 16, textTransform: 'uppercase', letterSpacing: 0.5, color: 'var(--fs-gray-500)' }}>Buyer Details</h4>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                              <a href={`mailto:${selectedEnquiry.email}`} style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 14, color: "var(--fs-blue)" }}>
+                                {Icons.mail} {selectedEnquiry.email}
+                              </a>
+                              <a href={`tel:${selectedEnquiry.phone}`} style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 14, color: "var(--fs-blue)" }}>
+                                {Icons.phone} {selectedEnquiry.phone}
+                              </a>
+                            </div>
+                          </div>
+
+                          {/* Actions */}
+                          <div className="fs-detail-specs" style={{ padding: "20px", borderRadius: 12, marginBottom: 16 }}>
+                            <h4 style={{ fontSize: 14, fontWeight: 700, marginBottom: 16, textTransform: 'uppercase', letterSpacing: 0.5, color: 'var(--fs-gray-500)' }}>Actions</h4>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                              {['new', 'contacted', 'negotiating', 'sold', 'archived'].map(status => (
+                                <button
+                                  key={status}
+                                  onClick={() => handleEnquiryStatusChange(selectedEnquiry.id, status)}
+                                  style={{ 
+                                    padding: "10px 16px", 
+                                    background: selectedEnquiry.status === status ? '#eff6ff' : 'var(--fs-gray-100)', 
+                                    color: selectedEnquiry.status === status ? 'var(--fs-blue)' : 'var(--fs-gray-700)',
+                                    border: selectedEnquiry.status === status ? '1px solid var(--fs-blue)' : 'none',
+                                    borderRadius: 8,
+                                    fontSize: 13,
+                                    cursor: "pointer",
+                                    textAlign: 'left',
+                                    textTransform: 'capitalize',
+                                    fontWeight: selectedEnquiry.status === status ? 600 : 400
+                                  }}
+                                >
+                                  {status === 'new' && '✨ '} 
+                                  {status === 'contacted' && '✓ '} 
+                                  {status === 'negotiating' && '💬 '} 
+                                  {status === 'sold' && '🎉 '} 
+                                  {status === 'archived' && '📁 '}
+                                  Mark as {status}
+                                </button>
+                              ))}
+                              <hr style={{ margin: '8px 0', border: 'none', borderTop: '1px solid var(--fs-gray-200)' }} />
+                              <button
+                                onClick={() => handleMarkSpam(selectedEnquiry.id)}
+                                style={{ 
+                                  padding: "10px 16px", 
+                                  background: 'transparent', 
+                                  color: '#ef4444',
+                                  border: 'none',
+                                  borderRadius: 8,
+                                  fontSize: 13,
+                                  cursor: "pointer",
+                                  textAlign: 'left'
+                                }}
+                              >
+                                🚫 Mark as spam
+                              </button>
+                            </div>
+                          </div>
+
+                          {/* Notes */}
+                          <div className="fs-detail-specs" style={{ padding: "20px", borderRadius: 12 }}>
+                            <h4 style={{ fontSize: 14, fontWeight: 700, marginBottom: 12, textTransform: 'uppercase', letterSpacing: 0.5, color: 'var(--fs-gray-500)' }}>Private Notes</h4>
+                            <textarea
+                              className="fs-form-textarea"
+                              placeholder="Add notes about this buyer (only visible to you)..."
+                              style={{ minHeight: 100, fontSize: 13 }}
+                            />
+                          </div>
+                        </div>
+                      </div>
                     </div>
                   )}
                 </>
@@ -3455,6 +4055,8 @@ const AdminPage = ({ user, setPage, setUser }) => {
   }
 
   const [activeTab, setActiveTab] = useState('listings');
+  const [selectedLead, setSelectedLead] = useState(null);
+  const [leadStatusFilter, setLeadStatusFilter] = useState('all');
 
   const mockListings = [
     { id: 1, title: '2018 Cirrus SR22T', price: 895000, seller: 'Southern Aviation', status: 'pending', date: '2026-03-22' },
@@ -3465,6 +4067,92 @@ const AdminPage = ({ user, setPage, setUser }) => {
     { id: 1, name: 'John Smith', email: 'john@example.com', role: 'private', listings: 2 },
     { id: 2, name: 'Southern Aviation', email: 'sales@southernav.com', role: 'dealer', listings: 14 },
   ];
+
+  // Lead Management - For finance/insurance/valuation providers
+  const [leads, setLeads] = useState([
+    { 
+      id: 1, 
+      type: 'finance', 
+      name: 'John Smith', 
+      email: 'john@email.com', 
+      phone: '0412 345 678',
+      aircraft: '2018 Cirrus SR22T',
+      amount: 750000,
+      status: 'new',
+      provider: null,
+      notes: 'Looking for 80% LVR, 10 year term',
+      date: '2026-03-22T10:30:00',
+      assignedTo: null
+    },
+    { 
+      id: 2, 
+      type: 'insurance', 
+      name: 'Sarah Chen', 
+      email: 'sarah@aviation.com', 
+      phone: '0433 999 111',
+      aircraft: '2020 Piper Archer',
+      amount: 450000,
+      status: 'contacted',
+      provider: 'Avemco Insurance',
+      notes: 'Needs comprehensive hull coverage',
+      date: '2026-03-21T14:15:00',
+      assignedTo: 'Team Member A'
+    },
+    { 
+      id: 3, 
+      type: 'finance', 
+      name: 'Mike Johnson', 
+      email: 'mike@outlook.com', 
+      phone: '0400 222 444',
+      aircraft: '2015 Cessna 182',
+      amount: 320000,
+      status: 'qualified',
+      provider: 'Aviation Finance Australia',
+      notes: 'Pre-approved, ready to proceed',
+      date: '2026-03-20T09:00:00',
+      assignedTo: 'Team Member B'
+    },
+    { 
+      id: 4, 
+      type: 'valuation', 
+      name: 'Aviation Group Pty Ltd', 
+      email: 'admin@aviagroup.com', 
+      phone: '02 9999 8888',
+      aircraft: 'Fleet of 5 aircraft',
+      amount: null,
+      status: 'new',
+      provider: null,
+      notes: 'Commercial valuation required for insurance renewal',
+      date: '2026-03-22T16:45:00',
+      assignedTo: null
+    },
+  ]);
+
+  const handleLeadStatusChange = (leadId, newStatus) => {
+    setLeads(prev => prev.map(l => l.id === leadId ? { ...l, status: newStatus } : l));
+  };
+
+  const handleAssignProvider = (leadId, provider) => {
+    setLeads(prev => prev.map(l => l.id === leadId ? { ...l, provider, status: 'assigned' } : l));
+  };
+
+  const getLeadTypeLabel = (type) => {
+    const labels = { finance: '💰 Finance', insurance: '🛡️ Insurance', valuation: '📊 Valuation' };
+    return labels[type] || type;
+  };
+
+  const getLeadStatusBadge = (status) => {
+    const styles = {
+      new: { bg: '#dcfce7', color: '#166534', label: 'New' },
+      contacted: { bg: '#dbeafe', color: '#1e40af', label: 'Contacted' },
+      qualified: { bg: '#fef3c7', color: '#92400e', label: 'Qualified' },
+      assigned: { bg: '#e0e7ff', color: '#3730a3', label: 'Assigned' },
+      converted: { bg: '#d1fae5', color: '#065f46', label: 'Converted' },
+      lost: { bg: '#fee2e2', color: '#991b1b', label: 'Lost' }
+    };
+    const s = styles[status] || styles.new;
+    return <span style={{ padding: "4px 12px", borderRadius: 4, fontSize: 12, fontWeight: 500, background: s.bg, color: s.color }}>{s.label}</span>;
+  };
 
   return (
     <>
@@ -3529,16 +4217,17 @@ const AdminPage = ({ user, setPage, setUser }) => {
           </div>
 
           {/* Tabs */}
-          <div style={{ display: "flex", gap: 4, marginBottom: 24, borderBottom: "1px solid var(--fs-gray-200)" }}>
+          <div style={{ display: "flex", gap: 4, marginBottom: 24, borderBottom: "1px solid var(--fs-gray-200)", flexWrap: 'wrap' }}>
             {[
               { id: 'listings', label: 'Listings' },
               { id: 'users', label: 'Users' },
               { id: 'dealers', label: 'Dealer Applications' },
               { id: 'enquiries', label: 'Enquiries' },
+              { id: 'leads', label: 'Lead Management', badge: leads.filter(l => l.status === 'new').length },
             ].map(tab => (
               <button
                 key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
+                onClick={() => { setActiveTab(tab.id); setSelectedLead(null); }}
                 style={{
                   padding: "12px 20px",
                   border: "none",
@@ -3547,10 +4236,25 @@ const AdminPage = ({ user, setPage, setUser }) => {
                   cursor: "pointer",
                   fontSize: 14,
                   fontWeight: activeTab === tab.id ? 600 : 400,
-                  color: activeTab === tab.id ? "var(--fs-blue)" : "var(--fs-gray-500)"
+                  color: activeTab === tab.id ? "var(--fs-blue)" : "var(--fs-gray-500)",
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 8
                 }}
               >
                 {tab.label}
+                {tab.badge > 0 && (
+                  <span style={{ 
+                    background: activeTab === tab.id ? 'var(--fs-blue)' : 'var(--fs-gray-200)', 
+                    color: activeTab === tab.id ? 'white' : 'var(--fs-gray-600)', 
+                    fontSize: 11, 
+                    padding: '2px 8px', 
+                    borderRadius: 10,
+                    fontWeight: 600
+                  }}>
+                    {tab.badge}
+                  </span>
+                )}
               </button>
             ))}
           </div>
@@ -3664,6 +4368,233 @@ const AdminPage = ({ user, setPage, setUser }) => {
               <div style={{ padding: "48px", textAlign: "center" }}>
                 <p style={{ color: "var(--fs-gray-500)" }}>No new enquiries</p>
               </div>
+            )}
+
+            {/* LEAD MANAGEMENT TAB */}
+            {activeTab === 'leads' && (
+              <>
+                {!selectedLead ? (
+                  <>
+                    <div style={{ padding: "20px", borderBottom: "1px solid var(--fs-gray-100)", display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <div>
+                        <h3 style={{ fontSize: 18, fontWeight: 700, marginBottom: 4 }}>Lead Management</h3>
+                        <p style={{ fontSize: 13, color: 'var(--fs-gray-500)' }}>Finance, Insurance & Valuation inquiries</p>
+                      </div>
+                      <div style={{ display: 'flex', gap: 8 }}>
+                        {['all', 'finance', 'insurance', 'valuation'].map(filter => (
+                          <button 
+                            key={filter}
+                            onClick={() => setLeadStatusFilter(filter)}
+                            style={{ 
+                              padding: "6px 12px", 
+                              background: leadStatusFilter === filter ? 'var(--fs-blue)' : 'var(--fs-gray-100)', 
+                              color: leadStatusFilter === filter ? 'white' : 'var(--fs-gray-700)',
+                              border: "none",
+                              borderRadius: 6,
+                              fontSize: 12,
+                              cursor: "pointer",
+                              textTransform: 'capitalize'
+                            }}
+                          >
+                            {filter}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                    <table style={{ width: "100%", borderCollapse: "collapse" }}>
+                      <thead>
+                        <tr style={{ borderBottom: "1px solid var(--fs-gray-200)", background: '#fafafa' }}>
+                          <th style={{ padding: "16px", textAlign: "left", fontSize: 11, fontWeight: 600, color: "var(--fs-gray-500)", textTransform: "uppercase", letterSpacing: 0.5 }}>Type</th>
+                          <th style={{ padding: "16px", textAlign: "left", fontSize: 11, fontWeight: 600, color: "var(--fs-gray-500)", textTransform: "uppercase", letterSpacing: 0.5 }}>Contact</th>
+                          <th style={{ padding: "16px", textAlign: "left", fontSize: 11, fontWeight: 600, color: "var(--fs-gray-500)", textTransform: "uppercase", letterSpacing: 0.5 }}>Aircraft/Amount</th>
+                          <th style={{ padding: "16px", textAlign: "center", fontSize: 11, fontWeight: 600, color: "var(--fs-gray-500)", textTransform: "uppercase", letterSpacing: 0.5 }}>Status</th>
+                          <th style={{ padding: "16px", textAlign: "left", fontSize: 11, fontWeight: 600, color: "var(--fs-gray-500)", textTransform: "uppercase", letterSpacing: 0.5 }}>Provider</th>
+                          <th style={{ padding: "16px", textAlign: "right", fontSize: 11, fontWeight: 600, color: "var(--fs-gray-500)", textTransform: "uppercase", letterSpacing: 0.5 }}>Actions</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {leads
+                          .filter(l => leadStatusFilter === 'all' || l.type === leadStatusFilter)
+                          .map(lead => (
+                          <tr key={lead.id} style={{ borderBottom: "1px solid var(--fs-gray-100)" }}>
+                            <td style={{ padding: "16px" }}>
+                              <span style={{ fontSize: 13 }}>{getLeadTypeLabel(lead.type)}</span>
+                            </td>
+                            <td style={{ padding: "16px" }}>
+                              <p style={{ fontWeight: 500, fontSize: 14 }}>{lead.name}</p>
+                              <p style={{ fontSize: 12, color: 'var(--fs-gray-400)' }}>{lead.email}</p>
+                            </td>
+                            <td style={{ padding: "16px" }}>
+                              <p style={{ fontSize: 14 }}>{lead.aircraft}</p>
+                              {lead.amount && <p style={{ fontSize: 13, color: 'var(--fs-gray-500)' }}>${lead.amount.toLocaleString()}</p>}
+                            </td>
+                            <td style={{ padding: "16px", textAlign: "center" }}>
+                              {getLeadStatusBadge(lead.status)}
+                            </td>
+                            <td style={{ padding: "16px" }}>
+                              {lead.provider ? (
+                                <span style={{ fontSize: 13 }}>{lead.provider}</span>
+                              ) : (
+                                <span style={{ fontSize: 12, color: 'var(--fs-gray-400)', fontStyle: 'italic' }}>Unassigned</span>
+                              )}
+                            </td>
+                            <td style={{ padding: "16px", textAlign: "right" }}>
+                              <button 
+                                onClick={() => setSelectedLead(lead)}
+                                style={{ 
+                                  padding: "6px 12px", 
+                                  background: "var(--fs-blue)", 
+                                  color: "white",
+                                  border: "none",
+                                  borderRadius: 6,
+                                  fontSize: 12,
+                                  cursor: "pointer"
+                                }}
+                              >
+                                Manage
+                              </button>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </>
+                ) : (
+                  /* Lead Detail View */
+                  <div style={{ padding: "24px" }}>
+                    <button 
+                      onClick={() => setSelectedLead(null)}
+                      style={{ 
+                        marginBottom: 16,
+                        fontSize: 14, 
+                        color: 'var(--fs-gray-500)', 
+                        background: 'none', 
+                        border: 'none', 
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 6
+                      }}
+                    >
+                      ← Back to leads
+                    </button>
+
+                    <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr", gap: 24 }}>
+                      {/* Main Info */}
+                      <div>
+                        <div className="fs-detail-specs" style={{ padding: "24px", borderRadius: 12, marginBottom: 16 }}>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 20 }}>
+                            <div>
+                              <h2 style={{ fontSize: 24, fontWeight: 700, marginBottom: 8 }}>{selectedLead.name}</h2>
+                              <p style={{ fontSize: 14, color: 'var(--fs-gray-500)' }}>{getLeadTypeLabel(selectedLead.type)} • {selectedLead.aircraft}</p>
+                            </div>
+                            {getLeadStatusBadge(selectedLead.status)}
+                          </div>
+
+                          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 20 }}>
+                            <div>
+                              <p style={{ fontSize: 12, color: 'var(--fs-gray-400)', marginBottom: 4 }}>Email</p>
+                              <a href={`mailto:${selectedLead.email}`} style={{ fontSize: 14, color: 'var(--fs-blue)' }}>{selectedLead.email}</a>
+                            </div>
+                            <div>
+                              <p style={{ fontSize: 12, color: 'var(--fs-gray-400)', marginBottom: 4 }}>Phone</p>
+                              <a href={`tel:${selectedLead.phone}`} style={{ fontSize: 14, color: 'var(--fs-blue)' }}>{selectedLead.phone}</a>
+                            </div>
+                            {selectedLead.amount && (
+                              <div>
+                                <p style={{ fontSize: 12, color: 'var(--fs-gray-400)', marginBottom: 4 }}>Amount</p>
+                                <p style={{ fontSize: 14, fontWeight: 600 }}>${selectedLead.amount.toLocaleString()}</p>
+                              </div>
+                            )}
+                            <div>
+                              <p style={{ fontSize: 12, color: 'var(--fs-gray-400)', marginBottom: 4 }}>Received</p>
+                              <p style={{ fontSize: 14 }}>{new Date(selectedLead.date).toLocaleString()}</p>
+                            </div>
+                          </div>
+
+                          <div>
+                            <p style={{ fontSize: 12, color: 'var(--fs-gray-400)', marginBottom: 8 }}>Notes</p>
+                            <p style={{ fontSize: 14, lineHeight: 1.6, padding: 12, background: '#f9fafb', borderRadius: 8 }}>{selectedLead.notes}</p>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Sidebar Actions */}
+                      <div>
+                        <div className="fs-detail-specs" style={{ padding: "20px", borderRadius: 12, marginBottom: 16 }}>
+                          <h4 style={{ fontSize: 14, fontWeight: 700, marginBottom: 16 }}>Update Status</h4>
+                          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                            {['new', 'contacted', 'qualified', 'assigned', 'converted', 'lost'].map(status => (
+                              <button
+                                key={status}
+                                onClick={() => handleLeadStatusChange(selectedLead.id, status)}
+                                style={{ 
+                                  padding: "10px 16px", 
+                                  background: selectedLead.status === status ? '#eff6ff' : 'var(--fs-gray-100)', 
+                                  color: selectedLead.status === status ? 'var(--fs-blue)' : 'var(--fs-gray-700)',
+                                  border: selectedLead.status === status ? '1px solid var(--fs-blue)' : 'none',
+                                  borderRadius: 8,
+                                  fontSize: 13,
+                                  cursor: "pointer",
+                                  textAlign: 'left',
+                                  textTransform: 'capitalize',
+                                  fontWeight: selectedLead.status === status ? 600 : 400
+                                }}
+                              >
+                                {status}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+
+                        <div className="fs-detail-specs" style={{ padding: "20px", borderRadius: 12, marginBottom: 16 }}>
+                          <h4 style={{ fontSize: 14, fontWeight: 700, marginBottom: 16 }}>Assign Provider</h4>
+                          <select 
+                            className="fs-form-select"
+                            value={selectedLead.provider || ''}
+                            onChange={(e) => handleAssignProvider(selectedLead.id, e.target.value)}
+                            style={{ marginBottom: 12 }}
+                          >
+                            <option value="">Select Provider...</option>
+                            {selectedLead.type === 'finance' && (
+                              <>
+                                <option value="Aviation Finance Australia">Aviation Finance Australia</option>
+                                <option value="Aircraft Lending Centre">Aircraft Lending Centre</option>
+                                <option value="Bank of Queensland Aviation">Bank of Queensland Aviation</option>
+                              </>
+                            )}
+                            {selectedLead.type === 'insurance' && (
+                              <>
+                                <option value="Avemco Insurance">Avemco Insurance</option>
+                                <option value="QBE Aviation">QBE Aviation</option>
+                                <option value="Allianz Aircraft Insurance">Allianz Aircraft Insurance</option>
+                              </>
+                            )}
+                            {selectedLead.type === 'valuation' && (
+                              <>
+                                <option value="Aircraft Valuations Pty Ltd">Aircraft Valuations Pty Ltd</option>
+                                <option value="ASA Accredited Appraiser">ASA Accredited Appraiser</option>
+                              </>
+                            )}
+                          </select>
+                          <button className="fs-form-submit" style={{ width: '100%' }}>
+                            Send to Provider
+                          </button>
+                        </div>
+
+                        <div className="fs-detail-specs" style={{ padding: "20px", borderRadius: 12 }}>
+                          <h4 style={{ fontSize: 14, fontWeight: 700, marginBottom: 12 }}>Staff Notes</h4>
+                          <textarea
+                            className="fs-form-textarea"
+                            placeholder="Add internal notes..."
+                            style={{ minHeight: 100, fontSize: 13 }}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </>
             )}
           </div>
         </div>
