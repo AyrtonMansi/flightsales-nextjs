@@ -2502,30 +2502,53 @@ const LoginPage = ({ setPage, setUser }) => {
   };
 
   return (
-    <section className="fs-section" style={{ minHeight: "70vh", display: "flex", alignItems: "center", padding: "48px 0" }}>
-      <div className="fs-container" style={{ maxWidth: 480, margin: "0 auto" }}>
+    <section className="fs-section" style={{ minHeight: "70vh", display: "flex", alignItems: "center", padding: "32px 0" }}>
+      <div className="fs-container" style={{ maxWidth: 480, margin: "0 auto", padding: "0 20px" }}>
+        {/* Back Button */}
+        <button 
+          onClick={() => setPage('home')}
+          style={{ 
+            display: "flex", 
+            alignItems: "center", 
+            gap: 6, 
+            fontSize: 14, 
+            color: "var(--fs-gray-500)",
+            background: "none",
+            border: "none",
+            cursor: "pointer",
+            marginBottom: 24,
+            padding: "8px 0",
+            transition: "color 0.15s ease"
+          }}
+          onMouseEnter={e => e.target.style.color = "var(--fs-gray-900)"}
+          onMouseLeave={e => e.target.style.color = "var(--fs-gray-500)"}
+        >
+          <span style={{ fontSize: 12 }}>←</span> Back to home
+        </button>
+
         <div style={{ textAlign: "center", marginBottom: 32 }}>
           <div style={{ 
-            width: 64, 
-            height: 64, 
+            width: 72, 
+            height: 72, 
             borderRadius: "50%", 
-            background: "var(--fs-blue)", 
+            background: "var(--fs-gray-900)", 
             display: "flex", 
             alignItems: "center", 
             justifyContent: "center",
-            margin: "0 auto 16px"
+            margin: "0 auto 20px",
+            boxShadow: "var(--fs-shadow-md)"
           }}>
-            <span style={{ color: "white", fontSize: 28 }}>{Icons.user}</span>
+            <span style={{ color: "white", fontSize: 32 }}>{mode === 'login' ? '👋' : '✈️'}</span>
           </div>
-          <h1 style={{ fontFamily: "var(--fs-font-serif)", fontSize: 28, marginBottom: 8 }}>
+          <h1 style={{ fontFamily: "var(--fs-font-serif)", fontSize: 30, marginBottom: 8, fontWeight: 700 }}>
             {mode === 'login' ? 'Welcome back' : 'Create your account'}
           </h1>
-          <p style={{ fontSize: 14, color: "var(--fs-gray-500)" }}>
-            {mode === 'login' ? 'Sign in to manage your listings and saved aircraft' : 'Join Flightsales to buy and sell aircraft'}
+          <p style={{ fontSize: 15, color: "var(--fs-gray-500)", lineHeight: 1.5 }}>
+            {mode === 'login' ? 'Sign in to manage your listings and saved aircraft' : 'Join Flightsales to buy and sell aircraft across Australia'}
           </p>
         </div>
 
-        <div className="fs-detail-specs" style={{ boxShadow: "var(--fs-shadow-lg)", padding: 32 }}>
+        <div className="fs-detail-specs" style={{ boxShadow: "var(--fs-shadow-lg)", padding: "32px", borderRadius: "var(--fs-radius)", background: "white" }}>
           {/* Google Auth */}
           <button 
             onClick={handleGoogleAuth}
@@ -2545,11 +2568,32 @@ const LoginPage = ({ setPage, setUser }) => {
               alignItems: "center", 
               justifyContent: "center", 
               gap: 12,
-              opacity: loading ? 0.7 : 1
+              opacity: loading ? 0.6 : 1,
+              transition: "all 0.15s ease",
+              boxShadow: "0 1px 2px rgba(0,0,0,0.05)"
             }}
+            onMouseEnter={e => { if (!loading) { e.target.style.borderColor = "var(--fs-gray-400)"; e.target.style.background = "var(--fs-gray-50)"; }}}
+            onMouseLeave={e => { e.target.style.borderColor = "var(--fs-gray-200)"; e.target.style.background = "white"; }}
           >
-            <svg width="20" height="20" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
-            Continue with Google
+            {loading ? (
+              <span style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                <span style={{ 
+                  width: 18, 
+                  height: 18, 
+                  border: "2px solid var(--fs-gray-300)", 
+                  borderTopColor: "var(--fs-gray-600)", 
+                  borderRadius: "50%", 
+                  animation: "fs-spin 1s linear infinite",
+                  display: "inline-block"
+                }} />
+                Connecting...
+              </span>
+            ) : (
+              <>
+                <svg width="20" height="20" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+                Continue with Google
+              </>
+            )}
           </button>
 
           <div style={{ textAlign: "center", color: "var(--fs-gray-400)", fontSize: 13, margin: "20px 0", position: "relative" }}>
@@ -2558,14 +2602,18 @@ const LoginPage = ({ setPage, setUser }) => {
           </div>
 
           {error && (
-            <div style={{ 
+            <div className="fs-form-error" style={{ 
               padding: "12px 16px", 
               background: "#fef2f2", 
-              borderRadius: 6, 
-              marginBottom: 16,
-              border: "1px solid #fecaca"
+              borderRadius: "var(--fs-radius-sm)", 
+              marginBottom: 20,
+              border: "1px solid #fecaca",
+              display: "flex",
+              alignItems: "center",
+              gap: 10
             }}>
-              <p style={{ fontSize: 13, color: "#dc2626", margin: 0 }}>{error}</p>
+              <span style={{ color: "#dc2626", fontSize: 16 }}>⚠️</span>
+              <p style={{ fontSize: 13, color: "#dc2626", margin: 0, fontWeight: 500 }}>{error}</p>
             </div>
           )}
 
@@ -2574,38 +2622,53 @@ const LoginPage = ({ setPage, setUser }) => {
               <>
                 <div className="fs-form-group">
                   <label className="fs-form-label">Account Type *</label>
-                  <div style={{ display: "flex", gap: 12 }}>
-                    <label 
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+                    <div
                       onClick={() => setAccountType('private')}
                       style={{ 
-                        flex: 1, 
-                        padding: "12px 16px", 
+                        padding: "14px 12px", 
                         borderRadius: "var(--fs-radius-sm)",
                         border: accountType === 'private' ? "2px solid var(--fs-blue)" : "1px solid var(--fs-gray-200)",
                         background: accountType === 'private' ? "#eff6ff" : "white",
                         cursor: "pointer",
-                        textAlign: "center"
+                        textAlign: "center",
+                        transition: "all 0.15s ease",
+                        display: "flex",
+                        flexDirection: "column",
+                        alignItems: "center",
+                        gap: 4
                       }}
                     >
-                      <input type="radio" name="accountType" checked={accountType === 'private'} onChange={() => setAccountType('private')} style={{ marginRight: 8 }} />
-                      Private Seller
-                    </label>
-                    <label 
+                      <span style={{ fontSize: 20 }}>👤</span>
+                      <span style={{ fontSize: 14, fontWeight: accountType === 'private' ? 600 : 400, color: accountType === 'private' ? "var(--fs-blue)" : "var(--fs-gray-700)" }}>
+                        Private Seller
+                      </span>
+                      <span style={{ fontSize: 11, color: "var(--fs-gray-400)" }}>Individual owner</span>
+                    </div>
+                    <div
                       onClick={() => setAccountType('dealer')}
                       style={{ 
-                        flex: 1, 
-                        padding: "12px 16px", 
+                        padding: "14px 12px", 
                         borderRadius: "var(--fs-radius-sm)",
                         border: accountType === 'dealer' ? "2px solid var(--fs-blue)" : "1px solid var(--fs-gray-200)",
                         background: accountType === 'dealer' ? "#eff6ff" : "white",
                         cursor: "pointer",
-                        textAlign: "center"
+                        textAlign: "center",
+                        transition: "all 0.15s ease",
+                        display: "flex",
+                        flexDirection: "column",
+                        alignItems: "center",
+                        gap: 4
                       }}
                     >
-                      <input type="radio" name="accountType" checked={accountType === 'dealer'} onChange={() => setAccountType('dealer')} style={{ marginRight: 8 }} />
-                      Dealer
-                    </label>
+                      <span style={{ fontSize: 20 }}>🏢</span>
+                      <span style={{ fontSize: 14, fontWeight: accountType === 'dealer' ? 600 : 400, color: accountType === 'dealer' ? "var(--fs-blue)" : "var(--fs-gray-700)" }}>
+                        Dealer
+                      </span>
+                      <span style={{ fontSize: 11, color: "var(--fs-gray-400)" }}>Business account</span>
+                    </div>
                   </div>
+                  <input type="hidden" name="accountType" value={accountType} />
                 </div>
 
                 <div className="fs-form-group">
@@ -2616,7 +2679,8 @@ const LoginPage = ({ setPage, setUser }) => {
                     placeholder="John Smith"
                     value={fullName}
                     onChange={e => setFullName(e.target.value)}
-                    required
+                    required={mode === 'register'}
+                    style={{ fontSize: 15 }}
                   />
                 </div>
 
@@ -2628,6 +2692,7 @@ const LoginPage = ({ setPage, setUser }) => {
                     placeholder="04XX XXX XXX"
                     value={phone}
                     onChange={e => setPhone(e.target.value)}
+                    style={{ fontSize: 15 }}
                   />
                 </div>
               </>
@@ -2642,6 +2707,8 @@ const LoginPage = ({ setPage, setUser }) => {
                 value={email}
                 onChange={e => setEmail(e.target.value)}
                 required
+                autoComplete="email"
+                style={{ fontSize: 15 }}
               />
             </div>
 
@@ -2655,28 +2722,59 @@ const LoginPage = ({ setPage, setUser }) => {
                 onChange={e => setPassword(e.target.value)}
                 required
                 minLength={8}
+                autoComplete={mode === 'login' ? "current-password" : "new-password"}
+                style={{ fontSize: 15 }}
               />
               {mode === 'register' && (
-                <p style={{ fontSize: 11, color: "var(--fs-gray-400)", marginTop: 4 }}>Must be at least 8 characters</p>
+                <div style={{ marginTop: 6, display: "flex", alignItems: "center", gap: 6 }}>
+                  <span style={{ 
+                    width: password.length >= 8 ? 8 : 8, 
+                    height: 8, 
+                    borderRadius: "50%", 
+                    background: password.length >= 8 ? "#22c55e" : password.length > 0 ? "#f59e0b" : "#d1d5db",
+                    transition: "all 0.2s"
+                  }} />
+                  <span style={{ fontSize: 11, color: password.length >= 8 ? "#22c55e" : password.length > 0 ? "#f59e0b" : "var(--fs-gray-400)" }}>
+                    {password.length >= 8 ? "Password looks good" : password.length > 0 ? "At least 8 characters required" : "Must be at least 8 characters"}
+                  </span>
+                </div>
               )}
             </div>
 
             <button 
               type="submit" 
               className="fs-form-submit"
-              disabled={loading}
-              style={{ opacity: loading ? 0.7 : 1 }}
+              disabled={loading || (mode === 'register' && password.length < 8)}
+              style={{ 
+                opacity: loading || (mode === 'register' && password.length < 8) ? 0.6 : 1,
+                cursor: loading || (mode === 'register' && password.length < 8) ? "not-allowed" : "pointer",
+                marginTop: 8
+              }}
             >
-              {loading ? 'Please wait...' : (mode === 'login' ? 'Sign In' : 'Create Account')}
+              {loading ? (
+                <span style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
+                  <span style={{ 
+                    width: 16, 
+                    height: 16, 
+                    border: "2px solid rgba(255,255,255,0.3)", 
+                    borderTopColor: "white", 
+                    borderRadius: "50%", 
+                    animation: "spin 1s linear infinite",
+                    display: "inline-block"
+                  }} />
+                  Please wait...
+                </span>
+              ) : (mode === 'login' ? 'Sign In' : 'Create Account')}
             </button>
           </form>
 
-          <p style={{ fontSize: 13, textAlign: "center", marginTop: 24, color: "var(--fs-gray-500)" }}>
+          <p style={{ fontSize: 14, textAlign: "center", marginTop: 24, color: "var(--fs-gray-500)" }}>
             {mode === 'login' ? "Don't have an account? " : "Already have an account? "}
             <button 
               onClick={() => {
                 setMode(mode === 'login' ? 'register' : 'login');
                 setError(null);
+                setPassword('');
               }}
               style={{ 
                 color: "var(--fs-blue)", 
@@ -2684,18 +2782,23 @@ const LoginPage = ({ setPage, setUser }) => {
                 cursor: "pointer",
                 background: "none",
                 border: "none",
-                padding: 0,
-                fontSize: 13
+                padding: "4px 8px",
+                fontSize: 14,
+                borderRadius: "var(--fs-radius-sm)",
+                transition: "all 0.15s ease",
+                marginLeft: 4
               }}
+              onMouseEnter={e => e.target.style.background = "var(--fs-gray-100)"}
+              onMouseLeave={e => e.target.style.background = "transparent"}
             >
               {mode === 'login' ? 'Create one' : 'Sign in'}
             </button>
           </p>
 
           {mode === 'register' && (
-            <p style={{ fontSize: 11, textAlign: "center", marginTop: 16, color: "var(--fs-gray-400)", lineHeight: 1.5 }}>
-              By creating an account, you agree to our Terms of Service and Privacy Policy. 
-              Dealer accounts require verification before listings go live.
+            <p style={{ fontSize: 12, textAlign: "center", marginTop: 20, color: "var(--fs-gray-400)", lineHeight: 1.6, padding: "0 16px" }}>
+              By creating an account, you agree to our <span style={{ color: "var(--fs-gray-600)", cursor: "pointer" }} onClick={() => setPage('terms')}>Terms of Service</span> and <span style={{ color: "var(--fs-gray-600)", cursor: "pointer" }} onClick={() => setPage('privacy')}>Privacy Policy</span>. 
+              <br />Dealer accounts require verification before listings go live.
             </p>
           )}
         </div>

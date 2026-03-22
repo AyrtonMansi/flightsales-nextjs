@@ -46,3 +46,121 @@ body {
 
 a { color: inherit; text-decoration: none; }
 ::selection { background: var(--fs-gray-900); color: var(--fs-white); }
+
+/* Spinner Animation */
+@keyframes fs-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Form Input Focus States */
+.fs-form-input:focus,
+.fs-form-select:focus,
+.fs-form-textarea:focus {
+  outline: none;
+  border-color: var(--fs-gray-900) !important;
+  box-shadow: 0 0 0 3px rgba(0,0,0,0.08);
+  transition: all 0.15s ease;
+}
+
+/* Form Input Placeholder */
+.fs-form-input::placeholder,
+.fs-form-textarea::placeholder {
+  color: var(--fs-gray-400);
+}
+
+/* Button Hover Transitions */
+.fs-form-submit {
+  transition: all 0.15s ease;
+}
+
+.fs-form-submit:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.fs-form-submit:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+/* Account Type Card Hover */
+.fs-account-type-card {
+  transition: all 0.15s ease;
+}
+
+.fs-account-type-card:hover {
+  border-color: var(--fs-gray-400);
+}
+
+/* Error State Shake Animation */
+@keyframes fs-shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-4px); }
+  75% { transform: translateX(4px); }
+}
+
+.fs-form-error {
+  animation: fs-shake 0.3s ease;
+}
+
+/* Form Element Base Styles */
+.fs-form-group {
+  margin-bottom: 20px;
+}
+
+.fs-form-label {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--fs-gray-700);
+  margin-bottom: 8px;
+}
+
+.fs-form-input,
+.fs-form-select,
+.fs-form-textarea {
+  width: 100%;
+  padding: 12px 16px;
+  border: 1px solid var(--fs-gray-200);
+  border-radius: var(--fs-radius-sm);
+  font-family: var(--fs-font);
+  font-size: 15px;
+  background: white;
+  color: var(--fs-gray-900);
+  transition: all 0.15s ease;
+}
+
+.fs-form-input:hover,
+.fs-form-select:hover,
+.fs-form-textarea:hover {
+  border-color: var(--fs-gray-300);
+}
+
+.fs-form-select {
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23737373' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  padding-right: 40px;
+}
+
+.fs-form-textarea {
+  resize: vertical;
+  min-height: 100px;
+}
+
+.fs-form-submit {
+  width: 100%;
+  padding: 14px 24px;
+  background: var(--fs-gray-900);
+  color: white;
+  border: none;
+  border-radius: var(--fs-radius-sm);
+  font-family: var(--fs-font);
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
