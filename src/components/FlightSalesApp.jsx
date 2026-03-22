@@ -1545,7 +1545,7 @@ const ListingDetail = ({ listing, onBack, savedIds, onSave }) => {
   );
 };
 
-const SellPage = () => {
+const SellPage = ({ user, setPage }) => {
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({
     manufacturer: '',
@@ -1567,6 +1567,7 @@ const SellPage = () => {
   const [lookupError, setLookupError] = useState(null);
   const [autoFilled, setAutoFilled] = useState(false);
   const [showManualForm, setShowManualForm] = useState(false);
+  const [showLoginPrompt, setShowLoginPrompt] = useState(false);
 
   const lookupCASA = async () => {
     const rego = formData.rego.toUpperCase().trim();
@@ -1651,44 +1652,12 @@ const SellPage = () => {
           
           {step === 1 && (
             <div className="fs-detail-specs" style={{ boxShadow: "var(--fs-shadow-md)" }}>
-              <h3 style={{ fontSize: 18, marginBottom: 8 }}>Step 1: Find Your Aircraft</h3>
-              <p style={{ fontSize: 14, color: 'var(--fs-gray-500)', marginBottom: 24 }}>
-                Enter your VH registration and we'll pull the details from CASA for you.
-              </p>
+              <h3 style={{ fontSize: 18, marginBottom: 24 }}>Step 1: Enter Registration</h3>
               
-              {/* CASA Rego Lookup - CLEAN & PROMINENT */}
-              <div style={{ 
-                marginBottom: 32, 
-                padding: 24, 
-                background: 'linear-gradient(135deg, #eff6ff 0%, #ffffff 100%)', 
-                borderRadius: 'var(--fs-radius-lg)', 
-                border: '2px solid var(--fs-blue)',
-                position: 'relative'
-              }}>
-                <div style={{ 
-                  position: 'absolute', 
-                  top: -12, 
-                  left: 20, 
-                  background: 'var(--fs-blue)', 
-                  color: 'white', 
-                  padding: '4px 12px', 
-                  borderRadius: 4, 
-                  fontSize: 11, 
-                  fontWeight: 700,
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.5px'
-                }}>
-                  Quick Start
-                </div>
-                
-                <label className="fs-form-label" style={{ fontSize: 14, marginBottom: 8 }}>
-                  Aircraft Registration (Rego)
-                </label>
-                <p style={{ fontSize: 13, color: 'var(--fs-gray-500)', marginBottom: 16 }}>
-                  Enter your VH-XXX registration to auto-import from CASA
-                </p>
-                
-                <div style={{ display: "flex", gap: 12 }}>
+              {/* CASA Rego Lookup - SLIMLINE */}
+              <div style={{ marginBottom: 24 }}>
+                <label className="fs-form-label">Aircraft Registration</label>
+                <div style={{ display: "flex", gap: 8, marginTop: 8 }}>
                   <input 
                     className="fs-form-input" 
                     placeholder="VH-ABC"
@@ -1697,10 +1666,8 @@ const SellPage = () => {
                     onKeyPress={handleKeyPress}
                     style={{ 
                       textTransform: 'uppercase', 
-                      fontWeight: 700, 
-                      letterSpacing: '0.1em',
-                      fontSize: 18,
-                      padding: '14px 16px',
+                      fontWeight: 600,
+                      letterSpacing: '0.05em',
                       flex: 1
                     }}
                     maxLength={6}
@@ -1710,106 +1677,28 @@ const SellPage = () => {
                     onClick={lookupCASA}
                     disabled={isLookingUp || formData.rego.length < 6}
                     className="fs-nav-btn-primary"
-                    style={{ 
-                      whiteSpace: 'nowrap', 
-                      minWidth: 120,
-                      padding: '14px 24px',
-                      fontSize: 15
-                    }}
+                    style={{ whiteSpace: 'nowrap' }}
                   >
-                    {isLookingUp ? (
-                      <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                        <svg width="16" height="16" viewBox="0 0 24 24" style={{ animation: 'spin 1s linear infinite' }}>
-                          <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" fill="none" strokeDasharray="60" strokeDashoffset="20" />
-                        </svg>
-                        Searching...
-                      </span>
-                    ) : (
-                      <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                        🔍 Pull from CASA
-                      </span>
-                    )}
+                    {isLookingUp ? '...' : 'Lookup'}
                   </button>
                 </div>
                 
                 {lookupError && (
-                  <div style={{ 
-                    marginTop: 12, 
-                    padding: '10px 12px', 
-                    background: '#fef2f2', 
-                    borderRadius: 6,
-                    border: '1px solid #fecaca'
-                  }}>
-                    <p style={{ fontSize: 13, color: '#dc2626', margin: 0 }}>{lookupError}</p>
-                    <button 
-                      onClick={() => setShowManualForm(true)}
-                      style={{ 
-                        fontSize: 12, 
-                        color: '#dc2626', 
-                        textDecoration: 'underline',
-                        background: 'none',
-                        border: 'none',
-                        padding: 0,
-                        marginTop: 4,
-                        cursor: 'pointer'
-                      }}
-                    >
-                      Enter details manually instead →
-                    </button>
-                  </div>
+                  <p style={{ fontSize: 12, color: 'var(--fs-red)', marginTop: 8 }}>
+                    {lookupError} — <button onClick={() => setShowManualForm(true)} style={{ textDecoration: 'underline', background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}>enter manually</button>
+                  </p>
                 )}
                 
                 {autoFilled && (
-                  <div style={{ 
-                    marginTop: 12, 
-                    padding: '12px 16px', 
-                    background: '#dcfce7', 
-                    borderRadius: 6,
-                    border: '1px solid #86efac',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 10
-                  }}>
-                    <div style={{ 
-                      width: 24, 
-                      height: 24, 
-                      borderRadius: '50%', 
-                      background: '#22c55e',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      color: 'white',
-                      fontSize: 14
-                    }}>
-                      ✓
-                    </div>
-                    <div>
-                      <p style={{ fontSize: 14, color: '#166534', fontWeight: 600, margin: 0 }}>
-                        Aircraft found in CASA register!
-                      </p>
-                      <p style={{ fontSize: 12, color: '#15803d', margin: '2px 0 0 0' }}>
-                        Details auto-filled below. Please review and add missing information.
-                      </p>
-                    </div>
-                  </div>
+                  <p style={{ fontSize: 12, color: 'var(--fs-green)', marginTop: 8 }}>
+                    {Icons.check} Found in CASA — details loaded below
+                  </p>
                 )}
                 
-                {!showManualForm && !lookupError && (
-                  <button 
-                    onClick={() => setShowManualForm(true)}
-                    style={{ 
-                      marginTop: 16,
-                      fontSize: 13, 
-                      color: 'var(--fs-gray-500)', 
-                      background: 'none',
-                      border: 'none',
-                      padding: 0,
-                      cursor: 'pointer',
-                      textDecoration: 'underline'
-                    }}
-                  >
-                    Skip lookup, enter details manually →
-                  </button>
+                {!showManualForm && !lookupError && !autoFilled && (
+                  <p style={{ fontSize: 12, color: 'var(--fs-gray-400)', marginTop: 8 }}>
+                    Or <button onClick={() => setShowManualForm(true)} style={{ textDecoration: 'underline', background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}>skip and enter manually</button>
+                  </p>
                 )}
               </div>
               
@@ -1988,38 +1877,82 @@ const SellPage = () => {
           
           {step === 3 && (
             <div className="fs-detail-specs" style={{ boxShadow: "var(--fs-shadow-md)" }}>
-              <h3 style={{ fontSize: 18 }}>Photos & Submit</h3>
-              <div style={{ border: "2px dashed var(--fs-gray-200)", borderRadius: "var(--fs-radius)", padding: 40, textAlign: "center", marginBottom: 20 }}>
-                <div style={{ color: "var(--fs-gray-400)", marginBottom: 8 }}>{Icons.camera}</div>
-                <p style={{ fontWeight: 600, fontSize: 14, marginBottom: 4 }}>Upload Photos</p>
-                <p style={{ fontSize: 12, color: "var(--fs-gray-400)" }}>Minimum 4 photos required. Include exterior (4 angles), cockpit, panel, and engine bay.</p>
-                <button className="fs-detail-cta fs-detail-cta-secondary" style={{ maxWidth: 200, margin: "16px auto 0" }}>Choose Files</button>
-              </div>
-              <div style={{ background: "var(--fs-gray-50)", borderRadius: "var(--fs-radius)", padding: 20, marginBottom: 20 }}>
-                <h4 style={{ fontSize: 14, fontWeight: 700, marginBottom: 8 }}>Listing Plans</h4>
-                {[
-                  { name: "Basic", price: "Free", features: ["30-day listing", "Up to 8 photos", "Standard placement"] },
-                  { name: "Featured", price: "$149", features: ["60-day listing", "Up to 20 photos", "Homepage featured", "Priority in search", "Social media promotion"], recommended: true },
-                  { name: "Premium", price: "$299", features: ["90-day listing", "Unlimited photos", "Top placement", "Video walkthrough", "Valuation report", "Dedicated support"] },
-                ].map(plan => (
-                  <label key={plan.name} style={{ display: "flex", gap: 12, padding: "12px", marginBottom: 8, borderRadius: "var(--fs-radius-sm)", border: plan.recommended ? "2px solid var(--fs-blue)" : "1px solid var(--fs-gray-200)", cursor: "pointer", background: "white" }}>
-                    <input type="radio" name="plan" defaultChecked={plan.recommended} style={{ marginTop: 2 }} />
-                    <div style={{ flex: 1 }}>
-                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                        <span style={{ fontWeight: 600, fontSize: 14 }}>{plan.name}</span>
-                        <span style={{ fontWeight: 700, color: "var(--fs-blue)" }}>{plan.price}</span>
-                      </div>
-                      <div style={{ fontSize: 12, color: "var(--fs-gray-500)", marginTop: 4 }}>
-                        {plan.features.join(" · ")}
-                      </div>
-                    </div>
-                  </label>
-                ))}
-              </div>
-              <div style={{ display: "flex", gap: 12 }}>
-                <button className="fs-detail-cta fs-detail-cta-secondary" onClick={() => setStep(2)} style={{ flex: 1 }}>Back</button>
-                <button className="fs-form-submit" style={{ flex: 2, marginTop: 0 }}>Submit Listing for Review</button>
-              </div>
+              {!user ? (
+                /* LOGIN PROMPT */
+                <div style={{ textAlign: 'center', padding: '32px 24px' }}>
+                  <div style={{ 
+                    width: 64, 
+                    height: 64, 
+                    borderRadius: '50%', 
+                    background: '#eff6ff',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    margin: '0 auto 20px',
+                    fontSize: 28
+                  }}>
+                    {Icons.user}
+                  </div>
+                  <h3 style={{ fontSize: 20, fontWeight: 700, marginBottom: 8 }}>Sign in to continue</h3>
+                  <p style={{ fontSize: 14, color: 'var(--fs-gray-500)', marginBottom: 24, maxWidth: 360, margin: '0 auto 24px' }}>
+                    Create an account or sign in to submit your aircraft listing and manage your ads.
+                  </p>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 12, maxWidth: 280, margin: '0 auto' }}>
+                    <button 
+                      className="fs-form-submit"
+                      onClick={() => setPage && setPage('login')}
+                      style={{ marginTop: 0 }}
+                    >
+                      Sign In / Create Account
+                    </button>
+                    <button 
+                      className="fs-detail-cta fs-detail-cta-secondary"
+                      onClick={() => setStep(2)}
+                    >
+                      Back to Edit
+                    </button>
+                  </div>
+                  <p style={{ fontSize: 12, color: 'var(--fs-gray-400)', marginTop: 20 }}>
+                    Free to list. No credit card required.
+                  </p>
+                </div>
+              ) : (
+                /* LOGGED IN - SHOW SUBMIT FORM */
+                <>
+                  <h3 style={{ fontSize: 18 }}>Photos & Submit</h3>
+                  <div style={{ border: "2px dashed var(--fs-gray-200)", borderRadius: "var(--fs-radius)", padding: 40, textAlign: "center", marginBottom: 20 }}>
+                    <div style={{ color: "var(--fs-gray-400)", marginBottom: 8 }}>{Icons.camera}</div>
+                    <p style={{ fontWeight: 600, fontSize: 14, marginBottom: 4 }}>Upload Photos</p>
+                    <p style={{ fontSize: 12, color: "var(--fs-gray-400)" }}>Minimum 4 photos required. Include exterior (4 angles), cockpit, panel, and engine bay.</p>
+                    <button className="fs-detail-cta fs-detail-cta-secondary" style={{ maxWidth: 200, margin: "16px auto 0" }}>Choose Files</button>
+                  </div>
+                  <div style={{ background: "var(--fs-gray-50)", borderRadius: "var(--fs-radius)", padding: 20, marginBottom: 20 }}>
+                    <h4 style={{ fontSize: 14, fontWeight: 700, marginBottom: 8 }}>Listing Plans</h4>
+                    {[
+                      { name: "Basic", price: "Free", features: ["30-day listing", "Up to 8 photos", "Standard placement"] },
+                      { name: "Featured", price: "$149", features: ["60-day listing", "Up to 20 photos", "Homepage featured", "Priority in search", "Social media promotion"], recommended: true },
+                      { name: "Premium", price: "$299", features: ["90-day listing", "Unlimited photos", "Top placement", "Video walkthrough", "Valuation report", "Dedicated support"] },
+                    ].map(plan => (
+                      <label key={plan.name} style={{ display: "flex", gap: 12, padding: "12px", marginBottom: 8, borderRadius: "var(--fs-radius-sm)", border: plan.recommended ? "2px solid var(--fs-blue)" : "1px solid var(--fs-gray-200)", cursor: "pointer", background: "white" }}>
+                        <input type="radio" name="plan" defaultChecked={plan.recommended} style={{ marginTop: 2 }} />
+                        <div style={{ flex: 1 }}>
+                          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                            <span style={{ fontWeight: 600, fontSize: 14 }}>{plan.name}</span>
+                            <span style={{ fontWeight: 700, color: "var(--fs-blue)" }}>{plan.price}</span>
+                          </div>
+                          <div style={{ fontSize: 12, color: "var(--fs-gray-500)", marginTop: 4 }}>
+                            {plan.features.join(" · ")}
+                          </div>
+                        </div>
+                      </label>
+                    ))}
+                  </div>
+                  <div style={{ display: "flex", gap: 12 }}>
+                    <button className="fs-detail-cta fs-detail-cta-secondary" onClick={() => setStep(2)} style={{ flex: 1 }}>Back</button>
+                    <button className="fs-form-submit" style={{ flex: 2, marginTop: 0 }}>Submit Listing for Review</button>
+                  </div>
+                </>
+              )}
             </div>
           )}
         </div>
@@ -2359,6 +2292,7 @@ export default function FlightSalesApp() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [savedIds, setSavedIds] = useState(new Set());
   const [toast, setToast] = useState(null);
+  const [user, setUser] = useState(null); // null = not logged in, object = logged in
 
   const setSelectedListing = (l) => {
     setSelectedListingRaw(l);
@@ -2389,19 +2323,19 @@ export default function FlightSalesApp() {
   return (
     <>
       <style>{STYLES}</style>
-      <Nav page={page} setPage={setPageWrap} setMobileOpen={setMobileOpen} mobileOpen={mobileOpen} />
+      <Nav page={page} setPage={setPageWrap} setMobileOpen={setMobileOpen} mobileOpen={mobileOpen} user={user} />
       
       {page === "home" && <HomePage setPage={setPageWrap} setSelectedListing={setSelectedListing} savedIds={savedIds} onSave={onSave} />}
       {page === "buy" && <BuyPage setSelectedListing={setSelectedListing} savedIds={savedIds} onSave={onSave} />}
       {page === "detail" && <ListingDetail listing={selectedListing} onBack={() => setPageWrap("buy")} savedIds={savedIds} onSave={onSave} />}
-      {page === "sell" && <SellPage />}
+      {page === "sell" && <SellPage user={user} setPage={setPageWrap} />}
       {page === "dealers" && <DealersPage />}
       {page === "finance" && <FinancePage />}
       {page === "valuate" && <ValuatePage />}
       {page === "news" && <NewsPage />}
       {page === "about" && <AboutPage />}
       {page === "contact" && <ContactPage />}
-      {page === "login" && <LoginPage setPage={setPageWrap} />}
+      {page === "login" && <LoginPage setPage={setPageWrap} setUser={setUser} />}
       
       <Footer setPage={setPageWrap} />
       
