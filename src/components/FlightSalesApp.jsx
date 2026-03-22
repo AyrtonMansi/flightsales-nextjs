@@ -1566,13 +1566,14 @@ const SellPage = () => {
   const [isLookingUp, setIsLookingUp] = useState(false);
   const [lookupError, setLookupError] = useState(null);
   const [autoFilled, setAutoFilled] = useState(false);
+  const [showManualForm, setShowManualForm] = useState(false);
 
   const lookupCASA = async () => {
     const rego = formData.rego.toUpperCase().trim();
     
     // Validate format
     if (!rego.match(/^VH-[A-Z]{3}$/)) {
-      setLookupError('Invalid format. Use VH-ABC (3 letters)');
+      setLookupError('Invalid format. Use VH-ABC (3 letters after VH-)');
       return;
     }
     
@@ -1588,24 +1589,30 @@ const SellPage = () => {
         throw new Error(data.error || 'Lookup failed');
       }
       
-      // Map CASA data to form fields
-      const updates = {};
+      // Map CASA data to form fields - comprehensive mapping
+      const updates = { rego };
       if (data.manufacturer) updates.manufacturer = data.manufacturer;
       if (data.model) updates.model = data.model;
-      if (data.year) updates.year = data.year;
+      if (data.year) updates.year = data.year.toString();
       if (data.category) updates.category = data.category;
       if (data.engineType) updates.engineType = data.engineType;
-      if (data.mtow_kg) updates.mtow = data.mtow_kg;
-      if (data.seats) updates.seats = data.seats;
+      if (data.mtow_kg) updates.mtow = data.mtow_kg.toString();
+      if (data.seats) updates.seats = data.seats.toString();
+      if (data.serialNumber) updates.serialNumber = data.serialNumber;
+      if (data.propeller) updates.propeller = data.propeller;
+      if (data.registration) updates.rego = data.registration;
       
       setFormData(prev => ({ ...prev, ...updates }));
       setAutoFilled(true);
+      setShowManualForm(true);
       
       // Show toast
       setToast?.('Aircraft details found and auto-filled!');
       
     } catch (error) {
       setLookupError(error.message || 'Aircraft not found in CASA register');
+      // Still show form so they can enter manually
+      setShowManualForm(true);
     } finally {
       setIsLookingUp(false);
     }
@@ -1616,6 +1623,12 @@ const SellPage = () => {
     if (field === 'rego') {
       setLookupError(null);
       setAutoFilled(false);
+    }
+  };
+
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter' && formData.rego.length >= 6) {
+      lookupCASA();
     }
   };
 
@@ -1638,23 +1651,58 @@ const SellPage = () => {
           
           {step === 1 && (
             <div className="fs-detail-specs" style={{ boxShadow: "var(--fs-shadow-md)" }}>
-              <h3 style={{ fontSize: 18 }}>Aircraft Details</h3>
+              <h3 style={{ fontSize: 18, marginBottom: 8 }}>Step 1: Find Your Aircraft</h3>
+              <p style={{ fontSize: 14, color: 'var(--fs-gray-500)', marginBottom: 24 }}>
+                Enter your VH registration and we'll pull the details from CASA for you.
+              </p>
               
-              {/* CASA Rego Lookup */}
-              <div className="fs-form-group" style={{ marginBottom: 24, padding: 16, background: 'var(--fs-gray-50)', borderRadius: 'var(--fs-radius)', border: '1px solid var(--fs-gray-200)' }}>
-                <label className="fs-form-label" style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                  {Icons.shield} CASA Registration Lookup
+              {/* CASA Rego Lookup - CLEAN & PROMINENT */}
+              <div style={{ 
+                marginBottom: 32, 
+                padding: 24, 
+                background: 'linear-gradient(135deg, #eff6ff 0%, #ffffff 100%)', 
+                borderRadius: 'var(--fs-radius-lg)', 
+                border: '2px solid var(--fs-blue)',
+                position: 'relative'
+              }}>
+                <div style={{ 
+                  position: 'absolute', 
+                  top: -12, 
+                  left: 20, 
+                  background: 'var(--fs-blue)', 
+                  color: 'white', 
+                  padding: '4px 12px', 
+                  borderRadius: 4, 
+                  fontSize: 11, 
+                  fontWeight: 700,
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.5px'
+                }}>
+                  Quick Start
+                </div>
+                
+                <label className="fs-form-label" style={{ fontSize: 14, marginBottom: 8 }}>
+                  Aircraft Registration (Rego)
                 </label>
-                <p style={{ fontSize: 12, color: 'var(--fs-gray-500)', marginBottom: 12 }}>
-                  Enter your VH registration to auto-fill aircraft details from the CASA Aircraft Register
+                <p style={{ fontSize: 13, color: 'var(--fs-gray-500)', marginBottom: 16 }}>
+                  Enter your VH-XXX registration to auto-import from CASA
                 </p>
-                <div style={{ display: "flex", gap: 8 }}>
+                
+                <div style={{ display: "flex", gap: 12 }}>
                   <input 
                     className="fs-form-input" 
                     placeholder="VH-ABC"
                     value={formData.rego}
                     onChange={e => handleInputChange('rego', e.target.value.toUpperCase())}
-                    style={{ textTransform: 'uppercase', fontWeight: 600, letterSpacing: '0.05em' }}
+                    onKeyPress={handleKeyPress}
+                    style={{ 
+                      textTransform: 'uppercase', 
+                      fontWeight: 700, 
+                      letterSpacing: '0.1em',
+                      fontSize: 18,
+                      padding: '14px 16px',
+                      flex: 1
+                    }}
                     maxLength={6}
                   />
                   <button 
@@ -1662,24 +1710,137 @@ const SellPage = () => {
                     onClick={lookupCASA}
                     disabled={isLookingUp || formData.rego.length < 6}
                     className="fs-nav-btn-primary"
-                    style={{ whiteSpace: 'nowrap', minWidth: 100 }}
+                    style={{ 
+                      whiteSpace: 'nowrap', 
+                      minWidth: 120,
+                      padding: '14px 24px',
+                      fontSize: 15
+                    }}
                   >
-                    {isLookingUp ? 'Searching...' : '🔍 Lookup'}
+                    {isLookingUp ? (
+                      <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                        <svg width="16" height="16" viewBox="0 0 24 24" style={{ animation: 'spin 1s linear infinite' }}>
+                          <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" fill="none" strokeDasharray="60" strokeDashoffset="20" />
+                        </svg>
+                        Searching...
+                      </span>
+                    ) : (
+                      <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                        🔍 Pull from CASA
+                      </span>
+                    )}
                   </button>
                 </div>
+                
                 {lookupError && (
-                  <p style={{ fontSize: 12, color: 'var(--fs-red)', marginTop: 8 }}>{lookupError}</p>
-                )}
-                {autoFilled && (
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 8, fontSize: 12, color: 'var(--fs-green)' }}>
-                    {Icons.check} Auto-filled from CASA register. Please verify details.
+                  <div style={{ 
+                    marginTop: 12, 
+                    padding: '10px 12px', 
+                    background: '#fef2f2', 
+                    borderRadius: 6,
+                    border: '1px solid #fecaca'
+                  }}>
+                    <p style={{ fontSize: 13, color: '#dc2626', margin: 0 }}>{lookupError}</p>
+                    <button 
+                      onClick={() => setShowManualForm(true)}
+                      style={{ 
+                        fontSize: 12, 
+                        color: '#dc2626', 
+                        textDecoration: 'underline',
+                        background: 'none',
+                        border: 'none',
+                        padding: 0,
+                        marginTop: 4,
+                        cursor: 'pointer'
+                      }}
+                    >
+                      Enter details manually instead →
+                    </button>
                   </div>
+                )}
+                
+                {autoFilled && (
+                  <div style={{ 
+                    marginTop: 12, 
+                    padding: '12px 16px', 
+                    background: '#dcfce7', 
+                    borderRadius: 6,
+                    border: '1px solid #86efac',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 10
+                  }}>
+                    <div style={{ 
+                      width: 24, 
+                      height: 24, 
+                      borderRadius: '50%', 
+                      background: '#22c55e',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      color: 'white',
+                      fontSize: 14
+                    }}>
+                      ✓
+                    </div>
+                    <div>
+                      <p style={{ fontSize: 14, color: '#166534', fontWeight: 600, margin: 0 }}>
+                        Aircraft found in CASA register!
+                      </p>
+                      <p style={{ fontSize: 12, color: '#15803d', margin: '2px 0 0 0' }}>
+                        Details auto-filled below. Please review and add missing information.
+                      </p>
+                    </div>
+                  </div>
+                )}
+                
+                {!showManualForm && !lookupError && (
+                  <button 
+                    onClick={() => setShowManualForm(true)}
+                    style={{ 
+                      marginTop: 16,
+                      fontSize: 13, 
+                      color: 'var(--fs-gray-500)', 
+                      background: 'none',
+                      border: 'none',
+                      padding: 0,
+                      cursor: 'pointer',
+                      textDecoration: 'underline'
+                    }}
+                  >
+                    Skip lookup, enter details manually →
+                  </button>
                 )}
               </div>
               
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
-                <div className="fs-form-group">
-                  <label className="fs-form-label">Manufacturer *</label>
+              {/* Aircraft Details Form - Shows after lookup or manual entry */}
+              {showManualForm && (
+                <>
+                  <div style={{ 
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    gap: 12, 
+                    marginBottom: 20,
+                    paddingBottom: 16,
+                    borderBottom: '1px solid var(--fs-gray-200)'
+                  }}>
+                    <h4 style={{ fontSize: 16, fontWeight: 700, margin: 0 }}>Aircraft Details</h4>
+                    {autoFilled && (
+                      <span style={{ 
+                        fontSize: 11, 
+                        color: '#16a34a', 
+                        background: '#dcfce7',
+                        padding: '2px 8px',
+                        borderRadius: 4
+                      }}>
+                        Auto-filled from CASA
+                      </span>
+                    )}
+                  </div>
+                  
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
+                    <div className="fs-form-group">
+                      <label className="fs-form-label">Manufacturer *</label>
                   <select 
                     className="fs-form-select"
                     value={formData.manufacturer}
@@ -1761,6 +1922,8 @@ const SellPage = () => {
                   </select>
                 </div>
               </div>
+              </>
+            )}
               <button className="fs-form-submit" onClick={() => setStep(2)} style={{ marginTop: 16 }}>Continue to Specs</button>
             </div>
           )}
