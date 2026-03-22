@@ -957,8 +957,18 @@ const ListingCard = ({ listing, onClick, onSave, saved }) => (
   </div>
 );
 
-const EnquiryModal = ({ listing, onClose }) => {
+const EnquiryModal = ({ listing, onClose, user }) => {
   const [sent, setSent] = useState(false);
+  const [contactMethod, setContactMethod] = useState('email'); // 'email' | 'phone' | 'sms'
+  const [formData, setFormData] = useState({
+    name: user?.full_name || '',
+    email: user?.email || '',
+    phone: user?.phone || '',
+    message: `Hi, I'm interested in the ${listing.title} (${listing.rego}). Is it available for an inspection?`,
+    financeStatus: '',
+    hangarStatus: ''
+  });
+
   if (sent) return (
     <div className="fs-modal-overlay" onClick={onClose}>
       <div className="fs-modal" onClick={e => e.stopPropagation()}>
@@ -968,7 +978,7 @@ const EnquiryModal = ({ listing, onClose }) => {
           </div>
           <h2 style={{ fontSize: 20, fontWeight: 700, marginBottom: 8 }}>Enquiry Sent</h2>
           <p style={{ fontSize: 14, color: "var(--fs-gray-500)", marginBottom: 24 }}>
-            Your enquiry about the {listing.title} has been sent to the seller. They'll receive your details via email and should respond within 24 hours.
+            Your enquiry about the {listing.title} has been sent to the seller. They'll receive your details via {contactMethod === 'sms' ? 'SMS' : contactMethod} and should respond within 24 hours.
           </p>
           <button className="fs-detail-cta fs-detail-cta-primary" style={{ maxWidth: 200, margin: "0 auto" }} onClick={onClose}>Done</button>
         </div>
@@ -978,55 +988,137 @@ const EnquiryModal = ({ listing, onClose }) => {
   
   return (
     <div className="fs-modal-overlay" onClick={onClose}>
-      <div className="fs-modal" onClick={e => e.stopPropagation()}>
+      <div className="fs-modal" onClick={e => e.stopPropagation()} style={{ maxWidth: 520 }}>
         <div className="fs-modal-header">
           <div>
-            <h2>Enquire About This Aircraft</h2>
-            <p style={{ fontSize: 13, color: "var(--fs-gray-500)", marginTop: 4 }}>{listing.title}</p>
+            <h2>Contact Seller</h2>
+            <p style={{ fontSize: 13, color: "var(--fs-gray-500)", marginTop: 4 }}>{listing.title} — {formatPriceFull(listing.price)}</p>
           </div>
           <button className="fs-modal-close" onClick={onClose}>{Icons.x}</button>
         </div>
+        
+        {/* Contact Method Tabs */}
+        <div style={{ display: "flex", borderBottom: "1px solid var(--fs-gray-200)" }}>
+          {[
+            { id: 'email', label: 'Email', icon: Icons.mail },
+            { id: 'phone', label: 'Phone', icon: Icons.phone },
+          ].map(method => (
+            <button
+              key={method.id}
+              onClick={() => setContactMethod(method.id)}
+              style={{
+                flex: 1,
+                padding: "16px",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: 8,
+                background: "none",
+                border: "none",
+                borderBottom: contactMethod === method.id ? "2px solid var(--fs-blue)" : "2px solid transparent",
+                color: contactMethod === method.id ? "var(--fs-blue)" : "var(--fs-gray-500)",
+                fontWeight: contactMethod === method.id ? 600 : 400,
+                fontSize: 14,
+                cursor: "pointer"
+              }}
+            >
+              {method.icon} {method.label}
+            </button>
+          ))}
+        </div>
+
         <div className="fs-modal-body">
-          <div className="fs-form-group">
-            <label className="fs-form-label">Full Name *</label>
-            <input className="fs-form-input" placeholder="John Smith" />
-          </div>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
-            <div className="fs-form-group">
-              <label className="fs-form-label">Email *</label>
-              <input className="fs-form-input" type="email" placeholder="john@email.com" />
+          {contactMethod === 'phone' ? (
+            <div style={{ textAlign: "center", padding: "24px 0" }}>
+              <div style={{ width: 64, height: 64, borderRadius: "50%", background: "#dcfce7", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 16px", fontSize: 28 }}>
+                {Icons.phone}
+              </div>
+              <h3 style={{ fontSize: 18, fontWeight: 600, marginBottom: 8 }}>Call the Seller</h3>
+              <p style={{ fontSize: 14, color: "var(--fs-gray-500)", marginBottom: 16 }}>
+                Mention you found this aircraft on Flightsales
+              </p>
+              <a 
+                href="tel:+61400123456" 
+                style={{ 
+                  display: "inline-block",
+                  padding: "14px 32px", 
+                  background: "var(--fs-blue)", 
+                  color: "white",
+                  borderRadius: "var(--fs-radius-sm)",
+                  fontSize: 18,
+                  fontWeight: 600,
+                  textDecoration: "none"
+                }}
+              >
+                0400 123 456
+              </a>
+              <p style={{ fontSize: 12, color: "var(--fs-gray-400)", marginTop: 16 }}>
+                Available Mon-Fri 9am-6pm AEST
+              </p>
             </div>
-            <div className="fs-form-group">
-              <label className="fs-form-label">Phone *</label>
-              <input className="fs-form-input" type="tel" placeholder="04XX XXX XXX" />
-            </div>
-          </div>
-          <div className="fs-form-group">
-            <label className="fs-form-label">Are you finance pre-approved?</label>
-            <select className="fs-form-select">
-              <option>Select...</option>
-              <option>Yes, pre-approved</option>
-              <option>No, but interested in finance</option>
-              <option>Cash buyer</option>
-            </select>
-          </div>
-          <div className="fs-form-group">
-            <label className="fs-form-label">Do you have hangar space?</label>
-            <select className="fs-form-select">
-              <option>Select...</option>
-              <option>Yes</option>
-              <option>No, need to arrange</option>
-              <option>Looking for options</option>
-            </select>
-          </div>
-          <div className="fs-form-group">
-            <label className="fs-form-label">Message</label>
-            <textarea className="fs-form-textarea" placeholder="I'm interested in this aircraft. Is it available for viewing?" defaultValue={`Hi, I'm interested in the ${listing.title} (${listing.rego}). Is it available for an inspection? I'd also appreciate any additional maintenance records.`} />
-          </div>
-          <button className="fs-form-submit" onClick={() => setSent(true)}>
-            Send Enquiry
-          </button>
-          <p style={{ fontSize: 11, color: "var(--fs-gray-400)", marginTop: 12, textAlign: "center" }}>
+          ) : (
+            <>
+              <div className="fs-form-group">
+                <label className="fs-form-label">Full Name *</label>
+                <input 
+                  className="fs-form-input" 
+                  placeholder="John Smith"
+                  value={formData.name}
+                  onChange={e => setFormData({...formData, name: e.target.value})}
+                />
+              </div>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+                <div className="fs-form-group">
+                  <label className="fs-form-label">Email *</label>
+                  <input 
+                    className="fs-form-input" 
+                    type="email" 
+                    placeholder="john@email.com"
+                    value={formData.email}
+                    onChange={e => setFormData({...formData, email: e.target.value})}
+                  />
+                </div>
+                <div className="fs-form-group">
+                  <label className="fs-form-label">Phone *</label>
+                  <input 
+                    className="fs-form-input" 
+                    type="tel" 
+                    placeholder="04XX XXX XXX"
+                    value={formData.phone}
+                    onChange={e => setFormData({...formData, phone: e.target.value})}
+                  />
+                </div>
+              </div>
+              <div className="fs-form-group">
+                <label className="fs-form-label">Are you finance pre-approved?</label>
+                <select 
+                  className="fs-form-select"
+                  value={formData.financeStatus}
+                  onChange={e => setFormData({...formData, financeStatus: e.target.value})}
+                >
+                  <option value="">Select...</option>
+                  <option value="pre-approved">Yes, pre-approved</option>
+                  <option value="interested">No, but interested in finance</option>
+                  <option value="cash">Cash buyer</option>
+                </select>
+              </div>
+              <div className="fs-form-group">
+                <label className="fs-form-label">Message</label>
+                <textarea 
+                  className="fs-form-textarea" 
+                  placeholder="I'm interested in this aircraft. Is it available for viewing?"
+                  value={formData.message}
+                  onChange={e => setFormData({...formData, message: e.target.value})}
+                  rows={4}
+                />
+              </div>
+              <button className="fs-form-submit" onClick={() => setSent(true)}>
+                Send Enquiry
+              </button>
+            </>
+          )}
+          
+          <p style={{ fontSize: 11, color: "var(--fs-gray-400)", marginTop: 16, textAlign: "center" }}>
             By submitting, you agree to our Terms and Privacy Policy. Your details will be shared with the seller.
           </p>
         </div>
@@ -1436,7 +1528,7 @@ const BuyPage = ({ setSelectedListing, savedIds, onSave }) => {
   );
 };
 
-const ListingDetail = ({ listing, onBack, savedIds, onSave }) => {
+const ListingDetail = ({ listing, onBack, savedIds, onSave, user }) => {
   const [showEnquiry, setShowEnquiry] = useState(false);
   if (!listing) return null;
   const l = listing;
@@ -1512,9 +1604,22 @@ const ListingDetail = ({ listing, onBack, savedIds, onSave }) => {
             <div className="fs-detail-price-card">
               <div className="fs-detail-price">{formatPriceFull(l.price)}</div>
               <div className="fs-detail-rego">{l.rego} &middot; {l.condition}</div>
+              
+              {/* Primary CTA - Enquire */}
               <button className="fs-detail-cta fs-detail-cta-primary" onClick={() => setShowEnquiry(true)}>
-                {Icons.mail} &nbsp;Enquire Now
+                {Icons.mail} &nbsp;Email Seller
               </button>
+              
+              {/* Phone CTA */}
+              <a 
+                href="tel:+61400123456"
+                className="fs-detail-cta fs-detail-cta-secondary"
+                style={{ textDecoration: "none", display: "flex", alignItems: "center", justifyContent: "center" }}
+              >
+                {Icons.phone} &nbsp;Call Seller
+              </a>
+              
+              {/* Save Button */}
               <button className="fs-detail-cta fs-detail-cta-secondary" onClick={() => onSave(l.id)}>
                 {savedIds.has(l.id) ? Icons.heartFull : Icons.heart} &nbsp;{savedIds.has(l.id) ? "Saved" : "Save to Watchlist"}
               </button>
@@ -1568,12 +1673,64 @@ const ListingDetail = ({ listing, onBack, savedIds, onSave }) => {
         </div>
       </div>
 
-      {showEnquiry && <EnquiryModal listing={l} onClose={() => setShowEnquiry(false)} />}
+      {showEnquiry && <EnquiryModal listing={l} onClose={() => setShowEnquiry(false)} user={user} />}
     </>
   );
 };
 
 const SellPage = ({ user, setPage }) => {
+  // Require login to sell
+  if (!user) {
+    return (
+      <>
+        <div className="fs-about-hero">
+          <div className="fs-container">
+            <h1 style={{ fontFamily: "var(--fs-font-serif)", fontSize: 36 }}>Sell Your Aircraft</h1>
+            <p style={{ color: "rgba(255,255,255,0.6)", marginTop: 8 }}>Reach thousands of qualified buyers across Australia</p>
+          </div>
+        </div>
+        <section className="fs-section">
+          <div className="fs-container" style={{ maxWidth: 480, margin: "0 auto" }}>
+            <div className="fs-detail-specs" style={{ textAlign: 'center', padding: '48px 32px' }}>
+              <div style={{ 
+                width: 80, 
+                height: 80, 
+                borderRadius: '50%', 
+                background: '#eff6ff',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                margin: '0 auto 24px',
+                fontSize: 36
+              }}>
+                {Icons.user}
+              </div>
+              <h3 style={{ fontSize: 22, fontWeight: 700, marginBottom: 12 }}>Sign in to List Your Aircraft</h3>
+              <p style={{ fontSize: 14, color: 'var(--fs-gray-500)', marginBottom: 24 }}>
+                Create an account or sign in to list your aircraft for sale. 
+                It's free to create a basic listing.
+              </p>
+              <button 
+                className="fs-form-submit"
+                onClick={() => setPage('login')}
+                style={{ maxWidth: 280, margin: '0 auto 12px' }}
+              >
+                Sign In / Create Account
+              </button>
+              <button 
+                className="fs-detail-cta fs-detail-cta-secondary"
+                onClick={() => setPage('buy')}
+                style={{ maxWidth: 280, margin: '0 auto' }}
+              >
+                Browse Aircraft Instead
+              </button>
+            </div>
+          </div>
+        </section>
+      </>
+    );
+  }
+
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({
     manufacturer: '',
@@ -1595,7 +1752,6 @@ const SellPage = ({ user, setPage }) => {
   const [lookupError, setLookupError] = useState(null);
   const [autoFilled, setAutoFilled] = useState(false);
   const [showManualForm, setShowManualForm] = useState(false);
-  const [showLoginPrompt, setShowLoginPrompt] = useState(false);
 
   const lookupCASA = async () => {
     const rego = formData.rego.toUpperCase().trim();
@@ -2548,7 +2704,7 @@ const LoginPage = ({ setPage, setUser }) => {
   );
 };
 
-const DashboardPage = ({ user, setPage }) => {
+const DashboardPage = ({ user, setPage, setUser, savedIds, onSave }) => {
   if (!user) {
     setPage('login');
     return null;
@@ -2562,24 +2718,70 @@ const DashboardPage = ({ user, setPage }) => {
     return null;
   }
 
+  const [activeTab, setActiveTab] = useState('listings');
+  const [editProfile, setEditProfile] = useState(false);
+  const [profileData, setProfileData] = useState({
+    full_name: user.full_name || '',
+    email: user.email || '',
+    phone: user.phone || '',
+    location: user.location || ''
+  });
+
+  // Mock data for user's listings
+  const myListings = [];
+  
+  // Mock enquiries received
+  const myEnquiries = [
+    { id: 1, aircraft: '2018 Cirrus SR22T', from: 'John Smith', email: 'john@email.com', phone: '0412 345 678', message: 'Is this aircraft still available? I would like to arrange an inspection.', date: '2026-03-22', status: 'new' },
+  ];
+
+  // Get saved aircraft from sample listings
+  const savedAircraft = SAMPLE_LISTINGS.filter(l => savedIds.has(l.id));
+
+  const handleLogout = () => {
+    setUser(null);
+    setPage('home');
+  };
+
+  const handleSaveProfile = () => {
+    // In real app, save to backend
+    setEditProfile(false);
+  };
+
   return (
     <>
       <div className="fs-about-hero" style={{ padding: "48px 0" }}>
         <div className="fs-container">
-          <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
-            <img 
-              src={user.avatar} 
-              alt={user.full_name}
-              style={{ width: 64, height: 64, borderRadius: "50%", border: "3px solid white" }}
-            />
-            <div>
-              <h1 style={{ fontFamily: "var(--fs-font-serif)", fontSize: 32, marginBottom: 4 }}>
-                {user.full_name}
-              </h1>
-              <p style={{ color: "rgba(255,255,255,0.6)", fontSize: 14 }}>
-                {isDealer ? 'Verified Dealer' : 'Private Seller'} • {user.email}
-              </p>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
+              <img 
+                src={user.avatar} 
+                alt={user.full_name}
+                style={{ width: 64, height: 64, borderRadius: "50%", border: "3px solid white" }}
+              />
+              <div>
+                <h1 style={{ fontFamily: "var(--fs-font-serif)", fontSize: 32, marginBottom: 4 }}>
+                  {user.full_name}
+                </h1>
+                <p style={{ color: "rgba(255,255,255,0.6)", fontSize: 14 }}>
+                  {isDealer ? 'Verified Dealer' : 'Private Seller'} • {user.email}
+                </p>
+              </div>
             </div>
+            <button 
+              onClick={handleLogout}
+              style={{ 
+                padding: "10px 20px", 
+                background: "rgba(255,255,255,0.1)", 
+                border: "1px solid rgba(255,255,255,0.2)",
+                borderRadius: "var(--fs-radius-sm)",
+                color: "white",
+                cursor: "pointer",
+                fontSize: 14
+              }}
+            >
+              Logout
+            </button>
           </div>
         </div>
       </div>
@@ -2592,34 +2794,48 @@ const DashboardPage = ({ user, setPage }) => {
               <div className="fs-detail-specs" style={{ padding: 0, overflow: "hidden" }}>
                 <div style={{ padding: "20px", borderBottom: "1px solid var(--fs-gray-100)" }}>
                   <p style={{ fontSize: 12, color: "var(--fs-gray-500)", marginBottom: 4 }}>Account Type</p>
-                  <p style={{ fontSize: 14, fontWeight: 600 }}>{isDealer ? 'Dealer Account' : 'Private Seller'}</p>
+                  <p style={{ fontSize: 14, fontWeight: 600 }}>{isDealer ? 'Verified Dealer' : 'Private Seller'}</p>
                 </div>
                 
                 <nav style={{ padding: "12px 0" }}>
                   {[
-                    { id: 'listings', label: 'My Listings', icon: Icons.plane },
-                    { id: 'saved', label: 'Saved Aircraft', icon: Icons.heart },
-                    { id: 'enquiries', label: 'Enquiries', icon: Icons.mail },
+                    { id: 'listings', label: 'My Listings', icon: Icons.plane, count: myListings.length },
+                    { id: 'saved', label: 'Saved Aircraft', icon: Icons.heart, count: savedAircraft.length },
+                    { id: 'enquiries', label: 'Enquiries', icon: Icons.mail, count: myEnquiries.length },
                     { id: 'profile', label: 'Profile Settings', icon: Icons.user },
                   ].map(item => (
                     <button
                       key={item.id}
+                      onClick={() => setActiveTab(item.id)}
                       style={{
                         width: "100%",
                         padding: "12px 20px",
                         display: "flex",
                         alignItems: "center",
                         gap: 12,
-                        background: "none",
+                        background: activeTab === item.id ? '#eff6ff' : 'none',
                         border: "none",
+                        borderLeft: activeTab === item.id ? '3px solid var(--fs-blue)' : '3px solid transparent',
                         cursor: "pointer",
                         fontSize: 14,
-                        color: "var(--fs-gray-700)",
+                        color: activeTab === item.id ? "var(--fs-blue)" : "var(--fs-gray-700)",
+                        fontWeight: activeTab === item.id ? 600 : 400,
                         textAlign: "left"
                       }}
                     >
-                      <span style={{ color: "var(--fs-gray-400)" }}>{item.icon}</span>
-                      {item.label}
+                      <span style={{ color: activeTab === item.id ? "var(--fs-blue)" : "var(--fs-gray-400)" }}>{item.icon}</span>
+                      <span style={{ flex: 1 }}>{item.label}</span>
+                      {item.count > 0 && (
+                        <span style={{ 
+                          background: 'var(--fs-blue)', 
+                          color: 'white', 
+                          fontSize: 11, 
+                          padding: '2px 8px', 
+                          borderRadius: 10 
+                        }}>
+                          {item.count}
+                        </span>
+                      )}
                     </button>
                   ))}
                 </nav>
@@ -2638,36 +2854,214 @@ const DashboardPage = ({ user, setPage }) => {
 
             {/* Main Content */}
             <div>
-              {/* Stats */}
-              <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 16, marginBottom: 24 }}>
-                <div className="fs-detail-specs" style={{ textAlign: "center", padding: "24px" }}>
-                  <p style={{ fontSize: 32, fontWeight: 800, color: "var(--fs-blue)" }}>0</p>
-                  <p style={{ fontSize: 13, color: "var(--fs-gray-500)" }}>Active Listings</p>
-                </div>
-                <div className="fs-detail-specs" style={{ textAlign: "center", padding: "24px" }}>
-                  <p style={{ fontSize: 32, fontWeight: 800, color: "var(--fs-green)" }}>0</p>
-                  <p style={{ fontSize: 13, color: "var(--fs-gray-500)" }}>Enquiries</p>
-                </div>
-                <div className="fs-detail-specs" style={{ textAlign: "center", padding: "24px" }}>
-                  <p style={{ fontSize: 32, fontWeight: 800, color: "var(--fs-gray-900)" }}>0</p>
-                  <p style={{ fontSize: 13, color: "var(--fs-gray-500)" }}>Saved</p>
-                </div>
-              </div>
+              {/* MY LISTINGS TAB */}
+              {activeTab === 'listings' && (
+                <>
+                  <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 16, marginBottom: 24 }}>
+                    <div className="fs-detail-specs" style={{ textAlign: "center", padding: "24px" }}>
+                      <p style={{ fontSize: 32, fontWeight: 800, color: "var(--fs-blue)" }}>{myListings.length}</p>
+                      <p style={{ fontSize: 13, color: "var(--fs-gray-500)" }}>Active Listings</p>
+                    </div>
+                    <div className="fs-detail-specs" style={{ textAlign: "center", padding: "24px" }}>
+                      <p style={{ fontSize: 32, fontWeight: 800, color: "var(--fs-green)" }}>{myEnquiries.length}</p>
+                      <p style={{ fontSize: 13, color: "var(--fs-gray-500)" }}>Enquiries</p>
+                    </div>
+                    <div className="fs-detail-specs" style={{ textAlign: "center", padding: "24px" }}>
+                      <p style={{ fontSize: 32, fontWeight: 800, color: "var(--fs-gray-900)" }}>{savedAircraft.length}</p>
+                      <p style={{ fontSize: 13, color: "var(--fs-gray-500)" }}>Saved</p>
+                    </div>
+                  </div>
 
-              {/* Empty State */}
-              <div className="fs-detail-specs" style={{ padding: "48px", textAlign: "center" }}>
-                <div style={{ fontSize: 48, marginBottom: 16 }}>✈️</div>
-                <h3 style={{ fontSize: 18, fontWeight: 700, marginBottom: 8 }}>No active listings</h3>
-                <p style={{ fontSize: 14, color: "var(--fs-gray-500)", marginBottom: 24 }}>
-                  Get started by listing your first aircraft. It only takes a few minutes.
-                </p>
-                <button 
-                  className="fs-nav-btn-primary"
-                  onClick={() => setPage('sell')}
-                >
-                  List Your Aircraft
-                </button>
-              </div>
+                  {myListings.length === 0 ? (
+                    <div className="fs-detail-specs" style={{ padding: "48px", textAlign: "center" }}>
+                      <div style={{ fontSize: 48, marginBottom: 16 }}>✈️</div>
+                      <h3 style={{ fontSize: 18, fontWeight: 700, marginBottom: 8 }}>No active listings</h3>
+                      <p style={{ fontSize: 14, color: "var(--fs-gray-500)", marginBottom: 24 }}>
+                        Get started by listing your first aircraft. It only takes a few minutes.
+                      </p>
+                      <button 
+                        className="fs-nav-btn-primary"
+                        onClick={() => setPage('sell')}
+                      >
+                        List Your Aircraft
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="fs-grid">
+                      {myListings.map(listing => (
+                        <ListingCard key={listing.id} listing={listing} onClick={() => {}} onSave={onSave} saved={savedIds.has(listing.id)} />
+                      ))}
+                    </div>
+                  )}
+                </>
+              )}
+
+              {/* SAVED AIRCRAFT TAB */}
+              {activeTab === 'saved' && (
+                <>
+                  <h3 style={{ fontSize: 20, fontWeight: 700, marginBottom: 16 }}>Saved Aircraft</h3>
+                  {savedAircraft.length === 0 ? (
+                    <div className="fs-detail-specs" style={{ padding: "48px", textAlign: "center" }}>
+                      <div style={{ fontSize: 48, marginBottom: 16 }}>{Icons.heart}</div>
+                      <h3 style={{ fontSize: 18, fontWeight: 700, marginBottom: 8 }}>No saved aircraft</h3>
+                      <p style={{ fontSize: 14, color: "var(--fs-gray-500)", marginBottom: 24 }}>
+                        Browse our listings and save aircraft you're interested in.
+                      </p>
+                      <button 
+                        className="fs-nav-btn-primary"
+                        onClick={() => setPage('buy')}
+                      >
+                        Browse Aircraft
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="fs-grid">
+                      {savedAircraft.map(listing => (
+                        <ListingCard key={listing.id} listing={listing} onClick={() => {}} onSave={onSave} saved={true} />
+                      ))}
+                    </div>
+                  )}
+                </>
+              )}
+
+              {/* ENQUIRIES TAB */}
+              {activeTab === 'enquiries' && (
+                <>
+                  <h3 style={{ fontSize: 20, fontWeight: 700, marginBottom: 16 }}>Enquiries</h3>
+                  {myEnquiries.length === 0 ? (
+                    <div className="fs-detail-specs" style={{ padding: "48px", textAlign: "center" }}>
+                      <div style={{ fontSize: 48, marginBottom: 16 }}>{Icons.mail}</div>
+                      <h3 style={{ fontSize: 18, fontWeight: 700, marginBottom: 8 }}>No enquiries yet</h3>
+                      <p style={{ fontSize: 14, color: "var(--fs-gray-500)" }}>
+                        When buyers contact you about your listings, they'll appear here.
+                      </p>
+                    </div>
+                  ) : (
+                    <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+                      {myEnquiries.map(enquiry => (
+                        <div key={enquiry.id} className="fs-detail-specs" style={{ padding: "20px" }}>
+                          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 12 }}>
+                            <div>
+                              <h4 style={{ fontSize: 16, fontWeight: 600, marginBottom: 4 }}>{enquiry.aircraft}</h4>
+                              <p style={{ fontSize: 13, color: "var(--fs-gray-500)" }}>From: {enquiry.from}</p>
+                            </div>
+                            <span style={{ 
+                              padding: "4px 12px", 
+                              borderRadius: 4, 
+                              fontSize: 12,
+                              background: enquiry.status === 'new' ? '#dcfce7' : '#f3f4f6',
+                              color: enquiry.status === 'new' ? '#166534' : '#6b7280'
+                            }}>
+                              {enquiry.status === 'new' ? 'New' : 'Replied'}
+                            </span>
+                          </div>
+                          <p style={{ fontSize: 14, color: "var(--fs-gray-700)", marginBottom: 16, lineHeight: 1.5 }}>
+                            "{enquiry.message}"
+                          </p>
+                          <div style={{ display: "flex", gap: 12, flexWrap: "wrap", padding: "12px", background: "var(--fs-gray-50)", borderRadius: "var(--fs-radius-sm)" }}>
+                            <a href={`mailto:${enquiry.email}`} style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 13, color: "var(--fs-blue)" }}>
+                              {Icons.mail} {enquiry.email}
+                            </a>
+                            <a href={`tel:${enquiry.phone}`} style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 13, color: "var(--fs-blue)" }}>
+                              {Icons.phone} {enquiry.phone}
+                            </a>
+                          </div>
+                          <p style={{ fontSize: 11, color: "var(--fs-gray-400)", marginTop: 12 }}>
+                            Received: {enquiry.date}
+                          </p>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </>
+              )}
+
+              {/* PROFILE SETTINGS TAB */}
+              {activeTab === 'profile' && (
+                <>
+                  <h3 style={{ fontSize: 20, fontWeight: 700, marginBottom: 16 }}>Profile Settings</h3>
+                  <div className="fs-detail-specs" style={{ padding: "24px" }}>
+                    {!editProfile ? (
+                      <>
+                        <div style={{ display: "flex", alignItems: "center", gap: 16, marginBottom: 24 }}>
+                          <img src={user.avatar} alt={user.full_name} style={{ width: 80, height: 80, borderRadius: "50%" }} />
+                          <div>
+                            <h4 style={{ fontSize: 18, fontWeight: 600 }}>{profileData.full_name}</h4>
+                            <p style={{ fontSize: 14, color: "var(--fs-gray-500)" }}>{profileData.email}</p>
+                          </div>
+                        </div>
+                        <div style={{ marginBottom: 24 }}>
+                          <div style={{ display: "flex", justifyContent: "space-between", padding: "12px 0", borderBottom: "1px solid var(--fs-gray-100)" }}>
+                            <span style={{ color: "var(--fs-gray-500)" }}>Phone</span>
+                            <span>{profileData.phone || 'Not set'}</span>
+                          </div>
+                          <div style={{ display: "flex", justifyContent: "space-between", padding: "12px 0", borderBottom: "1px solid var(--fs-gray-100)" }}>
+                            <span style={{ color: "var(--fs-gray-500)" }}>Location</span>
+                            <span>{profileData.location || 'Not set'}</span>
+                          </div>
+                          <div style={{ display: "flex", justifyContent: "space-between", padding: "12px 0" }}>
+                            <span style={{ color: "var(--fs-gray-500)" }}>Account Type</span>
+                            <span style={{ textTransform: "capitalize" }}>{user.role}</span>
+                          </div>
+                        </div>
+                        <button 
+                          className="fs-detail-cta fs-detail-cta-primary"
+                          onClick={() => setEditProfile(true)}
+                        >
+                          Edit Profile
+                        </button>
+                      </>
+                    ) : (
+                      <>
+                        <div className="fs-form-group">
+                          <label className="fs-form-label">Full Name</label>
+                          <input 
+                            className="fs-form-input" 
+                            value={profileData.full_name}
+                            onChange={e => setProfileData({...profileData, full_name: e.target.value})}
+                          />
+                        </div>
+                        <div className="fs-form-group">
+                          <label className="fs-form-label">Email</label>
+                          <input className="fs-form-input" value={profileData.email} disabled />
+                        </div>
+                        <div className="fs-form-group">
+                          <label className="fs-form-label">Phone</label>
+                          <input 
+                            className="fs-form-input" 
+                            value={profileData.phone}
+                            onChange={e => setProfileData({...profileData, phone: e.target.value})}
+                            placeholder="04XX XXX XXX"
+                          />
+                        </div>
+                        <div className="fs-form-group">
+                          <label className="fs-form-label">Location</label>
+                          <input 
+                            className="fs-form-input" 
+                            value={profileData.location}
+                            onChange={e => setProfileData({...profileData, location: e.target.value})}
+                            placeholder="e.g. Sydney, NSW"
+                          />
+                        </div>
+                        <div style={{ display: "flex", gap: 12 }}>
+                          <button 
+                            className="fs-form-submit"
+                            onClick={handleSaveProfile}
+                          >
+                            Save Changes
+                          </button>
+                          <button 
+                            className="fs-detail-cta fs-detail-cta-secondary"
+                            onClick={() => setEditProfile(false)}
+                          >
+                            Cancel
+                          </button>
+                        </div>
+                      </>
+                    )}
+                  </div>
+                </>
+              )}
             </div>
           </div>
         </div>
@@ -2942,7 +3336,7 @@ export default function FlightSalesApp() {
       
       {page === "home" && <HomePage setPage={setPageWrap} setSelectedListing={setSelectedListing} savedIds={savedIds} onSave={onSave} />}
       {page === "buy" && <BuyPage setSelectedListing={setSelectedListing} savedIds={savedIds} onSave={onSave} />}
-      {page === "detail" && <ListingDetail listing={selectedListing} onBack={() => setPageWrap("buy")} savedIds={savedIds} onSave={onSave} />}
+      {page === "detail" && <ListingDetail listing={selectedListing} onBack={() => setPageWrap("buy")} savedIds={savedIds} onSave={onSave} user={user} />}
       {page === "sell" && <SellPage user={user} setPage={setPageWrap} />}
       {page === "dealers" && <DealersPage />}
       {page === "finance" && <FinancePage />}
@@ -2951,7 +3345,7 @@ export default function FlightSalesApp() {
       {page === "about" && <AboutPage />}
       {page === "contact" && <ContactPage />}
       {page === "login" && <LoginPage setPage={setPageWrap} setUser={setUser} />}
-      {page === "dashboard" && <DashboardPage user={user} setPage={setPageWrap} />}
+      {page === "dashboard" && <DashboardPage user={user} setPage={setPageWrap} setUser={setUser} savedIds={savedIds} onSave={onSave} />}
       {page === "admin" && <AdminPage user={user} setPage={setPageWrap} setUser={setUser} />}
       
       <Footer setPage={setPageWrap} />
