@@ -123,6 +123,11 @@ const Icons = {
   home: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>,
   eye: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>,
   alert: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>,
+  file: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><line x1="10" y1="9" x2="8" y2="9"/></svg>,
+  tag: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>,
+  gift: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><polyline points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5"/><line x1="12" y1="22" x2="12" y2="7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg>,
+  settings: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>,
+  logout: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>,
 };
 
 // --- UNSPLASH AIRCRAFT IMAGES ---
@@ -3267,12 +3272,59 @@ const DashboardPage = ({ user, setPage, setUser, savedIds, onSave }) => {
     );
   };
 
+  // Add state for new sections
+  const [savedSearches, setSavedSearches] = useState([
+    { id: 1, name: 'Cirrus under $1M in VIC', filters: { make: 'Cirrus', maxPrice: '1000000', state: 'VIC' }, alerts: true, count: 12 },
+    { id: 2, name: 'Single engine trainers', filters: { cat: 'Single Engine Piston' }, alerts: false, count: 45 },
+  ]);
+  
+  const [receivedOffers, setReceivedOffers] = useState([
+    { id: 1, aircraft: '2018 Cirrus SR22T', from: 'John Smith', amount: 850000, status: 'pending', date: '2026-03-22' },
+  ]);
+  
+  const [myOffers, setMyOffers] = useState([
+    { id: 1, aircraft: '2020 Cessna 182T', to: 'Southern Aviation', amount: 365000, status: 'pending', date: '2026-03-21' },
+  ]);
+  
+  const [drafts, setDrafts] = useState([
+    { id: 1, title: '2019 Diamond DA40', lastEdited: '2026-03-20', progress: 60 },
+  ]);
+  
+  const [notifications, setNotifications] = useState({
+    emailEnquiries: true,
+    emailOffers: true,
+    emailSavedSearch: true,
+    smsEnquiries: false,
+    smsOffers: false,
+    pushNotifications: true,
+    marketingEmails: false,
+  });
+  
+  const [discounts] = useState([
+    { id: 1, code: 'WELCOME2026', discount: '20% off listing fees', expiry: '2026-12-31', used: false },
+    { id: 2, code: 'DEALER50', discount: '50% off first month', expiry: '2026-06-30', used: true },
+  ]);
+
   const sidebarItems = [
     { id: 'overview', label: 'Overview', icon: Icons.home },
-    { id: 'listings', label: 'My Listings', icon: Icons.plane, count: myListings.length },
-    { id: 'enquiries', label: 'Enquiries', icon: Icons.mail, count: stats.newEnquiries },
-    { id: 'saved', label: 'Saved Aircraft', icon: Icons.heart, count: savedAircraft.length },
-    { id: 'profile', label: 'Settings', icon: Icons.user },
+    { section: 'My Selling', items: [
+      { id: 'listings', label: 'My Aircraft', icon: Icons.plane, count: myListings.length },
+      { id: 'drafts', label: 'Manage Ad or Draft', icon: Icons.file, count: drafts.length },
+      { id: 'receivedOffers', label: 'Manage Your Offers', icon: Icons.tag, count: receivedOffers.length },
+    ]},
+    { section: 'My Buying', items: [
+      { id: 'saved', label: 'Saved Aircraft', icon: Icons.heart, count: savedAircraft.length },
+      { id: 'savedSearches', label: 'Saved Searches', icon: Icons.search, count: savedSearches.length },
+      { id: 'myOffers', label: 'My Instant Offers', icon: Icons.dollar, count: myOffers.length },
+    ]},
+    { section: 'Messages', items: [
+      { id: 'enquiries', label: 'Messages', icon: Icons.mail, count: stats.newEnquiries },
+    ]},
+    { section: 'Account', items: [
+      { id: 'profile', label: 'Profile', icon: Icons.user },
+      { id: 'notifications', label: 'Notification Preferences', icon: Icons.bell },
+      { id: 'discounts', label: 'Discounts', icon: Icons.gift, count: discounts.filter(d => !d.used).length },
+    ]},
   ];
 
   return (
@@ -3353,43 +3405,118 @@ const DashboardPage = ({ user, setPage, setUser, savedIds, onSave }) => {
                 </div>
                 
                 <nav style={{ padding: "8px 0" }}>
-                  {sidebarItems.map(item => (
+                  {sidebarItems.map((section, idx) => (
+                    <div key={idx}>
+                      {section.section && (
+                        <p style={{ 
+                          fontSize: 10, 
+                          color: 'var(--fs-gray-400)', 
+                          textTransform: 'uppercase', 
+                          letterSpacing: 0.8,
+                          padding: '16px 20px 8px',
+                          fontWeight: 600
+                        }}>
+                          {section.section}
+                        </p>
+                      )}
+                      {section.items ? section.items.map(item => (
+                        <button
+                          key={item.id}
+                          onClick={() => { setActiveTab(item.id); setSelectedEnquiry(null); }}
+                          style={{
+                            width: "100%",
+                            padding: "10px 20px",
+                            display: "flex",
+                            alignItems: "center",
+                            gap: 12,
+                            background: activeTab === item.id ? '#eff6ff' : 'none',
+                            border: "none",
+                            borderLeft: activeTab === item.id ? '3px solid var(--fs-blue)' : '3px solid transparent',
+                            cursor: "pointer",
+                            fontSize: 14,
+                            color: activeTab === item.id ? "var(--fs-blue)" : "var(--fs-gray-700)",
+                            fontWeight: activeTab === item.id ? 600 : 400,
+                            textAlign: "left",
+                            transition: 'all 0.15s ease'
+                          }}
+                        >
+                          <span style={{ color: activeTab === item.id ? "var(--fs-blue)" : "var(--fs-gray-400)", width: 20 }}>{item.icon}</span>
+                          <span style={{ flex: 1 }}>{item.label}</span>
+                          {item.count > 0 && (
+                            <span style={{ 
+                              background: activeTab === item.id ? 'var(--fs-blue)' : 'var(--fs-gray-200)', 
+                              color: activeTab === item.id ? 'white' : 'var(--fs-gray-600)', 
+                              fontSize: 11, 
+                              padding: '2px 8px', 
+                              borderRadius: 10,
+                              fontWeight: 600
+                            }}>
+                              {item.count}
+                            </span>
+                          )}
+                        </button>
+                      )) : (
+                        <button
+                          key={section.id}
+                          onClick={() => { setActiveTab(section.id); setSelectedEnquiry(null); }}
+                          style={{
+                            width: "100%",
+                            padding: "10px 20px",
+                            display: "flex",
+                            alignItems: "center",
+                            gap: 12,
+                            background: activeTab === section.id ? '#eff6ff' : 'none',
+                            border: "none",
+                            borderLeft: activeTab === section.id ? '3px solid var(--fs-blue)' : '3px solid transparent',
+                            cursor: "pointer",
+                            fontSize: 14,
+                            color: activeTab === section.id ? "var(--fs-blue)" : "var(--fs-gray-700)",
+                            fontWeight: activeTab === section.id ? 600 : 400,
+                            textAlign: "left",
+                            transition: 'all 0.15s ease'
+                          }}
+                        >
+                          <span style={{ color: activeTab === section.id ? "var(--fs-blue)" : "var(--fs-gray-400)", width: 20 }}>{section.icon}</span>
+                          <span style={{ flex: 1 }}>{section.label}</span>
+                          {section.count > 0 && (
+                            <span style={{ 
+                              background: activeTab === section.id ? 'var(--fs-blue)' : 'var(--fs-gray-200)', 
+                              color: activeTab === section.id ? 'white' : 'var(--fs-gray-600)', 
+                              fontSize: 11, 
+                              padding: '2px 8px', 
+                              borderRadius: 10,
+                              fontWeight: 600
+                            }}>
+                              {section.count}
+                            </span>
+                          )}
+                        </button>
+                      )}
+                    </div>
+                  ))}
+                  
+                  {/* Sign Out */}
+                  <div style={{ padding: '16px 20px', borderTop: '1px solid var(--fs-gray-100)', marginTop: 8 }}>
                     <button
-                      key={item.id}
-                      onClick={() => { setActiveTab(item.id); setSelectedEnquiry(null); }}
+                      onClick={handleLogout}
                       style={{
                         width: "100%",
-                        padding: "12px 20px",
+                        padding: "10px 0",
                         display: "flex",
                         alignItems: "center",
                         gap: 12,
-                        background: activeTab === item.id ? '#eff6ff' : 'none',
+                        background: 'none',
                         border: "none",
-                        borderLeft: activeTab === item.id ? '3px solid var(--fs-blue)' : '3px solid transparent',
                         cursor: "pointer",
                         fontSize: 14,
-                        color: activeTab === item.id ? "var(--fs-blue)" : "var(--fs-gray-700)",
-                        fontWeight: activeTab === item.id ? 600 : 400,
+                        color: "var(--fs-gray-500)",
                         textAlign: "left",
-                        transition: 'all 0.15s ease'
                       }}
                     >
-                      <span style={{ color: activeTab === item.id ? "var(--fs-blue)" : "var(--fs-gray-400)", width: 20 }}>{item.icon}</span>
-                      <span style={{ flex: 1 }}>{item.label}</span>
-                      {item.count > 0 && (
-                        <span style={{ 
-                          background: activeTab === item.id ? 'var(--fs-blue)' : 'var(--fs-gray-200)', 
-                          color: activeTab === item.id ? 'white' : 'var(--fs-gray-600)', 
-                          fontSize: 11, 
-                          padding: '2px 8px', 
-                          borderRadius: 10,
-                          fontWeight: 600
-                        }}>
-                          {item.count}
-                        </span>
-                      )}
+                      <span style={{ color: "var(--fs-gray-400)", width: 20 }}>{Icons.logout}</span>
+                      <span>Sign Out</span>
                     </button>
-                  ))}
+                  </div>
                 </nav>
 
                 {isDealer && (
@@ -3955,6 +4082,380 @@ const DashboardPage = ({ user, setPage, setUser, savedIds, onSave }) => {
               )}
 
               {/* PROFILE SETTINGS TAB */}
+              {/* DRAFTS TAB */}
+              {activeTab === 'drafts' && (
+                <>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
+                    <div>
+                      <h3 style={{ fontSize: 20, fontWeight: 700, marginBottom: 4 }}>Manage Ad or Draft</h3>
+                      <p style={{ fontSize: 14, color: 'var(--fs-gray-500)' }}>Continue editing your saved drafts</p>
+                    </div>
+                    <button 
+                      className="fs-nav-btn-primary"
+                      onClick={() => setPage('sell')}
+                    >
+                      + New Draft
+                    </button>
+                  </div>
+
+                  {drafts.length === 0 ? (
+                    <div className="fs-detail-specs" style={{ padding: "64px", textAlign: "center", borderRadius: 12 }}>
+                      <div style={{ fontSize: 56, marginBottom: 20, opacity: 0.5 }}>{Icons.file}</div>
+                      <h3 style={{ fontSize: 20, fontWeight: 700, marginBottom: 8 }}>No drafts</h3>
+                      <p style={{ fontSize: 15, color: "var(--fs-gray-500)", maxWidth: 400, margin: '0 auto' }}>
+                        Start creating a listing and save it as a draft to finish later.
+                      </p>
+                    </div>
+                  ) : (
+                    <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                      {drafts.map(draft => (
+                        <div key={draft.id} className="fs-detail-specs" style={{ padding: "20px", borderRadius: 12, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                          <div>
+                            <h4 style={{ fontSize: 16, fontWeight: 600, marginBottom: 4 }}>{draft.title}</h4>
+                            <p style={{ fontSize: 13, color: 'var(--fs-gray-500)' }}>Last edited: {draft.lastEdited}</p>
+                            <div style={{ marginTop: 8, display: 'flex', alignItems: 'center', gap: 8 }}>
+                              <div style={{ width: 120, height: 6, background: '#e5e5e5', borderRadius: 3 }}>
+                                <div style={{ width: `${draft.progress}%`, height: '100%', background: 'var(--fs-blue)', borderRadius: 3 }} />
+                              </div>
+                              <span style={{ fontSize: 12, color: 'var(--fs-gray-500)' }}>{draft.progress}% complete</span>
+                            </div>
+                          </div>
+                          <div style={{ display: 'flex', gap: 8 }}>
+                            <button style={{ padding: "8px 16px", background: "var(--fs-gray-100)", border: "none", borderRadius: 6, fontSize: 13, cursor: "pointer" }}>Delete</button>
+                            <button style={{ padding: "8px 16px", background: "var(--fs-blue)", color: 'white', border: "none", borderRadius: 6, fontSize: 13, cursor: "pointer" }}>Continue</button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </>
+              )}
+
+              {/* RECEIVED OFFERS TAB */}
+              {activeTab === 'receivedOffers' && (
+                <>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
+                    <div>
+                      <h3 style={{ fontSize: 20, fontWeight: 700, marginBottom: 4 }}>Manage Your Offers</h3>
+                      <p style={{ fontSize: 14, color: 'var(--fs-gray-500)' }}>Offers received on your listings</p>
+                    </div>
+                  </div>
+
+                  {receivedOffers.length === 0 ? (
+                    <div className="fs-detail-specs" style={{ padding: "64px", textAlign: "center", borderRadius: 12 }}>
+                      <div style={{ fontSize: 56, marginBottom: 20, opacity: 0.5 }}>{Icons.tag}</div>
+                      <h3 style={{ fontSize: 20, fontWeight: 700, marginBottom: 8 }}>No offers yet</h3>
+                      <p style={{ fontSize: 15, color: "var(--fs-gray-500)", maxWidth: 400, margin: '0 auto' }}>
+                        When buyers make offers on your aircraft, they'll appear here.
+                      </p>
+                    </div>
+                  ) : (
+                    <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                      {receivedOffers.map(offer => (
+                        <div key={offer.id} className="fs-detail-specs" style={{ padding: "20px", borderRadius: 12 }}>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12 }}>
+                            <div>
+                              <h4 style={{ fontSize: 16, fontWeight: 600, marginBottom: 4 }}>{offer.aircraft}</h4>
+                              <p style={{ fontSize: 13, color: 'var(--fs-gray-500)' }}>From: {offer.from}</p>
+                            </div>
+                            <span style={{ 
+                              padding: "4px 12px", 
+                              borderRadius: 4, 
+                              fontSize: 12,
+                              background: offer.status === 'pending' ? '#fef3c7' : '#dcfce7',
+                              color: offer.status === 'pending' ? '#92400e' : '#166534',
+                              textTransform: 'capitalize'
+                            }}>
+                              {offer.status}
+                            </span>
+                          </div>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: "12px", background: "var(--fs-gray-50)", borderRadius: 8, marginBottom: 12 }}>
+                            <span style={{ fontSize: 14, color: 'var(--fs-gray-500)' }}>Offer Amount</span>
+                            <span style={{ fontSize: 18, fontWeight: 700 }}>${offer.amount.toLocaleString()}</span>
+                          </div>
+                          <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
+                            <button style={{ padding: "8px 16px", background: "var(--fs-gray-100)", border: "none", borderRadius: 6, fontSize: 13, cursor: "pointer" }}>Decline</button>
+                            <button style={{ padding: "8px 16px", background: "var(--fs-blue)", color: 'white', border: "none", borderRadius: 6, fontSize: 13, cursor: "pointer" }}>Accept</button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </>
+              )}
+
+              {/* MY OFFERS (MADE) TAB */}
+              {activeTab === 'myOffers' && (
+                <>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
+                    <div>
+                      <h3 style={{ fontSize: 20, fontWeight: 700, marginBottom: 4 }}>My Instant Offers</h3>
+                      <p style={{ fontSize: 14, color: 'var(--fs-gray-500)' }}>Offers you've made on aircraft</p>
+                    </div>
+                  </div>
+
+                  {myOffers.length === 0 ? (
+                    <div className="fs-detail-specs" style={{ padding: "64px", textAlign: "center", borderRadius: 12 }}>
+                      <div style={{ fontSize: 56, marginBottom: 20, opacity: 0.5 }}>{Icons.dollar}</div>
+                      <h3 style={{ fontSize: 20, fontWeight: 700, marginBottom: 8 }}>No offers made</h3>
+                      <p style={{ fontSize: 15, color: "var(--fs-gray-500)", maxWidth: 400, margin: '0 auto' }}>
+                        When you make offers on aircraft, they'll appear here.
+                      </p>
+                    </div>
+                  ) : (
+                    <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                      {myOffers.map(offer => (
+                        <div key={offer.id} className="fs-detail-specs" style={{ padding: "20px", borderRadius: 12 }}>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                            <div>
+                              <h4 style={{ fontSize: 16, fontWeight: 600, marginBottom: 4 }}>{offer.aircraft}</h4>
+                              <p style={{ fontSize: 13, color: 'var(--fs-gray-500)' }}>To: {offer.to}</p>
+                              <p style={{ fontSize: 13, color: 'var(--fs-gray-400)', marginTop: 4 }}>Made: {offer.date}</p>
+                            </div>
+                            <div style={{ textAlign: 'right' }}>
+                              <p style={{ fontSize: 18, fontWeight: 700 }}>${offer.amount.toLocaleString()}</p>
+                              <span style={{ 
+                                padding: "4px 12px", 
+                                borderRadius: 4, 
+                                fontSize: 12,
+                                background: offer.status === 'pending' ? '#fef3c7' : offer.status === 'accepted' ? '#dcfce7' : '#fee2e2',
+                                color: offer.status === 'pending' ? '#92400e' : offer.status === 'accepted' ? '#166534' : '#991b1b',
+                                textTransform: 'capitalize'
+                              }}>
+                                {offer.status}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </>
+              )}
+
+              {/* SAVED SEARCHES TAB */}
+              {activeTab === 'savedSearches' && (
+                <>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
+                    <div>
+                      <h3 style={{ fontSize: 20, fontWeight: 700, marginBottom: 4 }}>Saved Searches</h3>
+                      <p style={{ fontSize: 14, color: 'var(--fs-gray-500)' }}>Get alerts for new matching aircraft</p>
+                    </div>
+                  </div>
+
+                  {savedSearches.length === 0 ? (
+                    <div className="fs-detail-specs" style={{ padding: "64px", textAlign: "center", borderRadius: 12 }}>
+                      <div style={{ fontSize: 56, marginBottom: 20, opacity: 0.5 }}>{Icons.search}</div>
+                      <h3 style={{ fontSize: 20, fontWeight: 700, marginBottom: 8 }}>No saved searches</h3>
+                      <p style={{ fontSize: 15, color: "var(--fs-gray-500)", maxWidth: 400, margin: '0 auto' }}>
+                        Save your searches to get notified when new aircraft match your criteria.
+                      </p>
+                    </div>
+                  ) : (
+                    <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                      {savedSearches.map(search => (
+                        <div key={search.id} className="fs-detail-specs" style={{ padding: "20px", borderRadius: 12 }}>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12 }}>
+                            <div>
+                              <h4 style={{ fontSize: 16, fontWeight: 600, marginBottom: 4 }}>{search.name}</h4>
+                              <p style={{ fontSize: 13, color: 'var(--fs-blue)' }}>{search.count} new matches</p>
+                            </div>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                              <span style={{ fontSize: 13, color: search.alerts ? '#10b981' : 'var(--fs-gray-400)' }}>
+                                {search.alerts ? '🔔 Alerts on' : '🔕 Alerts off'}
+                              </span>
+                            </div>
+                          </div>
+                          <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 12 }}>
+                            {Object.entries(search.filters).map(([key, value]) => (
+                              <span key={key} style={{ padding: "4px 10px", background: "var(--fs-gray-100)", borderRadius: 4, fontSize: 12 }}>
+                                {key}: {value}
+                              </span>
+                            ))}
+                          </div>
+                          <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
+                            <button style={{ padding: "8px 16px", background: "transparent", border: "1px solid var(--fs-gray-200)", borderRadius: 6, fontSize: 13, cursor: "pointer" }}>Delete</button>
+                            <button style={{ padding: "8px 16px", background: "var(--fs-blue)", color: 'white', border: "none", borderRadius: 6, fontSize: 13, cursor: "pointer" }}>View Results</button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </>
+              )}
+
+              {/* NOTIFICATIONS TAB */}
+              {activeTab === 'notifications' && (
+                <>
+                  <h3 style={{ fontSize: 20, fontWeight: 700, marginBottom: 16 }}>Notification Preferences</h3>
+                  <div className="fs-detail-specs" style={{ padding: "24px", borderRadius: 12 }}>
+                    <h4 style={{ fontSize: 16, fontWeight: 600, marginBottom: 20 }}>Email Notifications</h4>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 16, marginBottom: 32 }}>
+                      {[
+                        { key: 'emailEnquiries', label: 'New enquiries on my listings', desc: 'When someone contacts you about your aircraft' },
+                        { key: 'emailOffers', label: 'Offers on my listings', desc: 'When someone makes an offer on your aircraft' },
+                        { key: 'emailSavedSearch', label: 'Saved search alerts', desc: 'When new aircraft match your saved searches' },
+                      ].map(item => (
+                        <div key={item.key} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                          <div>
+                            <p style={{ fontSize: 14, fontWeight: 500 }}>{item.label}</p>
+                            <p style={{ fontSize: 12, color: 'var(--fs-gray-400)' }}>{item.desc}</p>
+                          </div>
+                          <button
+                            onClick={() => setNotifications(prev => ({ ...prev, [item.key]: !prev[item.key] }))}
+                            style={{
+                              width: 48,
+                              height: 24,
+                              borderRadius: 12,
+                              background: notifications[item.key] ? 'var(--fs-blue)' : 'var(--fs-gray-200)',
+                              border: 'none',
+                              cursor: 'pointer',
+                              position: 'relative',
+                              transition: 'background 0.2s'
+                            }}
+                          >
+                            <span style={{
+                              position: 'absolute',
+                              top: 2,
+                              left: notifications[item.key] ? 26 : 2,
+                              width: 20,
+                              height: 20,
+                              borderRadius: '50%',
+                              background: 'white',
+                              transition: 'left 0.2s'
+                            }} />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+
+                    <h4 style={{ fontSize: 16, fontWeight: 600, marginBottom: 20 }}>SMS Notifications</h4>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 16, marginBottom: 32 }}>
+                      {[
+                        { key: 'smsEnquiries', label: 'New enquiries', desc: 'Text message for urgent enquiries' },
+                        { key: 'smsOffers', label: 'New offers', desc: 'Text message when you receive an offer' },
+                      ].map(item => (
+                        <div key={item.key} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                          <div>
+                            <p style={{ fontSize: 14, fontWeight: 500 }}>{item.label}</p>
+                            <p style={{ fontSize: 12, color: 'var(--fs-gray-400)' }}>{item.desc}</p>
+                          </div>
+                          <button
+                            onClick={() => setNotifications(prev => ({ ...prev, [item.key]: !prev[item.key] }))}
+                            style={{
+                              width: 48,
+                              height: 24,
+                              borderRadius: 12,
+                              background: notifications[item.key] ? 'var(--fs-blue)' : 'var(--fs-gray-200)',
+                              border: 'none',
+                              cursor: 'pointer',
+                              position: 'relative',
+                              transition: 'background 0.2s'
+                            }}
+                          >
+                            <span style={{
+                              position: 'absolute',
+                              top: 2,
+                              left: notifications[item.key] ? 26 : 2,
+                              width: 20,
+                              height: 20,
+                              borderRadius: '50%',
+                              background: 'white',
+                              transition: 'left 0.2s'
+                            }} />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+
+                    <h4 style={{ fontSize: 16, fontWeight: 600, marginBottom: 20 }}>Other</h4>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                      {[
+                        { key: 'marketingEmails', label: 'Marketing emails', desc: 'Promotions, tips, and news from Flightsales' },
+                      ].map(item => (
+                        <div key={item.key} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                          <div>
+                            <p style={{ fontSize: 14, fontWeight: 500 }}>{item.label}</p>
+                            <p style={{ fontSize: 12, color: 'var(--fs-gray-400)' }}>{item.desc}</p>
+                          </div>
+                          <button
+                            onClick={() => setNotifications(prev => ({ ...prev, [item.key]: !prev[item.key] }))}
+                            style={{
+                              width: 48,
+                              height: 24,
+                              borderRadius: 12,
+                              background: notifications[item.key] ? 'var(--fs-blue)' : 'var(--fs-gray-200)',
+                              border: 'none',
+                              cursor: 'pointer',
+                              position: 'relative',
+                              transition: 'background 0.2s'
+                            }}
+                          >
+                            <span style={{
+                              position: 'absolute',
+                              top: 2,
+                              left: notifications[item.key] ? 26 : 2,
+                              width: 20,
+                              height: 20,
+                              borderRadius: '50%',
+                              background: 'white',
+                              transition: 'left 0.2s'
+                            }} />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </>
+              )}
+
+              {/* DISCOUNTS TAB */}
+              {activeTab === 'discounts' && (
+                <>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
+                    <div>
+                      <h3 style={{ fontSize: 20, fontWeight: 700, marginBottom: 4 }}>Discounts</h3>
+                      <p style={{ fontSize: 14, color: 'var(--fs-gray-500)' }}>Your available promo codes</p>
+                    </div>
+                  </div>
+
+                  {discounts.length === 0 ? (
+                    <div className="fs-detail-specs" style={{ padding: "64px", textAlign: "center", borderRadius: 12 }}>
+                      <div style={{ fontSize: 56, marginBottom: 20, opacity: 0.5 }}>{Icons.gift}</div>
+                      <h3 style={{ fontSize: 20, fontWeight: 700, marginBottom: 8 }}>No discounts</h3>
+                      <p style={{ fontSize: 15, color: "var(--fs-gray-500)", maxWidth: 400, margin: '0 auto' }}>
+                        Check back for special offers and promotions.
+                      </p>
+                    </div>
+                  ) : (
+                    <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 16 }}>
+                      {discounts.map(discount => (
+                        <div key={discount.id} className="fs-detail-specs" style={{ padding: "24px", borderRadius: 12, position: 'relative', opacity: discount.used ? 0.6 : 1 }}>
+                          {discount.used && (
+                            <div style={{ position: 'absolute', top: 12, right: 12, padding: '4px 8px', background: 'var(--fs-gray-200)', borderRadius: 4, fontSize: 11, fontWeight: 600 }}>USED</div>
+                          )}
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16 }}>
+                            <div style={{ width: 48, height: 48, borderRadius: 12, background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 24 }}>
+                              🎁
+                            </div>
+                            <div>
+                              <h4 style={{ fontSize: 16, fontWeight: 700 }}>{discount.discount}</h4>
+                              <p style={{ fontSize: 13, color: 'var(--fs-gray-500)' }}>Expires: {discount.expiry}</p>
+                            </div>
+                          </div>
+                          <div style={{ padding: "12px", background: "var(--fs-gray-100)", borderRadius: 8, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                            <code style={{ fontSize: 14, fontWeight: 600, letterSpacing: 1 }}>{discount.code}</code>
+                            {!discount.used && (
+                              <button style={{ padding: "6px 12px", background: "var(--fs-blue)", color: 'white', border: "none", borderRadius: 4, fontSize: 12, cursor: "pointer" }}>Copy</button>
+                            )}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </>
+              )}
+
               {activeTab === 'profile' && (
                 <>
                   <h3 style={{ fontSize: 20, fontWeight: 700, marginBottom: 16 }}>Profile Settings</h3>
