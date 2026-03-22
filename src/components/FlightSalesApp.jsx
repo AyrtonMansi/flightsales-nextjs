@@ -5,10 +5,46 @@ import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 // ============================================================
 
 // --- DATA LAYER ---
-const MANUFACTURERS = ["Cessna", "Piper", "Beechcraft", "Cirrus", "Diamond", "Mooney", "Socata", "Robinson", "Bell", "Jabiru", "Tecnam", "Pipistrel", "Sling", "BRM Aero"];
-const CATEGORIES = ["Single Engine Piston", "Multi Engine Piston", "Turboprop", "Jet", "Helicopter", "Ultralight", "LSA", "Warbird", "Glider", "Amphibious"];
+const MANUFACTURERS = ["Airbus", "American Champion", "Aquila", "AutoGyro", "Aviat", "Beechcraft", "Bell", "BRM Aero", "Cessna", "Cirrus", "CubCrafters", "DAHER", "Diamond", "Dynali", "Flight Design", "Grumman", "GippsAero", "Guimbal", "HondaJet", "Icon", "Jabiru", "Lancair", "Lockheed", "Magni", "Maule", "Mooney", "Pipistrel", "Piper", "Pilatus", "Quest", "Robinson", "Rockwell", "Rotorway", "Schweizer", "Sling", "Socata", "Stemme", "Tecnam", "Vans", "Vulcanair", "XtremeAir"];
+
+const CATEGORIES = ["Single Engine Piston", "Multi Engine Piston", "Turboprop", "Light Jet", "Midsize Jet", "Heavy Jet", "Helicopter", "Gyrocopter", "Ultralight", "LSA", "Warbird", "Glider", "Amphibious/Seaplane"];
+
 const STATES = ["NSW", "VIC", "QLD", "WA", "SA", "TAS", "NT", "ACT"];
-const CONDITIONS = ["New", "Pre-Owned", "Project"];
+
+const CONDITIONS = ["New", "Pre-Owned", "Project/Restoration"];
+
+const PRICE_RANGES = [
+  { label: "Under $100k", min: 0, max: 100000 },
+  { label: "$100k - $200k", min: 100000, max: 200000 },
+  { label: "$200k - $500k", min: 200000, max: 500000 },
+  { label: "$500k - $1M", min: 500000, max: 1000000 },
+  { label: "$1M - $3M", min: 1000000, max: 3000000 },
+  { label: "$3M+", min: 3000000, max: null }
+];
+
+const YEAR_RANGES = [
+  { label: "2020+", min: 2020 },
+  { label: "2015-2019", min: 2015, max: 2019 },
+  { label: "2010-2014", min: 2010, max: 2014 },
+  { label: "2000-2009", min: 2000, max: 2009 },
+  { label: "1990-1999", min: 1990, max: 1999 },
+  { label: "1980-1989", min: 1980, max: 1989 },
+  { label: "Pre-1980", max: 1979 }
+];
+
+const TTAF_RANGES = [
+  { label: "Under 500 hrs", max: 500 },
+  { label: "500-1000 hrs", min: 500, max: 1000 },
+  { label: "1000-2000 hrs", min: 1000, max: 2000 },
+  { label: "2000-5000 hrs", min: 2000, max: 5000 },
+  { label: "5000+ hrs", min: 5000 }
+];
+
+const SEAT_COUNTS = [1, 2, 4, 5, 6, 8, 9, 10, 11, 12];
+
+const ENGINE_TYPES = ["Piston", "Turboprop", "Jet", "Electric", "Rotary"];
+
+const AVIONICS_TYPES = ["Garmin G1000/G3000", "Garmin GTN Series", "Garmin G3X", "Honeywell", "Rockwell Collins", "Aspen EFD", "Dynon SkyView", "Traditional Steam Gauge", "Partial Panel"];
 
 const SAMPLE_LISTINGS = [
   { id: 1, title: "2018 Cirrus SR22T GTS", price: 895000, manufacturer: "Cirrus", model: "SR22T GTS", year: 2018, category: "Single Engine Piston", condition: "Pre-Owned", state: "VIC", city: "Moorabbin", ttaf: 420, eng_hours: 420, eng_tbo: 2000, avionics: "Garmin Perspective+", rego: "VH-XRT", useful_load: 454, range_nm: 930, fuel_burn: 68, cruise_kts: 213, ifr: true, retractable: false, pressurised: false, glass_cockpit: true, images: 12, featured: true, dealer: "Southern Aviation Group", dealer_id: 1, created: "2026-03-18", description: "Pristine condition with FIKI, A/C, and full TKS. One owner, always hangared. Complete logbooks. Next annual due Sep 2026.", specs: { engine: "Continental TSIO-550-K", propeller: "Hartzell 3-blade composite", seats: 4, mtow_kg: 1542, wingspan_m: 11.68, parachute: "CAPS equipped" }},
@@ -1121,7 +1157,7 @@ const HomePage = ({ setPage, setSelectedListing, savedIds, onSave }) => {
             <span className="fs-section-link" onClick={() => setPage("dealers")}>All dealers {Icons.arrowRight}</span>
           </div>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(340px, 1fr))", gap: 16 }}>
-            {DEALERS.slice(0, 4).map(d => (
+            {DEALERS.slice(0, 3).map(d => (
               <div key={d.id} className="fs-dealer-card" onClick={() => setPage("dealers")}>
                 <div className="fs-dealer-avatar">{d.logo}</div>
                 <div className="fs-dealer-info">
@@ -1146,7 +1182,7 @@ const HomePage = ({ setPage, setSelectedListing, savedIds, onSave }) => {
             <h2 className="fs-section-title">Aviation News</h2>
             <span className="fs-section-link" onClick={() => setPage("news")}>All articles {Icons.arrowRight}</span>
           </div>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: 20 }}>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 20, maxWidth: 960, margin: "0 auto" }}>
             {NEWS_ARTICLES.slice(0, 3).map(a => (
               <div key={a.id} className="fs-news-card">
                 <span className={`fs-news-tag ${a.category.toLowerCase()}`}>{a.category}</span>
