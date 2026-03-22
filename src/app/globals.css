@@ -1,0 +1,48 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
+
+:root {
+  --fs-navy: #000000;
+  --fs-navy-light: #0a0a0a;
+  --fs-blue: #000000;
+  --fs-blue-light: #262626;
+  --fs-sky: #000000;
+  --fs-amber: #000000;
+  --fs-green: #10b981;
+  --fs-red: #ef4444;
+  --fs-bg: #fafafa;
+  --fs-white: #ffffff;
+  --fs-gray-50: #fafafa;
+  --fs-gray-100: #f5f5f5;
+  --fs-gray-200: #e5e5e5;
+  --fs-gray-300: #d4d4d4;
+  --fs-gray-400: #a3a3a3;
+  --fs-gray-500: #737373;
+  --fs-gray-600: #525252;
+  --fs-gray-700: #404040;
+  --fs-gray-800: #262626;
+  --fs-gray-900: #0a0a0a;
+  --fs-radius: 12px;
+  --fs-radius-sm: 8px;
+  --fs-radius-lg: 16px;
+  --fs-shadow: 0 1px 2px rgba(0,0,0,0.04);
+  --fs-shadow-md: 0 4px 16px rgba(0,0,0,0.06);
+  --fs-shadow-lg: 0 8px 30px rgba(0,0,0,0.08);
+  --fs-font: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  --fs-font-serif: 'Plus Jakarta Sans', system-ui, sans-serif;
+  --fs-max-w: 1280px;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--fs-font);
+  color: var(--fs-gray-900);
+  background: var(--fs-bg);
+  -webkit-font-smoothing: antialiased;
+  line-height: 1.5;
+}
+
+a { color: inherit; text-decoration: none; }
+::selection { background: var(--fs-gray-900); color: var(--fs-white); }
