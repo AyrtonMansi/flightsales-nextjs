@@ -1013,7 +1013,7 @@ const HomePage = ({ setPage, setSelectedListing, savedIds, onSave }) => {
   const [searchMake, setSearchMake] = useState("");
   const [searchState, setSearchState] = useState("");
   
-  const featured = SAMPLE_LISTINGS.filter(l => l.featured);
+  const featured = SAMPLE_LISTINGS.filter(l => l.featured).slice(0, 4);
   const latest = [...SAMPLE_LISTINGS].sort((a, b) => new Date(b.created) - new Date(a.created)).slice(0, 4);
 
   return (
@@ -1097,7 +1097,7 @@ const HomePage = ({ setPage, setSelectedListing, savedIds, onSave }) => {
             <h2 className="fs-section-title">Featured Aircraft</h2>
             <span className="fs-section-link" onClick={() => setPage("buy")}>View all aircraft {Icons.arrowRight}</span>
           </div>
-          <div className="fs-grid">
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 20 }}>
             {featured.map(l => (
               <ListingCard key={l.id} listing={l} onClick={setSelectedListing} onSave={onSave} saved={savedIds.has(l.id)} />
             ))}
