@@ -1062,7 +1062,6 @@ const HomePage = ({ setPage, setSelectedListing, savedIds, onSave }) => {
             <div className="fs-stat"><div className="fs-stat-num">{DEALERS.length}</div><div className="fs-stat-label">Verified Dealers</div></div>
             <div className="fs-stat"><div className="fs-stat-num">2.4K+</div><div className="fs-stat-label">Monthly Buyers</div></div>
           </div>
-          </div>
         </div>
       </section>
 
