@@ -5155,7 +5155,6 @@ export default function FlightSalesApp() {
       {page === "detail" && <ListingDetail listing={selectedListing} onBack={() => setPageWrap("buy")} savedIds={savedIds} onSave={onSave} user={user} />}
       {page === "sell" && <SellPage user={user} setPage={setPageWrap} />}
       {page === "dealers" && <DealersPage />}
-      {page === "finance" && <FinancePage />}
       {page === "valuate" && <ValuatePage />}
       {page === "news" && <NewsPage />}
       {page === "about" && <AboutPage />}
@@ -5163,6 +5162,7 @@ export default function FlightSalesApp() {
       {page === "login" && <LoginPage setPage={setPageWrap} setUser={setUser} />}
       {page === "dashboard" && <DashboardPage user={user} setPage={setPageWrap} setUser={setUser} savedIds={savedIds} onSave={onSave} />}
       {page === "admin" && <AdminPage user={user} setPage={setPageWrap} setUser={setUser} />}
+      {(page === "finance" || page === "insurance") && <HomePage setPage={setPageWrap} setSelectedListing={setSelectedListing} savedIds={savedIds} onSave={onSave} setSearchFilters={setSearchFilters} />}
 
       <Footer setPage={setPageWrap} />
 
