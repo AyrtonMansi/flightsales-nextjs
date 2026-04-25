@@ -1,4 +1,9 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from "react";
+import {
+  useAuth, useProfile, useAircraft, useFeaturedAircraft, useLatestAircraft,
+  useDealers, useNews, useSavedAircraft, useMyListings, useMyEnquiries,
+  submitEnquiry, createListing, uploadImage
+} from "../lib/hooks";
 
 // ============================================================
 // FLIGHTSALES.COM.AU — PRODUCTION AVIATION MARKETPLACE
@@ -82,7 +87,8 @@ const formatPrice = (p) => p >= 1000000 ? `$${(p/1000000).toFixed(1)}M` : `$${(p
 const formatPriceFull = (p) => new Intl.NumberFormat('en-AU', { style: 'currency', currency: 'AUD', maximumFractionDigits: 0 }).format(p);
 const formatHours = (h) => h ? h.toLocaleString() + " hrs" : "N/A";
 const timeAgo = (d) => {
-  const days = Math.floor((new Date('2026-03-22') - new Date(d)) / 86400000);
+  if (!d) return "";
+  const days = Math.floor((Date.now() - new Date(d).getTime()) / 86400000);
   if (days === 0) return "Today";
   if (days === 1) return "Yesterday";
   if (days < 7) return `${days} days ago`;
@@ -146,11 +152,14 @@ const AIRCRAFT_IMAGES = {
   12: "https://images.unsplash.com/photo-1483304528321-0674f0040030?w=800&q=80",   // Mooney
 };
 
-// --- AIRCRAFT IMAGE COMPONENT (Unsplash) ---
+// --- AIRCRAFT IMAGE COMPONENT ---
 const AircraftImage = ({ listing, className = "", size = "md", style = {} }) => {
   const heights = { sm: "140px", md: "220px", lg: "400px", full: "100%" };
-  const imageUrl = AIRCRAFT_IMAGES[listing.id] || AIRCRAFT_IMAGES[1];
-  
+  // Use first real image from DB, else fall back to Unsplash by numeric seed
+  const seed = typeof listing.id === 'number' ? listing.id : (listing.id?.charCodeAt(0) % 12) + 1;
+  const fallback = AIRCRAFT_IMAGES[seed] || AIRCRAFT_IMAGES[1];
+  const imageUrl = (listing.images && listing.images.length > 0) ? listing.images[0] : fallback;
+
   return (
     <div className={className} style={{
       height: heights[size],
@@ -829,6 +838,13 @@ a { color: inherit; text-decoration: none; }
   from { transform: translateY(20px); opacity: 0; }
   to { transform: translateY(0); opacity: 1; }
 }
+@keyframes fs-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+@keyframes fs-spin {
+  to { transform: rotate(360deg); }
+}
 
 /* EMPTY STATE */
 .fs-empty {
@@ -910,9 +926,9 @@ const Nav = ({ page, setPage, setMobileOpen, mobileOpen, user }) => (
                 borderRadius: "var(--fs-radius-sm)"
               }}
             >
-              <img 
-                src={user.avatar} 
-                alt={user.full_name}
+              <img
+                src={user.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.full_name || user.email || 'U')}&background=0a0a0a&color=fff`}
+                alt={user.full_name || user.email}
                 style={{ width: 32, height: 32, borderRadius: "50%" }}
               />
               <span style={{ fontSize: 14, fontWeight: 500 }}>{user.full_name?.split(' ')[0]}</span>
@@ -974,37 +990,42 @@ const Footer = ({ setPage }) => (
   </footer>
 );
 
-const ListingCard = ({ listing, onClick, onSave, saved }) => (
-  <div className="fs-card" onClick={() => onClick(listing)}>
-    <AircraftImage listing={listing} />
-    <div className="fs-card-body">
-      {listing.dealer && (
-        <div className="fs-card-dealer">{Icons.shield} {listing.dealer}</div>
-      )}
-      <div className="fs-card-title">{listing.title}</div>
-      <div className="fs-card-price">{formatPriceFull(listing.price)}</div>
-      <div className="fs-card-meta">
-        <span className="fs-card-meta-item">{Icons.clock} {formatHours(listing.ttaf)} TT</span>
-        <span className="fs-card-meta-item">{Icons.gauge} {formatHours(listing.eng_hours)} SMOH</span>
-        <span className="fs-card-meta-item">{Icons.location} {listing.city}, {listing.state}</span>
+const ListingCard = ({ listing, onClick, onSave, saved }) => {
+  const dealerName = listing.dealer?.name || (typeof listing.dealer === 'string' ? listing.dealer : null);
+  return (
+    <div className="fs-card" onClick={() => onClick(listing)}>
+      <AircraftImage listing={listing} />
+      <div className="fs-card-body">
+        {dealerName && (
+          <div className="fs-card-dealer">{Icons.shield} {dealerName}</div>
+        )}
+        <div className="fs-card-title">{listing.title}</div>
+        <div className="fs-card-price">{formatPriceFull(listing.price)}</div>
+        <div className="fs-card-meta">
+          <span className="fs-card-meta-item">{Icons.clock} {formatHours(listing.ttaf)} TT</span>
+          <span className="fs-card-meta-item">{Icons.gauge} {formatHours(listing.eng_hours)} SMOH</span>
+          <span className="fs-card-meta-item">{Icons.location} {listing.city}, {listing.state}</span>
+        </div>
+      </div>
+      <div className="fs-card-footer">
+        <span>{timeAgo(listing.created_at || listing.created)}</span>
+        <span onClick={e => { e.stopPropagation(); onSave(listing.id); }} style={{ cursor: "pointer", color: saved ? "var(--fs-red)" : undefined }}>
+          {saved ? Icons.heartFull : Icons.heart}
+        </span>
       </div>
     </div>
-    <div className="fs-card-footer">
-      <span>{timeAgo(listing.created)}</span>
-      <span onClick={e => { e.stopPropagation(); onSave(listing.id); }} style={{ cursor: "pointer", color: saved ? "var(--fs-red)" : undefined }}>
-        {saved ? Icons.heartFull : Icons.heart}
-      </span>
-    </div>
-  </div>
-);
+  );
+};
 
 const EnquiryModal = ({ listing, onClose, user }) => {
   const [sent, setSent] = useState(false);
+  const [sending, setSending] = useState(false);
+  const [sendError, setSendError] = useState(null);
   const [formData, setFormData] = useState({
     name: user?.full_name || '',
     email: user?.email || '',
     phone: user?.phone || '',
-    message: `Hi, I'm interested in the ${listing.title} (${listing.rego}). Is it available for an inspection?`,
+    message: `Hi, I'm interested in the ${listing.title}${listing.rego ? ` (${listing.rego})` : ''}. Is it available for an inspection?`,
     financeStatus: '',
     hangarStatus: ''
   });
@@ -1092,8 +1113,33 @@ const EnquiryModal = ({ listing, onClose, user }) => {
                   rows={4}
                 />
               </div>
-              <button className="fs-form-submit" onClick={() => setSent(true)}>
-                Send Enquiry
+              {sendError && (
+                <div style={{ padding: "10px 14px", background: "#fef2f2", border: "1px solid #fecaca", borderRadius: "var(--fs-radius-sm)", marginBottom: 12, fontSize: 13, color: "#dc2626" }}>
+                  {sendError}
+                </div>
+              )}
+              <button
+                className="fs-form-submit"
+                disabled={sending}
+                style={{ opacity: sending ? 0.7 : 1, cursor: sending ? "not-allowed" : "pointer" }}
+                onClick={async () => {
+                  if (!formData.name || !formData.email || !formData.message) {
+                    setSendError("Please fill in your name, email, and message.");
+                    return;
+                  }
+                  setSending(true);
+                  setSendError(null);
+                  try {
+                    await submitEnquiry(listing.id, formData);
+                    setSent(true);
+                  } catch (err) {
+                    setSendError(err.message || "Failed to send enquiry. Please try again.");
+                  } finally {
+                    setSending(false);
+                  }
+                }}
+              >
+                {sending ? "Sending..." : "Send Enquiry"}
               </button>
               <p style={{ fontSize: 11, color: "var(--fs-gray-400)", marginTop: 16, textAlign: "center" }}>
                 By submitting, you agree to our Terms and Privacy Policy. Your details will be shared with the seller.
@@ -1111,8 +1157,15 @@ const HomePage = ({ setPage, setSelectedListing, savedIds, onSave, setSearchFilt
   const [searchState, setSearchState] = useState("");
   const [aiQuery, setAiQuery] = useState("");
 
-  const featured = SAMPLE_LISTINGS.filter(l => l.featured).slice(0, 4);
-  const latest = [...SAMPLE_LISTINGS].sort((a, b) => new Date(b.created) - new Date(a.created)).slice(0, 4);
+  const { aircraft: featuredFromDB, loading: featuredLoading } = useFeaturedAircraft();
+  const { aircraft: latestFromDB, loading: latestLoading } = useLatestAircraft();
+  const { dealers: dealersFromDB } = useDealers();
+  const { articles: newsFromDB } = useNews(3);
+
+  const featured = featuredFromDB.length > 0 ? featuredFromDB : SAMPLE_LISTINGS.filter(l => l.featured).slice(0, 4);
+  const latest = latestFromDB.length > 0 ? latestFromDB : [...SAMPLE_LISTINGS].sort((a, b) => new Date(b.created_at || b.created) - new Date(a.created_at || a.created)).slice(0, 4);
+  const displayDealers = dealersFromDB.length > 0 ? dealersFromDB : DEALERS;
+  const displayNews = newsFromDB.length > 0 ? newsFromDB : NEWS_ARTICLES;
 
   // Parse AI search query and extract filters
   const parseAiQuery = (query) => {
@@ -1296,7 +1349,7 @@ const HomePage = ({ setPage, setSelectedListing, savedIds, onSave, setSearchFilt
 
           <div className="fs-stats">
             <div className="fs-stat"><div className="fs-stat-num">{SAMPLE_LISTINGS.length}+</div><div className="fs-stat-label">Aircraft Listed</div></div>
-            <div className="fs-stat"><div className="fs-stat-num">{DEALERS.length}</div><div className="fs-stat-label">Verified Dealers</div></div>
+            <div className="fs-stat"><div className="fs-stat-num">{displayDealers.length}</div><div className="fs-stat-label">Verified Dealers</div></div>
             <div className="fs-stat"><div className="fs-stat-num">2.4K+</div><div className="fs-stat-label">Monthly Buyers</div></div>
           </div>
         </div>
@@ -1310,7 +1363,9 @@ const HomePage = ({ setPage, setSelectedListing, savedIds, onSave, setSearchFilt
             <span className="fs-section-link" onClick={() => setPage("buy")}>View all aircraft {Icons.arrowRight}</span>
           </div>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 20 }}>
-            {featured.map(l => (
+            {featuredLoading ? (
+              [1,2,3,4].map(i => <div key={i} style={{ height: 320, background: "var(--fs-gray-100)", borderRadius: "var(--fs-radius)", animation: "fs-pulse 1.5s infinite" }} />)
+            ) : featured.map(l => (
               <ListingCard key={l.id} listing={l} onClick={setSelectedListing} onSave={onSave} saved={savedIds.has(l.id)} />
             ))}
           </div>
@@ -1354,7 +1409,9 @@ const HomePage = ({ setPage, setSelectedListing, savedIds, onSave, setSearchFilt
             <span className="fs-section-link" onClick={() => setPage("buy")}>View all {Icons.arrowRight}</span>
           </div>
           <div className="fs-grid">
-            {latest.map(l => (
+            {latestLoading ? (
+              [1,2,3,4].map(i => <div key={i} style={{ height: 280, background: "var(--fs-gray-100)", borderRadius: "var(--fs-radius)", animation: "fs-pulse 1.5s infinite" }} />)
+            ) : latest.map(l => (
               <ListingCard key={l.id} listing={l} onClick={setSelectedListing} onSave={onSave} saved={savedIds.has(l.id)} />
             ))}
           </div>
@@ -1369,7 +1426,7 @@ const HomePage = ({ setPage, setSelectedListing, savedIds, onSave, setSearchFilt
             <span className="fs-section-link" onClick={() => setPage("dealers")}>All dealers {Icons.arrowRight}</span>
           </div>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(340px, 1fr))", gap: 16 }}>
-            {DEALERS.slice(0, 3).map(d => (
+            {displayDealers.slice(0, 3).map(d => (
               <div key={d.id} className="fs-dealer-card" onClick={() => setPage("dealers")}>
                 <div className="fs-dealer-avatar">{d.logo}</div>
                 <div className="fs-dealer-info">
@@ -1395,7 +1452,7 @@ const HomePage = ({ setPage, setSelectedListing, savedIds, onSave, setSearchFilt
             <span className="fs-section-link" onClick={() => setPage("news")}>All articles {Icons.arrowRight}</span>
           </div>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 20, maxWidth: 960, margin: "0 auto" }}>
-            {NEWS_ARTICLES.slice(0, 3).map(a => (
+            {displayNews.slice(0, 3).map(a => (
               <div key={a.id} className="fs-news-card">
                 <span className={`fs-news-tag ${a.category.toLowerCase()}`}>{a.category}</span>
                 <div className="fs-news-title">{a.title}</div>
@@ -1601,7 +1658,25 @@ const BuyPage = ({ setSelectedListing, savedIds, onSave, initialFilters }) => {
 
   const activeFilterCount = [catFilter, stateFilter, makeFilter, condFilter, minPrice, maxPrice, maxHours, ifrOnly, glassOnly].filter(Boolean).length;
 
+  const dbFilters = useMemo(() => ({
+    category: catFilter || undefined,
+    manufacturer: makeFilter || undefined,
+    state: stateFilter || undefined,
+    condition: condFilter || undefined,
+    minPrice: minPrice || undefined,
+    maxPrice: maxPrice || undefined,
+    maxHours: maxHours || undefined,
+    ifrOnly: ifrOnly || undefined,
+    glassOnly: glassOnly || undefined,
+    search: search || undefined,
+    sortBy,
+  }), [catFilter, makeFilter, stateFilter, condFilter, minPrice, maxPrice, maxHours, ifrOnly, glassOnly, search, sortBy]);
+
+  const { aircraft: dbAircraft, loading: dbLoading, total: dbTotal } = useAircraft(dbFilters);
+
+  // Fall back to client-side filtered mock data if DB returns empty
   const filtered = useMemo(() => {
+    if (dbAircraft.length > 0) return dbAircraft;
     let results = SAMPLE_LISTINGS.filter(l => {
       if (search && !l.title.toLowerCase().includes(search.toLowerCase()) && !l.manufacturer.toLowerCase().includes(search.toLowerCase())) return false;
       if (catFilter && l.category !== catFilter) return false;
@@ -1617,10 +1692,10 @@ const BuyPage = ({ setSelectedListing, savedIds, onSave, initialFilters }) => {
     });
     if (sortBy === "price-asc") results.sort((a, b) => a.price - b.price);
     if (sortBy === "price-desc") results.sort((a, b) => b.price - a.price);
-    if (sortBy === "newest") results.sort((a, b) => new Date(b.created) - new Date(a.created));
+    if (sortBy === "newest") results.sort((a, b) => new Date(b.created_at || b.created) - new Date(a.created_at || a.created));
     if (sortBy === "hours-low") results.sort((a, b) => a.ttaf - b.ttaf);
     return results;
-  }, [search, sortBy, catFilter, stateFilter, makeFilter, condFilter, minPrice, maxPrice, maxHours, ifrOnly, glassOnly]);
+  }, [dbAircraft, search, sortBy, catFilter, stateFilter, makeFilter, condFilter, minPrice, maxPrice, maxHours, ifrOnly, glassOnly]);
 
   return (
     <>
@@ -1725,11 +1800,15 @@ const BuyPage = ({ setSelectedListing, savedIds, onSave, initialFilters }) => {
             <div>
               <div className="fs-results-bar">
                 <span className="fs-results-count">
-                  {filtered.length} aircraft found
-                  {aiQuery && <span style={{ color: "var(--fs-gray-400)", marginLeft: 8 }}>for "{aiQuery}"</span>}
+                  {dbLoading ? "Searching..." : `${filtered.length} aircraft found`}
+                  {aiQuery && !dbLoading && <span style={{ color: "var(--fs-gray-400)", marginLeft: 8 }}>for "{aiQuery}"</span>}
                 </span>
               </div>
-              {filtered.length === 0 ? (
+              {dbLoading ? (
+                <div className="fs-grid">
+                  {[1,2,3,4,5,6].map(i => <div key={i} style={{ height: 280, background: "var(--fs-gray-100)", borderRadius: "var(--fs-radius)", animation: "fs-pulse 1.5s infinite" }} />)}
+                </div>
+              ) : filtered.length === 0 ? (
                 <div className="fs-empty">
                   <div style={{ fontSize: 40, marginBottom: 8 }}>{Icons.search}</div>
                   <p>No aircraft match your filters.</p>
@@ -1767,8 +1846,8 @@ const ListingDetail = ({ listing, onBack, savedIds, onSave, user }) => {
           <h1 style={{ fontSize: 26, fontWeight: 700, marginBottom: 4 }}>{l.title}</h1>
           <div style={{ display: "flex", gap: 16, fontSize: 13, color: "rgba(255,255,255,0.5)", alignItems: "center", flexWrap: "wrap" }}>
             <span style={{ display: "flex", alignItems: "center", gap: 4 }}>{Icons.location} {l.city}, {l.state}</span>
-            <span>Listed {timeAgo(l.created)}</span>
-            {l.dealer && <span className="fs-tag fs-tag-blue" style={{ fontSize: 10 }}>{Icons.shield} Verified Dealer</span>}
+            <span>Listed {timeAgo(l.created_at || l.created)}</span>
+            {(l.dealer?.name || l.dealer) && <span className="fs-tag fs-tag-blue" style={{ fontSize: 10 }}>{Icons.shield} Verified Dealer</span>}
             <span>{l.condition}</span>
           </div>
         </div>
@@ -1945,17 +2024,26 @@ const SellPage = ({ user, setPage }) => {
   }
 
   const [step, setStep] = useState(1);
+  const [submitting, setSubmitting] = useState(false);
+  const [submitSuccess, setSubmitSuccess] = useState(false);
+  const [submitError, setSubmitError] = useState(null);
+  const [uploadedImages, setUploadedImages] = useState([]);
+  const [uploadingImages, setUploadingImages] = useState(false);
+  const [selectedPlan, setSelectedPlan] = useState('Featured');
+  const fileInputRef = useRef(null);
   const [formData, setFormData] = useState({
     manufacturer: '',
     model: '',
     year: '',
     category: '',
     rego: '',
-    condition: '',
+    condition: 'Pre-Owned',
     price: '',
     state: '',
+    city: '',
     ttaf: '',
     eng_hours: '',
+    eng_tbo: '',
     engineType: '',
     propeller: '',
     avionics: '',
@@ -2310,11 +2398,22 @@ const SellPage = ({ user, setPage }) => {
                 </div>
                 <div className="fs-form-group" style={{ gridColumn: "span 2" }}>
                   <label className="fs-form-label">Avionics</label>
-                  <input className="fs-form-input" placeholder="e.g. Garmin G1000 NXi, GFC700 autopilot" />
+                  <input
+                    className="fs-form-input"
+                    placeholder="e.g. Garmin G1000 NXi, GFC700 autopilot"
+                    value={formData.avionics || ''}
+                    onChange={e => handleInputChange('avionics', e.target.value)}
+                  />
                 </div>
                 <div className="fs-form-group" style={{ gridColumn: "span 2" }}>
                   <label className="fs-form-label">Description *</label>
-                  <textarea className="fs-form-textarea" placeholder="Describe the aircraft condition, history, notable features..." style={{ minHeight: 120 }} />
+                  <textarea
+                    className="fs-form-textarea"
+                    placeholder="Describe the aircraft condition, history, notable features..."
+                    style={{ minHeight: 120 }}
+                    value={formData.description || ''}
+                    onChange={e => handleInputChange('description', e.target.value)}
+                  />
                 </div>
               </div>
               <div style={{ display: "flex", gap: 12, marginTop: 16 }}>
@@ -2369,37 +2468,113 @@ const SellPage = ({ user, setPage }) => {
                 /* LOGGED IN - SHOW SUBMIT FORM */
                 <>
                   <h3 style={{ fontSize: 18 }}>Photos & Submit</h3>
-                  <div style={{ border: "2px dashed var(--fs-gray-200)", borderRadius: "var(--fs-radius)", padding: 40, textAlign: "center", marginBottom: 20 }}>
-                    <div style={{ color: "var(--fs-gray-400)", marginBottom: 8 }}>{Icons.camera}</div>
-                    <p style={{ fontWeight: 600, fontSize: 14, marginBottom: 4 }}>Upload Photos</p>
-                    <p style={{ fontSize: 12, color: "var(--fs-gray-400)" }}>Minimum 4 photos required. Include exterior (4 angles), cockpit, panel, and engine bay.</p>
-                    <button className="fs-detail-cta fs-detail-cta-secondary" style={{ maxWidth: 200, margin: "16px auto 0" }}>Choose Files</button>
-                  </div>
-                  <div style={{ background: "var(--fs-gray-50)", borderRadius: "var(--fs-radius)", padding: 20, marginBottom: 20 }}>
-                    <h4 style={{ fontSize: 14, fontWeight: 700, marginBottom: 8 }}>Listing Plans</h4>
-                    {[
-                      { name: "Basic", price: "Free", features: ["30-day listing", "Up to 8 photos", "Standard placement"] },
-                      { name: "Featured", price: "$149", features: ["60-day listing", "Up to 20 photos", "Homepage featured", "Priority in search", "Social media promotion"], recommended: true },
-                      { name: "Premium", price: "$299", features: ["90-day listing", "Unlimited photos", "Top placement", "Video walkthrough", "Valuation report", "Dedicated support"] },
-                    ].map(plan => (
-                      <label key={plan.name} style={{ display: "flex", gap: 12, padding: "12px", marginBottom: 8, borderRadius: "var(--fs-radius-sm)", border: plan.recommended ? "2px solid var(--fs-blue)" : "1px solid var(--fs-gray-200)", cursor: "pointer", background: "white" }}>
-                        <input type="radio" name="plan" defaultChecked={plan.recommended} style={{ marginTop: 2 }} />
-                        <div style={{ flex: 1 }}>
-                          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                            <span style={{ fontWeight: 600, fontSize: 14 }}>{plan.name}</span>
-                            <span style={{ fontWeight: 700, color: "var(--fs-blue)" }}>{plan.price}</span>
+                  {submitSuccess ? (
+                    <div style={{ textAlign: "center", padding: "40px 24px" }}>
+                      <div style={{ width: 64, height: 64, borderRadius: "50%", background: "#d1fae5", color: "#059669", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 16px", fontSize: 28 }}>{Icons.check}</div>
+                      <h3 style={{ fontSize: 22, fontWeight: 700, marginBottom: 8 }}>Listing Submitted!</h3>
+                      <p style={{ fontSize: 14, color: "var(--fs-gray-500)", marginBottom: 24 }}>Your listing is under review and will go live within 24 hours. You'll receive an email confirmation shortly.</p>
+                      <button className="fs-form-submit" style={{ maxWidth: 220, margin: "0 auto" }} onClick={() => setPage('dashboard')}>Go to Dashboard</button>
+                    </div>
+                  ) : (
+                    <>
+                      <h3 style={{ fontSize: 18 }}>Photos & Submit</h3>
+                      <input ref={fileInputRef} type="file" accept="image/*" multiple style={{ display: "none" }} onChange={async (e) => {
+                        const files = Array.from(e.target.files);
+                        if (!files.length) return;
+                        setUploadingImages(true);
+                        try {
+                          const tempId = `temp-${Date.now()}`;
+                          const urls = await Promise.all(files.map(f => uploadImage(f, tempId)));
+                          setUploadedImages(prev => [...prev, ...urls]);
+                        } catch (err) {
+                          setSubmitError('Image upload failed: ' + err.message);
+                        } finally {
+                          setUploadingImages(false);
+                        }
+                      }} />
+                      <div style={{ border: "2px dashed var(--fs-gray-200)", borderRadius: "var(--fs-radius)", padding: 32, textAlign: "center", marginBottom: 20 }}>
+                        <div style={{ color: "var(--fs-gray-400)", marginBottom: 8 }}>{Icons.camera}</div>
+                        <p style={{ fontWeight: 600, fontSize: 14, marginBottom: 4 }}>Upload Photos</p>
+                        <p style={{ fontSize: 12, color: "var(--fs-gray-400)" }}>Minimum 4 photos recommended. Include exterior, cockpit, panel, and engine bay.</p>
+                        {uploadedImages.length > 0 && (
+                          <div style={{ display: "flex", flexWrap: "wrap", gap: 8, justifyContent: "center", margin: "12px 0" }}>
+                            {uploadedImages.map((url, i) => (
+                              <div key={i} style={{ position: "relative" }}>
+                                <img src={url} alt="" style={{ width: 72, height: 72, objectFit: "cover", borderRadius: 8, border: "2px solid var(--fs-green)" }} />
+                                <button onClick={() => setUploadedImages(prev => prev.filter((_, j) => j !== i))}
+                                  style={{ position: "absolute", top: -6, right: -6, width: 18, height: 18, borderRadius: "50%", background: "#ef4444", color: "white", border: "none", cursor: "pointer", fontSize: 10, display: "flex", alignItems: "center", justifyContent: "center" }}>✕</button>
+                              </div>
+                            ))}
                           </div>
-                          <div style={{ fontSize: 12, color: "var(--fs-gray-500)", marginTop: 4 }}>
-                            {plan.features.join(" · ")}
-                          </div>
-                        </div>
-                      </label>
-                    ))}
-                  </div>
-                  <div style={{ display: "flex", gap: 12 }}>
-                    <button className="fs-detail-cta fs-detail-cta-secondary" onClick={() => setStep(2)} style={{ flex: 1 }}>Back</button>
-                    <button className="fs-form-submit" style={{ flex: 2, marginTop: 0 }}>Submit Listing for Review</button>
-                  </div>
+                        )}
+                        <button className="fs-detail-cta fs-detail-cta-secondary" style={{ maxWidth: 200, margin: "16px auto 0" }} onClick={() => fileInputRef.current?.click()} disabled={uploadingImages}>
+                          {uploadingImages ? "Uploading..." : `Choose Files${uploadedImages.length > 0 ? ` (${uploadedImages.length} added)` : ''}`}
+                        </button>
+                      </div>
+                      <div style={{ background: "var(--fs-gray-50)", borderRadius: "var(--fs-radius)", padding: 20, marginBottom: 20 }}>
+                        <h4 style={{ fontSize: 14, fontWeight: 700, marginBottom: 8 }}>Listing Plan</h4>
+                        {[
+                          { name: "Basic", price: "Free", features: ["30-day listing", "Up to 8 photos", "Standard placement"] },
+                          { name: "Featured", price: "$149", features: ["60-day listing", "Up to 20 photos", "Homepage featured", "Priority in search"], recommended: true },
+                          { name: "Premium", price: "$299", features: ["90-day listing", "Unlimited photos", "Top placement", "Dedicated support"] },
+                        ].map(plan => (
+                          <label key={plan.name} style={{ display: "flex", gap: 12, padding: "12px", marginBottom: 8, borderRadius: "var(--fs-radius-sm)", border: selectedPlan === plan.name ? "2px solid var(--fs-blue)" : "1px solid var(--fs-gray-200)", cursor: "pointer", background: "white" }}>
+                            <input type="radio" name="plan" checked={selectedPlan === plan.name} onChange={() => setSelectedPlan(plan.name)} style={{ marginTop: 2 }} />
+                            <div style={{ flex: 1 }}>
+                              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                                <span style={{ fontWeight: 600, fontSize: 14 }}>{plan.name}</span>
+                                <span style={{ fontWeight: 700, color: "var(--fs-blue)" }}>{plan.price}</span>
+                              </div>
+                              <div style={{ fontSize: 12, color: "var(--fs-gray-500)", marginTop: 4 }}>{plan.features.join(" · ")}</div>
+                            </div>
+                          </label>
+                        ))}
+                      </div>
+                      {submitError && (
+                        <div style={{ padding: "10px 14px", background: "#fef2f2", border: "1px solid #fecaca", borderRadius: "var(--fs-radius-sm)", marginBottom: 12, fontSize: 13, color: "#dc2626" }}>{submitError}</div>
+                      )}
+                      <div style={{ display: "flex", gap: 12 }}>
+                        <button className="fs-detail-cta fs-detail-cta-secondary" onClick={() => setStep(2)} style={{ flex: 1 }}>Back</button>
+                        <button
+                          className="fs-form-submit"
+                          style={{ flex: 2, marginTop: 0, opacity: submitting ? 0.7 : 1, cursor: submitting ? "not-allowed" : "pointer" }}
+                          disabled={submitting}
+                          onClick={async () => {
+                            setSubmitting(true);
+                            setSubmitError(null);
+                            try {
+                              await createListing({
+                                title: `${formData.year} ${formData.manufacturer} ${formData.model}`.trim(),
+                                manufacturer: formData.manufacturer,
+                                model: formData.model,
+                                year: parseInt(formData.year),
+                                category: formData.category,
+                                rego: formData.rego,
+                                condition: formData.condition,
+                                price: parseInt(formData.price),
+                                state: formData.state,
+                                city: formData.city || formData.state,
+                                ttaf: parseInt(formData.ttaf) || 0,
+                                eng_hours: parseInt(formData.eng_hours) || null,
+                                avionics: formData.avionics,
+                                description: formData.description,
+                                images: uploadedImages,
+                                specs: { engine: formData.engineType, propeller: formData.propeller },
+                                featured: selectedPlan !== 'Basic',
+                              }, user.id);
+                              setSubmitSuccess(true);
+                            } catch (err) {
+                              setSubmitError(err.message || 'Failed to submit listing. Please try again.');
+                            } finally {
+                              setSubmitting(false);
+                            }
+                          }}
+                        >
+                          {submitting ? "Submitting..." : "Submit Listing for Review"}
+                        </button>
+                      </div>
+                    </>
+                  )}
                 </>
               )}
             </div>
@@ -2700,70 +2875,51 @@ const ContactPage = () => (
   </>
 );
 
-const LoginPage = ({ setPage, setUser }) => {
-  const [mode, setMode] = useState('login'); // 'login' | 'register'
+const LoginPage = ({ setPage, signIn, signUp, signInWithGoogle }) => {
+  const [mode, setMode] = useState('login');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [fullName, setFullName] = useState('');
   const [phone, setPhone] = useState('');
-  const [accountType, setAccountType] = useState('private'); // 'private' | 'dealer'
+  const [accountType, setAccountType] = useState('private');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [registerSuccess, setRegisterSuccess] = useState(false);
 
   const handleGoogleAuth = async () => {
     setLoading(true);
-    // In production, this would redirect to Google OAuth
-    // For demo, simulate successful login
-    setTimeout(() => {
-      const mockUser = {
-        id: 'google-123',
-        email: 'demo@flightsales.com',
-        full_name: 'Demo User',
-        role: 'private',
-        avatar: 'https://ui-avatars.com/api/?name=Demo+User&background=random',
-        created_at: new Date().toISOString()
-      };
-      setUser(mockUser);
-      setPage('dashboard');
+    setError(null);
+    try {
+      await signInWithGoogle();
+      // Google OAuth redirects — page will reload
+    } catch (err) {
+      setError(err.message || 'Google sign-in failed. Please try again.');
       setLoading(false);
-    }, 1000);
+    }
   };
 
   const handleEmailAuth = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError(null);
-    
-    // Simulate auth
-    setTimeout(() => {
+    try {
       if (mode === 'login') {
-        // Login simulation
-        const mockUser = {
-          id: 'user-123',
-          email: email,
-          full_name: email.split('@')[0],
-          role: email.includes('dealer') ? 'dealer' : email.includes('admin') ? 'admin' : 'private',
-          avatar: `https://ui-avatars.com/api/?name=${email.split('@')[0]}&background=random`,
-          created_at: new Date().toISOString()
-        };
-        setUser(mockUser);
+        await signIn(email, password);
         setPage('dashboard');
       } else {
-        // Registration simulation
-        const mockUser = {
-          id: 'user-new',
-          email: email,
+        if (password.length < 8) throw new Error('Password must be at least 8 characters.');
+        await signUp(email, password, {
           full_name: fullName,
-          role: accountType,
-          phone: phone,
-          avatar: `https://ui-avatars.com/api/?name=${fullName}&background=random`,
-          created_at: new Date().toISOString()
-        };
-        setUser(mockUser);
-        setPage('dashboard');
+          phone,
+          account_type: accountType
+        });
+        setRegisterSuccess(true);
       }
+    } catch (err) {
+      setError(err.message || 'Authentication failed. Please try again.');
+    } finally {
       setLoading(false);
-    }, 1000);
+    }
   };
 
   return (
@@ -3060,19 +3216,27 @@ const LoginPage = ({ setPage, setUser }) => {
             </button>
           </p>
 
-          {mode === 'register' && (
+          {mode === 'register' && !registerSuccess && (
             <p style={{ fontSize: 12, textAlign: "center", marginTop: 20, color: "var(--fs-gray-400)", lineHeight: 1.6, padding: "0 16px" }}>
-              By creating an account, you agree to our <span style={{ color: "var(--fs-gray-600)", cursor: "pointer" }} onClick={() => setPage('terms')}>Terms of Service</span> and <span style={{ color: "var(--fs-gray-600)", cursor: "pointer" }} onClick={() => setPage('privacy')}>Privacy Policy</span>. 
+              By creating an account, you agree to our Terms of Service and Privacy Policy.
               <br />Dealer accounts require verification before listings go live.
             </p>
           )}
         </div>
+
+        {registerSuccess && (
+          <div style={{ marginTop: 24, padding: "20px", background: "#d1fae5", borderRadius: "var(--fs-radius)", textAlign: "center" }}>
+            <div style={{ fontSize: 24, marginBottom: 8 }}>✉️</div>
+            <p style={{ fontSize: 14, fontWeight: 600, color: "#065f46", marginBottom: 4 }}>Check your email!</p>
+            <p style={{ fontSize: 13, color: "#065f46" }}>We've sent a confirmation link to <strong>{email}</strong>. Click it to activate your account.</p>
+          </div>
+        )}
       </div>
     </section>
   );
 };
 
-const DashboardPage = ({ user, setPage, setUser, savedIds, onSave }) => {
+const DashboardPage = ({ user, setPage, signOut, savedIds, savedListings, onSave }) => {
   if (!user) {
     setPage('login');
     return null;
@@ -3086,11 +3250,11 @@ const DashboardPage = ({ user, setPage, setUser, savedIds, onSave }) => {
     return null;
   }
 
-  // State management
   const [activeTab, setActiveTab] = useState('overview');
   const [editProfile, setEditProfile] = useState(false);
   const [selectedEnquiry, setSelectedEnquiry] = useState(null);
   const [replyText, setReplyText] = useState('');
+  const [savingProfile, setSavingProfile] = useState(false);
   const [profileData, setProfileData] = useState({
     full_name: user.full_name || '',
     email: user.email || '',
@@ -3098,132 +3262,61 @@ const DashboardPage = ({ user, setPage, setUser, savedIds, onSave }) => {
     location: user.location || ''
   });
 
-  // Mock data - in production this comes from API
-  const [myListings, setMyListings] = useState([
-    { 
-      id: 1, 
-      title: '2018 Cirrus SR22T GTS', 
-      price: 895000, 
-      status: 'active',
-      views: 1247,
-      enquiries: 8,
-      watchers: 42,
-      daysListed: 12,
-      featured: true,
-      image: AIRCRAFT_IMAGES[1]
-    },
-    { 
-      id: 2, 
-      title: '2005 Cessna 182T', 
-      price: 385000, 
-      status: 'pending',
-      views: 523,
-      enquiries: 3,
-      watchers: 18,
-      daysListed: 5,
-      featured: false,
-      image: AIRCRAFT_IMAGES[2]
-    },
-  ]);
+  const { listings: myListings, loading: listingsLoading, updateListingStatus } = useMyListings(user.id);
+  const { enquiries: myEnquiries, loading: enquiriesLoading, updateStatus: updateEnquiryStatus } = useMyEnquiries(user.id);
+  const { updateProfile } = useProfile(user.id);
 
-  const [myEnquiries, setMyEnquiries] = useState([
-    { 
-      id: 1, 
-      aircraft: '2018 Cirrus SR22T', 
-      aircraftId: 1,
-      from: 'John Smith', 
-      email: 'john@email.com', 
-      phone: '0412 345 678', 
-      message: 'Is this aircraft still available? I would like to arrange an inspection this weekend if possible. I\'m a serious buyer with finance pre-approved.',
-      date: '2026-03-22T14:30:00',
-      status: 'new',
-      replies: []
-    },
-    { 
-      id: 2, 
-      aircraft: '2018 Cirrus SR22T', 
-      aircraftId: 1,
-      from: 'Sarah Chen', 
-      email: 'sarah@aviation.com', 
-      phone: '0433 999 111', 
-      message: 'Hi, I\'m interested in the Cirrus. Can you tell me more about the maintenance history and last annual? Also, is the price negotiable?',
-      date: '2026-03-21T09:15:00',
-      status: 'contacted',
-      replies: [
-        { from: 'me', message: 'Hi Sarah, thanks for your interest. The last annual was in September 2025. I\'ll send you the full maintenance logs via email.', date: '2026-03-21T11:30:00' }
-      ]
-    },
-    { 
-      id: 3, 
-      aircraft: '2005 Cessna 182T', 
-      aircraftId: 2,
-      from: 'Mike Johnson', 
-      email: 'mike@outlook.com', 
-      phone: '0400 222 444', 
-      message: 'Is this aircraft IFR certified? I\'m looking for something I can use for instrument training.',
-      date: '2026-03-20T16:45:00',
-      status: 'negotiating',
-      replies: []
-    },
-  ]);
+  const savedAircraft = savedListings || [];
 
-  const [activities, setActivities] = useState([
-    { id: 1, type: 'enquiry', message: 'New enquiry on VH-XRT from John Smith', time: '2 mins ago', icon: Icons.mail },
-    { id: 2, type: 'view', message: 'Your Cessna 182T was viewed 12 times today', time: '1 hour ago', icon: Icons.eye },
-    { id: 3, type: 'alert', message: 'Price drop suggestion: Your listing is 10% above market average', time: '3 hours ago', icon: Icons.alert },
-    { id: 4, type: 'save', message: 'Someone saved your Cirrus SR22T to their watchlist', time: '5 hours ago', icon: Icons.heart },
-  ]);
-
-  const savedAircraft = SAMPLE_LISTINGS.filter(l => savedIds.has(l.id));
-
-  // Stats calculation
   const stats = {
-    totalViews: myListings.reduce((sum, l) => sum + l.views, 0),
-    totalEnquiries: myListings.reduce((sum, l) => sum + l.enquiries, 0),
+    totalViews: 0,
+    totalEnquiries: myEnquiries.length,
     activeListings: myListings.filter(l => l.status === 'active').length,
-    totalWatchers: myListings.reduce((sum, l) => sum + l.watchers, 0),
+    totalWatchers: 0,
     newEnquiries: myEnquiries.filter(e => e.status === 'new').length
   };
 
-  const handleLogout = () => {
-    setUser(null);
+  const handleLogout = async () => {
+    await signOut();
     setPage('home');
   };
 
-  const handleSaveProfile = () => {
-    setEditProfile(false);
+  const handleSaveProfile = async () => {
+    setSavingProfile(true);
+    try {
+      await updateProfile({
+        full_name: profileData.full_name,
+        phone: profileData.phone,
+        location: profileData.location
+      });
+      setEditProfile(false);
+    } catch (err) {
+      console.error('Profile save failed:', err);
+    } finally {
+      setSavingProfile(false);
+    }
   };
 
   const handleEnquiryStatusChange = (enquiryId, newStatus) => {
-    setMyEnquiries(prev => prev.map(e => 
-      e.id === enquiryId ? { ...e, status: newStatus } : e
-    ));
+    updateEnquiryStatus(enquiryId, newStatus);
+    if (selectedEnquiry?.id === enquiryId) {
+      setSelectedEnquiry(prev => ({ ...prev, status: newStatus }));
+    }
   };
 
   const handleReplySubmit = (enquiryId) => {
     if (!replyText.trim()) return;
-    
-    setMyEnquiries(prev => prev.map(e => 
-      e.id === enquiryId ? { 
-        ...e, 
-        status: 'contacted',
-        replies: [...e.replies, { from: 'me', message: replyText, date: new Date().toISOString() }]
-      } : e
-    ));
     setReplyText('');
+    updateEnquiryStatus(enquiryId, 'replied');
   };
 
   const handleMarkSpam = (enquiryId) => {
-    setMyEnquiries(prev => prev.map(e => 
-      e.id === enquiryId ? { ...e, status: 'spam' } : e
-    ));
+    updateEnquiryStatus(enquiryId, 'spam');
   };
 
   const formatTimeAgo = (dateString) => {
-    const date = new Date(dateString);
-    const now = new Date('2026-03-22T20:00:00');
-    const diff = Math.floor((now - date) / 1000 / 60);
-    
+    if (!dateString) return '';
+    const diff = Math.floor((Date.now() - new Date(dateString).getTime()) / 1000 / 60);
     if (diff < 1) return 'Just now';
     if (diff < 60) return `${diff} mins ago`;
     if (diff < 1440) return `${Math.floor(diff / 60)} hours ago`;
@@ -3317,9 +3410,9 @@ const DashboardPage = ({ user, setPage, setUser, savedIds, onSave }) => {
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
             <div style={{ display: "flex", alignItems: "center", gap: 20 }}>
               <div style={{ position: 'relative' }}>
-                <img 
-                  src={user.avatar} 
-                  alt={user.full_name}
+                <img
+                  src={user.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.full_name || user.email || 'User')}&background=0a0a0a&color=fff`}
+                  alt={user.full_name || user.email}
                   style={{ width: 72, height: 72, borderRadius: "50%", border: "3px solid white" }}
                 />
                 {isDealer && (
@@ -4505,11 +4598,13 @@ const DashboardPage = ({ user, setPage, setUser, savedIds, onSave }) => {
                           />
                         </div>
                         <div style={{ display: "flex", gap: 12 }}>
-                          <button 
+                          <button
                             className="fs-form-submit"
                             onClick={handleSaveProfile}
+                            disabled={savingProfile}
+                            style={{ opacity: savingProfile ? 0.7 : 1 }}
                           >
-                            Save Changes
+                            {savingProfile ? "Saving..." : "Save Changes"}
                           </button>
                           <button 
                             className="fs-detail-cta fs-detail-cta-secondary"
@@ -4531,7 +4626,7 @@ const DashboardPage = ({ user, setPage, setUser, savedIds, onSave }) => {
   );
 };
 
-const AdminPage = ({ user, setPage, setUser }) => {
+const AdminPage = ({ user, setPage, signOut }) => {
   if (!user || user.role !== 'admin') {
     setPage('login');
     return null;
@@ -4665,7 +4760,7 @@ const AdminPage = ({ user, setPage, setUser }) => {
               </div>
             </div>
             <button 
-              onClick={() => { setUser(null); setPage('home'); }}
+              onClick={async () => { await signOut(); setPage('home'); }}
               style={{ 
                 padding: "8px 16px", 
                 background: "rgba(255,255,255,0.1)", 
@@ -5091,10 +5186,27 @@ export default function FlightSalesApp() {
   const [page, setPage] = useState("home");
   const [selectedListing, setSelectedListingRaw] = useState(null);
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [savedIds, setSavedIds] = useState(new Set());
   const [toast, setToast] = useState(null);
-  const [user, setUser] = useState(null); // null = not logged in, object = logged in
-  const [searchFilters, setSearchFilters] = useState(null); // Persist search filters across pages
+  const [searchFilters, setSearchFilters] = useState(null);
+
+  // Real auth
+  const { user: authUser, loading: authLoading, signIn, signUp, signInWithGoogle, signOut } = useAuth();
+  const { profile } = useProfile(authUser?.id);
+
+  // Construct a user object compatible with all child components
+  const user = authUser ? {
+    id: authUser.id,
+    email: authUser.email,
+    full_name: profile?.full_name || authUser.user_metadata?.full_name || authUser.email?.split('@')[0] || 'User',
+    phone: profile?.phone || '',
+    location: profile?.location || '',
+    role: profile?.is_dealer ? 'dealer' : (authUser.email === 'admin@flightsales.com.au' ? 'admin' : 'private'),
+    avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(profile?.full_name || authUser.email || 'User')}&background=0a0a0a&color=fff`,
+    created_at: authUser.created_at
+  } : null;
+
+  // Real saved aircraft
+  const { savedIds, savedListings, toggleSave } = useSavedAircraft(authUser?.id);
 
   const setSelectedListing = (l) => {
     setSelectedListingRaw(l);
@@ -5109,13 +5221,10 @@ export default function FlightSalesApp() {
     window.scrollTo(0, 0);
   };
 
-  const onSave = (id) => {
-    setSavedIds(prev => {
-      const next = new Set(prev);
-      if (next.has(id)) { next.delete(id); setToast("Removed from watchlist"); }
-      else { next.add(id); setToast("Added to watchlist"); }
-      return next;
-    });
+  const onSave = async (id) => {
+    if (!authUser) { setToast("Sign in to save aircraft"); return; }
+    const isSaved = await toggleSave(id);
+    setToast(isSaved ? "Added to watchlist ❤️" : "Removed from watchlist");
   };
 
   useEffect(() => {
@@ -5159,9 +5268,9 @@ export default function FlightSalesApp() {
       {page === "news" && <NewsPage />}
       {page === "about" && <AboutPage />}
       {page === "contact" && <ContactPage />}
-      {page === "login" && <LoginPage setPage={setPageWrap} setUser={setUser} />}
-      {page === "dashboard" && <DashboardPage user={user} setPage={setPageWrap} setUser={setUser} savedIds={savedIds} onSave={onSave} />}
-      {page === "admin" && <AdminPage user={user} setPage={setPageWrap} setUser={setUser} />}
+      {page === "login" && <LoginPage setPage={setPageWrap} signIn={signIn} signUp={signUp} signInWithGoogle={signInWithGoogle} />}
+      {page === "dashboard" && <DashboardPage user={user} setPage={setPageWrap} signOut={signOut} savedIds={savedIds} savedListings={savedListings} onSave={onSave} />}
+      {page === "admin" && <AdminPage user={user} setPage={setPageWrap} signOut={signOut} />}
       {(page === "finance" || page === "insurance") && <HomePage setPage={setPageWrap} setSelectedListing={setSelectedListing} savedIds={savedIds} onSave={onSave} setSearchFilters={setSearchFilters} />}
 
       <Footer setPage={setPageWrap} />

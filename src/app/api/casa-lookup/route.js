@@ -1,10 +1,33 @@
 import { supabase } from '@/lib/supabase';
 
+// In-memory rate limiter: 10 requests per minute per IP
+const rateLimit = new Map();
+
+function checkRateLimit(ip) {
+  const now = Date.now();
+  // Clean old entries
+  for (const [key, entries] of rateLimit.entries()) {
+    const fresh = entries.filter(t => now - t < 60000);
+    if (fresh.length === 0) rateLimit.delete(key);
+    else rateLimit.set(key, fresh);
+  }
+  const entries = rateLimit.get(ip) || [];
+  if (entries.length >= 10) return false;
+  rateLimit.set(ip, [...entries, now]);
+  return true;
+}
+
 // CASA Aircraft Register scraper with caching
 export async function GET(request) {
+  const ip = request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || 'unknown';
+
+  if (!checkRateLimit(ip)) {
+    return Response.json({ error: 'Rate limit exceeded. Please wait a minute.' }, { status: 429 });
+  }
+
   const { searchParams } = new URL(request.url);
   const rego = searchParams.get('rego')?.toUpperCase().trim();
-  
+
   // Validate rego format (VH-XXX)
   if (!rego || !/^VH-[A-Z]{3}$/.test(rego)) {
     return Response.json(
@@ -12,7 +35,7 @@ export async function GET(request) {
       { status: 400 }
     );
   }
-  
+
   try {
     // Check cache first (24 hour TTL)
     const { data: cached } = await supabase
@@ -269,29 +292,3 @@ function cleanAircraftData(raw) {
   return cleaned;
 }
 
-// Rate limiting helper
-const rateLimit = new Map();
-
-export async function middleware(request) {
-  const ip = request.ip || 'unknown';
-  const now = Date.now();
-  
-  // Clean old entries
-  for (const [key, time] of rateLimit.entries()) {
-    if (now - time > 60000) rateLimit.delete(key);
-  }
-  
-  // Check rate (10 requests per minute per IP)
-  const count = Array.from(rateLimit.entries()).filter(
-    ([key, time]) => key.startsWith(ip) && now - time < 60000
-  ).length;
-  
-  if (count >= 10) {
-    return Response.json(
-      { error: 'Rate limit exceeded. Please wait a minute.' },
-      { status: 429 }
-    );
-  }
-  
-  rateLimit.set(`${ip}-${now}`, now);
-}
