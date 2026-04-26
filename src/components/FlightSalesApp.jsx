@@ -550,40 +550,38 @@ a { color: inherit; text-decoration: none; }
 @media (hover: none) {
   .fs-card-quicklook { display: none !important; }
 }
-.fs-card-body { padding: 18px 20px 20px; flex: 1; display: flex; flex-direction: column; }
+.fs-card-body { padding: 16px 18px 16px; flex: 1; display: flex; flex-direction: column; }
 .fs-card-eyebrow {
   font-size: 10.5px; font-weight: 600; color: var(--fs-ink-3);
   letter-spacing: 0.08em; text-transform: uppercase;
-  margin-bottom: 10px;
+  margin-bottom: 6px;
 }
 .fs-card-title {
   font-family: var(--fs-font);
-  font-size: 17px; font-weight: 600; line-height: 1.3;
-  letter-spacing: -0.02em; color: var(--fs-ink);
-  display: -webkit-box; -webkit-line-clamp: 2;
+  font-size: 16px; font-weight: 600; line-height: 1.25;
+  letter-spacing: -0.015em; color: var(--fs-ink);
+  display: -webkit-box; -webkit-line-clamp: 1;
   -webkit-box-orient: vertical; overflow: hidden;
-  margin-bottom: 14px;
-  min-height: 44px;
+  margin-bottom: 6px;
 }
 .fs-card-price {
   font-family: var(--fs-font);
-  font-size: 26px; font-weight: 700; color: var(--fs-ink);
-  letter-spacing: -0.03em; line-height: 1;
+  font-size: 22px; font-weight: 700; color: var(--fs-ink);
+  letter-spacing: -0.025em; line-height: 1.1;
   font-feature-settings: "tnum";
-  border-top: 1px solid var(--fs-line);
-  padding-top: 14px;
-  margin-bottom: 12px;
+  margin-bottom: 10px;
 }
 .fs-card-meta {
-  font-size: 13px; color: var(--fs-ink-3); font-weight: 500;
-  letter-spacing: -0.005em; line-height: 1.5;
+  font-size: 12.5px; color: var(--fs-ink-3); font-weight: 500;
+  letter-spacing: -0.005em; line-height: 1.4;
+  margin-bottom: 12px;
 }
-.fs-card-meta-sep { color: var(--fs-ink-4); margin: 0 7px; }
+.fs-card-meta-sep { color: var(--fs-ink-4); margin: 0 6px; }
 .fs-card-dealer {
   display: flex; align-items: center; gap: 6px;
-  font-size: 12.5px; color: var(--fs-ink-2); font-weight: 500;
+  font-size: 12px; color: var(--fs-ink-2); font-weight: 500;
   letter-spacing: -0.005em;
-  margin-top: auto; padding-top: 14px;
+  margin-top: auto; padding-top: 10px;
   border-top: 1px solid var(--fs-line);
 }
 .fs-card-dealer svg { width: 12px; height: 12px; color: var(--fs-ink-3); flex-shrink: 0; }
@@ -598,10 +596,13 @@ a { color: inherit; text-decoration: none; }
 }
 .fs-card-location svg { color: var(--fs-ink-4); width: 13px; height: 13px; }
 
-/* LISTING GRID — clean spacing */
+/* LISTING GRID — fixed 3 columns at desktop */
 .fs-grid {
   display: grid; gap: 24px;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+@media (max-width: 1100px) {
+  .fs-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; }
 }
 @media (max-width: 640px) {
   .fs-grid { grid-template-columns: 1fr; gap: 16px; }
@@ -1037,24 +1038,23 @@ a { color: inherit; text-decoration: none; }
 }
 .fs-sidebar-active-chip:hover { background: var(--fs-ink-2); }
 
-/* Sidebar sections — grouped by purpose */
+/* Sidebar sections — minimal, label-driven */
 .fs-sidebar-section {
-  padding: 14px 0;
+  padding: 12px 0;
   border-top: 1px solid var(--fs-line);
 }
 .fs-sidebar-section:first-of-type { border-top: none; padding-top: 4px; }
 .fs-sidebar-section-title {
-  font-size: 11px; font-weight: 700; color: var(--fs-ink-3);
-  letter-spacing: 0.08em; text-transform: uppercase;
+  font-size: 13px; font-weight: 600; color: var(--fs-ink);
+  letter-spacing: -0.01em;
   margin-bottom: 10px;
 }
 
-.fs-sidebar-group { margin-bottom: 10px; }
+.fs-sidebar-group { margin-bottom: 8px; }
 .fs-sidebar-group:last-child { margin-bottom: 0; }
 .fs-sidebar-label {
-  font-size: 11px; font-weight: 600; color: var(--fs-ink-3);
-  margin-bottom: 5px; display: block; letter-spacing: 0.02em;
-  text-transform: uppercase;
+  font-size: 12px; font-weight: 500; color: var(--fs-ink-3);
+  margin-bottom: 5px; display: block; letter-spacing: -0.005em;
 }
 .fs-sidebar-select {
   width: 100%; padding: 9px 12px; border: 1px solid var(--fs-line);
@@ -2468,9 +2468,8 @@ const BuyPage = ({ setSelectedListing, savedIds, onSave, initialFilters, user, s
               </div>
             )}
 
-            {/* LOCATION */}
+            {/* All filters live as simple labelled fields — no eyebrow group titles */}
             <div className="fs-sidebar-section">
-              <div className="fs-sidebar-section-title">Location</div>
               <div className="fs-sidebar-group">
                 <label className="fs-sidebar-label">State</label>
                 <select className="fs-sidebar-select" value={stateFilter} onChange={e => setStateFilter(e.target.value)}>
@@ -2478,11 +2477,6 @@ const BuyPage = ({ setSelectedListing, savedIds, onSave, initialFilters, user, s
                   {STATES.map(s => <option key={s} value={s}>{s}</option>)}
                 </select>
               </div>
-            </div>
-
-            {/* AIRCRAFT */}
-            <div className="fs-sidebar-section">
-              <div className="fs-sidebar-section-title">Aircraft</div>
               <div className="fs-sidebar-group">
                 <label className="fs-sidebar-label">Category</label>
                 <select className="fs-sidebar-select" value={catFilter} onChange={e => setCatFilter(e.target.value)}>
@@ -2506,13 +2500,13 @@ const BuyPage = ({ setSelectedListing, savedIds, onSave, initialFilters, user, s
               </div>
             </div>
 
-            {/* PRICE — with preset chips */}
+            {/* PRICE */}
             <div className="fs-sidebar-section">
-              <div className="fs-sidebar-section-title">Price (AUD)</div>
+              <label className="fs-sidebar-label">Price (AUD)</label>
               <div className="fs-sidebar-presets">
-                <button onClick={() => setPricePreset('', '100000')} className={`fs-sidebar-preset${isPricePreset('', '100000') ? ' active' : ''}`}>Under $100k</button>
-                <button onClick={() => setPricePreset('', '300000')} className={`fs-sidebar-preset${isPricePreset('', '300000') ? ' active' : ''}`}>Under $300k</button>
-                <button onClick={() => setPricePreset('', '1000000')} className={`fs-sidebar-preset${isPricePreset('', '1000000') ? ' active' : ''}`}>Under $1M</button>
+                <button onClick={() => setPricePreset('', '100000')} className={`fs-sidebar-preset${isPricePreset('', '100000') ? ' active' : ''}`}>&lt;$100k</button>
+                <button onClick={() => setPricePreset('', '300000')} className={`fs-sidebar-preset${isPricePreset('', '300000') ? ' active' : ''}`}>&lt;$300k</button>
+                <button onClick={() => setPricePreset('', '1000000')} className={`fs-sidebar-preset${isPricePreset('', '1000000') ? ' active' : ''}`}>&lt;$1M</button>
                 <button onClick={() => setPricePreset('1000000', '')} className={`fs-sidebar-preset${isPricePreset('1000000', '') ? ' active' : ''}`}>$1M+</button>
               </div>
               <div className="fs-sidebar-range">
@@ -2522,30 +2516,27 @@ const BuyPage = ({ setSelectedListing, savedIds, onSave, initialFilters, user, s
               </div>
             </div>
 
-            {/* PERFORMANCE — TTAF preset chips */}
+            {/* HOURS */}
             <div className="fs-sidebar-section">
-              <div className="fs-sidebar-section-title">Performance</div>
+              <label className="fs-sidebar-label">Total time (hours)</label>
               <div className="fs-sidebar-presets">
-                <button onClick={() => setHoursPreset('500')} className={`fs-sidebar-preset${isHoursPreset('500') ? ' active' : ''}`}>Low time &lt;500</button>
-                <button onClick={() => setHoursPreset('2000')} className={`fs-sidebar-preset${isHoursPreset('2000') ? ' active' : ''}`}>Mid &lt;2000</button>
+                <button onClick={() => setHoursPreset('500')} className={`fs-sidebar-preset${isHoursPreset('500') ? ' active' : ''}`}>&lt;500</button>
+                <button onClick={() => setHoursPreset('2000')} className={`fs-sidebar-preset${isHoursPreset('2000') ? ' active' : ''}`}>&lt;2,000</button>
                 <button onClick={() => setHoursPreset('')} className={`fs-sidebar-preset${isHoursPreset('') ? ' active' : ''}`}>Any</button>
               </div>
-              <div className="fs-sidebar-group" style={{ marginTop: 8 }}>
-                <label className="fs-sidebar-label">Max total hours (TTAF)</label>
-                <input
-                  type="number"
-                  placeholder="e.g. 2000"
-                  value={maxHours}
-                  onChange={e => setMaxHours(e.target.value)}
-                  className="fs-sidebar-select"
-                  style={{ cursor: 'text' }}
-                />
-              </div>
+              <input
+                type="number"
+                placeholder="Max hours"
+                value={maxHours}
+                onChange={e => setMaxHours(e.target.value)}
+                className="fs-sidebar-select"
+                style={{ cursor: 'text' }}
+              />
             </div>
 
             {/* EQUIPMENT — category-aware */}
             <div className="fs-sidebar-section">
-              <div className="fs-sidebar-section-title">Equipment</div>
+              <label className="fs-sidebar-label">Equipment</label>
               <label className="fs-sidebar-check">
                 <input type="checkbox" checked={ifrOnly} onChange={e => setIfrOnly(e.target.checked)} /> IFR capable
               </label>
