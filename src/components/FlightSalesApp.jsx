@@ -1149,31 +1149,50 @@ const Footer = ({ setPage }) => (
 const ListingCard = ({ listing, onClick, onSave, saved }) => {
   const dealerName = listing.dealer?.name || (typeof listing.dealer === 'string' ? listing.dealer : null);
   const isNew = isJustListed(listing);
+  const location = [listing.city, listing.state].filter(Boolean).join(', ');
   return (
     <div className="fs-card" onClick={() => onClick(listing)}>
-      <AircraftImage listing={listing} />
+      <div style={{ position: "relative" }}>
+        <AircraftImage listing={listing} />
+        <button
+          onClick={e => { e.stopPropagation(); onSave(listing.id); }}
+          aria-label={saved ? "Unsave" : "Save"}
+          style={{
+            position: "absolute", top: 12, right: 12,
+            width: 36, height: 36, borderRadius: "50%",
+            background: "rgba(255,255,255,0.95)",
+            border: "none", cursor: "pointer",
+            display: "flex", alignItems: "center", justifyContent: "center",
+            color: saved ? "#000" : "#000",
+            transition: "transform 0.15s",
+          }}
+          onMouseEnter={e => e.currentTarget.style.transform = "scale(1.08)"}
+          onMouseLeave={e => e.currentTarget.style.transform = "scale(1)"}
+        >
+          {saved ? Icons.heartFull : Icons.heart}
+        </button>
+      </div>
       <div className="fs-card-body">
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 6 }}>
-          <div style={{ flex: 1, minWidth: 0 }}>
-            {dealerName && <div className="fs-card-dealer">{Icons.shield} {dealerName}</div>}
-            <div className="fs-card-title">{listing.title}</div>
-          </div>
-          {listing.year && <div style={{ fontSize: 11, color: "var(--fs-gray-400)", fontWeight: 600, whiteSpace: "nowrap", marginLeft: 8, paddingTop: 2 }}>{listing.year}</div>}
+        <div className="fs-card-dealer-row">
+          {dealerName ? (
+            <>{Icons.shield}<span>{dealerName}</span></>
+          ) : (
+            <span style={{ color: "var(--fs-ink-4)" }}>Private seller</span>
+          )}
         </div>
+        <div className="fs-card-title">{listing.title}</div>
         <div className="fs-card-price">{formatPriceFull(listing.price)}</div>
         <div className="fs-card-meta">
           {listing.ttaf != null && <span className="fs-card-meta-item">{Icons.clock} {formatHours(listing.ttaf)} TT</span>}
           {listing.eng_hours != null && <span className="fs-card-meta-item">{Icons.gauge} {formatHours(listing.eng_hours)} SMOH</span>}
-          {(listing.city || listing.state) && <span className="fs-card-meta-item">{Icons.location} {[listing.city, listing.state].filter(Boolean).join(', ')}</span>}
         </div>
-        {listing.avionics && <div style={{ fontSize: 11, color: "var(--fs-gray-400)", marginTop: 6, overflow: "hidden", whiteSpace: "nowrap", textOverflow: "ellipsis" }}>{listing.avionics}</div>}
       </div>
       <div className="fs-card-footer">
+        {location ? (
+          <span className="fs-card-location">{Icons.location}{location}</span>
+        ) : <span />}
         <span style={{ color: isNew ? "var(--fs-green)" : undefined, fontWeight: isNew ? 600 : undefined }}>
           {isNew ? "Just listed" : timeAgo(listing.created_at || listing.created)}
-        </span>
-        <span onClick={e => { e.stopPropagation(); onSave(listing.id); }} style={{ cursor: "pointer", color: saved ? "var(--fs-red)" : "var(--fs-gray-400)", fontSize: 16 }}>
-          {saved ? Icons.heartFull : Icons.heart}
         </span>
       </div>
     </div>
@@ -1456,9 +1475,9 @@ const HomePage = ({ setPage, setSelectedListing, savedIds, onSave, setSearchFilt
       {/* HERO */}
       <section className="fs-hero">
         <div className="fs-container fs-hero-content">
-          <h1>Find your next<br/><em>aircraft</em></h1>
+          <h1>Find your next aircraft.</h1>
           <p className="fs-hero-sub">
-            Search thousands of aircraft for sale across Australia. Verified dealers, transparent data, real pricing.
+            Australia's marketplace for aircraft. Search thousands of listings from verified dealers and private sellers.
           </p>
 
           <div className="fs-search-bar">
@@ -1523,12 +1542,15 @@ const HomePage = ({ setPage, setSelectedListing, savedIds, onSave, setSearchFilt
       <section className="fs-section">
         <div className="fs-container">
           <div className="fs-section-header">
-            <h2 className="fs-section-title">Featured Aircraft</h2>
-            <span className="fs-section-link" onClick={() => setPage("buy")}>View all aircraft {Icons.arrowRight}</span>
+            <div>
+              <h2 className="fs-section-title">Featured aircraft</h2>
+              <p className="fs-section-sub">Hand-picked by our team. Verified by their dealers.</p>
+            </div>
+            <span className="fs-section-link" onClick={() => setPage("buy")}>View all {Icons.arrowRight}</span>
           </div>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 20 }}>
+          <div className="fs-grid">
             {featuredLoading ? (
-              [1,2,3,4].map(i => <div key={i} style={{ height: 320, background: "var(--fs-gray-100)", borderRadius: "var(--fs-radius)", animation: "fs-pulse 1.5s infinite" }} />)
+              [1,2,3,4].map(i => <div key={i} style={{ height: 360, background: "var(--fs-bg-2)", borderRadius: "var(--fs-radius)", animation: "fs-pulse 1.5s infinite" }} />)
             ) : featured.map(l => (
               <ListingCard key={l.id} listing={l} onClick={setSelectedListing} onSave={onSave} saved={savedIds.has(l.id)} />
             ))}
@@ -1537,15 +1559,18 @@ const HomePage = ({ setPage, setSelectedListing, savedIds, onSave, setSearchFilt
       </section>
 
       {/* LATEST */}
-      <section className="fs-section" style={{ paddingTop: 0 }}>
+      <section className="fs-section fs-section-alt">
         <div className="fs-container">
           <div className="fs-section-header">
-            <h2 className="fs-section-title">Just Listed</h2>
+            <div>
+              <h2 className="fs-section-title">Just listed</h2>
+              <p className="fs-section-sub">The latest aircraft to hit the market.</p>
+            </div>
             <span className="fs-section-link" onClick={() => setPage("buy")}>View all {Icons.arrowRight}</span>
           </div>
           <div className="fs-grid">
             {latestLoading ? (
-              [1,2,3,4].map(i => <div key={i} style={{ height: 280, background: "var(--fs-gray-100)", borderRadius: "var(--fs-radius)", animation: "fs-pulse 1.5s infinite" }} />)
+              [1,2,3,4].map(i => <div key={i} style={{ height: 360, background: "var(--fs-line)", borderRadius: "var(--fs-radius)", animation: "fs-pulse 1.5s infinite" }} />)
             ) : latest.map(l => (
               <ListingCard key={l.id} listing={l} onClick={setSelectedListing} onSave={onSave} saved={savedIds.has(l.id)} />
             ))}
@@ -1554,14 +1579,17 @@ const HomePage = ({ setPage, setSelectedListing, savedIds, onSave, setSearchFilt
       </section>
 
       {/* DEALERS */}
-      <section className="fs-section" style={{ background: "var(--fs-gray-50)", paddingTop: 56, paddingBottom: 56 }}>
+      <section className="fs-section">
         <div className="fs-container">
           <div className="fs-section-header">
-            <h2 className="fs-section-title">Verified Dealers</h2>
+            <div>
+              <h2 className="fs-section-title">Verified dealers</h2>
+              <p className="fs-section-sub">Trusted aviation specialists across Australia.</p>
+            </div>
             <span className="fs-section-link" onClick={() => setPage("dealers")}>All dealers {Icons.arrowRight}</span>
           </div>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(340px, 1fr))", gap: 16 }}>
-            {displayDealers.slice(0, 3).map(d => (
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(320px, 1fr))", gap: 16 }}>
+            {displayDealers.slice(0, 6).map(d => (
               <div key={d.id} className="fs-dealer-card" onClick={() => setPage("dealers")}>
                 <div className="fs-dealer-avatar">{d.logo}</div>
                 <div className="fs-dealer-info">
@@ -1570,7 +1598,6 @@ const HomePage = ({ setPage, setSelectedListing, savedIds, onSave, setSearchFilt
                   <div className="fs-dealer-stats">
                     <span>{d.listings} listings</span>
                     <span className="fs-dealer-rating">{Icons.star} {d.rating}</span>
-                    <span>Since {d.since}</span>
                   </div>
                 </div>
               </div>
@@ -1580,15 +1607,18 @@ const HomePage = ({ setPage, setSelectedListing, savedIds, onSave, setSearchFilt
       </section>
 
       {/* NEWS */}
-      <section className="fs-section">
+      <section className="fs-section fs-section-alt">
         <div className="fs-container">
           <div className="fs-section-header">
-            <h2 className="fs-section-title">Aviation News</h2>
+            <div>
+              <h2 className="fs-section-title">Aviation news</h2>
+              <p className="fs-section-sub">Industry updates, market trends, and regulatory news.</p>
+            </div>
             <span className="fs-section-link" onClick={() => setPage("news")}>All articles {Icons.arrowRight}</span>
           </div>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 20, maxWidth: 960, margin: "0 auto" }}>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: 20 }}>
             {displayNews.slice(0, 3).map(a => (
-              <div key={a.id} className="fs-news-card">
+              <div key={a.id} className="fs-news-card" onClick={() => setPage("news")}>
                 <span className={`fs-news-tag ${a.category.toLowerCase()}`}>{a.category}</span>
                 <div className="fs-news-title">{a.title}</div>
                 <div className="fs-news-excerpt">{a.excerpt}</div>
