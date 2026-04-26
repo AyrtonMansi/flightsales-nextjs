@@ -1088,7 +1088,7 @@ const Nav = ({ page, setPage, setMobileOpen, mobileOpen, user }) => (
         <span className="fs-nav-logo-text">Flightsales<span>.com.au</span></span>
       </div>
       <div className={`fs-nav-links${mobileOpen ? " open" : ""}`}>
-        {[["buy", "Buy"], ["sell", "Sell"], ["dealers", "Dealers"], ["news", "News"], ["valuate", "Valuation"]].map(([p, label]) => (
+        {[["buy", "Buy"], ["sell", "Sell"], ["dealers", "Dealers"], ["news", "News"]].map(([p, label]) => (
           <button key={p} className={`fs-nav-link${page === p ? " active" : ""}`} onClick={() => { setPage(p); setMobileOpen(false); }}>{label}</button>
         ))}
       </div>
@@ -1151,7 +1151,7 @@ const Footer = ({ setPage }) => (
         </div>
         <div>
           <div className="fs-footer-heading">Services</div>
-          {[["sell", "Sell Your Aircraft"], ["dealers", "Dealer Portal"], ["valuate", "Aircraft Valuation"]].map(([p, t]) => (
+          {[["sell", "Sell Your Aircraft"], ["dealers", "Dealer Portal"]].map(([p, t]) => (
             <span key={t} className="fs-footer-link" onClick={() => setPage(p)}>{t}</span>
           ))}
         </div>
@@ -1558,35 +1558,6 @@ const HomePage = ({ setPage, setSelectedListing, savedIds, onSave, setSearchFilt
             ) : featured.map(l => (
               <ListingCard key={l.id} listing={l} onClick={setSelectedListing} onSave={onSave} saved={savedIds.has(l.id)} />
             ))}
-          </div>
-        </div>
-      </section>
-
-      {/* VALUATION CTA */}
-      <section className="fs-section" style={{ paddingTop: 0 }}>
-        <div className="fs-container">
-          <div className="fs-val-card">
-            <div>
-              <h2 className="fs-val-title">What's your aircraft worth?</h2>
-              <p className="fs-val-sub">Get an instant market estimate based on recent sales data, condition, and hours. Free for private sellers.</p>
-              <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
-                {["Based on real market data", "Updated monthly", "Free for private sellers"].map(t => (
-                  <span key={t} style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 13, color: "rgba(255,255,255,0.7)" }}>
-                    <span style={{ color: "var(--fs-sky)" }}>{Icons.check}</span> {t}
-                  </span>
-                ))}
-              </div>
-            </div>
-            <div className="fs-val-form">
-              <select className="fs-val-input" style={{ cursor: "pointer" }}>
-                <option>Select Manufacturer</option>
-                {MANUFACTURERS.map(m => <option key={m}>{m}</option>)}
-              </select>
-              <input className="fs-val-input" placeholder="Model (e.g. SR22T, C182)" />
-              <input className="fs-val-input" placeholder="Year" type="number" />
-              <input className="fs-val-input" placeholder="Total Time Airframe (hours)" type="number" />
-              <button className="fs-val-btn" onClick={() => setPage("valuate")}>Get Free Valuation</button>
-            </div>
           </div>
         </div>
       </section>
