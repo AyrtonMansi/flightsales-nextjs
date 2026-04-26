@@ -187,22 +187,8 @@ const AircraftImage = ({ listing, className = "", size = "md", style = {}, showG
       />
       <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to bottom, transparent 60%, rgba(0,0,0,0.5) 100%)", pointerEvents: "none" }} />
 
-      {/* Badges — top left. Featured is a premium gold pill; New is monochrome. */}
+      {/* Badges — top left. Only "New" rendered for now; Featured tier is shown via card border. */}
       <div style={{ position: "absolute", top: 12, left: 12, display: "flex", flexDirection: "row", gap: 6, flexWrap: "wrap" }}>
-        {listing.featured && (
-          <div style={{
-            display: "inline-flex", alignItems: "center", gap: 5,
-            background: "rgba(255, 248, 230, 0.96)", color: "#7a5b0e",
-            fontSize: 11, fontWeight: 700, padding: "4px 10px 4px 8px",
-            borderRadius: "var(--fs-radius-pill)",
-            letterSpacing: "0.02em", textTransform: "uppercase",
-            border: "1px solid rgba(201, 168, 91, 0.45)",
-            backdropFilter: "blur(8px)",
-          }}>
-            <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#c9a85b", display: "inline-block" }} />
-            Featured
-          </div>
-        )}
         {isJustListed(listing) && (
           <div style={{ background: "rgba(255,255,255,0.95)", color: "#000", fontSize: 11, fontWeight: 600, padding: "5px 10px", borderRadius: "var(--fs-radius-pill)", letterSpacing: "-0.005em" }}>New</div>
         )}
@@ -577,13 +563,13 @@ a { color: inherit; text-decoration: none; }
   margin-bottom: 10px;
 }
 .fs-card-title {
-  font-family: var(--fs-font-serif);
-  font-size: 22px; font-weight: 500; line-height: 1.15;
-  letter-spacing: -0.025em; color: var(--fs-ink);
+  font-family: var(--fs-font);
+  font-size: 17px; font-weight: 600; line-height: 1.3;
+  letter-spacing: -0.02em; color: var(--fs-ink);
   display: -webkit-box; -webkit-line-clamp: 2;
   -webkit-box-orient: vertical; overflow: hidden;
-  margin-bottom: 16px;
-  min-height: 50px;
+  margin-bottom: 14px;
+  min-height: 44px;
 }
 .fs-card-price {
   font-family: var(--fs-font);
@@ -811,8 +797,8 @@ a { color: inherit; text-decoration: none; }
   margin-bottom: 10px;
 }
 .fs-buy-hero-title {
-  font-family: var(--fs-font-serif);
-  font-size: 44px; font-weight: 500; line-height: 1.05;
+  font-family: var(--fs-font);
+  font-size: 36px; font-weight: 700; line-height: 1.1;
   letter-spacing: -0.035em; color: var(--fs-ink);
   margin: 0 0 8px;
 }
@@ -907,42 +893,44 @@ a { color: inherit; text-decoration: none; }
 }
 .fs-sort-select:hover { border-color: var(--fs-ink-3); }
 .fs-sort-select:focus { border-color: var(--fs-ink); }
-/* SIDEBAR LAYOUT — full-page left rail */
+/* SIDEBAR LAYOUT — full-page flush left rail (no card chrome) */
 .fs-buy-layout {
-  display: grid; grid-template-columns: 300px 1fr; gap: 36px;
+  display: grid; grid-template-columns: 280px 1fr; gap: 40px;
   align-items: start;
 }
 @media (max-width: 960px) {
-  .fs-buy-layout { grid-template-columns: 1fr; }
+  .fs-buy-layout { grid-template-columns: 1fr; gap: 0; }
   .fs-sidebar { display: none; }
   .fs-sidebar.open { display: block; }
 }
 .fs-sidebar {
   position: sticky;
-  top: 132px; /* nav (72) + sticky search bar (~60) */
+  top: 132px;
   align-self: start;
   max-height: calc(100vh - 140px);
   overflow-y: auto;
-  padding-right: 4px;
-  display: flex; flex-direction: column; gap: 16px;
+  padding-right: 12px;
+  margin-right: -12px;
+  display: flex; flex-direction: column;
   scrollbar-width: thin;
 }
 .fs-sidebar::-webkit-scrollbar { width: 6px; }
 .fs-sidebar::-webkit-scrollbar-thumb { background: var(--fs-line); border-radius: 3px; }
 .fs-sidebar::-webkit-scrollbar-thumb:hover { background: var(--fs-ink-4); }
 
+/* Filter "card" is now a flush rail block — no border, no padding offset */
 .fs-sidebar-card {
-  background: var(--fs-white); border: 1px solid var(--fs-line);
-  border-radius: var(--fs-radius); padding: 20px;
+  background: transparent; border: none;
+  border-radius: 0; padding: 0;
 }
 .fs-sidebar-header {
   display: flex; justify-content: space-between; align-items: baseline;
   margin-bottom: 14px;
 }
 .fs-sidebar-title {
-  font-family: var(--fs-font-serif);
-  font-size: 19px; font-weight: 500; color: var(--fs-ink);
-  letter-spacing: -0.025em;
+  font-family: var(--fs-font);
+  font-size: 16px; font-weight: 700; color: var(--fs-ink);
+  letter-spacing: -0.02em;
 }
 .fs-sidebar-clear {
   background: none; border: none; cursor: pointer;
@@ -1043,11 +1031,12 @@ a { color: inherit; text-decoration: none; }
   margin-left: 4px;
 }
 
-/* Sidebar info-flow cards */
+/* Sidebar info-flow cards — separated from filter rail by gap */
 .fs-sidebar-info-card {
   background: var(--fs-ink); color: white;
   border-radius: var(--fs-radius); padding: 18px;
   position: relative;
+  margin-top: 24px;
 }
 .fs-sidebar-info-icon {
   width: 36px; height: 36px; border-radius: 8px;
@@ -1079,6 +1068,7 @@ a { color: inherit; text-decoration: none; }
   background: var(--fs-bg-2);
   border-radius: var(--fs-radius); padding: 16px 18px;
   display: flex; flex-direction: column; gap: 8px;
+  margin-top: 12px;
 }
 .fs-sidebar-trust-row {
   display: flex; align-items: center; gap: 10px;
@@ -1094,6 +1084,7 @@ a { color: inherit; text-decoration: none; }
 .fs-sidebar-help {
   background: var(--fs-white); border: 1px solid var(--fs-line);
   border-radius: var(--fs-radius); padding: 18px;
+  margin-top: 12px;
 }
 .fs-sidebar-help-title {
   font-size: 13px; font-weight: 700; color: var(--fs-ink);
@@ -2640,7 +2631,7 @@ const BuyPage = ({ setSelectedListing, savedIds, onSave, initialFilters, user, s
                     <span style={{ color: 'var(--fs-ink-3)' }}>Searching…</span>
                   ) : (
                     <>
-                      <span style={{ color: "var(--fs-ink)", fontWeight: 700, fontSize: 22, letterSpacing: "-0.02em", fontFamily: 'var(--fs-font-serif)' }}>{filtered.length}</span>
+                      <span style={{ color: "var(--fs-ink)", fontWeight: 700, fontSize: 22, letterSpacing: "-0.02em" }}>{filtered.length}</span>
                       <span style={{ marginLeft: 6 }}>{filtered.length === 1 ? 'aircraft' : 'aircraft'}</span>
                       {aiQuery && <span style={{ color: "var(--fs-ink-3)", marginLeft: 8, fontStyle: 'italic' }}>for "{aiQuery}"</span>}
                     </>
