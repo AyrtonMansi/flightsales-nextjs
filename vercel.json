@@ -1,0 +1,20 @@
+{
+  "rewrites": [
+    { "source": "/buy", "destination": "/" },
+    { "source": "/search", "destination": "/" },
+    { "source": "/listings/:id", "destination": "/" },
+    { "source": "/sell", "destination": "/" },
+    { "source": "/dashboard", "destination": "/" },
+    { "source": "/admin", "destination": "/" },
+    { "source": "/login", "destination": "/" },
+    { "source": "/dealers", "destination": "/" },
+    { "source": "/dealers/:id", "destination": "/" },
+    { "source": "/news", "destination": "/" },
+    { "source": "/news/:slug", "destination": "/" },
+    { "source": "/about", "destination": "/" },
+    { "source": "/contact", "destination": "/" },
+    { "source": "/finance", "destination": "/" },
+    { "source": "/insurance", "destination": "/" },
+    { "source": "/valuate", "destination": "/" }
+  ]
+}
