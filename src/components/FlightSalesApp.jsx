@@ -331,9 +331,8 @@ a { color: inherit; text-decoration: none; }
 }
 .fs-nav-logo-text {
   font-family: var(--fs-font);
-  font-size: 22px; color: var(--fs-ink); letter-spacing: -0.04em; font-weight: 800;
+  font-size: 20px; color: var(--fs-ink); letter-spacing: -0.04em; font-weight: 700;
 }
-.fs-nav-logo-text span { color: var(--fs-ink-4); font-weight: 400; font-style: normal; }
 .fs-nav-links { display: flex; gap: 4px; align-items: center; }
 .fs-nav-link {
   color: var(--fs-ink); font-size: 15px; font-weight: 500;
@@ -375,18 +374,18 @@ a { color: inherit; text-decoration: none; }
   .fs-nav-link { padding: 12px 16px; text-align: left; border-radius: var(--fs-radius); }
 }
 
-/* HERO — Uber-style: massive headline, white, no decoration */
+/* HERO — centered, refined */
 .fs-hero {
   background: var(--fs-white);
-  padding: 88px 0 64px; position: relative;
+  padding: 80px 0 56px; position: relative; text-align: center;
 }
-.fs-hero-content { position: relative; z-index: 1; max-width: 1100px; }
+.fs-hero-content { position: relative; z-index: 1; max-width: 880px; margin: 0 auto; }
 .fs-hero-eyebrow {
   display: inline-flex; align-items: center; gap: 8px;
   background: var(--fs-bg-2);
   padding: 6px 14px; border-radius: var(--fs-radius-pill);
   font-size: 13px; font-weight: 600; color: var(--fs-ink);
-  margin-bottom: 28px;
+  margin-bottom: 24px;
   letter-spacing: -0.01em;
 }
 .fs-hero-eyebrow-dot {
@@ -394,24 +393,27 @@ a { color: inherit; text-decoration: none; }
 }
 .fs-hero h1 {
   font-family: var(--fs-font);
-  font-size: clamp(44px, 7.5vw, 84px);
+  font-size: clamp(36px, 5vw, 56px);
   color: var(--fs-ink);
-  line-height: 1.0; margin-bottom: 24px; font-weight: 700;
-  letter-spacing: -0.04em;
+  line-height: 1.05; margin-bottom: 18px; font-weight: 700;
+  letter-spacing: -0.035em;
 }
 .fs-hero h1 em {
   font-style: normal; font-weight: 700; color: var(--fs-ink);
 }
 .fs-hero-sub {
-  color: var(--fs-ink-3); font-size: 18px; margin-bottom: 40px;
-  max-width: 640px;
+  color: var(--fs-ink-3); font-size: 17px; margin: 0 auto 36px;
+  max-width: 560px;
   font-weight: 400; line-height: 1.45; letter-spacing: -0.01em;
 }
+.fs-hero .fs-search-bar { margin: 0 auto; }
+.fs-hero .fs-categories { justify-content: center; }
+.fs-hero .fs-stats { justify-content: center; margin-left: auto; margin-right: auto; max-width: 640px; }
 @media (max-width: 640px) {
-  .fs-hero { padding: 48px 0 40px; }
-  .fs-hero h1 { font-size: 40px; line-height: 1.05; margin-bottom: 16px; }
-  .fs-hero-sub { font-size: 16px; margin-bottom: 28px; }
-  .fs-hero-eyebrow { margin-bottom: 20px; font-size: 12px; }
+  .fs-hero { padding: 40px 0 32px; }
+  .fs-hero h1 { font-size: 32px; line-height: 1.08; margin-bottom: 14px; letter-spacing: -0.03em; }
+  .fs-hero-sub { font-size: 15px; margin-bottom: 24px; }
+  .fs-hero-eyebrow { margin-bottom: 18px; font-size: 12px; }
 }
 
 /* SEARCH BAR — Uber-style pill row */
@@ -1063,8 +1065,7 @@ const Nav = ({ page, setPage, setMobileOpen, mobileOpen, user }) => (
   <nav className="fs-nav">
     <div className="fs-container fs-nav-inner">
       <div className="fs-nav-logo" onClick={() => setPage("home")}>
-        <span style={{ color: "var(--fs-gray-900)" }}>{Icons.plane}</span>
-        <span className="fs-nav-logo-text">Flightsales<span>.com.au</span></span>
+        <span className="fs-nav-logo-text">FlightSales</span>
       </div>
       <div className={`fs-nav-links${mobileOpen ? " open" : ""}`}>
         {[["buy", "Buy"], ["sell", "Sell"], ["dealers", "Dealers"], ["news", "News"]].map(([p, label]) => (
@@ -1115,7 +1116,7 @@ const Footer = ({ setPage }) => (
     <div className="fs-container">
       <div className="fs-footer-grid">
         <div>
-          <div className="fs-footer-brand">Flightsales<span>.com.au</span></div>
+          <div className="fs-footer-brand">FlightSales</div>
           <p className="fs-footer-desc">Australia's premier aircraft marketplace. Buy and sell aircraft with confidence — from single-engine pistons to turboprops and helicopters.</p>
           <div style={{ display: "flex", gap: "8px" }}>
             <span className="fs-tag fs-tag-green">{Icons.shield} Verified Dealers</span>
@@ -1837,7 +1838,7 @@ const HomePage = ({ setPage, setSelectedListing, savedIds, onSave, setSearchFilt
           </div>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(320px, 1fr))", gap: 16 }}>
             {displayDealers.slice(0, 6).map(d => (
-              <div key={d.id} className="fs-dealer-card" onClick={() => setPage("dealers")}>
+              <div key={d.id} className="fs-dealer-card" onClick={() => setPage("dealers")} style={{ cursor: "pointer" }}>
                 <div className="fs-dealer-avatar">{d.logo}</div>
                 <div className="fs-dealer-info">
                   <div className="fs-dealer-name">{d.name}</div>
@@ -3217,7 +3218,7 @@ const SellPage = ({ user, setPage }) => {
   );
 };
 
-const DealersPage = () => {
+const DealersPage = ({ onSelectDealer }) => {
   const { dealers: dealersFromDB, loading } = useDealers();
   const dealers = dealersFromDB.length > 0 ? dealersFromDB : DEALERS;
   const [applyForm, setApplyForm] = useState({ name: '', email: '', business: '', phone: '' });
@@ -3250,7 +3251,7 @@ const DealersPage = () => {
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(360px, 1fr))", gap: 16 }}>
             {loading ? [1,2,3,4,5,6].map(i => <div key={i} style={{ height: 160, background: "var(--fs-gray-100)", borderRadius: "var(--fs-radius)", animation: "fs-pulse 1.5s infinite" }} />) :
               dealers.map(d => (
-                <div key={d.id} className="fs-dealer-card" style={{ flexDirection: "column", alignItems: "flex-start", gap: 0 }}>
+                <div key={d.id} className="fs-dealer-card" onClick={() => onSelectDealer && onSelectDealer(d)} style={{ flexDirection: "column", alignItems: "flex-start", gap: 0, cursor: "pointer" }}>
                   <div style={{ display: "flex", gap: 14, alignItems: "center", width: "100%", marginBottom: 12 }}>
                     <div className="fs-dealer-avatar" style={{ width: 56, height: 56, fontSize: 16 }}>{d.logo}</div>
                     <div>
@@ -3290,6 +3291,121 @@ const DealersPage = () => {
             ) : (
               <button className="fs-form-submit" style={{ maxWidth: 240, margin: "0 auto" }} onClick={() => setShowApply(true)}>Apply Now</button>
             )}
+          </div>
+        </div>
+      </section>
+    </>
+  );
+};
+
+// DEALER DETAIL — storefront page with all the dealer's listings
+const DealerDetailPage = ({ dealer, onBack, setSelectedListing, savedIds, onSave }) => {
+  const { aircraft: dealerListings, loading } = useAircraft({ dealerId: dealer?.id });
+  const [contactSent, setContactSent] = useState(false);
+  const [contactSending, setContactSending] = useState(false);
+  const [contactErr, setContactErr] = useState(null);
+  const [contactForm, setContactForm] = useState({ name: '', email: '', phone: '', message: `Hi, I'd like to know more about the aircraft you have available at ${dealer?.name || 'your dealership'}.` });
+
+  if (!dealer) return null;
+  // Filter sample listings to dealer if no DB results yet
+  const listings = dealerListings.length > 0
+    ? dealerListings
+    : SAMPLE_LISTINGS.filter(l => l.dealer_id === dealer.id);
+
+  const handleContact = async () => {
+    if (!contactForm.name || !contactForm.email) { setContactErr('Name and email required.'); return; }
+    setContactSending(true); setContactErr(null);
+    try {
+      await submitLead('contact', { name: contactForm.name, email: contactForm.email, phone: contactForm.phone, message: `[DEALER ENQUIRY: ${dealer.name}] ${contactForm.message}` });
+      setContactSent(true);
+    } catch (err) { setContactErr(err.message || 'Send failed'); } finally { setContactSending(false); }
+  };
+
+  return (
+    <>
+      {/* Header */}
+      <div style={{ background: "var(--fs-bg-2)", borderBottom: "1px solid var(--fs-line)" }}>
+        <div className="fs-container" style={{ paddingTop: 32, paddingBottom: 32 }}>
+          <div style={{ display: "flex", gap: 20, alignItems: "center", flexWrap: "wrap" }}>
+            <div className="fs-dealer-avatar" style={{ width: 80, height: 80, fontSize: 22, borderRadius: 16 }}>{dealer.logo}</div>
+            <div style={{ flex: 1, minWidth: 220 }}>
+              <h1 style={{ fontSize: 32, fontWeight: 700, letterSpacing: "-0.04em", marginBottom: 8 }}>{dealer.name}</h1>
+              <div style={{ display: "flex", gap: 16, flexWrap: "wrap", fontSize: 14, color: "var(--fs-ink-3)", fontWeight: 500 }}>
+                <span style={{ display: "flex", alignItems: "center", gap: 4 }}>{Icons.location} {dealer.location}</span>
+                <span style={{ display: "flex", alignItems: "center", gap: 4, color: "var(--fs-ink)" }}>{Icons.shield} Verified dealer</span>
+                {dealer.rating && <span style={{ display: "flex", alignItems: "center", gap: 4 }}>{Icons.star} {dealer.rating} rating</span>}
+                {dealer.since && <span>Trading since {dealer.since}</span>}
+              </div>
+              {dealer.speciality && <p style={{ marginTop: 10, fontSize: 14, color: "var(--fs-ink-3)" }}>Specialising in <strong style={{ color: "var(--fs-ink)" }}>{dealer.speciality}</strong></p>}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <section className="fs-section" style={{ paddingTop: 48 }}>
+        <div className="fs-container">
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 360px", gap: 32 }}>
+            {/* Listings */}
+            <div>
+              <div className="fs-section-header" style={{ marginBottom: 24 }}>
+                <h2 style={{ fontSize: 24, fontWeight: 700, letterSpacing: "-0.03em" }}>
+                  {listings.length} aircraft from {dealer.name}
+                </h2>
+              </div>
+              {loading ? (
+                <div className="fs-grid">
+                  {[1,2,3].map(i => <div key={i} style={{ height: 360, background: "var(--fs-bg-2)", borderRadius: "var(--fs-radius)", animation: "fs-pulse 1.5s infinite" }} />)}
+                </div>
+              ) : listings.length === 0 ? (
+                <div style={{ padding: "48px 24px", border: "1px solid var(--fs-line)", borderRadius: "var(--fs-radius)", textAlign: "center" }}>
+                  <div style={{ fontSize: 16, fontWeight: 600, marginBottom: 8 }}>No active listings right now</div>
+                  <p style={{ fontSize: 14, color: "var(--fs-ink-3)" }}>Get in touch with {dealer.name} for upcoming inventory.</p>
+                </div>
+              ) : (
+                <div className="fs-grid">
+                  {listings.map(l => (
+                    <ListingCard key={l.id} listing={l} onClick={setSelectedListing} onSave={onSave} saved={savedIds.has(l.id)} />
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Contact sidebar */}
+            <div>
+              <div style={{ position: "sticky", top: 88, background: "var(--fs-white)", border: "1px solid var(--fs-line)", borderRadius: "var(--fs-radius)", padding: 24 }}>
+                <h3 style={{ fontSize: 18, fontWeight: 700, letterSpacing: "-0.02em", marginBottom: 6 }}>Contact {dealer.name}</h3>
+                <p style={{ fontSize: 13, color: "var(--fs-ink-3)", marginBottom: 16 }}>Send a message and we'll forward it to the dealer.</p>
+                {contactSent ? (
+                  <div style={{ padding: "20px 16px", background: "var(--fs-bg-2)", borderRadius: "var(--fs-radius)", textAlign: "center" }}>
+                    <div style={{ fontSize: 14, fontWeight: 600, color: "var(--fs-ink)" }}>{Icons.check} Message sent</div>
+                    <p style={{ fontSize: 13, color: "var(--fs-ink-3)", marginTop: 6 }}>{dealer.name} will be in touch within 1 business day.</p>
+                  </div>
+                ) : (
+                  <>
+                    {contactErr && <p style={{ color: "var(--fs-red)", fontSize: 13, marginBottom: 8 }}>{contactErr}</p>}
+                    <div className="fs-form-group">
+                      <label className="fs-form-label">Your name</label>
+                      <input className="fs-form-input" value={contactForm.name} onChange={e => setContactForm(f => ({...f, name: e.target.value}))} />
+                    </div>
+                    <div className="fs-form-group">
+                      <label className="fs-form-label">Email</label>
+                      <input className="fs-form-input" type="email" value={contactForm.email} onChange={e => setContactForm(f => ({...f, email: e.target.value}))} />
+                    </div>
+                    <div className="fs-form-group">
+                      <label className="fs-form-label">Phone (optional)</label>
+                      <input className="fs-form-input" type="tel" value={contactForm.phone} onChange={e => setContactForm(f => ({...f, phone: e.target.value}))} />
+                    </div>
+                    <div className="fs-form-group">
+                      <label className="fs-form-label">Message</label>
+                      <textarea className="fs-form-textarea" rows={4} value={contactForm.message} onChange={e => setContactForm(f => ({...f, message: e.target.value}))} />
+                    </div>
+                    <button className="fs-form-submit" onClick={handleContact} disabled={contactSending}>
+                      {contactSending ? 'Sending...' : 'Send message'}
+                    </button>
+                  </>
+                )}
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -5961,6 +6077,7 @@ const AdminPage = ({ user, setPage, signOut }) => {
 export default function FlightSalesApp() {
   const [page, setPage] = useState("home");
   const [selectedListing, setSelectedListingRaw] = useState(null);
+  const [selectedDealer, setSelectedDealer] = useState(null);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [toast, setToast] = useState(null);
   const [searchFilters, setSearchFilters] = useState(null);
@@ -6039,7 +6156,8 @@ export default function FlightSalesApp() {
       {page === "buy" && <BuyPage setSelectedListing={setSelectedListing} savedIds={savedIds} onSave={onSave} initialFilters={searchFilters} user={user} />}
       {page === "detail" && <ListingDetail listing={selectedListing} onBack={() => setPageWrap("buy")} savedIds={savedIds} onSave={onSave} user={user} />}
       {page === "sell" && <SellPage user={user} setPage={setPageWrap} />}
-      {page === "dealers" && <DealersPage />}
+      {page === "dealers" && <DealersPage onSelectDealer={(d) => { setSelectedDealer(d); setPage("dealer-detail"); window.scrollTo(0, 0); }} />}
+      {page === "dealer-detail" && <DealerDetailPage dealer={selectedDealer} onBack={() => setPageWrap("dealers")} setSelectedListing={setSelectedListing} savedIds={savedIds} onSave={onSave} />}
       {page === "valuate" && <ContactPage />}
       {page === "news" && <NewsPage />}
       {page === "about" && <AboutPage />}
