@@ -4247,18 +4247,9 @@ const LoginPage = ({ setPage, signIn, signUp, signInWithGoogle, resetPassword })
 };
 
 const DashboardPage = ({ user, setPage, signOut, savedIds, savedListings, onSave, onSelectListing }) => {
-  if (!user) {
-    setPage('login');
-    return null;
-  }
-
-  const isDealer = user.role === 'dealer';
-  const isAdmin = user.role === 'admin';
-
-  if (isAdmin) {
-    setPage('admin');
-    return null;
-  }
+  // Note: caller (App) gates rendering so user is always defined and not an admin here.
+  const isDealer = user?.role === 'dealer';
+  const isAdmin = user?.role === 'admin';
 
   const [activeTab, setActiveTab] = useState('overview');
   const [editProfile, setEditProfile] = useState(false);
@@ -5660,11 +5651,7 @@ const DashboardPage = ({ user, setPage, signOut, savedIds, savedListings, onSave
 };
 
 const AdminPage = ({ user, setPage, signOut }) => {
-  if (!user || user.role !== 'admin') {
-    setPage('login');
-    return null;
-  }
-
+  // Caller (App) already gates rendering on admin role; no render-time setPage here.
   const [activeTab, setActiveTab] = useState('listings');
   const [selectedLead, setSelectedLead] = useState(null);
   const [leadStatusFilter, setLeadStatusFilter] = useState('all');
@@ -6275,6 +6262,14 @@ export default function FlightSalesApp() {
     window.scrollTo(0, 0);
   };
 
+  // Auth-gate redirects (run as side effects, never during render)
+  useEffect(() => {
+    if (authLoading) return; // wait for session to resolve
+    if (page === 'dashboard' && !authUser) setPage('login');
+    if (page === 'dashboard' && user?.role === 'admin') setPage('admin');
+    if (page === 'admin' && user?.role !== 'admin') setPage(authUser ? 'dashboard' : 'login');
+  }, [page, authUser, authLoading, user?.role]);
+
   const onSave = async (id) => {
     if (!authUser) { setToast("Sign in to save aircraft"); return; }
     const isSaved = await toggleSave(id);
@@ -6324,8 +6319,8 @@ export default function FlightSalesApp() {
       {page === "about" && <AboutPage />}
       {page === "contact" && <ContactPage />}
       {page === "login" && <LoginPage setPage={setPageWrap} signIn={signIn} signUp={signUp} signInWithGoogle={signInWithGoogle} resetPassword={resetPassword} />}
-      {page === "dashboard" && <DashboardPage user={user} setPage={setPageWrap} signOut={signOut} savedIds={savedIds} savedListings={savedListings} onSave={onSave} onSelectListing={setSelectedListing} />}
-      {page === "admin" && <AdminPage user={user} setPage={setPageWrap} signOut={signOut} />}
+      {page === "dashboard" && user && user.role !== 'admin' && <DashboardPage user={user} setPage={setPageWrap} signOut={signOut} savedIds={savedIds} savedListings={savedListings} onSave={onSave} onSelectListing={setSelectedListing} />}
+      {page === "admin" && user?.role === 'admin' && <AdminPage user={user} setPage={setPageWrap} signOut={signOut} />}
       {(page === "finance" || page === "insurance") && <ContactPage />}
 
       <Footer setPage={setPageWrap} />
