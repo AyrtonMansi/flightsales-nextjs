@@ -2,7 +2,8 @@ import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import {
   useAuth, useProfile, useAircraft, useFeaturedAircraft, useLatestAircraft,
   useDealers, useNews, useSavedAircraft, useMyListings, useMyEnquiries,
-  submitEnquiry, createListing, uploadImage
+  useAdminListings, useAdminUsers, useAdminEnquiries,
+  submitEnquiry, createListing, uploadImage, submitLead
 } from "../lib/hooks";
 
 // ============================================================
@@ -5668,82 +5669,64 @@ const AdminPage = ({ user, setPage, signOut }) => {
   const [selectedLead, setSelectedLead] = useState(null);
   const [leadStatusFilter, setLeadStatusFilter] = useState('all');
 
-  const mockListings = [
-    { id: 1, title: '2018 Cirrus SR22T', price: 895000, seller: 'Southern Aviation', status: 'pending', date: '2026-03-22' },
-    { id: 2, title: '2005 Cessna 182T', price: 385000, seller: 'Private', status: 'active', date: '2026-03-21' },
-  ];
+  const { listings: adminListings, loading: listingsLoading, updateStatus: updateListingStatus } = useAdminListings();
+  const { users: adminUsers, loading: usersLoading, promoteToDealer } = useAdminUsers();
+  const { enquiries: adminEnquiries, updateStatus: updateEnquiryStatus } = useAdminEnquiries();
 
-  const mockUsers = [
-    { id: 1, name: 'John Smith', email: 'john@example.com', role: 'private', listings: 2 },
-    { id: 2, name: 'Southern Aviation', email: 'sales@southernav.com', role: 'dealer', listings: 14 },
-  ];
+  // Real listings rows mapped to the existing table's expected shape
+  const listingsView = useMemo(() => (adminListings || []).map(l => ({
+    id: l.id,
+    title: l.title || `${l.year || ''} ${l.manufacturer || ''} ${l.model || ''}`.trim(),
+    price: l.price || 0,
+    seller: l.dealer?.name || (l.user_id ? 'Private seller' : 'Unknown'),
+    status: l.status || 'pending',
+    date: l.created_at,
+  })), [adminListings]);
 
-  // Lead Management - For finance/insurance/valuation providers
-  const [leads, setLeads] = useState([
-    { 
-      id: 1, 
-      type: 'finance', 
-      name: 'John Smith', 
-      email: 'john@email.com', 
-      phone: '0412 345 678',
-      aircraft: '2018 Cirrus SR22T',
-      amount: 750000,
-      status: 'new',
-      provider: null,
-      notes: 'Looking for 80% LVR, 10 year term',
-      date: '2026-03-22T10:30:00',
-      assignedTo: null
-    },
-    { 
-      id: 2, 
-      type: 'insurance', 
-      name: 'Sarah Chen', 
-      email: 'sarah@aviation.com', 
-      phone: '0433 999 111',
-      aircraft: '2020 Piper Archer',
-      amount: 450000,
-      status: 'contacted',
-      provider: 'Avemco Insurance',
-      notes: 'Needs comprehensive hull coverage',
-      date: '2026-03-21T14:15:00',
-      assignedTo: 'Team Member A'
-    },
-    { 
-      id: 3, 
-      type: 'finance', 
-      name: 'Mike Johnson', 
-      email: 'mike@outlook.com', 
-      phone: '0400 222 444',
-      aircraft: '2015 Cessna 182',
-      amount: 320000,
-      status: 'qualified',
-      provider: 'Aviation Finance Australia',
-      notes: 'Pre-approved, ready to proceed',
-      date: '2026-03-20T09:00:00',
-      assignedTo: 'Team Member B'
-    },
-    { 
-      id: 4, 
-      type: 'valuation', 
-      name: 'Aviation Group Pty Ltd', 
-      email: 'admin@aviagroup.com', 
-      phone: '02 9999 8888',
-      aircraft: 'Fleet of 5 aircraft',
+  const usersView = useMemo(() => (adminUsers || []).map(u => ({
+    id: u.id,
+    name: u.full_name || u.email?.split('@')[0] || 'Unnamed',
+    email: u.email,
+    role: u.is_dealer ? 'dealer' : 'private',
+    listings: u.listings_count || 0,
+  })), [adminUsers]);
+
+  // Split enquiries into platform-leads (finance/insurance/valuation/contact) vs listing enquiries
+  const leads = useMemo(() => (adminEnquiries || [])
+    .filter(e => e.type && e.type !== 'enquiry')
+    .map(e => ({
+      id: e.id,
+      type: e.type,
+      name: e.name,
+      email: e.email,
+      phone: e.phone || '',
+      aircraft: e.aircraft?.title || '—',
       amount: null,
-      status: 'new',
+      status: e.status || 'new',
       provider: null,
-      notes: 'Commercial valuation required for insurance renewal',
-      date: '2026-03-22T16:45:00',
-      assignedTo: null
-    },
-  ]);
+      notes: e.message || '',
+      date: e.created_at,
+      assignedTo: null,
+    })), [adminEnquiries]);
+
+  const listingEnquiries = useMemo(() => (adminEnquiries || [])
+    .filter(e => !e.type || e.type === 'enquiry'), [adminEnquiries]);
 
   const handleLeadStatusChange = (leadId, newStatus) => {
-    setLeads(prev => prev.map(l => l.id === leadId ? { ...l, status: newStatus } : l));
+    updateEnquiryStatus(leadId, newStatus);
   };
 
   const handleAssignProvider = (leadId, provider) => {
-    setLeads(prev => prev.map(l => l.id === leadId ? { ...l, provider, status: 'assigned' } : l));
+    // Provider assignment isn't in the schema yet — record as a status change for now
+    updateEnquiryStatus(leadId, 'assigned');
+  };
+
+  // Live stats from real DB rows
+  const adminStats = {
+    totalListings: adminListings?.length || 0,
+    pendingReview: (adminListings || []).filter(l => l.status === 'pending').length,
+    activeUsers: adminUsers?.length || 0,
+    dealers: (adminUsers || []).filter(u => u.is_dealer).length,
   };
 
   const getLeadTypeLabel = (type) => {
@@ -5811,13 +5794,13 @@ const AdminPage = ({ user, setPage, signOut }) => {
 
       <section className="fs-section" style={{ padding: "32px 0" }}>
         <div className="fs-container">
-          {/* Stats Row */}
+          {/* Stats Row — live from DB */}
           <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 16, marginBottom: 32 }}>
             {[
-              { label: 'Total Listings', value: '156', color: 'var(--fs-blue)' },
-              { label: 'Pending Review', value: '12', color: 'var(--fs-amber)' },
-              { label: 'Active Users', value: '89', color: 'var(--fs-green)' },
-              { label: 'Dealers', value: '24', color: 'var(--fs-gray-900)' },
+              { label: 'Total Listings', value: adminStats.totalListings, color: 'var(--fs-blue)' },
+              { label: 'Pending Review', value: adminStats.pendingReview, color: 'var(--fs-amber)' },
+              { label: 'Active Users', value: adminStats.activeUsers, color: 'var(--fs-green)' },
+              { label: 'Dealers', value: adminStats.dealers, color: 'var(--fs-gray-900)' },
             ].map(stat => (
               <div key={stat.label} className="fs-detail-specs" style={{ padding: "20px" }}>
                 <p style={{ fontSize: 28, fontWeight: 800, color: stat.color }}>{stat.value}</p>
@@ -5872,6 +5855,11 @@ const AdminPage = ({ user, setPage, signOut }) => {
           {/* Content */}
           <div className="fs-detail-specs" style={{ padding: 0 }}>
             {activeTab === 'listings' && (
+              listingsLoading ? (
+                <div style={{ padding: 48, textAlign: 'center', color: 'var(--fs-gray-500)' }}>Loading listings…</div>
+              ) : listingsView.length === 0 ? (
+                <div style={{ padding: 48, textAlign: 'center', color: 'var(--fs-gray-500)' }}>No listings yet.</div>
+              ) : (
               <table style={{ width: "100%", borderCollapse: "collapse" }}>
                 <thead>
                   <tr style={{ borderBottom: "1px solid var(--fs-gray-200)" }}>
@@ -5879,67 +5867,72 @@ const AdminPage = ({ user, setPage, signOut }) => {
                     <th style={{ padding: "16px", textAlign: "left", fontSize: 12, fontWeight: 600, color: "var(--fs-gray-500)", textTransform: "uppercase" }}>Price</th>
                     <th style={{ padding: "16px", textAlign: "left", fontSize: 12, fontWeight: 600, color: "var(--fs-gray-500)", textTransform: "uppercase" }}>Seller</th>
                     <th style={{ padding: "16px", textAlign: "left", fontSize: 12, fontWeight: 600, color: "var(--fs-gray-500)", textTransform: "uppercase" }}>Status</th>
-                    <th style={{ padding: "16px", textAlign: "left", fontSize: 12, fontWeight: 600, color: "var(--fs-gray-500)", textTransform: "uppercase" }}>Actions</th>
+                    <th style={{ padding: "16px", textAlign: "right", fontSize: 12, fontWeight: 600, color: "var(--fs-gray-500)", textTransform: "uppercase" }}>Actions</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {mockListings.map(listing => (
+                  {listingsView.map(listing => (
                     <tr key={listing.id} style={{ borderBottom: "1px solid var(--fs-gray-100)" }}>
                       <td style={{ padding: "16px", fontWeight: 500 }}>{listing.title}</td>
-                      <td style={{ padding: "16px" }}>${listing.price.toLocaleString()}</td>
+                      <td style={{ padding: "16px" }}>${(listing.price || 0).toLocaleString()}</td>
                       <td style={{ padding: "16px", color: "var(--fs-gray-600)" }}>{listing.seller}</td>
                       <td style={{ padding: "16px" }}>
-                        <span style={{ 
-                          padding: "4px 12px", 
-                          borderRadius: 4, 
-                          fontSize: 12, 
+                        <span style={{
+                          padding: "4px 12px",
+                          borderRadius: 4,
+                          fontSize: 12,
                           fontWeight: 500,
-                          background: listing.status === 'active' ? '#dcfce7' : '#fef3c7',
-                          color: listing.status === 'active' ? '#166534' : '#92400e'
+                          background: listing.status === 'active' ? '#dcfce7' : listing.status === 'pending' ? '#fef3c7' : '#f3f4f6',
+                          color: listing.status === 'active' ? '#166534' : listing.status === 'pending' ? '#92400e' : 'var(--fs-gray-600)',
+                          textTransform: 'capitalize',
                         }}>
                           {listing.status}
                         </span>
                       </td>
-                      <td style={{ padding: "16px" }}>
-                        <button style={{ 
-                          padding: "6px 12px", 
-                          background: "var(--fs-blue)", 
-                          color: "white",
-                          border: "none",
-                          borderRadius: 4,
-                          fontSize: 12,
-                          cursor: "pointer"
-                        }}>
-                          Review
-                        </button>
+                      <td style={{ padding: "16px", textAlign: 'right' }}>
+                        <div style={{ display: 'flex', gap: 6, justifyContent: 'flex-end' }}>
+                          {listing.status !== 'active' && (
+                            <button onClick={() => updateListingStatus(listing.id, 'active')} style={{ padding: "6px 12px", background: "var(--fs-green)", color: "white", border: "none", borderRadius: 4, fontSize: 12, cursor: "pointer" }}>Approve</button>
+                          )}
+                          {listing.status === 'active' && (
+                            <button onClick={() => updateListingStatus(listing.id, 'pending')} style={{ padding: "6px 12px", background: "var(--fs-gray-100)", color: "var(--fs-gray-700)", border: "none", borderRadius: 4, fontSize: 12, cursor: "pointer" }}>Unpublish</button>
+                          )}
+                          <button onClick={() => updateListingStatus(listing.id, 'sold')} style={{ padding: "6px 12px", background: "var(--fs-gray-100)", color: "var(--fs-gray-700)", border: "none", borderRadius: 4, fontSize: 12, cursor: "pointer" }}>Mark Sold</button>
+                        </div>
                       </td>
                     </tr>
                   ))}
                 </tbody>
               </table>
+              )
             )}
 
             {activeTab === 'users' && (
+              usersLoading ? (
+                <div style={{ padding: 48, textAlign: 'center', color: 'var(--fs-gray-500)' }}>Loading users…</div>
+              ) : usersView.length === 0 ? (
+                <div style={{ padding: 48, textAlign: 'center', color: 'var(--fs-gray-500)' }}>No users yet.</div>
+              ) : (
               <table style={{ width: "100%", borderCollapse: "collapse" }}>
                 <thead>
                   <tr style={{ borderBottom: "1px solid var(--fs-gray-200)" }}>
                     <th style={{ padding: "16px", textAlign: "left", fontSize: 12, fontWeight: 600, color: "var(--fs-gray-500)", textTransform: "uppercase" }}>User</th>
                     <th style={{ padding: "16px", textAlign: "left", fontSize: 12, fontWeight: 600, color: "var(--fs-gray-500)", textTransform: "uppercase" }}>Role</th>
                     <th style={{ padding: "16px", textAlign: "left", fontSize: 12, fontWeight: 600, color: "var(--fs-gray-500)", textTransform: "uppercase" }}>Listings</th>
-                    <th style={{ padding: "16px", textAlign: "left", fontSize: 12, fontWeight: 600, color: "var(--fs-gray-500)", textTransform: "uppercase" }}>Actions</th>
+                    <th style={{ padding: "16px", textAlign: "right", fontSize: 12, fontWeight: 600, color: "var(--fs-gray-500)", textTransform: "uppercase" }}>Actions</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {mockUsers.map(u => (
+                  {usersView.map(u => (
                     <tr key={u.id} style={{ borderBottom: "1px solid var(--fs-gray-100)" }}>
                       <td style={{ padding: "16px" }}>
                         <p style={{ fontWeight: 500 }}>{u.name}</p>
                         <p style={{ fontSize: 12, color: "var(--fs-gray-500)" }}>{u.email}</p>
                       </td>
                       <td style={{ padding: "16px" }}>
-                        <span style={{ 
-                          padding: "4px 12px", 
-                          borderRadius: 4, 
+                        <span style={{
+                          padding: "4px 12px",
+                          borderRadius: 4,
                           fontSize: 12,
                           background: u.role === 'dealer' ? '#eff6ff' : '#f3f4f6',
                           color: u.role === 'dealer' ? 'var(--fs-blue)' : 'var(--fs-gray-600)',
@@ -5949,23 +5942,16 @@ const AdminPage = ({ user, setPage, signOut }) => {
                         </span>
                       </td>
                       <td style={{ padding: "16px" }}>{u.listings}</td>
-                      <td style={{ padding: "16px" }}>
-                        <button style={{ 
-                          padding: "6px 12px", 
-                          background: "var(--fs-gray-100)", 
-                          color: "var(--fs-gray-700)",
-                          border: "none",
-                          borderRadius: 4,
-                          fontSize: 12,
-                          cursor: "pointer"
-                        }}>
-                          View
-                        </button>
+                      <td style={{ padding: "16px", textAlign: 'right' }}>
+                        {u.role !== 'dealer' && (
+                          <button onClick={() => promoteToDealer(u.id)} style={{ padding: "6px 12px", background: "var(--fs-blue)", color: 'white', border: "none", borderRadius: 4, fontSize: 12, cursor: "pointer" }}>Promote to dealer</button>
+                        )}
                       </td>
                     </tr>
                   ))}
                 </tbody>
               </table>
+              )
             )}
 
             {activeTab === 'dealers' && (
@@ -5975,9 +5961,44 @@ const AdminPage = ({ user, setPage, signOut }) => {
             )}
 
             {activeTab === 'enquiries' && (
-              <div style={{ padding: "48px", textAlign: "center" }}>
-                <p style={{ color: "var(--fs-gray-500)" }}>No new enquiries</p>
-              </div>
+              listingEnquiries.length === 0 ? (
+                <div style={{ padding: "48px", textAlign: "center" }}>
+                  <p style={{ color: "var(--fs-gray-500)" }}>No listing enquiries yet.</p>
+                </div>
+              ) : (
+                <table style={{ width: "100%", borderCollapse: "collapse" }}>
+                  <thead>
+                    <tr style={{ borderBottom: "1px solid var(--fs-gray-200)" }}>
+                      <th style={{ padding: "16px", textAlign: "left", fontSize: 12, fontWeight: 600, color: "var(--fs-gray-500)", textTransform: "uppercase" }}>From</th>
+                      <th style={{ padding: "16px", textAlign: "left", fontSize: 12, fontWeight: 600, color: "var(--fs-gray-500)", textTransform: "uppercase" }}>Aircraft</th>
+                      <th style={{ padding: "16px", textAlign: "left", fontSize: 12, fontWeight: 600, color: "var(--fs-gray-500)", textTransform: "uppercase" }}>Status</th>
+                      <th style={{ padding: "16px", textAlign: "left", fontSize: 12, fontWeight: 600, color: "var(--fs-gray-500)", textTransform: "uppercase" }}>Received</th>
+                      <th style={{ padding: "16px", textAlign: "right", fontSize: 12, fontWeight: 600, color: "var(--fs-gray-500)", textTransform: "uppercase" }}>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {listingEnquiries.map(e => (
+                      <tr key={e.id} style={{ borderBottom: "1px solid var(--fs-gray-100)" }}>
+                        <td style={{ padding: "16px" }}>
+                          <p style={{ fontWeight: 500 }}>{e.name}</p>
+                          <p style={{ fontSize: 12, color: 'var(--fs-gray-500)' }}>{e.email}</p>
+                        </td>
+                        <td style={{ padding: "16px", color: "var(--fs-gray-700)" }}>{e.aircraft?.title || '—'}</td>
+                        <td style={{ padding: "16px" }}>
+                          <span style={{ padding: '4px 12px', borderRadius: 4, fontSize: 12, fontWeight: 500, background: e.status === 'new' ? '#dcfce7' : '#f3f4f6', color: e.status === 'new' ? '#166534' : 'var(--fs-gray-600)', textTransform: 'capitalize' }}>{e.status}</span>
+                        </td>
+                        <td style={{ padding: "16px", fontSize: 13, color: 'var(--fs-gray-500)' }}>{new Date(e.created_at).toLocaleString()}</td>
+                        <td style={{ padding: "16px", textAlign: 'right' }}>
+                          <a href={`mailto:${e.email}`} style={{ fontSize: 12, color: 'var(--fs-blue)', marginRight: 12 }}>Email</a>
+                          {e.status === 'new' && (
+                            <button onClick={() => updateEnquiryStatus(e.id, 'read')} style={{ padding: "6px 12px", background: "var(--fs-gray-100)", color: 'var(--fs-gray-700)', border: 'none', borderRadius: 4, fontSize: 12, cursor: 'pointer' }}>Mark read</button>
+                          )}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              )
             )}
 
             {/* LEAD MANAGEMENT TAB */}

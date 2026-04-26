@@ -453,9 +453,106 @@ export async function submitLead(type, leadData) {
       name: leadData.name,
       email: leadData.email,
       phone: leadData.phone || null,
-      message: `[${type.toUpperCase()} LEAD] ${leadData.message || ''}`,
+      message: leadData.message || '',
+      type, // 'finance' | 'insurance' | 'valuation' | 'contact'
       status: 'new'
     });
   if (error) throw error;
   return data;
+}
+
+// ─── Admin: cross-user views (RLS must allow admin role) ────────────────────
+
+export function useAdminListings() {
+  const [listings, setListings] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  const fetchAll = useCallback(async () => {
+    setLoading(true);
+    try {
+      const { data, error: err } = await supabase
+        .from('aircraft')
+        .select(`*, dealer:dealers(id, name)`)
+        .order('created_at', { ascending: false });
+      if (err) throw err;
+      setListings(data || []);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => { fetchAll(); }, [fetchAll]);
+
+  const updateStatus = async (id, status) => {
+    const { data, error: err } = await supabase
+      .from('aircraft').update({ status }).eq('id', id).select().single();
+    if (err) throw err;
+    setListings(prev => prev.map(l => l.id === id ? { ...l, ...data } : l));
+    return data;
+  };
+
+  return { listings, loading, error, refetch: fetchAll, updateStatus };
+}
+
+export function useAdminUsers() {
+  const [users, setUsers] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  const fetchAll = useCallback(async () => {
+    setLoading(true);
+    try {
+      const { data: profiles } = await supabase
+        .from('profiles').select('*').order('created_at', { ascending: false });
+      const { data: counts } = await supabase
+        .from('aircraft').select('user_id');
+      const listingsByUser = (counts || []).reduce((acc, r) => {
+        if (r.user_id) acc[r.user_id] = (acc[r.user_id] || 0) + 1;
+        return acc;
+      }, {});
+      setUsers((profiles || []).map(p => ({ ...p, listings_count: listingsByUser[p.id] || 0 })));
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => { fetchAll(); }, [fetchAll]);
+
+  const promoteToDealer = async (userId, dealerId = null) => {
+    const { error: err } = await supabase
+      .from('profiles').update({ is_dealer: true, dealer_id: dealerId }).eq('id', userId);
+    if (err) throw err;
+    setUsers(prev => prev.map(u => u.id === userId ? { ...u, is_dealer: true, dealer_id: dealerId } : u));
+  };
+
+  return { users, loading, refetch: fetchAll, promoteToDealer };
+}
+
+export function useAdminEnquiries() {
+  const [enquiries, setEnquiries] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  const fetchAll = useCallback(async () => {
+    setLoading(true);
+    try {
+      const { data } = await supabase
+        .from('enquiries')
+        .select(`*, aircraft:aircraft(id, title)`)
+        .order('created_at', { ascending: false });
+      setEnquiries(data || []);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => { fetchAll(); }, [fetchAll]);
+
+  const updateStatus = async (id, status) => {
+    await supabase.from('enquiries').update({ status }).eq('id', id);
+    setEnquiries(prev => prev.map(e => e.id === id ? { ...e, status } : e));
+  };
+
+  return { enquiries, loading, refetch: fetchAll, updateStatus };
 }
