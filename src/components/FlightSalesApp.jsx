@@ -1161,6 +1161,7 @@ const HomePage = ({ setPage, setSelectedListing, savedIds, onSave, setSearchFilt
   const { aircraft: latestFromDB, loading: latestLoading } = useLatestAircraft();
   const { dealers: dealersFromDB } = useDealers();
   const { articles: newsFromDB } = useNews(3);
+  const { total: totalListings } = useAircraft({});
 
   const featured = featuredFromDB.length > 0 ? featuredFromDB : SAMPLE_LISTINGS.filter(l => l.featured).slice(0, 4);
   const latest = latestFromDB.length > 0 ? latestFromDB : [...SAMPLE_LISTINGS].sort((a, b) => new Date(b.created_at || b.created) - new Date(a.created_at || a.created)).slice(0, 4);
@@ -1348,7 +1349,7 @@ const HomePage = ({ setPage, setSelectedListing, savedIds, onSave, setSearchFilt
           </div>
 
           <div className="fs-stats">
-            <div className="fs-stat"><div className="fs-stat-num">{SAMPLE_LISTINGS.length}+</div><div className="fs-stat-label">Aircraft Listed</div></div>
+            <div className="fs-stat"><div className="fs-stat-num">{totalListings > 0 ? `${totalListings}+` : `${SAMPLE_LISTINGS.length}+`}</div><div className="fs-stat-label">Aircraft Listed</div></div>
             <div className="fs-stat"><div className="fs-stat-num">{displayDealers.length}</div><div className="fs-stat-label">Verified Dealers</div></div>
             <div className="fs-stat"><div className="fs-stat-num">2.4K+</div><div className="fs-stat-label">Monthly Buyers</div></div>
           </div>
@@ -2585,54 +2586,96 @@ const SellPage = ({ user, setPage }) => {
   );
 };
 
-const DealersPage = () => (
-  <>
-    <div className="fs-about-hero">
-      <div className="fs-container">
-        <h1 style={{ fontFamily: "var(--fs-font-serif)", fontSize: 36 }}>Verified Dealers</h1>
-        <p style={{ color: "rgba(255,255,255,0.6)", marginTop: 8 }}>Trusted aviation businesses across Australia</p>
+const DealersPage = () => {
+  const { dealers: dealersFromDB, loading } = useDealers();
+  const dealers = dealersFromDB.length > 0 ? dealersFromDB : DEALERS;
+  const [applyForm, setApplyForm] = useState({ name: '', email: '', business: '', phone: '' });
+  const [applying, setApplying] = useState(false);
+  const [applied, setApplied] = useState(false);
+  const [applyError, setApplyError] = useState(null);
+  const [showApply, setShowApply] = useState(false);
+
+  const handleApply = async () => {
+    if (!applyForm.name || !applyForm.email || !applyForm.business) { setApplyError('Please fill in all required fields.'); return; }
+    setApplying(true); setApplyError(null);
+    try {
+      await submitLead('contact', { name: applyForm.name, email: applyForm.email, phone: applyForm.phone, message: `[DEALER APPLICATION] Business: ${applyForm.business}` });
+      setApplied(true);
+    } catch (err) {
+      setApplyError(err.message || 'Failed to submit. Please try again.');
+    } finally { setApplying(false); }
+  };
+
+  return (
+    <>
+      <div className="fs-about-hero">
+        <div className="fs-container">
+          <h1 style={{ fontFamily: "var(--fs-font-serif)", fontSize: 36 }}>Verified Dealers</h1>
+          <p style={{ color: "rgba(255,255,255,0.6)", marginTop: 8 }}>Trusted aviation businesses across Australia</p>
+        </div>
       </div>
-    </div>
-    <section className="fs-section">
-      <div className="fs-container">
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(360px, 1fr))", gap: 16 }}>
-          {DEALERS.map(d => (
-            <div key={d.id} className="fs-dealer-card" style={{ flexDirection: "column", alignItems: "flex-start", gap: 0 }}>
-              <div style={{ display: "flex", gap: 14, alignItems: "center", width: "100%", marginBottom: 12 }}>
-                <div className="fs-dealer-avatar" style={{ width: 56, height: 56, fontSize: 16 }}>{d.logo}</div>
-                <div>
-                  <div className="fs-dealer-name" style={{ fontSize: 17 }}>{d.name}</div>
-                  <div className="fs-dealer-loc">{Icons.location} {d.location}</div>
+      <section className="fs-section">
+        <div className="fs-container">
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(360px, 1fr))", gap: 16 }}>
+            {loading ? [1,2,3,4,5,6].map(i => <div key={i} style={{ height: 160, background: "var(--fs-gray-100)", borderRadius: "var(--fs-radius)", animation: "fs-pulse 1.5s infinite" }} />) :
+              dealers.map(d => (
+                <div key={d.id} className="fs-dealer-card" style={{ flexDirection: "column", alignItems: "flex-start", gap: 0 }}>
+                  <div style={{ display: "flex", gap: 14, alignItems: "center", width: "100%", marginBottom: 12 }}>
+                    <div className="fs-dealer-avatar" style={{ width: 56, height: 56, fontSize: 16 }}>{d.logo}</div>
+                    <div>
+                      <div className="fs-dealer-name" style={{ fontSize: 17 }}>{d.name}</div>
+                      <div className="fs-dealer-loc">{Icons.location} {d.location}</div>
+                    </div>
+                  </div>
+                  <div style={{ fontSize: 13, color: "var(--fs-gray-500)", marginBottom: 12 }}>Specialising in {d.speciality}</div>
+                  <div style={{ display: "flex", gap: 16, fontSize: 13, width: "100%", paddingTop: 12, borderTop: "1px solid var(--fs-gray-100)" }}>
+                    <span>{d.listings} active listings</span>
+                    <span className="fs-dealer-rating">{Icons.star} {d.rating}</span>
+                    <span>Est. {d.since}</span>
+                  </div>
+                </div>
+              ))
+            }
+          </div>
+          <div style={{ textAlign: "center", marginTop: 40, padding: "32px", background: "var(--fs-gray-50)", borderRadius: "var(--fs-radius-lg)" }}>
+            <h3 style={{ fontSize: 20, fontWeight: 700, marginBottom: 8 }}>Become a Flightsales Dealer</h3>
+            <p style={{ fontSize: 14, color: "var(--fs-gray-500)", marginBottom: 16, maxWidth: 500, margin: "0 auto 16px" }}>
+              Get a branded storefront, lead management tools, and access to Australia's largest aviation audience.
+            </p>
+            {applied ? (
+              <p style={{ color: "var(--fs-blue)", fontWeight: 600 }}>✓ Application received — we'll be in touch within 2 business days.</p>
+            ) : showApply ? (
+              <div style={{ maxWidth: 400, margin: "0 auto", textAlign: "left" }}>
+                {applyError && <p style={{ color: "#ef4444", fontSize: 13, marginBottom: 8 }}>{applyError}</p>}
+                <div className="fs-form-group"><label className="fs-form-label">Your Name *</label><input className="fs-form-input" value={applyForm.name} onChange={e => setApplyForm(f => ({...f, name: e.target.value}))} /></div>
+                <div className="fs-form-group"><label className="fs-form-label">Business Name *</label><input className="fs-form-input" value={applyForm.business} onChange={e => setApplyForm(f => ({...f, business: e.target.value}))} /></div>
+                <div className="fs-form-group"><label className="fs-form-label">Email *</label><input className="fs-form-input" type="email" value={applyForm.email} onChange={e => setApplyForm(f => ({...f, email: e.target.value}))} /></div>
+                <div className="fs-form-group"><label className="fs-form-label">Phone</label><input className="fs-form-input" type="tel" value={applyForm.phone} onChange={e => setApplyForm(f => ({...f, phone: e.target.value}))} /></div>
+                <div style={{ display: "flex", gap: 12 }}>
+                  <button className="fs-form-submit" onClick={handleApply} disabled={applying} style={{ opacity: applying ? 0.7 : 1 }}>{applying ? 'Submitting...' : 'Submit Application'}</button>
+                  <button className="fs-detail-cta fs-detail-cta-secondary" onClick={() => setShowApply(false)}>Cancel</button>
                 </div>
               </div>
-              <div style={{ fontSize: 13, color: "var(--fs-gray-500)", marginBottom: 12 }}>
-                Specialising in {d.speciality}
-              </div>
-              <div style={{ display: "flex", gap: 16, fontSize: 13, width: "100%", paddingTop: 12, borderTop: "1px solid var(--fs-gray-100)" }}>
-                <span>{d.listings} active listings</span>
-                <span className="fs-dealer-rating">{Icons.star} {d.rating}</span>
-                <span>Est. {d.since}</span>
-              </div>
-            </div>
-          ))}
+            ) : (
+              <button className="fs-form-submit" style={{ maxWidth: 240, margin: "0 auto" }} onClick={() => setShowApply(true)}>Apply Now</button>
+            )}
+          </div>
         </div>
-        <div style={{ textAlign: "center", marginTop: 40, padding: "32px", background: "var(--fs-gray-50)", borderRadius: "var(--fs-radius-lg)" }}>
-          <h3 style={{ fontSize: 20, fontWeight: 700, marginBottom: 8 }}>Become a Flightsales Dealer</h3>
-          <p style={{ fontSize: 14, color: "var(--fs-gray-500)", marginBottom: 16, maxWidth: 500, margin: "0 auto 16px" }}>
-            Get a branded storefront, lead management tools, and access to Australia's largest aviation audience.
-          </p>
-          <button className="fs-form-submit" style={{ maxWidth: 240, margin: "0 auto" }}>Apply Now</button>
-        </div>
-      </div>
-    </section>
-  </>
-);
+      </section>
+    </>
+  );
+};
 
 const FinancePage = () => {
   const [amount, setAmount] = useState(400000);
   const [deposit, setDeposit] = useState(20);
   const [rate, setRate] = useState(7.5);
   const [term, setTerm] = useState(10);
+  const [showFinForm, setShowFinForm] = useState(false);
+  const [finForm, setFinForm] = useState({ name: '', email: '', phone: '', aircraft: '' });
+  const [finSending, setFinSending] = useState(false);
+  const [finSent, setFinSent] = useState(false);
+  const [finError, setFinError] = useState(null);
   const loanAmt = amount * (1 - deposit / 100);
   const monthly = loanAmt * (rate / 100 / 12) / (1 - Math.pow(1 + rate / 100 / 12, -term * 12));
 
@@ -2690,7 +2733,29 @@ const FinancePage = () => {
                 Loan amount: {formatPriceFull(Math.round(loanAmt))} &middot; Total interest: {formatPriceFull(Math.round(monthly * term * 12 - loanAmt))}
               </div>
             </div>
-            <button className="fs-form-submit" style={{ marginTop: 20 }}>Get Pre-Approved</button>
+            {finSent ? (
+              <p style={{ textAlign: "center", color: "var(--fs-blue)", fontWeight: 600, marginTop: 20 }}>✓ Request received — a finance specialist will contact you within 1 business day.</p>
+            ) : showFinForm ? (
+              <div style={{ marginTop: 20, borderTop: "1px solid var(--fs-gray-100)", paddingTop: 20 }}>
+                {finError && <p style={{ color: "#ef4444", fontSize: 13, marginBottom: 8 }}>{finError}</p>}
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+                  <div className="fs-form-group"><label className="fs-form-label">Your Name *</label><input className="fs-form-input" value={finForm.name} onChange={e => setFinForm(f => ({...f, name: e.target.value}))} /></div>
+                  <div className="fs-form-group"><label className="fs-form-label">Email *</label><input className="fs-form-input" type="email" value={finForm.email} onChange={e => setFinForm(f => ({...f, email: e.target.value}))} /></div>
+                  <div className="fs-form-group"><label className="fs-form-label">Phone</label><input className="fs-form-input" type="tel" value={finForm.phone} onChange={e => setFinForm(f => ({...f, phone: e.target.value}))} /></div>
+                  <div className="fs-form-group"><label className="fs-form-label">Aircraft in Mind</label><input className="fs-form-input" value={finForm.aircraft} onChange={e => setFinForm(f => ({...f, aircraft: e.target.value}))} placeholder="e.g. Cirrus SR22T" /></div>
+                </div>
+                <div style={{ display: "flex", gap: 12 }}>
+                  <button className="fs-form-submit" style={{ marginTop: 4 }} disabled={finSending} onClick={async () => {
+                    if (!finForm.name || !finForm.email) { setFinError('Name and email are required.'); return; }
+                    setFinSending(true); setFinError(null);
+                    try { await submitLead('finance', { name: finForm.name, email: finForm.email, phone: finForm.phone, message: `Finance enquiry. Loan: ${formatPriceFull(Math.round(loanAmt))}, ${term} yrs @ ${rate}%. Aircraft: ${finForm.aircraft}` }); setFinSent(true); } catch(err) { setFinError(err.message || 'Failed to submit.'); } finally { setFinSending(false); }
+                  }} style={{ marginTop: 4, opacity: finSending ? 0.7 : 1 }}>{finSending ? 'Sending...' : 'Submit'}</button>
+                  <button className="fs-detail-cta fs-detail-cta-secondary" style={{ marginTop: 4 }} onClick={() => setShowFinForm(false)}>Cancel</button>
+                </div>
+              </div>
+            ) : (
+              <button className="fs-form-submit" style={{ marginTop: 20 }} onClick={() => setShowFinForm(true)}>Get Pre-Approved</button>
+            )}
           </div>
         </div>
       </section>
@@ -3316,7 +3381,7 @@ const LoginPage = ({ setPage, signIn, signUp, signInWithGoogle }) => {
   );
 };
 
-const DashboardPage = ({ user, setPage, signOut, savedIds, savedListings, onSave }) => {
+const DashboardPage = ({ user, setPage, signOut, savedIds, savedListings, onSave, onSelectListing }) => {
   if (!user) {
     setPage('login');
     return null;
@@ -3932,7 +3997,7 @@ const DashboardPage = ({ user, setPage, signOut, savedIds, savedListings, onSave
                   ) : (
                     <div className="fs-grid">
                       {savedAircraft.map(listing => (
-                        <ListingCard key={listing.id} listing={listing} onClick={() => {}} onSave={onSave} saved={true} />
+                        <ListingCard key={listing.id} listing={listing} onClick={onSelectListing} onSave={onSave} saved={true} />
                       ))}
                     </div>
                   )}
@@ -5344,14 +5409,14 @@ export default function FlightSalesApp() {
       {page === "detail" && <ListingDetail listing={selectedListing} onBack={() => setPageWrap("buy")} savedIds={savedIds} onSave={onSave} user={user} />}
       {page === "sell" && <SellPage user={user} setPage={setPageWrap} />}
       {page === "dealers" && <DealersPage />}
-      {page === "valuate" && <ValuatePage />}
+      {page === "valuate" && <ContactPage />}
       {page === "news" && <NewsPage />}
       {page === "about" && <AboutPage />}
       {page === "contact" && <ContactPage />}
       {page === "login" && <LoginPage setPage={setPageWrap} signIn={signIn} signUp={signUp} signInWithGoogle={signInWithGoogle} />}
-      {page === "dashboard" && <DashboardPage user={user} setPage={setPageWrap} signOut={signOut} savedIds={savedIds} savedListings={savedListings} onSave={onSave} />}
+      {page === "dashboard" && <DashboardPage user={user} setPage={setPageWrap} signOut={signOut} savedIds={savedIds} savedListings={savedListings} onSave={onSave} onSelectListing={setSelectedListing} />}
       {page === "admin" && <AdminPage user={user} setPage={setPageWrap} signOut={signOut} />}
-      {(page === "finance" || page === "insurance") && <HomePage setPage={setPageWrap} setSelectedListing={setSelectedListing} savedIds={savedIds} onSave={onSave} setSearchFilters={setSearchFilters} />}
+      {(page === "finance" || page === "insurance") && <ContactPage />}
 
       <Footer setPage={setPageWrap} />
 
