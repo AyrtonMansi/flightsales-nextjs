@@ -24,6 +24,7 @@ export function useAircraft(filters = {}) {
       if (stableFilters.manufacturer) query = query.eq('manufacturer', stableFilters.manufacturer);
       if (stableFilters.state) query = query.eq('state', stableFilters.state);
       if (stableFilters.condition) query = query.eq('condition', stableFilters.condition);
+      if (stableFilters.dealerId) query = query.eq('dealer_id', stableFilters.dealerId);
       if (stableFilters.minPrice) query = query.gte('price', Number(stableFilters.minPrice));
       if (stableFilters.maxPrice) query = query.lte('price', Number(stableFilters.maxPrice));
       if (stableFilters.maxHours) query = query.lte('ttaf', Number(stableFilters.maxHours));
