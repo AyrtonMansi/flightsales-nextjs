@@ -1672,6 +1672,9 @@ const BuyPage = ({ setSelectedListing, savedIds, onSave, initialFilters }) => {
   const [glassOnly, setGlassOnly] = useState(initialFilters?.glassOnly || false);
   const [sideOpen, setSideOpen] = useState(false);
 
+  // Reset to page 1 whenever any filter changes — prevents empty page state
+  useEffect(() => { setResultPage(1); }, [search, catFilter, makeFilter, stateFilter, condFilter, minPrice, maxPrice, maxHours, ifrOnly, glassOnly]);
+
   const handleAiSearch = (query) => {
     const q = query.toLowerCase().trim();
     if (!q) return;
@@ -1884,44 +1887,99 @@ const BuyPage = ({ setSelectedListing, savedIds, onSave, initialFilters }) => {
     return results;
   }, [dbAircraft, search, sortBy, catFilter, stateFilter, makeFilter, condFilter, minPrice, maxPrice, maxHours, ifrOnly, glassOnly]);
 
+  // Active filter chips — compute labels for display
+  const activeChips = [
+    catFilter && { key: 'cat', label: catFilter, clear: () => setCatFilter("") },
+    makeFilter && { key: 'make', label: makeFilter, clear: () => setMakeFilter("") },
+    stateFilter && { key: 'state', label: stateFilter, clear: () => setStateFilter("") },
+    condFilter && { key: 'cond', label: condFilter, clear: () => setCondFilter("") },
+    (minPrice || maxPrice) && { key: 'price', label: `$${minPrice ? `${(minPrice/1000).toFixed(0)}k` : '0'}–${maxPrice ? `${(maxPrice/1000).toFixed(0)}k` : '∞'}`, clear: () => { setMinPrice(""); setMaxPrice(""); } },
+    maxHours && { key: 'hours', label: `< ${maxHours} hrs`, clear: () => setMaxHours("") },
+    ifrOnly && { key: 'ifr', label: 'IFR', clear: () => setIfrOnly(false) },
+    glassOnly && { key: 'glass', label: 'Glass', clear: () => setGlassOnly(false) },
+  ].filter(Boolean);
+
+  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+  const pageStart = (resultPage - 1) * PAGE_SIZE + 1;
+  const pageEnd = Math.min(resultPage * PAGE_SIZE, filtered.length);
+
   return (
     <>
+      {/* Search bar — wide, single line */}
       <div className="fs-search-page-bar">
         <div className="fs-container fs-search-page-inner">
-          <div className="fs-search-ai-icon" style={{ width: 28, height: 28, borderRadius: 6, fontSize: 11 }}>
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M12 2a4 4 0 0 0-4 4v2H6a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V10a2 2 0 0 0-2-2h-2V6a4 4 0 0 0-4-4z"/><circle cx="12" cy="15" r="2"/></svg>
-          </div>
-          <div style={{ position: "relative", flex: 1, minWidth: 200 }}>
-            <input className="fs-search-inline-input" style={{ paddingLeft: 14 }}
-              placeholder='Search "4-seat IFR under $500k" or type aircraft name...' 
-              value={search} 
+          <div style={{ position: "relative", flex: 1, minWidth: 240 }}>
+            <span style={{ position: "absolute", left: 16, top: "50%", transform: "translateY(-50%)", color: "var(--fs-ink-4)", pointerEvents: "none" }}>{Icons.search}</span>
+            <input
+              className="fs-search-inline-input"
+              placeholder="Try '4-seat IFR under $500k in VIC' or 'Cirrus SR22'"
+              value={search}
               onChange={e => setSearch(e.target.value)}
               onKeyDown={e => { if (e.key === "Enter" && e.target.value) handleAiSearch(e.target.value); }}
             />
           </div>
           <button className="fs-mobile-filter-btn" onClick={() => setSideOpen(!sideOpen)}>
-            {Icons.filter} Filters {activeFilterCount > 0 && `(${activeFilterCount})`}
+            {Icons.filter} Filters{activeFilterCount > 0 ? ` · ${activeFilterCount}` : ""}
           </button>
           <select className="fs-sort-select" value={sortBy} onChange={e => { setSortBy(e.target.value); setResultPage(1); }}>
-            <option value="newest">Newest First</option>
-            <option value="price-asc">Price: Low to High</option>
-            <option value="price-desc">Price: High to Low</option>
-            <option value="hours-low">Hours: Low to High</option>
+            <option value="newest">Newest first</option>
+            <option value="price-asc">Price: low to high</option>
+            <option value="price-desc">Price: high to low</option>
+            <option value="hours-low">Hours: low to high</option>
           </select>
         </div>
       </div>
-      <section className="fs-section" style={{ paddingTop: 24 }}>
+
+      {/* Quick filter pills — one-tap common filters */}
+      <div style={{ borderBottom: "1px solid var(--fs-line)", background: "var(--fs-white)" }}>
+        <div className="fs-container" style={{ padding: "12px 40px", display: "flex", gap: 8, flexWrap: "wrap", overflowX: "auto" }}>
+          {[
+            { label: "Just listed", active: false, action: () => setSortBy("newest") },
+            { label: "Under $300k", active: maxPrice === "300000", action: () => { setMaxPrice(maxPrice === "300000" ? "" : "300000"); setMinPrice(""); } },
+            { label: "Under $1M", active: maxPrice === "1000000", action: () => { setMaxPrice(maxPrice === "1000000" ? "" : "1000000"); setMinPrice(""); } },
+            { label: "$1M+", active: minPrice === "1000000" && !maxPrice, action: () => { setMinPrice(minPrice === "1000000" && !maxPrice ? "" : "1000000"); setMaxPrice(""); } },
+            { label: "IFR", active: ifrOnly, action: () => setIfrOnly(!ifrOnly) },
+            { label: "Glass cockpit", active: glassOnly, action: () => setGlassOnly(!glassOnly) },
+            { label: "Single Engine", active: catFilter === "Single Engine Piston", action: () => setCatFilter(catFilter === "Single Engine Piston" ? "" : "Single Engine Piston") },
+            { label: "Multi Engine", active: catFilter === "Multi Engine Piston", action: () => setCatFilter(catFilter === "Multi Engine Piston" ? "" : "Multi Engine Piston") },
+            { label: "Helicopter", active: catFilter === "Helicopter", action: () => setCatFilter(catFilter === "Helicopter" ? "" : "Helicopter") },
+            { label: "LSA", active: catFilter === "LSA", action: () => setCatFilter(catFilter === "LSA" ? "" : "LSA") },
+            { label: "Turboprop", active: catFilter === "Turboprop", action: () => setCatFilter(catFilter === "Turboprop" ? "" : "Turboprop") },
+            { label: "Low hours (<1000)", active: maxHours === "1000", action: () => setMaxHours(maxHours === "1000" ? "" : "1000") },
+          ].map(p => (
+            <button
+              key={p.label}
+              onClick={p.action}
+              className="fs-cat-pill"
+              style={{
+                background: p.active ? "var(--fs-ink)" : "var(--fs-bg-2)",
+                color: p.active ? "white" : "var(--fs-ink)",
+                fontSize: 13, padding: "8px 14px", whiteSpace: "nowrap"
+              }}
+            >{p.label}</button>
+          ))}
+        </div>
+      </div>
+
+      <section className="fs-section" style={{ paddingTop: 32, paddingBottom: 64 }}>
         <div className="fs-container">
           <div className="fs-buy-layout">
-            {/* SIDEBAR */}
+            {/* SIDEBAR — compressed */}
             <div className={`fs-sidebar${sideOpen ? " open" : ""}`}>
               <div className="fs-sidebar-card">
-                <div className="fs-sidebar-title">Filter Aircraft</div>
-                
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 18 }}>
+                  <div className="fs-sidebar-title" style={{ marginBottom: 0 }}>Filters</div>
+                  {activeFilterCount > 0 && (
+                    <button onClick={resetFilters} style={{ background: "none", border: "none", color: "var(--fs-ink-3)", fontSize: 13, fontWeight: 500, cursor: "pointer", textDecoration: "underline", padding: 0 }}>
+                      Clear all
+                    </button>
+                  )}
+                </div>
+
                 <div className="fs-sidebar-group">
                   <label className="fs-sidebar-label">Category</label>
                   <select className="fs-sidebar-select" value={catFilter} onChange={e => setCatFilter(e.target.value)}>
-                    <option value="">All Categories</option>
+                    <option value="">All</option>
                     {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
                   </select>
                 </div>
@@ -1929,7 +1987,7 @@ const BuyPage = ({ setSelectedListing, savedIds, onSave, initialFilters }) => {
                 <div className="fs-sidebar-group">
                   <label className="fs-sidebar-label">Manufacturer</label>
                   <select className="fs-sidebar-select" value={makeFilter} onChange={e => setMakeFilter(e.target.value)}>
-                    <option value="">All Makes</option>
+                    <option value="">All</option>
                     {MANUFACTURERS.map(m => <option key={m} value={m}>{m}</option>)}
                   </select>
                 </div>
@@ -1937,7 +1995,7 @@ const BuyPage = ({ setSelectedListing, savedIds, onSave, initialFilters }) => {
                 <div className="fs-sidebar-group">
                   <label className="fs-sidebar-label">State</label>
                   <select className="fs-sidebar-select" value={stateFilter} onChange={e => setStateFilter(e.target.value)}>
-                    <option value="">All States</option>
+                    <option value="">All</option>
                     {STATES.map(s => <option key={s} value={s}>{s}</option>)}
                   </select>
                 </div>
@@ -1951,7 +2009,7 @@ const BuyPage = ({ setSelectedListing, savedIds, onSave, initialFilters }) => {
                 </div>
 
                 <div className="fs-sidebar-group">
-                  <label className="fs-sidebar-label">Price Range</label>
+                  <label className="fs-sidebar-label">Price ($)</label>
                   <div className="fs-sidebar-range">
                     <input type="number" placeholder="Min" value={minPrice} onChange={e => setMinPrice(e.target.value)} />
                     <span>—</span>
@@ -1960,51 +2018,78 @@ const BuyPage = ({ setSelectedListing, savedIds, onSave, initialFilters }) => {
                 </div>
 
                 <div className="fs-sidebar-group">
-                  <label className="fs-sidebar-label">Max Total Hours</label>
-                  <input type="number" placeholder="e.g. 2000" value={maxHours} onChange={e => setMaxHours(e.target.value)} 
-                    style={{ width: "100%", padding: "9px 10px", border: "1px solid var(--fs-gray-200)", borderRadius: "var(--fs-radius-sm)", fontSize: 13, fontFamily: "var(--fs-font)", outline: "none" }} />
+                  <label className="fs-sidebar-label">Max total hours</label>
+                  <input type="number" placeholder="e.g. 2000" value={maxHours} onChange={e => setMaxHours(e.target.value)}
+                    style={{ width: "100%", padding: "11px 14px", border: "1px solid var(--fs-line)", borderRadius: "var(--fs-radius)", fontSize: 14, fontFamily: "var(--fs-font)", outline: "none", fontWeight: 500, color: "var(--fs-ink)" }} />
                 </div>
 
-                <div className="fs-sidebar-group">
+                <div className="fs-sidebar-group" style={{ marginBottom: 0 }}>
                   <label className="fs-sidebar-label">Features</label>
                   <label className="fs-sidebar-check">
-                    <input type="checkbox" checked={ifrOnly} onChange={e => setIfrOnly(e.target.checked)} /> IFR Capable
+                    <input type="checkbox" checked={ifrOnly} onChange={e => setIfrOnly(e.target.checked)} /> IFR capable
                   </label>
                   <label className="fs-sidebar-check">
-                    <input type="checkbox" checked={glassOnly} onChange={e => setGlassOnly(e.target.checked)} /> Glass Cockpit
+                    <input type="checkbox" checked={glassOnly} onChange={e => setGlassOnly(e.target.checked)} /> Glass cockpit
                   </label>
                 </div>
-
-                {activeFilterCount > 0 && (
-                  <button className="fs-sidebar-reset" onClick={resetFilters}>
-                    Clear all filters ({activeFilterCount})
-                  </button>
-                )}
               </div>
             </div>
 
             {/* RESULTS */}
             <div>
+              {/* Active filter chips */}
+              {activeChips.length > 0 && (
+                <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 20, alignItems: "center" }}>
+                  {activeChips.map(chip => (
+                    <button
+                      key={chip.key}
+                      onClick={chip.clear}
+                      style={{
+                        display: "inline-flex", alignItems: "center", gap: 6,
+                        background: "var(--fs-ink)", color: "white",
+                        border: "none", padding: "7px 8px 7px 14px",
+                        borderRadius: "var(--fs-radius-pill)",
+                        fontSize: 13, fontWeight: 500, cursor: "pointer",
+                        fontFamily: "var(--fs-font)", letterSpacing: "-0.005em",
+                      }}
+                    >
+                      {chip.label}
+                      <span style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", width: 18, height: 18, borderRadius: "50%", background: "rgba(255,255,255,0.15)" }}>
+                        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                      </span>
+                    </button>
+                  ))}
+                  <button onClick={resetFilters} style={{ background: "none", border: "none", color: "var(--fs-ink-3)", fontSize: 13, fontWeight: 500, cursor: "pointer", padding: "7px 10px", textDecoration: "underline" }}>
+                    Clear all
+                  </button>
+                </div>
+              )}
+
               <div className="fs-results-bar">
                 <span className="fs-results-count">
-                  {dbLoading ? "Searching..." : `${filtered.length} aircraft found`}
-                  {aiQuery && !dbLoading && <span style={{ color: "var(--fs-gray-400)", marginLeft: 8 }}>for "{aiQuery}"</span>}
+                  {dbLoading ? "Searching..." : (
+                    <>
+                      <span style={{ color: "var(--fs-ink)", fontWeight: 700, fontSize: 18, letterSpacing: "-0.02em" }}>{filtered.length}</span>
+                      {' '}aircraft
+                      {aiQuery && <span style={{ color: "var(--fs-ink-3)", marginLeft: 8 }}>for "{aiQuery}"</span>}
+                    </>
+                  )}
                 </span>
                 {filtered.length > 0 && !dbLoading && (
-                  <span style={{ fontSize: 12, color: "var(--fs-gray-400)" }}>
-                    Page {resultPage} of {Math.ceil(filtered.length / PAGE_SIZE)}
+                  <span style={{ fontSize: 13, color: "var(--fs-ink-3)", fontWeight: 500 }}>
+                    Showing {pageStart}–{pageEnd} of {filtered.length}
                   </span>
                 )}
               </div>
               {dbLoading ? (
                 <div className="fs-grid">
-                  {[1,2,3,4,5,6].map(i => <div key={i} style={{ height: 280, background: "var(--fs-gray-100)", borderRadius: "var(--fs-radius)", animation: "fs-pulse 1.5s infinite" }} />)}
+                  {[1,2,3,4,5,6].map(i => <div key={i} style={{ height: 360, background: "var(--fs-bg-2)", borderRadius: "var(--fs-radius)", animation: "fs-pulse 1.5s infinite" }} />)}
                 </div>
               ) : filtered.length === 0 ? (
-                <div className="fs-empty">
-                  <div style={{ fontSize: 40, marginBottom: 8 }}>{Icons.search}</div>
-                  <p>No aircraft match your filters.</p>
-                  <button className="fs-sidebar-reset" style={{ maxWidth: 200, margin: "16px auto 0" }} onClick={resetFilters}>Clear all filters</button>
+                <div className="fs-empty" style={{ padding: "80px 20px" }}>
+                  <div style={{ fontSize: 16, fontWeight: 600, color: "var(--fs-ink)", marginBottom: 8, letterSpacing: "-0.02em" }}>No aircraft match your filters</div>
+                  <p style={{ color: "var(--fs-ink-3)", fontSize: 14, marginBottom: 20 }}>Try widening your price range, removing a feature, or clearing filters.</p>
+                  <button className="fs-btn fs-btn-primary" onClick={resetFilters}>Clear all filters</button>
                 </div>
               ) : (
                 <>
@@ -2013,23 +2098,38 @@ const BuyPage = ({ setSelectedListing, savedIds, onSave, initialFilters }) => {
                       <ListingCard key={l.id} listing={l} onClick={setSelectedListing} onSave={onSave} saved={savedIds.has(l.id)} />
                     ))}
                   </div>
-                  {filtered.length > PAGE_SIZE && (
-                    <div style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: 8, marginTop: 32 }}>
-                      <button
-                        onClick={() => { setResultPage(p => Math.max(1, p - 1)); window.scrollTo(0, 300); }}
-                        disabled={resultPage === 1}
-                        style={{ padding: "8px 18px", borderRadius: "var(--fs-radius-sm)", border: "1px solid var(--fs-gray-200)", background: resultPage === 1 ? "var(--fs-gray-100)" : "#fff", cursor: resultPage === 1 ? "default" : "pointer", fontWeight: 600, fontSize: 14, color: resultPage === 1 ? "var(--fs-gray-400)" : "var(--fs-gray-900)" }}
-                      >← Prev</button>
-                      {Array.from({ length: Math.ceil(filtered.length / PAGE_SIZE) }, (_, i) => i + 1).map(p => (
-                        <button key={p} onClick={() => { setResultPage(p); window.scrollTo(0, 300); }}
-                          style={{ width: 36, height: 36, borderRadius: "var(--fs-radius-sm)", border: "1px solid", borderColor: p === resultPage ? "var(--fs-blue)" : "var(--fs-gray-200)", background: p === resultPage ? "var(--fs-blue)" : "#fff", color: p === resultPage ? "#fff" : "var(--fs-gray-700)", fontWeight: 600, fontSize: 14, cursor: "pointer" }}
-                        >{p}</button>
-                      ))}
-                      <button
-                        onClick={() => { setResultPage(p => Math.min(Math.ceil(filtered.length / PAGE_SIZE), p + 1)); window.scrollTo(0, 300); }}
-                        disabled={resultPage === Math.ceil(filtered.length / PAGE_SIZE)}
-                        style={{ padding: "8px 18px", borderRadius: "var(--fs-radius-sm)", border: "1px solid var(--fs-gray-200)", background: resultPage === Math.ceil(filtered.length / PAGE_SIZE) ? "var(--fs-gray-100)" : "#fff", cursor: resultPage === Math.ceil(filtered.length / PAGE_SIZE) ? "default" : "pointer", fontWeight: 600, fontSize: 14, color: resultPage === Math.ceil(filtered.length / PAGE_SIZE) ? "var(--fs-gray-400)" : "var(--fs-gray-900)" }}
-                      >Next →</button>
+                  {totalPages > 1 && (
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 48, paddingTop: 24, borderTop: "1px solid var(--fs-line)", flexWrap: "wrap", gap: 16 }}>
+                      <span style={{ fontSize: 13, color: "var(--fs-ink-3)", fontWeight: 500 }}>
+                        Page {resultPage} of {totalPages}
+                      </span>
+                      <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                        <button
+                          onClick={() => { setResultPage(p => Math.max(1, p - 1)); window.scrollTo({ top: 200, behavior: 'smooth' }); }}
+                          disabled={resultPage === 1}
+                          style={{ width: 40, height: 40, borderRadius: "50%", border: "1px solid var(--fs-line)", background: resultPage === 1 ? "var(--fs-bg-2)" : "white", cursor: resultPage === 1 ? "default" : "pointer", color: resultPage === 1 ? "var(--fs-ink-4)" : "var(--fs-ink)", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "var(--fs-font)" }}
+                          aria-label="Previous"
+                        >{Icons.chevronLeft}</button>
+                        {(() => {
+                          const pages = [];
+                          const showRange = 5;
+                          let start = Math.max(1, resultPage - Math.floor(showRange / 2));
+                          let end = Math.min(totalPages, start + showRange - 1);
+                          start = Math.max(1, end - showRange + 1);
+                          for (let p = start; p <= end; p++) pages.push(p);
+                          return pages.map(p => (
+                            <button key={p} onClick={() => { setResultPage(p); window.scrollTo({ top: 200, behavior: 'smooth' }); }}
+                              style={{ width: 40, height: 40, borderRadius: "50%", border: "none", background: p === resultPage ? "var(--fs-ink)" : "transparent", color: p === resultPage ? "white" : "var(--fs-ink)", fontWeight: p === resultPage ? 600 : 500, fontSize: 14, cursor: "pointer", fontFamily: "var(--fs-font)", letterSpacing: "-0.005em" }}
+                            >{p}</button>
+                          ));
+                        })()}
+                        <button
+                          onClick={() => { setResultPage(p => Math.min(totalPages, p + 1)); window.scrollTo({ top: 200, behavior: 'smooth' }); }}
+                          disabled={resultPage === totalPages}
+                          style={{ width: 40, height: 40, borderRadius: "50%", border: "1px solid var(--fs-line)", background: resultPage === totalPages ? "var(--fs-bg-2)" : "white", cursor: resultPage === totalPages ? "default" : "pointer", color: resultPage === totalPages ? "var(--fs-ink-4)" : "var(--fs-ink)", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "var(--fs-font)" }}
+                          aria-label="Next"
+                        >{Icons.chevronRight}</button>
+                      </div>
                     </div>
                   )}
                 </>
