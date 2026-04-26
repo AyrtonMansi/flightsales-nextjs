@@ -4239,18 +4239,82 @@ const DashboardPage = ({ user, setPage, signOut, savedIds, savedListings, onSave
     location: user.location || ''
   });
 
-  const { listings: myListings, loading: listingsLoading, updateListingStatus } = useMyListings(user.id);
-  const { enquiries: myEnquiries, loading: enquiriesLoading, updateStatus: updateEnquiryStatus } = useMyEnquiries(user.id);
+  const { listings: myListingsRaw, loading: listingsLoading, updateListingStatus, deleteListing } = useMyListings(user.id);
+  const { enquiries: myEnquiriesRaw, loading: enquiriesLoading, updateStatus: updateEnquiryStatus } = useMyEnquiries(user.id);
   const { updateProfile } = useProfile(user.id);
 
   const savedAircraft = savedListings || [];
 
+  const formatTimeAgo = (dateString) => {
+    if (!dateString) return '';
+    const diff = Math.floor((Date.now() - new Date(dateString).getTime()) / 1000 / 60);
+    if (diff < 1) return 'Just now';
+    if (diff < 60) return `${diff} mins ago`;
+    if (diff < 1440) return `${Math.floor(diff / 60)} hours ago`;
+    return `${Math.floor(diff / 1440)} days ago`;
+  };
+
+  // Normalise DB rows into the shape the existing UI expects.
+  // DB row → { id, name, email, phone, message, status, created_at, aircraft: { id, title, ... } }
+  // UI expects → { id, from, email, phone, message, status, date, aircraft: <title string>, aircraftId, hasReplied }
+  const myEnquiries = useMemo(() => (myEnquiriesRaw || []).map(e => ({
+    id: e.id,
+    from: e.name || 'Unknown',
+    email: e.email,
+    phone: e.phone || '',
+    message: e.message || '',
+    status: e.status || 'new',
+    date: e.created_at,
+    aircraft: e.aircraft?.title || '(Listing removed)',
+    aircraftId: e.aircraft?.id || e.aircraft_id,
+    hasReplied: e.status === 'replied',
+    raw: e,
+  })), [myEnquiriesRaw]);
+
+  // Listings: derive image, daysListed, views (0 until analytics table), enquiries count from real data
+  const myListings = useMemo(() => {
+    const enquiryCounts = (myEnquiriesRaw || []).reduce((acc, e) => {
+      const key = e.aircraft?.id || e.aircraft_id;
+      if (key) acc[key] = (acc[key] || 0) + 1;
+      return acc;
+    }, {});
+    return (myListingsRaw || []).map(l => ({
+      ...l,
+      image: (Array.isArray(l.images) && l.images[0]) || null,
+      daysListed: l.created_at ? Math.max(1, Math.floor((Date.now() - new Date(l.created_at).getTime()) / 86400000)) : 0,
+      views: l.view_count || 0,
+      enquiries: enquiryCounts[l.id] || 0,
+    }));
+  }, [myListingsRaw, myEnquiriesRaw]);
+
+  // Recent activity feed: derive from real enquiries + listings (no more undefined `activities`)
+  const activities = useMemo(() => {
+    const fromEnquiries = (myEnquiriesRaw || []).slice(0, 5).map(e => ({
+      id: `enq-${e.id}`,
+      type: 'enquiry',
+      icon: Icons.mail,
+      message: `${e.name || 'Someone'} enquired about ${e.aircraft?.title || 'your listing'}`,
+      time: formatTimeAgo(e.created_at),
+      ts: new Date(e.created_at).getTime(),
+    }));
+    const fromListings = (myListingsRaw || []).slice(0, 3).map(l => ({
+      id: `lst-${l.id}`,
+      type: 'listing',
+      icon: Icons.plane,
+      message: `${l.title || 'Listing'} ${l.status === 'active' ? 'is live' : `is ${l.status || 'pending'}`}`,
+      time: formatTimeAgo(l.created_at),
+      ts: new Date(l.created_at || 0).getTime(),
+    }));
+    return [...fromEnquiries, ...fromListings].sort((a, b) => b.ts - a.ts).slice(0, 6);
+  }, [myEnquiriesRaw, myListingsRaw]);
+
   const stats = {
-    totalViews: 0,
+    totalViews: myListings.reduce((sum, l) => sum + (l.views || 0), 0),
     totalEnquiries: myEnquiries.length,
     activeListings: myListings.filter(l => l.status === 'active').length,
+    pendingListings: myListings.filter(l => l.status === 'pending').length,
     totalWatchers: 0,
-    newEnquiries: myEnquiries.filter(e => e.status === 'new').length
+    newEnquiries: myEnquiries.filter(e => e.status === 'new').length,
   };
 
   const handleLogout = async () => {
@@ -4291,15 +4355,6 @@ const DashboardPage = ({ user, setPage, signOut, savedIds, savedListings, onSave
     updateEnquiryStatus(enquiryId, 'spam');
   };
 
-  const formatTimeAgo = (dateString) => {
-    if (!dateString) return '';
-    const diff = Math.floor((Date.now() - new Date(dateString).getTime()) / 1000 / 60);
-    if (diff < 1) return 'Just now';
-    if (diff < 60) return `${diff} mins ago`;
-    if (diff < 1440) return `${Math.floor(diff / 60)} hours ago`;
-    return `${Math.floor(diff / 1440)} days ago`;
-  };
-
   const getStatusBadge = (status) => {
     const styles = {
       new: { bg: '#dcfce7', color: '#166534', label: 'New' },
@@ -4324,24 +4379,13 @@ const DashboardPage = ({ user, setPage, signOut, savedIds, savedListings, onSave
     );
   };
 
-  // Add state for new sections
-  const [savedSearches, setSavedSearches] = useState([
-    { id: 1, name: 'Cirrus under $1M in VIC', filters: { make: 'Cirrus', maxPrice: '1000000', state: 'VIC' }, alerts: true, count: 12 },
-    { id: 2, name: 'Single engine trainers', filters: { cat: 'Single Engine Piston' }, alerts: false, count: 45 },
-  ]);
-  
-  const [receivedOffers, setReceivedOffers] = useState([
-    { id: 1, aircraft: '2018 Cirrus SR22T', from: 'John Smith', amount: 850000, status: 'pending', date: '2026-03-22' },
-  ]);
-  
-  const [myOffers, setMyOffers] = useState([
-    { id: 1, aircraft: '2020 Cessna 182T', to: 'Southern Aviation', amount: 365000, status: 'pending', date: '2026-03-21' },
-  ]);
-  
-  const [drafts, setDrafts] = useState([
-    { id: 1, title: '2019 Diamond DA40', lastEdited: '2026-03-20', progress: 60 },
-  ]);
-  
+  // Local state for sections that don't have a DB table yet — start empty so the
+  // UI shows real empty states instead of seeded fakes. Wire to DB when tables land.
+  const [savedSearches, setSavedSearches] = useState([]);
+  const [receivedOffers, setReceivedOffers] = useState([]);
+  const [myOffers, setMyOffers] = useState([]);
+  const [drafts, setDrafts] = useState([]);
+
   const [notifications, setNotifications] = useState({
     emailEnquiries: true,
     emailOffers: true,
@@ -4351,11 +4395,8 @@ const DashboardPage = ({ user, setPage, signOut, savedIds, savedListings, onSave
     pushNotifications: true,
     marketingEmails: false,
   });
-  
-  const [discounts] = useState([
-    { id: 1, code: 'WELCOME2026', discount: '20% off listing fees', expiry: '2026-12-31', used: false },
-    { id: 2, code: 'DEALER50', discount: '50% off first month', expiry: '2026-06-30', used: true },
-  ]);
+
+  const [discounts] = useState([]);
 
   const sidebarItems = [
     { id: 'overview', label: 'Overview', icon: Icons.home },
@@ -4591,15 +4632,15 @@ const DashboardPage = ({ user, setPage, signOut, savedIds, savedListings, onSave
                   {/* Stats Row */}
                   <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 16, marginBottom: 24 }}>
                     {[
-                      { label: 'Total Views', value: stats.totalViews.toLocaleString(), change: '+23%', color: 'var(--fs-blue)' },
-                      { label: 'Enquiries', value: stats.totalEnquiries, change: `+${stats.newEnquiries} new`, color: 'var(--fs-green)' },
-                      { label: 'Active Listings', value: stats.activeListings, change: '2 pending', color: 'var(--fs-gray-900)' },
-                      { label: 'Watchers', value: stats.totalWatchers, change: '+12 this week', color: 'var(--fs-amber)' },
+                      { label: 'Total Views', value: stats.totalViews.toLocaleString(), change: stats.totalViews === 0 ? 'Tracking soon' : null, color: 'var(--fs-blue)' },
+                      { label: 'Enquiries', value: stats.totalEnquiries, change: stats.newEnquiries > 0 ? `${stats.newEnquiries} new` : (stats.totalEnquiries > 0 ? 'All read' : null), color: 'var(--fs-green)' },
+                      { label: 'Active Listings', value: stats.activeListings, change: stats.pendingListings > 0 ? `${stats.pendingListings} pending` : null, color: 'var(--fs-gray-900)' },
+                      { label: 'Saved by buyers', value: stats.totalWatchers, change: null, color: 'var(--fs-amber)' },
                     ].map((stat, i) => (
                       <div key={i} className="fs-detail-specs" style={{ padding: "20px", borderRadius: 12 }}>
                         <p style={{ fontSize: 28, fontWeight: 800, color: stat.color, marginBottom: 4 }}>{stat.value}</p>
                         <p style={{ fontSize: 12, color: "var(--fs-gray-500)", marginBottom: 4 }}>{stat.label}</p>
-                        <p style={{ fontSize: 11, color: "#10b981", fontWeight: 500 }}>{stat.change}</p>
+                        {stat.change && <p style={{ fontSize: 11, color: "var(--fs-gray-500)", fontWeight: 500 }}>{stat.change}</p>}
                       </div>
                     ))}
                   </div>
@@ -4749,10 +4790,14 @@ const DashboardPage = ({ user, setPage, signOut, savedIds, savedListings, onSave
                             <tr key={listing.id} style={{ borderBottom: "1px solid var(--fs-gray-100)" }}>
                               <td style={{ padding: "16px" }}>
                                 <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                                  <img src={listing.image} alt={listing.title} style={{ width: 60, height: 40, objectFit: 'cover', borderRadius: 6 }} />
+                                  {listing.image ? (
+                                    <img src={listing.image} alt={listing.title} style={{ width: 60, height: 40, objectFit: 'cover', borderRadius: 6 }} />
+                                  ) : (
+                                    <div style={{ width: 60, height: 40, borderRadius: 6, background: 'var(--fs-gray-100)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--fs-gray-400)', fontSize: 16 }}>{Icons.plane}</div>
+                                  )}
                                   <div>
                                     <p style={{ fontWeight: 600, fontSize: 14, marginBottom: 2 }}>{listing.title}</p>
-                                    <p style={{ fontSize: 12, color: 'var(--fs-gray-400)' }}>{listing.daysListed} days listed</p>
+                                    <p style={{ fontSize: 12, color: 'var(--fs-gray-400)' }}>{listing.daysListed} {listing.daysListed === 1 ? 'day' : 'days'} listed</p>
                                   </div>
                                   {listing.featured && (
                                     <span style={{ 
@@ -4914,10 +4959,10 @@ const DashboardPage = ({ user, setPage, signOut, savedIds, savedListings, onSave
                               <p style={{ fontSize: 14, color: "var(--fs-gray-700)", marginBottom: 16, lineHeight: 1.5, paddingLeft: 56 }}>
                                 "{enquiry.message.substring(0, 120)}{enquiry.message.length > 120 ? '...' : ''}"
                               </p>
-                              {enquiry.replies.length > 0 && (
+                              {enquiry.hasReplied && (
                                 <div style={{ paddingLeft: 56, marginTop: 8 }}>
                                   <span style={{ fontSize: 12, color: '#10b981', fontWeight: 500 }}>
-                                    ✓ You replied {formatTimeAgo(enquiry.replies[enquiry.replies.length - 1].date)}
+                                    ✓ You've replied
                                   </span>
                                 </div>
                               )}
@@ -5001,34 +5046,12 @@ const DashboardPage = ({ user, setPage, signOut, savedIds, savedListings, onSave
                               </div>
                             </div>
 
-                            {/* Replies */}
-                            {selectedEnquiry.replies.map((reply, idx) => (
-                              <div key={idx} style={{ marginBottom: 20 }}>
-                                <div style={{ display: 'flex', gap: 12, flexDirection: 'row-reverse' }}>
-                                  <div style={{ 
-                                    width: 32, 
-                                    height: 32, 
-                                    borderRadius: '50%', 
-                                    background: 'var(--fs-blue)',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    fontSize: 14,
-                                    fontWeight: 600,
-                                    color: 'white',
-                                    flexShrink: 0
-                                  }}>
-                                    You
-                                  </div>
-                                  <div style={{ flex: 1 }}>
-                                    <div style={{ background: '#eff6ff', padding: 12, borderRadius: 12, borderBottomRightRadius: 4 }}>
-                                      <p style={{ fontSize: 14, lineHeight: 1.6 }}>{reply.message}</p>
-                                    </div>
-                                    <p style={{ fontSize: 11, color: 'var(--fs-gray-400)', marginTop: 4, textAlign: 'right' }}>{formatTimeAgo(reply.date)}</p>
-                                  </div>
-                                </div>
+                            {selectedEnquiry.hasReplied && (
+                              <div style={{ padding: "12px 16px", background: '#ecfdf5', borderRadius: 8, fontSize: 13, color: '#065f46', display: 'flex', alignItems: 'center', gap: 8 }}>
+                                <span>✓</span>
+                                <span>You've replied to this enquiry. Future replies are tracked by status only — full message threads are coming soon.</span>
                               </div>
-                            ))}
+                            )}
                           </div>
 
                           {/* Reply Input */}
