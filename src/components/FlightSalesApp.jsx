@@ -534,6 +534,10 @@ a { color: inherit; text-decoration: none; }
   border-color: var(--fs-ink);
 }
 .fs-card:hover img { transform: scale(1.02); }
+.fs-card:hover .fs-card-quicklook { opacity: 1 !important; }
+@media (hover: none) {
+  .fs-card-quicklook { display: none !important; }
+}
 .fs-card-body { padding: 16px 18px 18px; flex: 1; display: flex; flex-direction: column; gap: 4px; }
 .fs-card-dealer-row {
   display: flex; align-items: center; gap: 6px;
@@ -1147,7 +1151,7 @@ const Footer = ({ setPage }) => (
   </footer>
 );
 
-const ListingCard = ({ listing, onClick, onSave, saved }) => {
+const ListingCard = ({ listing, onClick, onSave, saved, onQuickLook, onCompareToggle, isComparing }) => {
   const dealerName = listing.dealer?.name || (typeof listing.dealer === 'string' ? listing.dealer : null);
   const isNew = isJustListed(listing);
   const location = [listing.city, listing.state].filter(Boolean).join(', ');
@@ -1162,26 +1166,65 @@ const ListingCard = ({ listing, onClick, onSave, saved }) => {
 
   return (
     <div className="fs-card" onClick={() => onClick(listing)}>
-      <div style={{ position: "relative" }}>
+      <div className="fs-card-image-wrap" style={{ position: "relative" }}>
         <AircraftImage listing={listing} />
-        <button
-          onClick={e => { e.stopPropagation(); onSave(listing.id); }}
-          aria-label={saved ? "Unsave" : "Save"}
-          style={{
-            position: "absolute", top: 12, right: 12,
-            width: 38, height: 38, borderRadius: "50%",
-            background: saved ? "#000" : "rgba(255,255,255,0.95)",
-            border: "none", cursor: "pointer",
-            display: "flex", alignItems: "center", justifyContent: "center",
-            color: saved ? "#fff" : "#000",
-            boxShadow: "0 2px 8px rgba(0,0,0,0.12)",
-            transition: "transform 0.15s var(--fs-ease-out), background-color 0.15s",
-          }}
-          onMouseEnter={e => e.currentTarget.style.transform = "scale(1.08)"}
-          onMouseLeave={e => e.currentTarget.style.transform = "scale(1)"}
-        >
-          {saved ? Icons.heartFull : Icons.heart}
-        </button>
+        {/* Top-right action stack: Save heart + Quick look (on hover) */}
+        <div style={{ position: "absolute", top: 12, right: 12, display: "flex", flexDirection: "column", gap: 8 }}>
+          <button
+            onClick={e => { e.stopPropagation(); onSave(listing.id); }}
+            aria-label={saved ? "Unsave" : "Save"}
+            style={{
+              width: 38, height: 38, borderRadius: "50%",
+              background: saved ? "#000" : "rgba(255,255,255,0.95)",
+              border: "none", cursor: "pointer",
+              display: "flex", alignItems: "center", justifyContent: "center",
+              color: saved ? "#fff" : "#000",
+              boxShadow: "0 2px 8px rgba(0,0,0,0.12)",
+              transition: "transform 0.15s var(--fs-ease-out), background-color 0.15s",
+            }}
+            onMouseEnter={e => e.currentTarget.style.transform = "scale(1.08)"}
+            onMouseLeave={e => e.currentTarget.style.transform = "scale(1)"}
+          >
+            {saved ? Icons.heartFull : Icons.heart}
+          </button>
+          {onCompareToggle && (
+            <button
+              onClick={e => { e.stopPropagation(); onCompareToggle(listing.id); }}
+              aria-label={isComparing ? "Remove from compare" : "Add to compare"}
+              title={isComparing ? "Remove from compare" : "Add to compare"}
+              className="fs-card-compare-btn"
+              style={{
+                width: 38, height: 38, borderRadius: "50%",
+                background: isComparing ? "#000" : "rgba(255,255,255,0.95)",
+                border: "none", cursor: "pointer",
+                display: "flex", alignItems: "center", justifyContent: "center",
+                color: isComparing ? "#fff" : "#000",
+                boxShadow: "0 2px 8px rgba(0,0,0,0.12)",
+              }}
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M3 6h18M3 12h18M3 18h12"/></svg>
+            </button>
+          )}
+        </div>
+        {/* Quick look button — bottom right, fades in on hover */}
+        {onQuickLook && (
+          <button
+            onClick={e => { e.stopPropagation(); onQuickLook(listing); }}
+            className="fs-card-quicklook"
+            style={{
+              position: "absolute", bottom: 12, right: 12,
+              padding: "8px 14px", borderRadius: "var(--fs-radius-pill)",
+              background: "rgba(0,0,0,0.85)", color: "white",
+              border: "none", cursor: "pointer",
+              display: "flex", alignItems: "center", gap: 6,
+              fontSize: 12.5, fontWeight: 600, fontFamily: "var(--fs-font)",
+              opacity: 0, transition: "opacity 0.2s var(--fs-ease-out)",
+              backdropFilter: "blur(8px)", letterSpacing: "-0.005em",
+            }}
+          >
+            {Icons.eye} Quick look
+          </button>
+        )}
       </div>
       <div className="fs-card-body">
         <div className="fs-card-dealer-row">
@@ -1214,6 +1257,190 @@ const ListingCard = ({ listing, onClick, onSave, saved }) => {
         <span style={{ color: isNew ? "var(--fs-ink)" : "var(--fs-ink-3)", fontWeight: isNew ? 600 : 500 }}>
           {isNew ? "Just listed" : timeAgo(listing.created_at || listing.created)}
         </span>
+      </div>
+    </div>
+  );
+};
+
+// QUICK-LOOK MODAL — preview a listing without leaving the grid
+const QuickLookModal = ({ listing, onClose, onViewFull, onSave, saved, onEnquire }) => {
+  if (!listing) return null;
+  const dealerName = listing.dealer?.name || (typeof listing.dealer === 'string' ? listing.dealer : null);
+  const location = [listing.city, listing.state].filter(Boolean).join(', ');
+  const tags = [
+    listing.ifr && "IFR",
+    listing.glass_cockpit && "Glass cockpit",
+    listing.pressurised && "Pressurised",
+    listing.retractable && "Retractable",
+  ].filter(Boolean);
+
+  return (
+    <div className="fs-modal-overlay" onClick={onClose}>
+      <div
+        className="fs-modal"
+        onClick={e => e.stopPropagation()}
+        style={{ maxWidth: 880, padding: 0, overflow: "hidden" }}
+      >
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 360px", minHeight: 480 }}>
+          <div style={{ position: "relative", background: "#000" }}>
+            <AircraftImage listing={listing} size="full" showGallery={true} style={{ height: "100%" }} />
+            <button
+              onClick={onClose}
+              aria-label="Close"
+              style={{ position: "absolute", top: 16, left: 16, width: 40, height: 40, borderRadius: "50%", background: "rgba(255,255,255,0.95)", border: "none", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", color: "#000" }}
+            >{Icons.x}</button>
+          </div>
+          <div style={{ padding: 28, display: "flex", flexDirection: "column", gap: 12, overflow: "auto" }}>
+            {dealerName && (
+              <div style={{ fontSize: 12, fontWeight: 600, color: "var(--fs-ink-3)", display: "flex", alignItems: "center", gap: 6, letterSpacing: "-0.005em" }}>
+                {Icons.shield}<span>{dealerName}</span>
+              </div>
+            )}
+            <h2 style={{ fontSize: 22, fontWeight: 700, letterSpacing: "-0.03em", lineHeight: 1.2 }}>{listing.title}</h2>
+            <div style={{ fontSize: 28, fontWeight: 700, letterSpacing: "-0.04em", color: "var(--fs-ink)" }}>{formatPriceFull(listing.price)}</div>
+            {location && (
+              <div style={{ fontSize: 14, color: "var(--fs-ink-3)", display: "flex", alignItems: "center", gap: 4, fontWeight: 500 }}>
+                {Icons.location}{location}
+              </div>
+            )}
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px 16px", padding: "12px 0", borderTop: "1px solid var(--fs-line)", borderBottom: "1px solid var(--fs-line)" }}>
+              {listing.ttaf > 0 && <div><div style={{ fontSize: 11, color: "var(--fs-ink-4)", fontWeight: 600 }}>TOTAL TIME</div><div style={{ fontSize: 14, fontWeight: 600 }}>{formatHours(listing.ttaf)}</div></div>}
+              {listing.eng_hours > 0 && <div><div style={{ fontSize: 11, color: "var(--fs-ink-4)", fontWeight: 600 }}>ENGINE SMOH</div><div style={{ fontSize: 14, fontWeight: 600 }}>{formatHours(listing.eng_hours)}</div></div>}
+              {listing.year && <div><div style={{ fontSize: 11, color: "var(--fs-ink-4)", fontWeight: 600 }}>YEAR</div><div style={{ fontSize: 14, fontWeight: 600 }}>{listing.year}</div></div>}
+              {listing.condition && <div><div style={{ fontSize: 11, color: "var(--fs-ink-4)", fontWeight: 600 }}>CONDITION</div><div style={{ fontSize: 14, fontWeight: 600 }}>{listing.condition}</div></div>}
+              {listing.cruise_kts && <div><div style={{ fontSize: 11, color: "var(--fs-ink-4)", fontWeight: 600 }}>CRUISE</div><div style={{ fontSize: 14, fontWeight: 600 }}>{listing.cruise_kts} kts</div></div>}
+              {listing.range_nm && <div><div style={{ fontSize: 11, color: "var(--fs-ink-4)", fontWeight: 600 }}>RANGE</div><div style={{ fontSize: 14, fontWeight: 600 }}>{listing.range_nm} nm</div></div>}
+            </div>
+            {tags.length > 0 && (
+              <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+                {tags.map(t => (
+                  <span key={t} style={{ fontSize: 12, fontWeight: 600, padding: "4px 10px", borderRadius: "var(--fs-radius-sm)", background: "var(--fs-bg-2)", color: "var(--fs-ink)" }}>{t}</span>
+                ))}
+              </div>
+            )}
+            <div style={{ marginTop: "auto", paddingTop: 12, display: "flex", flexDirection: "column", gap: 8 }}>
+              <button onClick={() => onEnquire(listing)} className="fs-btn fs-btn-primary" style={{ width: "100%" }}>
+                {Icons.mail} Contact seller
+              </button>
+              <div style={{ display: "flex", gap: 8 }}>
+                <button onClick={() => onViewFull(listing)} className="fs-btn fs-btn-secondary" style={{ flex: 1 }}>
+                  View full listing
+                </button>
+                <button
+                  onClick={() => onSave(listing.id)}
+                  aria-label={saved ? "Saved" : "Save"}
+                  style={{ width: 48, borderRadius: "var(--fs-radius-pill)", background: "var(--fs-bg-2)", border: "none", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", color: saved ? "var(--fs-ink)" : "var(--fs-ink-3)" }}
+                >
+                  {saved ? Icons.heartFull : Icons.heart}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <style>{`@media (max-width: 720px) { .fs-modal > div { grid-template-columns: 1fr !important; } }`}</style>
+      </div>
+    </div>
+  );
+};
+
+// COMPARE DRAWER — sticky bottom bar with up to 3 listings
+const CompareDrawer = ({ listings, onRemove, onClear, onCompare }) => {
+  if (!listings.length) return null;
+  return (
+    <div style={{
+      position: "fixed", bottom: 0, left: 0, right: 0, zIndex: 80,
+      background: "var(--fs-ink)", color: "white",
+      padding: "16px 24px",
+      boxShadow: "0 -8px 32px rgba(0,0,0,0.18)",
+    }}>
+      <div className="fs-container" style={{ display: "flex", alignItems: "center", gap: 16, flexWrap: "wrap" }}>
+        <div style={{ display: "flex", gap: 12, flex: 1, minWidth: 0, flexWrap: "wrap" }}>
+          {listings.map(l => (
+            <div key={l.id} style={{ display: "flex", alignItems: "center", gap: 10, background: "rgba(255,255,255,0.08)", padding: "8px 12px", borderRadius: "var(--fs-radius)", minWidth: 0 }}>
+              <div style={{ fontSize: 13, fontWeight: 600, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", maxWidth: 200, letterSpacing: "-0.01em" }}>{l.title}</div>
+              <button onClick={() => onRemove(l.id)} aria-label="Remove" style={{ background: "rgba(255,255,255,0.15)", border: "none", color: "white", cursor: "pointer", borderRadius: "50%", width: 22, height: 22, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+              </button>
+            </div>
+          ))}
+          {listings.length < 3 && (
+            <div style={{ fontSize: 13, color: "rgba(255,255,255,0.5)", display: "flex", alignItems: "center" }}>
+              Tap the compare icon on more listings — up to 3
+            </div>
+          )}
+        </div>
+        <div style={{ display: "flex", gap: 8 }}>
+          <button onClick={onClear} style={{ background: "transparent", border: "1px solid rgba(255,255,255,0.25)", color: "white", padding: "10px 16px", borderRadius: "var(--fs-radius-pill)", cursor: "pointer", fontSize: 13.5, fontWeight: 500, fontFamily: "var(--fs-font)" }}>
+            Clear
+          </button>
+          <button onClick={onCompare} disabled={listings.length < 2} style={{ background: "white", border: "none", color: "var(--fs-ink)", padding: "10px 22px", borderRadius: "var(--fs-radius-pill)", cursor: listings.length >= 2 ? "pointer" : "not-allowed", fontSize: 13.5, fontWeight: 600, fontFamily: "var(--fs-font)", opacity: listings.length < 2 ? 0.4 : 1, letterSpacing: "-0.01em" }}>
+            Compare {listings.length}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// COMPARE MODAL — side-by-side spec comparison
+const CompareModal = ({ listings, onClose, onViewListing }) => {
+  if (!listings.length) return null;
+  const specRows = [
+    ["Price", l => formatPriceFull(l.price)],
+    ["Year", l => l.year],
+    ["Manufacturer", l => l.manufacturer],
+    ["Model", l => l.model],
+    ["Category", l => l.category],
+    ["Condition", l => l.condition],
+    ["Total Time", l => l.ttaf > 0 ? formatHours(l.ttaf) : "—"],
+    ["Engine SMOH", l => l.eng_hours > 0 ? formatHours(l.eng_hours) : "—"],
+    ["Engine TBO", l => l.eng_tbo ? formatHours(l.eng_tbo) : "—"],
+    ["Avionics", l => l.avionics || "—"],
+    ["Useful Load", l => l.useful_load ? `${l.useful_load} kg` : "—"],
+    ["Range", l => l.range_nm ? `${l.range_nm} nm` : "—"],
+    ["Cruise Speed", l => l.cruise_kts ? `${l.cruise_kts} kts` : "—"],
+    ["Fuel Burn", l => l.fuel_burn ? `${l.fuel_burn} L/hr` : "—"],
+    ["IFR", l => l.ifr ? "Yes" : "No"],
+    ["Glass Cockpit", l => l.glass_cockpit ? "Yes" : "No"],
+    ["Pressurised", l => l.pressurised ? "Yes" : "No"],
+    ["Retractable", l => l.retractable ? "Yes" : "No"],
+    ["Location", l => [l.city, l.state].filter(Boolean).join(', ') || "—"],
+  ];
+
+  return (
+    <div className="fs-modal-overlay" onClick={onClose} style={{ alignItems: "flex-start", overflow: "auto", padding: "40px 20px" }}>
+      <div className="fs-modal" onClick={e => e.stopPropagation()} style={{ maxWidth: 1200, width: "100%", maxHeight: "none" }}>
+        <div className="fs-modal-header">
+          <h2>Compare {listings.length} aircraft</h2>
+          <button className="fs-modal-close" onClick={onClose}>{Icons.x}</button>
+        </div>
+        <div style={{ padding: "20px 28px 28px", overflow: "auto" }}>
+          <table style={{ width: "100%", borderCollapse: "collapse", fontFamily: "var(--fs-font)" }}>
+            <thead>
+              <tr>
+                <th style={{ textAlign: "left", padding: "12px 8px", fontSize: 12, color: "var(--fs-ink-4)", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.5px", width: 140 }}>Spec</th>
+                {listings.map(l => (
+                  <th key={l.id} style={{ textAlign: "left", padding: "12px 8px", verticalAlign: "top", minWidth: 200 }}>
+                    <div onClick={() => onViewListing(l)} style={{ cursor: "pointer" }}>
+                      <AircraftImage listing={l} size="sm" style={{ borderRadius: "var(--fs-radius-sm)", marginBottom: 8, height: 100 }} />
+                      <div style={{ fontSize: 14, fontWeight: 600, letterSpacing: "-0.02em" }}>{l.title}</div>
+                    </div>
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {specRows.map(([label, fn]) => (
+                <tr key={label} style={{ borderTop: "1px solid var(--fs-line)" }}>
+                  <td style={{ padding: "12px 8px", fontSize: 13, color: "var(--fs-ink-3)", fontWeight: 500, letterSpacing: "-0.005em" }}>{label}</td>
+                  {listings.map(l => (
+                    <td key={l.id} style={{ padding: "12px 8px", fontSize: 14, fontWeight: 500, color: "var(--fs-ink)", letterSpacing: "-0.005em" }}>{fn(l)}</td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );
@@ -1655,7 +1882,7 @@ const HomePage = ({ setPage, setSelectedListing, savedIds, onSave, setSearchFilt
   );
 };
 
-const BuyPage = ({ setSelectedListing, savedIds, onSave, initialFilters }) => {
+const BuyPage = ({ setSelectedListing, savedIds, onSave, initialFilters, user }) => {
   const [search, setSearch] = useState(initialFilters?.query || "");
   const [aiQuery, setAiQuery] = useState(initialFilters?.query || "");
   const [sortBy, setSortBy] = useState("newest");
@@ -1671,6 +1898,18 @@ const BuyPage = ({ setSelectedListing, savedIds, onSave, initialFilters }) => {
   const [ifrOnly, setIfrOnly] = useState(initialFilters?.ifrOnly || false);
   const [glassOnly, setGlassOnly] = useState(initialFilters?.glassOnly || false);
   const [sideOpen, setSideOpen] = useState(false);
+  const [quickLook, setQuickLook] = useState(null);
+  const [enquireFor, setEnquireFor] = useState(null);
+  const [compareIds, setCompareIds] = useState([]);
+  const [showCompareModal, setShowCompareModal] = useState(false);
+
+  const toggleCompare = (id) => {
+    setCompareIds(prev => {
+      if (prev.includes(id)) return prev.filter(x => x !== id);
+      if (prev.length >= 3) return prev; // max 3
+      return [...prev, id];
+    });
+  };
 
   // Reset to page 1 whenever any filter changes — prevents empty page state
   useEffect(() => { setResultPage(1); }, [search, catFilter, makeFilter, stateFilter, condFilter, minPrice, maxPrice, maxHours, ifrOnly, glassOnly]);
@@ -2095,7 +2334,16 @@ const BuyPage = ({ setSelectedListing, savedIds, onSave, initialFilters }) => {
                 <>
                   <div className="fs-grid">
                     {filtered.slice((resultPage - 1) * PAGE_SIZE, resultPage * PAGE_SIZE).map(l => (
-                      <ListingCard key={l.id} listing={l} onClick={setSelectedListing} onSave={onSave} saved={savedIds.has(l.id)} />
+                      <ListingCard
+                        key={l.id}
+                        listing={l}
+                        onClick={setSelectedListing}
+                        onSave={onSave}
+                        saved={savedIds.has(l.id)}
+                        onQuickLook={setQuickLook}
+                        onCompareToggle={toggleCompare}
+                        isComparing={compareIds.includes(l.id)}
+                      />
                     ))}
                   </div>
                   {totalPages > 1 && (
@@ -2138,6 +2386,39 @@ const BuyPage = ({ setSelectedListing, savedIds, onSave, initialFilters }) => {
           </div>
         </div>
       </section>
+
+      {/* Bottom-padding spacer when compare drawer is open */}
+      {compareIds.length > 0 && <div style={{ height: 80 }} />}
+
+      {/* Quick-look modal */}
+      {quickLook && (
+        <QuickLookModal
+          listing={quickLook}
+          onClose={() => setQuickLook(null)}
+          onViewFull={(l) => { setQuickLook(null); setSelectedListing(l); }}
+          onSave={onSave}
+          saved={savedIds.has(quickLook.id)}
+          onEnquire={(l) => { setQuickLook(null); setEnquireFor(l); }}
+        />
+      )}
+
+      {/* Inline enquiry from quick-look */}
+      {enquireFor && <EnquiryModal listing={enquireFor} onClose={() => setEnquireFor(null)} user={user} />}
+
+      {/* Compare drawer & modal */}
+      <CompareDrawer
+        listings={filtered.filter(l => compareIds.includes(l.id))}
+        onRemove={(id) => setCompareIds(prev => prev.filter(x => x !== id))}
+        onClear={() => setCompareIds([])}
+        onCompare={() => setShowCompareModal(true)}
+      />
+      {showCompareModal && (
+        <CompareModal
+          listings={filtered.filter(l => compareIds.includes(l.id))}
+          onClose={() => setShowCompareModal(false)}
+          onViewListing={(l) => { setShowCompareModal(false); setCompareIds([]); setSelectedListing(l); }}
+        />
+      )}
     </>
   );
 };
@@ -5755,7 +6036,7 @@ export default function FlightSalesApp() {
       {page !== 'home' && page !== 'detail' && <Breadcrumbs />}
 
       {page === "home" && <HomePage setPage={setPageWrap} setSelectedListing={setSelectedListing} savedIds={savedIds} onSave={onSave} setSearchFilters={setSearchFilters} />}
-      {page === "buy" && <BuyPage setSelectedListing={setSelectedListing} savedIds={savedIds} onSave={onSave} initialFilters={searchFilters} />}
+      {page === "buy" && <BuyPage setSelectedListing={setSelectedListing} savedIds={savedIds} onSave={onSave} initialFilters={searchFilters} user={user} />}
       {page === "detail" && <ListingDetail listing={selectedListing} onBack={() => setPageWrap("buy")} savedIds={savedIds} onSave={onSave} user={user} />}
       {page === "sell" && <SellPage user={user} setPage={setPageWrap} />}
       {page === "dealers" && <DealersPage />}
