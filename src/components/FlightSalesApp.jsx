@@ -313,9 +313,38 @@ a { color: inherit; text-decoration: none; }
   from { opacity: 0; transform: scale(0.96); }
   to { opacity: 1; transform: scale(1); }
 }
+@keyframes fs-slide-up {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
 .fs-anim-fade-up { animation: fs-fade-up 0.7s var(--fs-ease-out) backwards; }
 .fs-anim-fade-in { animation: fs-fade-in 0.8s var(--fs-ease-out) backwards; }
 .fs-anim-scale-in { animation: fs-scale-in 0.6s var(--fs-ease-out) backwards; }
+
+/* Skeleton loading states */
+@keyframes fs-shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+.fs-skeleton-shimmer {
+  background: linear-gradient(90deg, var(--fs-bg-2) 25%, var(--fs-gray-100) 50%, var(--fs-bg-2) 75%);
+  background-size: 200% 100%;
+  animation: fs-shimmer 1.5s ease-in-out infinite;
+}
+.fs-skeleton-line {
+  background: var(--fs-bg-2);
+  border-radius: var(--fs-radius-sm);
+  position: relative;
+  overflow: hidden;
+}
+.fs-skeleton-line::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent 25%, var(--fs-gray-100) 50%, transparent 75%);
+  background-size: 200% 100%;
+  animation: fs-shimmer 1.5s ease-in-out infinite;
+}
 
 /* NAV — solid white, hairline */
 .fs-nav {
@@ -1489,6 +1518,179 @@ const Footer = ({ setPage }) => (
       </div>
     </div>
   </footer>
+);
+
+// --- LOADING SKELETON COMPONENTS ---
+const CardSkeleton = () => (
+  <div className="fs-card" style={{ pointerEvents: 'none' }}>
+    <div className="fs-card-image-wrap" style={{ height: '180px', background: 'var(--fs-bg-2)', position: 'relative', overflow: 'hidden' }}>
+      <div className="fs-skeleton-shimmer" style={{ position: 'absolute', inset: 0 }} />
+    </div>
+    <div className="fs-card-body" style={{ padding: '16px 18px 18px' }}>
+      <div className="fs-skeleton-line" style={{ width: '40%', height: 12, marginBottom: 8 }} />
+      <div className="fs-skeleton-line" style={{ width: '85%', height: 20, marginBottom: 12 }} />
+      <div className="fs-skeleton-line" style={{ width: '60%', height: 28, marginBottom: 16 }} />
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+        <div className="fs-skeleton-line" style={{ width: '100%', height: 16 }} />
+        <div className="fs-skeleton-line" style={{ width: '100%', height: 16 }} />
+        <div className="fs-skeleton-line" style={{ width: '100%', height: 16 }} />
+        <div className="fs-skeleton-line" style={{ width: '100%', height: 16 }} />
+      </div>
+    </div>
+  </div>
+);
+
+// --- EMPTY STATE COMPONENT ---
+// --- MOBILE FILTER BOTTOM SHEET ---
+const MobileFilterSheet = ({ isOpen, onClose, children }) => {
+  if (!isOpen) return null;
+  
+  return (
+    <div 
+      style={{
+        position: 'fixed',
+        inset: 0,
+        zIndex: 200,
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'flex-end'
+      }}
+      onClick={onClose}
+    >
+      {/* Backdrop */}
+      <div 
+        style={{
+          position: 'absolute',
+          inset: 0,
+          background: 'rgba(0,0,0,0.5)',
+          animation: 'fs-fade-in 0.2s ease'
+        }}
+      />
+      
+      {/* Sheet */}
+      <div 
+        style={{
+          position: 'relative',
+          background: 'white',
+          borderRadius: '20px 20px 0 0',
+          maxHeight: '85vh',
+          overflow: 'auto',
+          animation: 'fs-slide-up 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)'
+        }}
+        onClick={e => e.stopPropagation()}
+      >
+        {/* Handle bar */}
+        <div style={{ 
+          display: 'flex', 
+          justifyContent: 'center', 
+          padding: '12px 0 8px',
+          position: 'sticky',
+          top: 0,
+          background: 'white',
+          zIndex: 1
+        }}>
+          <div style={{ width: 40, height: 4, background: 'var(--fs-line-2)', borderRadius: 2 }} />
+        </div>
+        
+        {/* Close button */}
+        <button 
+          onClick={onClose}
+          style={{
+            position: 'absolute',
+            top: 12,
+            right: 16,
+            width: 32,
+            height: 32,
+            borderRadius: '50%',
+            border: 'none',
+            background: 'var(--fs-bg-2)',
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center'
+          }}
+        >
+          {Icons.x}
+        </button>
+        
+        {/* Content */}
+        <div style={{ padding: '0 20px 24px' }}>
+          {children}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const EmptyState = ({ title, description, searchQuery, activeFilters, onClearFilters, onBrowseAll, onSetAlert, user }) => (
+  <div className="fs-empty" style={{ padding: "80px 20px", textAlign: 'center' }}>
+    <div style={{ 
+      width: 80, 
+      height: 80, 
+      margin: '0 auto 24px', 
+      borderRadius: '50%', 
+      background: 'var(--fs-bg-2)', 
+      display: 'flex', 
+      alignItems: 'center', 
+      justifyContent: 'center',
+      fontSize: 40
+    }}>
+      🔍
+    </div>
+    
+    <div style={{ fontSize: 20, fontWeight: 700, color: "var(--fs-ink)", marginBottom: 12, letterSpacing: "-0.02em" }}>
+      {title}
+    </div>
+    
+    <p style={{ color: "var(--fs-ink-3)", fontSize: 15, marginBottom: 24, maxWidth: 400, margin: '0 auto 24', lineHeight: 1.5 }}>
+      {searchQuery ? (
+        <>We couldn't find any aircraft for "<strong>{searchQuery}</strong>". {description}</>
+      ) : (
+        description
+      )}
+    </p>
+    
+    {activeFilters > 0 && (
+      <div style={{ marginBottom: 16 }}>
+        <button 
+          className="fs-btn fs-btn-primary" 
+          onClick={onClearFilters}
+          style={{ marginRight: 12 }}
+        >
+          Clear all filters
+        </button>
+      </div>
+    )}
+    
+    <div style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap' }}>
+      <button 
+        className="fs-btn fs-btn-secondary" 
+        onClick={onBrowseAll}
+      >
+        Browse all aircraft
+      </button>
+      
+      {!user && (
+        <button 
+          className="fs-btn fs-btn-secondary"
+          onClick={onSetAlert}
+          style={{ display: 'flex', alignItems: 'center', gap: 6 }}
+        >
+          <span>🔔</span> Get alerts
+        </button>
+      )}
+    </div>
+    
+    <div style={{ marginTop: 40, padding: '20px 24px', background: 'var(--fs-bg-2)', borderRadius: 12, maxWidth: 480, margin: '40px auto 0' }}>
+      <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--fs-ink-2)', marginBottom: 8 }}>💡 Tips</div>
+      <ul style={{ fontSize: 13, color: 'var(--fs-ink-3)', textAlign: 'left', lineHeight: 1.6, margin: 0, paddingLeft: 16 }}>
+        <li>Try searching for just the aircraft model (e.g., "Cessna 172")</li>
+        <li>Remove filters to see more results</li>
+        <li>Check different states for more options</li>
+        <li>New listings added daily — set an alert</li>
+      </ul>
+    </div>
+  </div>
 );
 
 const ListingCard = ({ listing, onClick, onSave, saved, onQuickLook }) => {
@@ -2681,14 +2883,19 @@ const BuyPage = ({ setSelectedListing, savedIds, onSave, initialFilters, user, s
           {/* Grid */}
           {dbLoading ? (
             <div className="fs-grid">
-              {[1,2,3,4,5,6].map(i => <div key={i} style={{ height: 360, background: "var(--fs-bg-2)", borderRadius: "var(--fs-radius)", animation: "fs-pulse 1.5s infinite" }} />)}
+              {[1,2,3,4,5,6].map(i => <CardSkeleton key={i} />)}
             </div>
           ) : filtered.length === 0 ? (
-            <div className="fs-empty" style={{ padding: "80px 20px" }}>
-              <div style={{ fontSize: 16, fontWeight: 600, color: "var(--fs-ink)", marginBottom: 8, letterSpacing: "-0.02em" }}>No aircraft match your filters</div>
-              <p style={{ color: "var(--fs-ink-3)", fontSize: 14, marginBottom: 20 }}>Try widening your price range, removing a feature, or clearing filters.</p>
-              <button className="fs-btn fs-btn-primary" onClick={resetFilters}>Clear all filters</button>
-            </div>
+            <EmptyState
+              title="No aircraft match your filters"
+              description="Try widening your price range, removing a feature, or clearing filters."
+              searchQuery={aiQuery}
+              activeFilters={activeFilterCount}
+              onClearFilters={resetFilters}
+              onBrowseAll={() => { resetFilters(); setPage && setPage('buy'); }}
+              onSetAlert={() => setPage && setPage('login')}
+              user={user}
+            />
           ) : (
             <>
               <div className="fs-grid">
