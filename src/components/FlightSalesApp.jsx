@@ -153,58 +153,67 @@ const AIRCRAFT_IMAGES = {
 };
 
 // --- AIRCRAFT IMAGE COMPONENT ---
-const AircraftImage = ({ listing, className = "", size = "md", style = {} }) => {
+const isJustListed = (listing) => {
+  const d = listing.created_at || listing.created;
+  if (!d) return false;
+  return (Date.now() - new Date(d).getTime()) < 7 * 86400000;
+};
+
+const AircraftImage = ({ listing, className = "", size = "md", style = {}, showGallery = false }) => {
   const heights = { sm: "140px", md: "220px", lg: "400px", full: "100%" };
-  // Use first real image from DB, else fall back to Unsplash by numeric seed
+  const [imgIdx, setImgIdx] = useState(0);
   const seed = typeof listing.id === 'number' ? listing.id : (listing.id?.charCodeAt(0) % 12) + 1;
   const fallback = AIRCRAFT_IMAGES[seed] || AIRCRAFT_IMAGES[1];
-  const imageUrl = (listing.images && listing.images.length > 0) ? listing.images[0] : fallback;
+  const images = (listing.images && listing.images.length > 0) ? listing.images : [fallback];
+  const imageUrl = images[imgIdx] || images[0];
+  const imgCount = images.length;
 
   return (
     <div className={className} style={{
-      height: heights[size],
-      position: "relative",
-      overflow: "hidden",
-      borderRadius: style.borderRadius || 0,
-      background: '#1a1a1a',
-      ...style
+      height: heights[size], position: "relative", overflow: "hidden",
+      borderRadius: style.borderRadius || 0, background: '#1a1a1a', ...style
     }}>
-      <img 
-        src={imageUrl} 
+      <img
+        src={imageUrl}
         alt={listing.title}
-        style={{
-          width: "100%",
-          height: "100%",
-          objectFit: "cover",
-          transition: "transform 0.3s ease"
-        }}
-        onError={(e) => {
-          // Fallback to black placeholder if image fails
-          e.target.style.display = 'none';
-          e.target.parentElement.style.background = '#000';
-        }}
+        loading="lazy"
+        style={{ width: "100%", height: "100%", objectFit: "cover", transition: "transform 0.3s ease" }}
+        onError={e => { e.target.style.display = 'none'; e.target.parentElement.style.background = '#000'; }}
       />
-      <div style={{
-        position: "absolute",
-        inset: 0,
-        background: "linear-gradient(to bottom, transparent 0%, transparent 60%, rgba(0,0,0,0.4) 100%)",
-        pointerEvents: "none"
-      }} />
-      {listing.featured && (
-        <div style={{
-          position: "absolute", top: size === "sm" ? "8px" : "12px", left: size === "sm" ? "8px" : "12px",
-          background: "#000", color: "#fff", fontSize: "10px", fontWeight: 800,
-          padding: "4px 10px", borderRadius: "4px", letterSpacing: "0.5px", textTransform: "uppercase"
-        }}>Featured</div>
-      )}
-      <div style={{
-        position: "absolute", bottom: size === "sm" ? "8px" : "12px", right: size === "sm" ? "8px" : "12px",
-        background: "rgba(0,0,0,0.7)", color: "white", fontSize: "11px",
-        padding: "4px 8px", borderRadius: "4px", display: "flex", alignItems: "center", gap: "4px",
-        backdropFilter: "blur(4px)"
-      }}>
-        {Icons.camera} {listing.images}
+      <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to bottom, transparent 60%, rgba(0,0,0,0.5) 100%)", pointerEvents: "none" }} />
+
+      {/* Badges — top left */}
+      <div style={{ position: "absolute", top: 10, left: 10, display: "flex", flexDirection: "column", gap: 4 }}>
+        {listing.featured && (
+          <div style={{ background: "#000", color: "#fff", fontSize: "10px", fontWeight: 800, padding: "3px 8px", borderRadius: "4px", letterSpacing: "0.5px", textTransform: "uppercase" }}>Featured</div>
+        )}
+        {isJustListed(listing) && (
+          <div style={{ background: "#10b981", color: "#fff", fontSize: "10px", fontWeight: 800, padding: "3px 8px", borderRadius: "4px", letterSpacing: "0.5px", textTransform: "uppercase" }}>Just Listed</div>
+        )}
+        {listing.ifr && (
+          <div style={{ background: "#2563eb", color: "#fff", fontSize: "10px", fontWeight: 700, padding: "3px 8px", borderRadius: "4px" }}>IFR</div>
+        )}
       </div>
+
+      {/* Photo nav arrows — only in gallery mode */}
+      {showGallery && imgCount > 1 && (
+        <>
+          <button onClick={e => { e.stopPropagation(); setImgIdx(i => (i - 1 + imgCount) % imgCount); }}
+            style={{ position: "absolute", left: 10, top: "50%", transform: "translateY(-50%)", background: "rgba(0,0,0,0.55)", color: "#fff", border: "none", borderRadius: "50%", width: 36, height: 36, fontSize: 18, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", backdropFilter: "blur(4px)" }}>‹</button>
+          <button onClick={e => { e.stopPropagation(); setImgIdx(i => (i + 1) % imgCount); }}
+            style={{ position: "absolute", right: 10, top: "50%", transform: "translateY(-50%)", background: "rgba(0,0,0,0.55)", color: "#fff", border: "none", borderRadius: "50%", width: 36, height: 36, fontSize: 18, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", backdropFilter: "blur(4px)" }}>›</button>
+          <div style={{ position: "absolute", bottom: 10, left: "50%", transform: "translateX(-50%)", display: "flex", gap: 5 }}>
+            {images.map((_, i) => <div key={i} onClick={e => { e.stopPropagation(); setImgIdx(i); }} style={{ width: i === imgIdx ? 18 : 6, height: 6, borderRadius: 3, background: i === imgIdx ? "#fff" : "rgba(255,255,255,0.5)", cursor: "pointer", transition: "all 0.2s" }} />)}
+          </div>
+        </>
+      )}
+
+      {/* Photo count — bottom right */}
+      {!showGallery && imgCount > 0 && (
+        <div style={{ position: "absolute", bottom: 10, right: 10, background: "rgba(0,0,0,0.65)", color: "white", fontSize: "11px", padding: "3px 8px", borderRadius: "4px", display: "flex", alignItems: "center", gap: "4px", backdropFilter: "blur(4px)" }}>
+          {Icons.camera} {imgCount}
+        </div>
+      )}
     </div>
   );
 };
@@ -536,6 +545,16 @@ a { color: inherit; text-decoration: none; }
 }
 .fs-detail-sidebar {
   display: flex; flex-direction: column; gap: 20px;
+}
+.fs-detail-sticky {
+  position: sticky; top: 88px;
+}
+.fs-detail-mobile-cta {
+  display: none;
+}
+@media (max-width: 900px) {
+  .fs-detail-sticky { position: static; }
+  .fs-detail-mobile-cta { display: block; margin-bottom: 24px; }
 }
 .fs-detail-price-card {
   background: var(--fs-white); border-radius: var(--fs-radius);
@@ -992,24 +1011,31 @@ const Footer = ({ setPage }) => (
 
 const ListingCard = ({ listing, onClick, onSave, saved }) => {
   const dealerName = listing.dealer?.name || (typeof listing.dealer === 'string' ? listing.dealer : null);
+  const isNew = isJustListed(listing);
   return (
     <div className="fs-card" onClick={() => onClick(listing)}>
       <AircraftImage listing={listing} />
       <div className="fs-card-body">
-        {dealerName && (
-          <div className="fs-card-dealer">{Icons.shield} {dealerName}</div>
-        )}
-        <div className="fs-card-title">{listing.title}</div>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 6 }}>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            {dealerName && <div className="fs-card-dealer">{Icons.shield} {dealerName}</div>}
+            <div className="fs-card-title">{listing.title}</div>
+          </div>
+          {listing.year && <div style={{ fontSize: 11, color: "var(--fs-gray-400)", fontWeight: 600, whiteSpace: "nowrap", marginLeft: 8, paddingTop: 2 }}>{listing.year}</div>}
+        </div>
         <div className="fs-card-price">{formatPriceFull(listing.price)}</div>
         <div className="fs-card-meta">
-          <span className="fs-card-meta-item">{Icons.clock} {formatHours(listing.ttaf)} TT</span>
-          <span className="fs-card-meta-item">{Icons.gauge} {formatHours(listing.eng_hours)} SMOH</span>
-          <span className="fs-card-meta-item">{Icons.location} {listing.city}, {listing.state}</span>
+          {listing.ttaf != null && <span className="fs-card-meta-item">{Icons.clock} {formatHours(listing.ttaf)} TT</span>}
+          {listing.eng_hours != null && <span className="fs-card-meta-item">{Icons.gauge} {formatHours(listing.eng_hours)} SMOH</span>}
+          {(listing.city || listing.state) && <span className="fs-card-meta-item">{Icons.location} {[listing.city, listing.state].filter(Boolean).join(', ')}</span>}
         </div>
+        {listing.avionics && <div style={{ fontSize: 11, color: "var(--fs-gray-400)", marginTop: 6, overflow: "hidden", whiteSpace: "nowrap", textOverflow: "ellipsis" }}>{listing.avionics}</div>}
       </div>
       <div className="fs-card-footer">
-        <span>{timeAgo(listing.created_at || listing.created)}</span>
-        <span onClick={e => { e.stopPropagation(); onSave(listing.id); }} style={{ cursor: "pointer", color: saved ? "var(--fs-red)" : undefined }}>
+        <span style={{ color: isNew ? "var(--fs-green)" : undefined, fontWeight: isNew ? 600 : undefined }}>
+          {isNew ? "Just listed" : timeAgo(listing.created_at || listing.created)}
+        </span>
+        <span onClick={e => { e.stopPropagation(); onSave(listing.id); }} style={{ cursor: "pointer", color: saved ? "var(--fs-red)" : "var(--fs-gray-400)", fontSize: 16 }}>
           {saved ? Icons.heartFull : Icons.heart}
         </span>
       </div>
@@ -1475,6 +1501,8 @@ const BuyPage = ({ setSelectedListing, savedIds, onSave, initialFilters }) => {
   const [search, setSearch] = useState(initialFilters?.query || "");
   const [aiQuery, setAiQuery] = useState(initialFilters?.query || "");
   const [sortBy, setSortBy] = useState("newest");
+  const [resultPage, setResultPage] = useState(1);
+  const PAGE_SIZE = 12;
   const [catFilter, setCatFilter] = useState(initialFilters?.cat || "");
   const [stateFilter, setStateFilter] = useState(initialFilters?.state || "");
   const [makeFilter, setMakeFilter] = useState(initialFilters?.make || "");
@@ -1716,7 +1744,7 @@ const BuyPage = ({ setSelectedListing, savedIds, onSave, initialFilters }) => {
           <button className="fs-mobile-filter-btn" onClick={() => setSideOpen(!sideOpen)}>
             {Icons.filter} Filters {activeFilterCount > 0 && `(${activeFilterCount})`}
           </button>
-          <select className="fs-sort-select" value={sortBy} onChange={e => setSortBy(e.target.value)}>
+          <select className="fs-sort-select" value={sortBy} onChange={e => { setSortBy(e.target.value); setResultPage(1); }}>
             <option value="newest">Newest First</option>
             <option value="price-asc">Price: Low to High</option>
             <option value="price-desc">Price: High to Low</option>
@@ -1804,6 +1832,11 @@ const BuyPage = ({ setSelectedListing, savedIds, onSave, initialFilters }) => {
                   {dbLoading ? "Searching..." : `${filtered.length} aircraft found`}
                   {aiQuery && !dbLoading && <span style={{ color: "var(--fs-gray-400)", marginLeft: 8 }}>for "{aiQuery}"</span>}
                 </span>
+                {filtered.length > 0 && !dbLoading && (
+                  <span style={{ fontSize: 12, color: "var(--fs-gray-400)" }}>
+                    Page {resultPage} of {Math.ceil(filtered.length / PAGE_SIZE)}
+                  </span>
+                )}
               </div>
               {dbLoading ? (
                 <div className="fs-grid">
@@ -1816,11 +1849,32 @@ const BuyPage = ({ setSelectedListing, savedIds, onSave, initialFilters }) => {
                   <button className="fs-sidebar-reset" style={{ maxWidth: 200, margin: "16px auto 0" }} onClick={resetFilters}>Clear all filters</button>
                 </div>
               ) : (
-                <div className="fs-grid">
-                  {filtered.map(l => (
-                    <ListingCard key={l.id} listing={l} onClick={setSelectedListing} onSave={onSave} saved={savedIds.has(l.id)} />
-                  ))}
-                </div>
+                <>
+                  <div className="fs-grid">
+                    {filtered.slice((resultPage - 1) * PAGE_SIZE, resultPage * PAGE_SIZE).map(l => (
+                      <ListingCard key={l.id} listing={l} onClick={setSelectedListing} onSave={onSave} saved={savedIds.has(l.id)} />
+                    ))}
+                  </div>
+                  {filtered.length > PAGE_SIZE && (
+                    <div style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: 8, marginTop: 32 }}>
+                      <button
+                        onClick={() => { setResultPage(p => Math.max(1, p - 1)); window.scrollTo(0, 300); }}
+                        disabled={resultPage === 1}
+                        style={{ padding: "8px 18px", borderRadius: "var(--fs-radius-sm)", border: "1px solid var(--fs-gray-200)", background: resultPage === 1 ? "var(--fs-gray-100)" : "#fff", cursor: resultPage === 1 ? "default" : "pointer", fontWeight: 600, fontSize: 14, color: resultPage === 1 ? "var(--fs-gray-400)" : "var(--fs-gray-900)" }}
+                      >← Prev</button>
+                      {Array.from({ length: Math.ceil(filtered.length / PAGE_SIZE) }, (_, i) => i + 1).map(p => (
+                        <button key={p} onClick={() => { setResultPage(p); window.scrollTo(0, 300); }}
+                          style={{ width: 36, height: 36, borderRadius: "var(--fs-radius-sm)", border: "1px solid", borderColor: p === resultPage ? "var(--fs-blue)" : "var(--fs-gray-200)", background: p === resultPage ? "var(--fs-blue)" : "#fff", color: p === resultPage ? "#fff" : "var(--fs-gray-700)", fontWeight: 600, fontSize: 14, cursor: "pointer" }}
+                        >{p}</button>
+                      ))}
+                      <button
+                        onClick={() => { setResultPage(p => Math.min(Math.ceil(filtered.length / PAGE_SIZE), p + 1)); window.scrollTo(0, 300); }}
+                        disabled={resultPage === Math.ceil(filtered.length / PAGE_SIZE)}
+                        style={{ padding: "8px 18px", borderRadius: "var(--fs-radius-sm)", border: "1px solid var(--fs-gray-200)", background: resultPage === Math.ceil(filtered.length / PAGE_SIZE) ? "var(--fs-gray-100)" : "#fff", cursor: resultPage === Math.ceil(filtered.length / PAGE_SIZE) ? "default" : "pointer", fontWeight: 600, fontSize: 14, color: resultPage === Math.ceil(filtered.length / PAGE_SIZE) ? "var(--fs-gray-400)" : "var(--fs-gray-900)" }}
+                      >Next →</button>
+                    </div>
+                  )}
+                </>
               )}
             </div>
           </div>
@@ -1832,24 +1886,57 @@ const BuyPage = ({ setSelectedListing, savedIds, onSave, initialFilters }) => {
 
 const ListingDetail = ({ listing, onBack, savedIds, onSave, user }) => {
   const [showEnquiry, setShowEnquiry] = useState(false);
+  const { aircraft: similar } = useAircraft({ category: listing?.category, sortBy: 'newest' });
   if (!listing) return null;
   const l = listing;
-  
+  const dealerObj = l.dealer || {};
+  const dealerName = dealerObj?.name || (typeof dealerObj === 'string' ? dealerObj : null);
+  const isSaved = savedIds.has(l.id);
+  const monthlyEst = formatPriceFull(Math.round(l.price * 0.008));
+
+  const specs = [
+    ["Year", l.year], ["Manufacturer", l.manufacturer], ["Model", l.model],
+    l.rego && ["Registration", l.rego],
+    ["Category", l.category], ["Condition", l.condition],
+    l.ttaf != null && ["Total Time Airframe", formatHours(l.ttaf)],
+    l.eng_hours != null && ["Engine Hours (SMOH)", formatHours(l.eng_hours)],
+    l.eng_tbo && ["Engine TBO", formatHours(l.eng_tbo)],
+    l.specs?.engine && ["Engine", l.specs.engine],
+    l.specs?.propeller && ["Propeller", l.specs.propeller],
+    l.avionics && ["Avionics", l.avionics],
+    l.specs?.seats && ["Seats", l.specs.seats],
+    l.specs?.mtow_kg && ["MTOW", l.specs.mtow_kg + " kg"],
+    l.specs?.wingspan_m && ["Wingspan", l.specs.wingspan_m + " m"],
+    l.useful_load && ["Useful Load", l.useful_load + " kg"],
+    l.range_nm && ["Range", l.range_nm + " nm"],
+    l.cruise_kts && ["Cruise Speed", l.cruise_kts + " kts"],
+    l.fuel_burn && ["Fuel Burn", l.fuel_burn + " L/hr"],
+    ["IFR Capable", l.ifr ? "✓ Yes" : "No"],
+    ["Retractable Gear", l.retractable ? "✓ Yes" : "No"],
+    l.pressurised !== undefined && ["Pressurised", l.pressurised ? "✓ Yes" : "No"],
+    ["Glass Cockpit", l.glass_cockpit ? "✓ Yes" : "No"],
+    l.specs?.parachute && ["Parachute", l.specs.parachute],
+  ].filter(Boolean);
+
+  const similarListings = similar.filter(s => s.id !== l.id).slice(0, 3);
+
   return (
     <>
       <div className="fs-detail-header">
         <div className="fs-container">
           <div className="fs-detail-breadcrumb">
-            <span onClick={onBack}>Buy</span> {Icons.chevronRight}
+            <span onClick={onBack} style={{ cursor: "pointer" }}>Buy</span> {Icons.chevronRight}
             <span>{l.category}</span> {Icons.chevronRight}
             <span style={{ color: "rgba(255,255,255,0.8)" }}>{l.title}</span>
           </div>
-          <h1 style={{ fontSize: 26, fontWeight: 700, marginBottom: 4 }}>{l.title}</h1>
-          <div style={{ display: "flex", gap: 16, fontSize: 13, color: "rgba(255,255,255,0.5)", alignItems: "center", flexWrap: "wrap" }}>
-            <span style={{ display: "flex", alignItems: "center", gap: 4 }}>{Icons.location} {l.city}, {l.state}</span>
+          <h1 style={{ fontSize: 28, fontWeight: 700, marginBottom: 8 }}>{l.title}</h1>
+          <div style={{ display: "flex", gap: 10, fontSize: 13, color: "rgba(255,255,255,0.5)", alignItems: "center", flexWrap: "wrap" }}>
+            <span style={{ display: "flex", alignItems: "center", gap: 4 }}>{Icons.location} {[l.city, l.state].filter(Boolean).join(', ')}</span>
             <span>Listed {timeAgo(l.created_at || l.created)}</span>
-            {(l.dealer?.name || l.dealer) && <span className="fs-tag fs-tag-blue" style={{ fontSize: 10 }}>{Icons.shield} Verified Dealer</span>}
-            <span>{l.condition}</span>
+            {dealerName && <span className="fs-tag fs-tag-blue" style={{ fontSize: 10 }}>{Icons.shield} Verified Dealer</span>}
+            {l.rego && <span className="fs-tag" style={{ fontSize: 10, background: "rgba(255,255,255,0.15)", color: "#fff" }}>✈ CASA {l.rego}</span>}
+            {l.ifr && <span className="fs-tag" style={{ fontSize: 10, background: "#2563eb", color: "#fff" }}>IFR</span>}
+            {isJustListed(l) && <span className="fs-tag" style={{ fontSize: 10, background: "#10b981", color: "#fff" }}>Just Listed</span>}
           </div>
         </div>
       </div>
@@ -1858,110 +1945,114 @@ const ListingDetail = ({ listing, onBack, savedIds, onSave, user }) => {
         <div className="fs-detail-layout">
           {/* Main content */}
           <div>
-            <AircraftImage listing={l} size="lg" style={{ borderRadius: "var(--fs-radius)", marginBottom: 20 }} />
-            
-            <div className="fs-detail-desc">
-              <h3>Description</h3>
-              <p>{l.description}</p>
-            </div>
-            
-            <div className="fs-detail-specs">
+            <AircraftImage listing={l} size="lg" style={{ borderRadius: "var(--fs-radius)", marginBottom: 20 }} showGallery={true} />
+
+            {l.description && (
+              <div className="fs-detail-specs" style={{ marginBottom: 20 }}>
+                <h3>Description</h3>
+                <p style={{ fontSize: 14, lineHeight: 1.7, color: "var(--fs-gray-600)", whiteSpace: "pre-line" }}>{l.description}</p>
+              </div>
+            )}
+
+            <div className="fs-detail-specs" style={{ marginBottom: 20 }}>
               <h3>Key Specifications</h3>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0" }}>
+                {specs.map(([label, value]) => (
+                  <div key={label} className="fs-detail-spec-row" style={{ gridColumn: label === "Avionics" ? "span 2" : undefined }}>
+                    <span className="fs-detail-spec-label">{label}</span>
+                    <span className="fs-detail-spec-value" style={{ color: String(value).startsWith('✓') ? "var(--fs-green)" : undefined }}>{value}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="fs-detail-specs" style={{ marginBottom: 20 }}>
+              <h3>Cost of Ownership (est.)</h3>
               {[
-                ["Year", l.year],
-                ["Manufacturer", l.manufacturer],
-                ["Model", l.model],
-                ["Registration", l.rego],
-                ["Category", l.category],
-                ["Condition", l.condition],
-                ["Total Time Airframe", formatHours(l.ttaf)],
-                ["Engine Hours (SMOH)", formatHours(l.eng_hours)],
-                ["Engine TBO", l.eng_tbo ? formatHours(l.eng_tbo) : "N/A"],
-                ["Engine", l.specs.engine],
-                ["Propeller", l.specs.propeller],
-                ["Avionics", l.avionics],
-                ["Seats", l.specs.seats],
-                ["MTOW", l.specs.mtow_kg + " kg"],
-                l.specs.wingspan_m && ["Wingspan", l.specs.wingspan_m + " m"],
-                ["Useful Load", l.useful_load + " kg"],
-                ["Range", l.range_nm + " nm"],
-                ["Cruise Speed", l.cruise_kts + " kts"],
-                ["Fuel Burn", l.fuel_burn + " L/hr"],
-                ["IFR Capable", l.ifr ? "Yes" : "No"],
-                ["Retractable Gear", l.retractable ? "Yes" : "No"],
-                l.pressurised !== undefined && ["Pressurised", l.pressurised ? "Yes" : "No"],
-                ["Glass Cockpit", l.glass_cockpit ? "Yes" : "No"],
-                l.specs.parachute && ["Parachute", l.specs.parachute],
+                ["Annual Insurance", formatPriceFull(Math.round(l.price * 0.015))],
+                ["Annual Inspection", l.category === "Helicopter" ? "$8,000–$15,000" : "$3,000–$8,000"],
+                ["Hangar (monthly)", "$400–$1,200"],
+                l.fuel_burn && ["Fuel per hour", `$${(l.fuel_burn * 2.8).toFixed(0)}`],
+                l.fuel_burn && ["Hourly Operating Cost", `~$${(l.fuel_burn * 2.8 + (l.eng_tbo ? (l.price * 0.3 / l.eng_tbo) : 50) + 30).toFixed(0)}`],
               ].filter(Boolean).map(([label, value]) => (
                 <div key={label} className="fs-detail-spec-row">
                   <span className="fs-detail-spec-label">{label}</span>
                   <span className="fs-detail-spec-value">{value}</span>
                 </div>
               ))}
+              <p style={{ fontSize: 11, color: "var(--fs-gray-400)", marginTop: 12 }}>Estimates only. Based on Australian averages. Actual costs vary.</p>
             </div>
-          </div>
 
-          {/* Sidebar */}
-          <div className="fs-detail-sidebar">
-            <div className="fs-detail-price-card">
-              <div className="fs-detail-price">{formatPriceFull(l.price)}</div>
-              <div className="fs-detail-rego">{l.rego} &middot; {l.condition}</div>
-              
-              {/* Primary CTA - Enquire */}
-              <button className="fs-detail-cta fs-detail-cta-primary" onClick={() => setShowEnquiry(true)}>
-                {Icons.mail} &nbsp;Contact Seller
+            {/* Mobile CTA — shown below specs on mobile */}
+            <div className="fs-detail-mobile-cta">
+              <div style={{ fontWeight: 800, fontSize: 26, letterSpacing: "-0.02em", marginBottom: 4 }}>{formatPriceFull(l.price)}</div>
+              <button className="fs-detail-cta fs-detail-cta-primary" onClick={() => setShowEnquiry(true)} style={{ marginBottom: 10 }}>
+                {Icons.mail}&nbsp; Contact Seller
               </button>
-              
-              {/* Save Button */}
               <button className="fs-detail-cta fs-detail-cta-secondary" onClick={() => onSave(l.id)}>
-                {savedIds.has(l.id) ? Icons.heartFull : Icons.heart} &nbsp;{savedIds.has(l.id) ? "Saved" : "Save to Watchlist"}
+                {isSaved ? Icons.heartFull : Icons.heart}&nbsp; {isSaved ? "Saved" : "Save to Watchlist"}
               </button>
-              <div style={{ marginTop: 16, padding: "16px 0", borderTop: "1px solid var(--fs-gray-100)" }}>
-                <div style={{ fontSize: 12, color: "var(--fs-gray-400)", marginBottom: 8 }}>Estimated Monthly Finance</div>
-                <div style={{ fontSize: 22, fontWeight: 700 }}>{formatPriceFull(Math.round(l.price * 0.008))}<span style={{ fontSize: 13, fontWeight: 400, color: "var(--fs-gray-400)" }}>/mo</span></div>
-                <div style={{ fontSize: 11, color: "var(--fs-gray-400)" }}>Based on 80% LVR, 7.5% over 10 years</div>
-              </div>
             </div>
 
-            {l.dealer && (
-              <div className="fs-detail-specs">
-                <h3>Dealer</h3>
-                <div style={{ display: "flex", gap: 12, alignItems: "center", marginBottom: 12 }}>
-                  <div className="fs-dealer-avatar" style={{ width: 40, height: 40, fontSize: 12 }}>
-                    {DEALERS.find(d => d.id === l.dealer_id)?.logo}
-                  </div>
-                  <div>
-                    <div style={{ fontWeight: 600, fontSize: 14 }}>{l.dealer}</div>
-                    <div style={{ fontSize: 12, color: "var(--fs-gray-500)", display: "flex", alignItems: "center", gap: 4 }}>
-                      {Icons.location} {DEALERS.find(d => d.id === l.dealer_id)?.location}
-                    </div>
-                  </div>
-                </div>
-                <div style={{ display: "flex", gap: 12, fontSize: 12, color: "var(--fs-gray-500)" }}>
-                  <span className="fs-dealer-rating">{Icons.star} {DEALERS.find(d => d.id === l.dealer_id)?.rating}</span>
-                  <span>{DEALERS.find(d => d.id === l.dealer_id)?.listings} active listings</span>
+            {/* Similar aircraft */}
+            {similarListings.length > 0 && (
+              <div style={{ marginTop: 8 }}>
+                <h3 style={{ fontSize: 16, fontWeight: 700, marginBottom: 16 }}>Similar {l.category} Aircraft</h3>
+                <div className="fs-grid" style={{ gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))" }}>
+                  {similarListings.map(s => (
+                    <ListingCard key={s.id} listing={s} onClick={() => { window.scrollTo(0,0); }} onSave={onSave} saved={savedIds.has(s.id)} />
+                  ))}
                 </div>
               </div>
             )}
+          </div>
 
-            <div className="fs-detail-specs">
-              <h3>Cost of Ownership (est.)</h3>
-              {[
-                ["Annual Insurance", formatPriceFull(Math.round(l.price * 0.015))],
-                ["Annual Inspection", l.category === "Helicopter" ? "$8,000 - $15,000" : "$3,000 - $8,000"],
-                ["Hangar (monthly)", "$400 - $1,200"],
-                ["Fuel per hour", `$${(l.fuel_burn * 2.8).toFixed(0)}`],
-                ["Hourly Operating Cost", `~$${(l.fuel_burn * 2.8 + (l.eng_tbo ? (l.price * 0.3 / l.eng_tbo) : 50) + 30).toFixed(0)}`],
-              ].map(([label, value]) => (
-                <div key={label} className="fs-detail-spec-row">
-                  <span className="fs-detail-spec-label">{label}</span>
-                  <span className="fs-detail-spec-value">{value}</span>
-                </div>
-              ))}
-              <p style={{ fontSize: 11, color: "var(--fs-gray-400)", marginTop: 12 }}>
-                Estimates only. Based on Australian averages. Actual costs vary by location, usage, and maintenance provider.
-              </p>
+          {/* Sticky Sidebar */}
+          <div className="fs-detail-sidebar">
+            <div className="fs-detail-price-card fs-detail-sticky">
+              <div className="fs-detail-price">{formatPriceFull(l.price)}</div>
+              {l.rego && <div className="fs-detail-rego">{l.rego} &middot; {l.condition}</div>}
+
+              <button className="fs-detail-cta fs-detail-cta-primary" onClick={() => setShowEnquiry(true)}>
+                {Icons.mail}&nbsp; Contact Seller
+              </button>
+              <button className="fs-detail-cta fs-detail-cta-secondary" onClick={() => onSave(l.id)}>
+                {isSaved ? Icons.heartFull : Icons.heart}&nbsp; {isSaved ? "Saved ✓" : "Save to Watchlist"}
+              </button>
+
+              <div style={{ marginTop: 16, padding: "14px 0", borderTop: "1px solid var(--fs-gray-100)" }}>
+                <div style={{ fontSize: 12, color: "var(--fs-gray-400)", marginBottom: 6 }}>Est. Monthly Finance</div>
+                <div style={{ fontSize: 22, fontWeight: 700 }}>{monthlyEst}<span style={{ fontSize: 13, fontWeight: 400, color: "var(--fs-gray-400)" }}>/mo</span></div>
+                <div style={{ fontSize: 11, color: "var(--fs-gray-400)" }}>80% LVR · 7.5% · 10 years</div>
+              </div>
+
+              {/* Trust signals */}
+              <div style={{ marginTop: 14, paddingTop: 14, borderTop: "1px solid var(--fs-gray-100)", display: "flex", flexDirection: "column", gap: 8 }}>
+                {l.rego && <div style={{ fontSize: 12, color: "var(--fs-gray-600)", display: "flex", alignItems: "center", gap: 6 }}><span style={{ color: "var(--fs-green)" }}>✓</span> CASA Registered ({l.rego})</div>}
+                {dealerName && <div style={{ fontSize: 12, color: "var(--fs-gray-600)", display: "flex", alignItems: "center", gap: 6 }}><span style={{ color: "var(--fs-green)" }}>✓</span> Verified Dealer Listing</div>}
+                <div style={{ fontSize: 12, color: "var(--fs-gray-600)", display: "flex", alignItems: "center", gap: 6 }}><span style={{ color: "var(--fs-green)" }}>✓</span> Transparent Pricing</div>
+                <div style={{ fontSize: 12, color: "var(--fs-gray-600)", display: "flex", alignItems: "center", gap: 6 }}><span style={{ color: "var(--fs-green)" }}>✓</span> No Hidden Fees</div>
+              </div>
             </div>
+
+            {dealerName && (
+              <div className="fs-detail-specs">
+                <h3>Seller</h3>
+                <div style={{ display: "flex", gap: 12, alignItems: "center", marginBottom: 12 }}>
+                  <div className="fs-dealer-avatar" style={{ width: 44, height: 44, fontSize: 13 }}>{(dealerObj.logo || dealerName?.slice(0,2))?.toUpperCase()}</div>
+                  <div>
+                    <div style={{ fontWeight: 700, fontSize: 14 }}>{dealerName}</div>
+                    {dealerObj.location && <div style={{ fontSize: 12, color: "var(--fs-gray-500)", display: "flex", alignItems: "center", gap: 4 }}>{Icons.location} {dealerObj.location}</div>}
+                  </div>
+                </div>
+                {dealerObj.rating && (
+                  <div style={{ display: "flex", gap: 12, fontSize: 12, color: "var(--fs-gray-500)" }}>
+                    <span className="fs-dealer-rating">{Icons.star} {dealerObj.rating}</span>
+                    {dealerObj.listings && <span>{dealerObj.listings} active listings</span>}
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         </div>
       </div>
