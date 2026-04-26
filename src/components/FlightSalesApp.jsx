@@ -187,10 +187,21 @@ const AircraftImage = ({ listing, className = "", size = "md", style = {}, showG
       />
       <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to bottom, transparent 60%, rgba(0,0,0,0.5) 100%)", pointerEvents: "none" }} />
 
-      {/* Badges — top left */}
+      {/* Badges — top left. Featured is a premium gold pill; New is monochrome. */}
       <div style={{ position: "absolute", top: 12, left: 12, display: "flex", flexDirection: "row", gap: 6, flexWrap: "wrap" }}>
         {listing.featured && (
-          <div style={{ background: "rgba(0,0,0,0.85)", color: "#fff", fontSize: 11, fontWeight: 600, padding: "5px 10px", borderRadius: "var(--fs-radius-pill)", letterSpacing: "-0.005em", backdropFilter: "blur(8px)" }}>Featured</div>
+          <div style={{
+            display: "inline-flex", alignItems: "center", gap: 5,
+            background: "rgba(255, 248, 230, 0.96)", color: "#7a5b0e",
+            fontSize: 11, fontWeight: 700, padding: "4px 10px 4px 8px",
+            borderRadius: "var(--fs-radius-pill)",
+            letterSpacing: "0.02em", textTransform: "uppercase",
+            border: "1px solid rgba(201, 168, 91, 0.45)",
+            backdropFilter: "blur(8px)",
+          }}>
+            <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#c9a85b", display: "inline-block" }} />
+            Featured
+          </div>
         )}
         {isJustListed(listing) && (
           <div style={{ background: "rgba(255,255,255,0.95)", color: "#000", fontSize: 11, fontWeight: 600, padding: "5px 10px", borderRadius: "var(--fs-radius-pill)", letterSpacing: "-0.005em" }}>New</div>
@@ -528,24 +539,42 @@ a { color: inherit; text-decoration: none; }
 .fs-card {
   background: var(--fs-white); border-radius: var(--fs-radius);
   overflow: hidden;
-  transition: border-color 0.15s var(--fs-ease-out);
+  transition: border-color 0.15s var(--fs-ease-out), box-shadow 0.15s var(--fs-ease-out), transform 0.15s var(--fs-ease-out);
   cursor: pointer;
   border: 1px solid var(--fs-line);
   display: flex; flex-direction: column;
 }
 .fs-card:hover {
   border-color: var(--fs-ink);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.06);
+  transform: translateY(-2px);
 }
 .fs-card:hover img { transform: scale(1.02); }
+/* Featured tier: subtle gold inner-glow border so it reads premium but not loud */
+.fs-card-featured {
+  box-shadow: inset 0 0 0 1px rgba(201, 168, 91, 0.35);
+}
+.fs-card-featured:hover {
+  box-shadow: 0 6px 20px rgba(0,0,0,0.06), inset 0 0 0 1px rgba(201, 168, 91, 0.55);
+}
+/* Compare button — secondary action, only visible on hover */
+.fs-card-compare-btn {
+  opacity: 0;
+  transition: opacity 0.15s var(--fs-ease-out);
+}
+.fs-card:hover .fs-card-compare-btn,
+.fs-card-compare-btn[data-active="true"] {
+  opacity: 1;
+}
 .fs-card:hover .fs-card-quicklook { opacity: 1 !important; }
 @media (hover: none) {
   .fs-card-quicklook { display: none !important; }
 }
-.fs-card-body { padding: 16px 18px 18px; flex: 1; display: flex; flex-direction: column; gap: 4px; }
+.fs-card-body { padding: 16px 18px 18px; flex: 1; display: flex; flex-direction: column; }
 .fs-card-dealer-row {
   display: flex; align-items: center; gap: 6px;
   font-size: 12px; font-weight: 600; color: var(--fs-ink-3);
-  margin-bottom: 4px; min-height: 16px;
+  margin-bottom: 6px; min-height: 16px;
   letter-spacing: -0.005em;
 }
 .fs-card-dealer-row svg { color: var(--fs-ink); width: 13px; height: 13px; }
@@ -555,17 +584,18 @@ a { color: inherit; text-decoration: none; }
   letter-spacing: -0.02em; color: var(--fs-ink);
   display: -webkit-box; -webkit-line-clamp: 1;
   -webkit-box-orient: vertical; overflow: hidden;
+  margin-bottom: 2px;
 }
 .fs-card-price {
   font-family: var(--fs-font);
-  font-size: 24px; font-weight: 700; color: var(--fs-ink);
-  letter-spacing: -0.035em; line-height: 1.1;
-  font-feature-settings: "tnum"; margin-top: 6px;
+  font-size: 26px; font-weight: 700; color: var(--fs-ink);
+  letter-spacing: -0.035em; line-height: 1.05;
+  font-feature-settings: "tnum"; margin-top: 0;
 }
 .fs-card-meta {
   display: flex; flex-wrap: wrap; gap: 4px 14px;
   font-size: 13px; color: var(--fs-ink-3); font-weight: 500;
-  margin-top: 8px; letter-spacing: -0.005em;
+  margin-top: 14px; letter-spacing: -0.005em;
 }
 .fs-card-meta-item { display: flex; align-items: center; gap: 5px; white-space: nowrap; }
 .fs-card-meta-item svg { color: var(--fs-ink-4); flex-shrink: 0; width: 14px; height: 14px; }
@@ -583,7 +613,7 @@ a { color: inherit; text-decoration: none; }
 
 /* LISTING GRID — clean spacing */
 .fs-grid {
-  display: grid; gap: 20px;
+  display: grid; gap: 24px;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
 }
 @media (max-width: 640px) {
@@ -764,7 +794,7 @@ a { color: inherit; text-decoration: none; }
 
 /* SEARCH PAGE — Uber */
 .fs-search-page-bar {
-  background: var(--fs-white); padding: 16px 0;
+  background: var(--fs-white); padding: 8px 0 12px;
   border-bottom: 1px solid var(--fs-line);
   position: sticky; top: 72px; z-index: 50;
 }
@@ -815,31 +845,32 @@ a { color: inherit; text-decoration: none; }
 }
 .fs-sidebar-card {
   background: var(--fs-white); border: 1px solid var(--fs-line);
-  border-radius: var(--fs-radius); padding: 24px;
+  border-radius: var(--fs-radius); padding: 18px;
 }
 .fs-sidebar-title {
-  font-size: 16px; font-weight: 700; color: var(--fs-ink);
-  margin-bottom: 18px; letter-spacing: -0.02em;
+  font-size: 15px; font-weight: 700; color: var(--fs-ink);
+  margin-bottom: 14px; letter-spacing: -0.02em;
 }
-.fs-sidebar-group { margin-bottom: 18px; }
+.fs-sidebar-group { margin-bottom: 12px; }
 .fs-sidebar-label {
-  font-size: 13px; font-weight: 600; color: var(--fs-ink);
-  margin-bottom: 8px; display: block; letter-spacing: -0.01em;
+  font-size: 11px; font-weight: 600; color: var(--fs-ink-3);
+  margin-bottom: 5px; display: block; letter-spacing: 0.02em;
+  text-transform: uppercase;
 }
 .fs-sidebar-select {
-  width: 100%; padding: 11px 14px; border: 1px solid var(--fs-line);
-  border-radius: var(--fs-radius); font-size: 14px;
+  width: 100%; padding: 9px 12px; border: 1px solid var(--fs-line);
+  border-radius: var(--fs-radius); font-size: 13.5px;
   font-family: var(--fs-font); outline: none; cursor: pointer;
   background: var(--fs-white); color: var(--fs-ink); font-weight: 500;
   transition: border-color 0.15s; letter-spacing: -0.005em;
 }
 .fs-sidebar-select:focus { border-color: var(--fs-ink); }
 .fs-sidebar-range {
-  display: flex; gap: 8px; align-items: center;
+  display: flex; gap: 6px; align-items: center;
 }
 .fs-sidebar-range input {
-  flex: 1; padding: 11px 12px; border: 1px solid var(--fs-line);
-  border-radius: var(--fs-radius); font-size: 14px;
+  flex: 1; padding: 9px 10px; border: 1px solid var(--fs-line);
+  border-radius: var(--fs-radius); font-size: 13.5px;
   font-family: var(--fs-font); outline: none; width: 100%;
   font-weight: 500; color: var(--fs-ink); background: var(--fs-white);
   letter-spacing: -0.005em;
@@ -847,8 +878,8 @@ a { color: inherit; text-decoration: none; }
 .fs-sidebar-range input:focus { border-color: var(--fs-ink); }
 .fs-sidebar-range span { color: var(--fs-ink-4); font-size: 13px; }
 .fs-sidebar-check {
-  display: flex; align-items: center; gap: 10px; padding: 6px 0;
-  font-size: 14px; color: var(--fs-ink); cursor: pointer; font-weight: 500;
+  display: flex; align-items: center; gap: 10px; padding: 4px 0;
+  font-size: 13.5px; color: var(--fs-ink); cursor: pointer; font-weight: 500;
   letter-spacing: -0.005em;
 }
 .fs-sidebar-check input { width: 16px; height: 16px; accent-color: var(--fs-ink); cursor: pointer; }
@@ -1171,7 +1202,7 @@ const ListingCard = ({ listing, onClick, onSave, saved, onQuickLook, onCompareTo
   ].filter(Boolean);
 
   return (
-    <div className="fs-card" onClick={() => onClick(listing)}>
+    <div className={`fs-card${listing.featured ? ' fs-card-featured' : ''}`} onClick={() => onClick(listing)}>
       <div className="fs-card-image-wrap" style={{ position: "relative" }}>
         <AircraftImage listing={listing} />
         {/* Top-right action stack: Save heart + Quick look (on hover) */}
@@ -1199,16 +1230,16 @@ const ListingCard = ({ listing, onClick, onSave, saved, onQuickLook, onCompareTo
               aria-label={isComparing ? "Remove from compare" : "Add to compare"}
               title={isComparing ? "Remove from compare" : "Add to compare"}
               className="fs-card-compare-btn"
+              data-active={isComparing ? "true" : undefined}
               style={{
-                width: 38, height: 38, borderRadius: "50%",
-                background: isComparing ? "#000" : "rgba(255,255,255,0.95)",
-                border: "none", cursor: "pointer",
+                width: 30, height: 30, borderRadius: "50%",
+                background: isComparing ? "#000" : "rgba(255,255,255,0.85)",
+                border: "1px solid rgba(0,0,0,0.08)", cursor: "pointer",
                 display: "flex", alignItems: "center", justifyContent: "center",
-                color: isComparing ? "#fff" : "#000",
-                boxShadow: "0 2px 8px rgba(0,0,0,0.12)",
+                color: isComparing ? "#fff" : "var(--fs-ink-2)",
               }}
             >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M3 6h18M3 12h18M3 18h12"/></svg>
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M3 6h18M3 12h18M3 18h12"/></svg>
             </button>
           )}
         </div>
@@ -2230,7 +2261,7 @@ const BuyPage = ({ setSelectedListing, savedIds, onSave, initialFilters, user })
         </div>
       </div>
 
-      <section className="fs-section" style={{ paddingTop: 32, paddingBottom: 64 }}>
+      <section className="fs-section" style={{ paddingTop: 20, paddingBottom: 64 }}>
         <div className="fs-container">
           <div className="fs-buy-layout">
             {/* SIDEBAR — compressed */}
@@ -2338,17 +2369,12 @@ const BuyPage = ({ setSelectedListing, savedIds, onSave, initialFilters, user })
                 <span className="fs-results-count">
                   {dbLoading ? "Searching..." : (
                     <>
-                      <span style={{ color: "var(--fs-ink)", fontWeight: 700, fontSize: 18, letterSpacing: "-0.02em" }}>{filtered.length}</span>
-                      {' '}aircraft
+                      <span style={{ color: "var(--fs-ink)", fontWeight: 700, fontSize: 22, letterSpacing: "-0.02em" }}>{filtered.length}</span>
+                      <span style={{ marginLeft: 6 }}>aircraft</span>
                       {aiQuery && <span style={{ color: "var(--fs-ink-3)", marginLeft: 8 }}>for "{aiQuery}"</span>}
                     </>
                   )}
                 </span>
-                {filtered.length > 0 && !dbLoading && (
-                  <span style={{ fontSize: 13, color: "var(--fs-ink-3)", fontWeight: 500 }}>
-                    Showing {pageStart}–{pageEnd} of {filtered.length}
-                  </span>
-                )}
               </div>
               {dbLoading ? (
                 <div className="fs-grid">
@@ -6289,7 +6315,7 @@ export default function FlightSalesApp() {
     const crumbs = getBreadcrumbs();
     if (crumbs.length === 0) return null;
     return (
-      <div className="fs-container" style={{ paddingTop: 16, paddingBottom: 0 }}>
+      <div className="fs-container" style={{ paddingTop: 12, paddingBottom: 8 }}>
         <div style={{ fontSize: 13, color: 'var(--fs-gray-500)', display: 'flex', alignItems: 'center', gap: 8 }}>
           {crumbs.map(([p, label], i) => (
             <span key={p} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
