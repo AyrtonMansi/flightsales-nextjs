@@ -223,7 +223,19 @@ export function useAuth() {
     if (error) throw error;
   };
 
-  return { user, loading, signUp, signIn, signInWithGoogle, signOut };
+  const resetPassword = async (email) => {
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `${window.location.origin}/auth/reset-password`,
+    });
+    if (error) throw error;
+  };
+
+  const updatePassword = async (newPassword) => {
+    const { error } = await supabase.auth.updateUser({ password: newPassword });
+    if (error) throw error;
+  };
+
+  return { user, loading, signUp, signIn, signInWithGoogle, signOut, resetPassword, updatePassword };
 }
 
 // ─── Profile ─────────────────────────────────────────────────────────────────
