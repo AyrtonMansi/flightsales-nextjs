@@ -543,15 +543,6 @@ a { color: inherit; text-decoration: none; }
 .fs-card-featured:hover {
   box-shadow: 0 6px 20px rgba(0,0,0,0.06), inset 0 0 0 1px rgba(201, 168, 91, 0.55);
 }
-/* Compare button — secondary action, only visible on hover */
-.fs-card-compare-btn {
-  opacity: 0;
-  transition: opacity 0.15s var(--fs-ease-out);
-}
-.fs-card:hover .fs-card-compare-btn,
-.fs-card-compare-btn[data-active="true"] {
-  opacity: 1;
-}
 .fs-card:hover .fs-card-quicklook { opacity: 1 !important; }
 @media (hover: none) {
   .fs-card-quicklook { display: none !important; }
@@ -785,11 +776,48 @@ a { color: inherit; text-decoration: none; }
   letter-spacing: -0.005em;
 }
 
-/* BUY PAGE — Editorial header */
-.fs-buy-hero {
-  background: linear-gradient(180deg, var(--fs-bg-2) 0%, var(--fs-white) 100%);
-  padding: 28px 0 24px;
+/* BUY PAGE — App-shell layout: flush left sidebar, main content right */
+.fs-buy-shell {
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  align-items: start;
+  min-height: calc(100vh - 72px);
+}
+@media (max-width: 960px) {
+  .fs-buy-shell { grid-template-columns: 1fr; }
+  .fs-buy-sidebar { display: none; }
+  .fs-buy-sidebar.open { display: block; position: fixed; inset: 72px 0 0 0; z-index: 100; height: auto; }
+}
+.fs-buy-sidebar {
+  background: var(--fs-bg-2);
+  border-right: 1px solid var(--fs-line);
+  position: sticky;
+  top: 72px;
+  height: calc(100vh - 72px);
+  overflow-y: auto;
+  scrollbar-width: thin;
+}
+.fs-buy-sidebar::-webkit-scrollbar { width: 6px; }
+.fs-buy-sidebar::-webkit-scrollbar-thumb { background: var(--fs-line); border-radius: 3px; }
+.fs-buy-sidebar::-webkit-scrollbar-thumb:hover { background: var(--fs-ink-4); }
+.fs-buy-sidebar-inner {
+  padding: 24px 22px 32px;
+  display: flex; flex-direction: column;
+}
+.fs-buy-main {
+  min-width: 0;
+  padding: 0 32px 64px;
+  background: var(--fs-white);
+}
+@media (max-width: 640px) {
+  .fs-buy-main { padding: 0 16px 48px; }
+}
+
+/* In-main hero (sits at top of content column) */
+.fs-buy-main-hero {
+  padding: 32px 0 20px;
   border-bottom: 1px solid var(--fs-line);
+  margin-bottom: 16px;
 }
 .fs-buy-hero-eyebrow {
   font-size: 11px; font-weight: 600; letter-spacing: 0.14em;
@@ -798,26 +826,42 @@ a { color: inherit; text-decoration: none; }
 }
 .fs-buy-hero-title {
   font-family: var(--fs-font);
-  font-size: 36px; font-weight: 700; line-height: 1.1;
+  font-size: 34px; font-weight: 700; line-height: 1.05;
   letter-spacing: -0.035em; color: var(--fs-ink);
   margin: 0 0 8px;
 }
 .fs-buy-hero-sub {
-  font-size: 15px; color: var(--fs-ink-3); font-weight: 500;
-  letter-spacing: -0.005em; max-width: 580px; line-height: 1.45;
+  font-size: 14.5px; color: var(--fs-ink-3); font-weight: 500;
+  letter-spacing: -0.005em; max-width: 620px; line-height: 1.5;
   margin: 0;
 }
 @media (max-width: 640px) {
-  .fs-buy-hero { padding: 20px 0 18px; }
-  .fs-buy-hero-title { font-size: 32px; }
-  .fs-buy-hero-sub { font-size: 14px; }
+  .fs-buy-main-hero { padding: 24px 0 16px; }
+  .fs-buy-hero-title { font-size: 28px; }
 }
 
-/* SEARCH PAGE — refined input */
+/* In-main sticky search (inside content column) */
+.fs-buy-main-search {
+  display: flex; gap: 10px; align-items: center;
+  background: var(--fs-white);
+  padding: 10px 0;
+  position: sticky; top: 72px; z-index: 40;
+  border-bottom: 1px solid var(--fs-line);
+}
+
+/* In-main toolbar */
+.fs-buy-main-toolbar {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 18px 0 14px;
+  margin-bottom: 22px;
+  border-bottom: 1px solid var(--fs-line);
+  flex-wrap: wrap; gap: 12px;
+}
+
+/* Old aliases kept for safety in case anything else references them */
 .fs-search-page-bar {
   background: var(--fs-white); padding: 14px 0;
   border-bottom: 1px solid var(--fs-line);
-  position: sticky; top: 72px; z-index: 50;
 }
 .fs-buy-search-input-wrap {
   position: relative; flex: 1; min-width: 240px;
@@ -893,39 +937,73 @@ a { color: inherit; text-decoration: none; }
 }
 .fs-sort-select:hover { border-color: var(--fs-ink-3); }
 .fs-sort-select:focus { border-color: var(--fs-ink); }
-/* SIDEBAR LAYOUT — full-page flush left rail (no card chrome) */
-.fs-buy-layout {
-  display: grid; grid-template-columns: 280px 1fr; gap: 40px;
-  align-items: start;
-}
-@media (max-width: 960px) {
-  .fs-buy-layout { grid-template-columns: 1fr; gap: 0; }
-  .fs-sidebar { display: none; }
-  .fs-sidebar.open { display: block; }
-}
-.fs-sidebar {
-  position: sticky;
-  top: 132px;
-  align-self: start;
-  max-height: calc(100vh - 140px);
-  overflow-y: auto;
-  padding-right: 12px;
-  margin-right: -12px;
-  display: flex; flex-direction: column;
-  scrollbar-width: thin;
-}
-.fs-sidebar::-webkit-scrollbar { width: 6px; }
-.fs-sidebar::-webkit-scrollbar-thumb { background: var(--fs-line); border-radius: 3px; }
-.fs-sidebar::-webkit-scrollbar-thumb:hover { background: var(--fs-ink-4); }
-
-/* Filter "card" is now a flush rail block — no border, no padding offset */
-.fs-sidebar-card {
-  background: transparent; border: none;
-  border-radius: 0; padding: 0;
-}
+/* SIDEBAR — header / livecount / preset chips */
 .fs-sidebar-header {
   display: flex; justify-content: space-between; align-items: baseline;
-  margin-bottom: 14px;
+  margin-bottom: 8px;
+}
+
+/* Live result count — confirms filter changes are working */
+.fs-sidebar-livecount {
+  display: flex; align-items: baseline; gap: 8px;
+  padding: 14px 14px;
+  background: var(--fs-white);
+  border: 1px solid var(--fs-line);
+  border-radius: var(--fs-radius);
+  margin: 8px 0 14px;
+}
+.fs-sidebar-livecount-num {
+  font-size: 22px; font-weight: 700; color: var(--fs-ink);
+  letter-spacing: -0.025em; font-feature-settings: "tnum";
+  line-height: 1;
+}
+.fs-sidebar-livecount-label {
+  font-size: 12.5px; color: var(--fs-ink-3); font-weight: 500;
+  letter-spacing: -0.005em;
+}
+
+/* Preset chip rows inside sections */
+.fs-sidebar-presets {
+  display: flex; flex-wrap: wrap; gap: 6px;
+  margin-bottom: 10px;
+}
+.fs-sidebar-preset {
+  background: var(--fs-white);
+  border: 1px solid var(--fs-line);
+  color: var(--fs-ink-2);
+  font-family: var(--fs-font);
+  font-size: 12px; font-weight: 500;
+  padding: 6px 10px;
+  border-radius: var(--fs-radius-pill);
+  cursor: pointer;
+  letter-spacing: -0.005em;
+  transition: all 0.12s var(--fs-ease-out);
+  white-space: nowrap;
+}
+.fs-sidebar-preset:hover {
+  border-color: var(--fs-ink-3);
+  color: var(--fs-ink);
+}
+.fs-sidebar-preset.active {
+  background: var(--fs-ink);
+  border-color: var(--fs-ink);
+  color: white;
+}
+
+/* Category-aware "soon" rows are slightly muted */
+.fs-sidebar-check-cat { opacity: 0.75; }
+
+/* Search clear button — sits in input on right when query present */
+.fs-buy-search-clear {
+  position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
+  width: 24px; height: 24px; border-radius: 50%;
+  background: var(--fs-bg-2); border: none;
+  color: var(--fs-ink-3); cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: background 0.12s, color 0.12s;
+}
+.fs-buy-search-clear:hover {
+  background: var(--fs-line); color: var(--fs-ink);
 }
 .fs-sidebar-title {
   font-family: var(--fs-font);
@@ -1396,7 +1474,7 @@ const Footer = ({ setPage }) => (
   </footer>
 );
 
-const ListingCard = ({ listing, onClick, onSave, saved, onQuickLook, onCompareToggle, isComparing }) => {
+const ListingCard = ({ listing, onClick, onSave, saved, onQuickLook }) => {
   const dealerName = listing.dealer?.name || (typeof listing.dealer === 'string' ? listing.dealer : null);
   const isNew = isJustListed(listing);
   const location = [listing.city, listing.state].filter(Boolean).join(', ');
@@ -1432,24 +1510,6 @@ const ListingCard = ({ listing, onClick, onSave, saved, onQuickLook, onCompareTo
           >
             {saved ? Icons.heartFull : Icons.heart}
           </button>
-          {onCompareToggle && (
-            <button
-              onClick={e => { e.stopPropagation(); onCompareToggle(listing.id); }}
-              aria-label={isComparing ? "Remove from compare" : "Add to compare"}
-              title={isComparing ? "Remove from compare" : "Add to compare"}
-              className="fs-card-compare-btn"
-              data-active={isComparing ? "true" : undefined}
-              style={{
-                width: 30, height: 30, borderRadius: "50%",
-                background: isComparing ? "#000" : "rgba(255,255,255,0.85)",
-                border: "1px solid rgba(0,0,0,0.08)", cursor: "pointer",
-                display: "flex", alignItems: "center", justifyContent: "center",
-                color: isComparing ? "#fff" : "var(--fs-ink-2)",
-              }}
-            >
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M3 6h18M3 12h18M3 18h12"/></svg>
-            </button>
-          )}
         </div>
         {/* Quick look button — bottom right, fades in on hover */}
         {onQuickLook && (
@@ -1621,108 +1681,6 @@ const QuickLookModal = ({ listing, onClose, onViewFull, onSave, saved, onEnquire
 };
 
 // COMPARE DRAWER — sticky bottom bar with up to 3 listings
-const CompareDrawer = ({ listings, onRemove, onClear, onCompare }) => {
-  if (!listings.length) return null;
-  return (
-    <div style={{
-      position: "fixed", bottom: 0, left: 0, right: 0, zIndex: 80,
-      background: "var(--fs-ink)", color: "white",
-      padding: "16px 24px",
-      boxShadow: "0 -8px 32px rgba(0,0,0,0.18)",
-    }}>
-      <div className="fs-container" style={{ display: "flex", alignItems: "center", gap: 16, flexWrap: "wrap" }}>
-        <div style={{ display: "flex", gap: 12, flex: 1, minWidth: 0, flexWrap: "wrap" }}>
-          {listings.map(l => (
-            <div key={l.id} style={{ display: "flex", alignItems: "center", gap: 10, background: "rgba(255,255,255,0.08)", padding: "8px 12px", borderRadius: "var(--fs-radius)", minWidth: 0 }}>
-              <div style={{ fontSize: 13, fontWeight: 600, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", maxWidth: 200, letterSpacing: "-0.01em" }}>{l.title}</div>
-              <button onClick={() => onRemove(l.id)} aria-label="Remove" style={{ background: "rgba(255,255,255,0.15)", border: "none", color: "white", cursor: "pointer", borderRadius: "50%", width: 22, height: 22, display: "flex", alignItems: "center", justifyContent: "center" }}>
-                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-              </button>
-            </div>
-          ))}
-          {listings.length < 3 && (
-            <div style={{ fontSize: 13, color: "rgba(255,255,255,0.5)", display: "flex", alignItems: "center" }}>
-              Tap the compare icon on more listings — up to 3
-            </div>
-          )}
-        </div>
-        <div style={{ display: "flex", gap: 8 }}>
-          <button onClick={onClear} style={{ background: "transparent", border: "1px solid rgba(255,255,255,0.25)", color: "white", padding: "10px 16px", borderRadius: "var(--fs-radius-pill)", cursor: "pointer", fontSize: 13.5, fontWeight: 500, fontFamily: "var(--fs-font)" }}>
-            Clear
-          </button>
-          <button onClick={onCompare} disabled={listings.length < 2} style={{ background: "white", border: "none", color: "var(--fs-ink)", padding: "10px 22px", borderRadius: "var(--fs-radius-pill)", cursor: listings.length >= 2 ? "pointer" : "not-allowed", fontSize: 13.5, fontWeight: 600, fontFamily: "var(--fs-font)", opacity: listings.length < 2 ? 0.4 : 1, letterSpacing: "-0.01em" }}>
-            Compare {listings.length}
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-// COMPARE MODAL — side-by-side spec comparison
-const CompareModal = ({ listings, onClose, onViewListing }) => {
-  if (!listings.length) return null;
-  const specRows = [
-    ["Price", l => formatPriceFull(l.price)],
-    ["Year", l => l.year],
-    ["Manufacturer", l => l.manufacturer],
-    ["Model", l => l.model],
-    ["Category", l => l.category],
-    ["Condition", l => l.condition],
-    ["Total Time", l => l.ttaf > 0 ? formatHours(l.ttaf) : "—"],
-    ["Engine SMOH", l => l.eng_hours > 0 ? formatHours(l.eng_hours) : "—"],
-    ["Engine TBO", l => l.eng_tbo ? formatHours(l.eng_tbo) : "—"],
-    ["Avionics", l => l.avionics || "—"],
-    ["Useful Load", l => l.useful_load ? `${l.useful_load} kg` : "—"],
-    ["Range", l => l.range_nm ? `${l.range_nm} nm` : "—"],
-    ["Cruise Speed", l => l.cruise_kts ? `${l.cruise_kts} kts` : "—"],
-    ["Fuel Burn", l => l.fuel_burn ? `${l.fuel_burn} L/hr` : "—"],
-    ["IFR", l => l.ifr ? "Yes" : "No"],
-    ["Glass Cockpit", l => l.glass_cockpit ? "Yes" : "No"],
-    ["Pressurised", l => l.pressurised ? "Yes" : "No"],
-    ["Retractable", l => l.retractable ? "Yes" : "No"],
-    ["Location", l => [l.city, l.state].filter(Boolean).join(', ') || "—"],
-  ];
-
-  return (
-    <div className="fs-modal-overlay" onClick={onClose} style={{ alignItems: "flex-start", overflow: "auto", padding: "40px 20px" }}>
-      <div className="fs-modal" onClick={e => e.stopPropagation()} style={{ maxWidth: 1200, width: "100%", maxHeight: "none" }}>
-        <div className="fs-modal-header">
-          <h2>Compare {listings.length} aircraft</h2>
-          <button className="fs-modal-close" onClick={onClose}>{Icons.x}</button>
-        </div>
-        <div style={{ padding: "20px 28px 28px", overflow: "auto" }}>
-          <table style={{ width: "100%", borderCollapse: "collapse", fontFamily: "var(--fs-font)" }}>
-            <thead>
-              <tr>
-                <th style={{ textAlign: "left", padding: "12px 8px", fontSize: 12, color: "var(--fs-ink-4)", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.5px", width: 140 }}>Spec</th>
-                {listings.map(l => (
-                  <th key={l.id} style={{ textAlign: "left", padding: "12px 8px", verticalAlign: "top", minWidth: 200 }}>
-                    <div onClick={() => onViewListing(l)} style={{ cursor: "pointer" }}>
-                      <AircraftImage listing={l} size="sm" style={{ borderRadius: "var(--fs-radius-sm)", marginBottom: 8, height: 100 }} />
-                      <div style={{ fontSize: 14, fontWeight: 600, letterSpacing: "-0.02em" }}>{l.title}</div>
-                    </div>
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {specRows.map(([label, fn]) => (
-                <tr key={label} style={{ borderTop: "1px solid var(--fs-line)" }}>
-                  <td style={{ padding: "12px 8px", fontSize: 13, color: "var(--fs-ink-3)", fontWeight: 500, letterSpacing: "-0.005em" }}>{label}</td>
-                  {listings.map(l => (
-                    <td key={l.id} style={{ padding: "12px 8px", fontSize: 14, fontWeight: 500, color: "var(--fs-ink)", letterSpacing: "-0.005em" }}>{fn(l)}</td>
-                  ))}
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-  );
-};
-
 const EnquiryModal = ({ listing, onClose, user }) => {
   const [sent, setSent] = useState(false);
   const [sending, setSending] = useState(false);
@@ -2205,16 +2163,7 @@ const BuyPage = ({ setSelectedListing, savedIds, onSave, initialFilters, user, s
   const [sideOpen, setSideOpen] = useState(false);
   const [quickLook, setQuickLook] = useState(null);
   const [enquireFor, setEnquireFor] = useState(null);
-  const [compareIds, setCompareIds] = useState([]);
-  const [showCompareModal, setShowCompareModal] = useState(false);
-
-  const toggleCompare = (id) => {
-    setCompareIds(prev => {
-      if (prev.includes(id)) return prev.filter(x => x !== id);
-      if (prev.length >= 3) return prev; // max 3
-      return [...prev, id];
-    });
-  };
+  // Compare mode removed — pilots open multiple tabs to compare instead.
 
   // Reset to page 1 whenever any filter changes — prevents empty page state
   useEffect(() => { setResultPage(1); }, [search, catFilter, makeFilter, stateFilter, condFilter, minPrice, maxPrice, maxHours, ifrOnly, glassOnly]);
@@ -2270,6 +2219,7 @@ const BuyPage = ({ setSelectedListing, savedIds, onSave, initialFilters, user, s
     }
     
     // ===== CATEGORY DETECTION =====
+    const explicitCategoryUsed = /\b(single.engine|singleengine|single-engine|multi.engine|multiengine|multi-engine|twin.engine|twin-engine|twin|turboprop|light.jet|midsize.jet|heavy.jet|business.jet|helicopter|heli|chopper|rotor|lsa|light.sport|sport.aircraft|ultralight|glider|sailplane|gyrocopter|gyro|autogyro)\b/.test(q);
     if (/\b(helicopter|heli|chopper|rotor)\b/.test(q)) {
       setCatFilter("Helicopter");
     } else if (/\b(single.engine|singleengine|single-engine|sep)\b/.test(q)) {
@@ -2286,6 +2236,22 @@ const BuyPage = ({ setSelectedListing, savedIds, onSave, initialFilters, user, s
       setCatFilter("Glider");
     } else if (/\b(gyrocopter|gyro|autogyro)\b/.test(q)) {
       setCatFilter("Gyrocopter");
+    }
+
+    // Smart defaults: when a recognised model is mentioned without an explicit
+    // category keyword, infer the category from the model. "Cessna 172" → SEP.
+    if (!explicitCategoryUsed) {
+      const modelToCategory = [
+        { pattern: /\b(172|152|182|206|cherokee|warrior|archer|sr20|sr22|da40|bonanza|mooney|tsi|sling|jabiru|cirrus)\b/, category: "Single Engine Piston" },
+        { pattern: /\b(da42|baron|seneca|310|aztec|seminole|duchess|navajo)\b/, category: "Multi Engine Piston" },
+        { pattern: /\b(pc-12|pc12|king.air|caravan|tbm|meridian|cheyenne|conquest)\b/, category: "Turboprop" },
+        { pattern: /\b(citation|hondajet|phenom|legacy|cj1|cj2|cj3|cj4|m2|mustang)\b/, category: "Light Jet" },
+        { pattern: /\b(r22|r44|r66|bell.206|bell.407|jetranger|longranger|ec120|ec130)\b/, category: "Helicopter" },
+        { pattern: /\b(tecnam|bristell|pipistrel|virus|sport.cruiser)\b/, category: "LSA" },
+      ];
+      for (const { pattern, category } of modelToCategory) {
+        if (pattern.test(q)) { setCatFilter(category); break; }
+      }
     }
     
     // ===== PRICE DETECTION =====
@@ -2443,279 +2409,336 @@ const BuyPage = ({ setSelectedListing, savedIds, onSave, initialFilters, user, s
   const pageStart = (resultPage - 1) * PAGE_SIZE + 1;
   const pageEnd = Math.min(resultPage * PAGE_SIZE, filtered.length);
 
+  // Category-aware predicates: only show certain equipment filters when the
+  // selected category implies them. Drives the smart Equipment section below.
+  const TURBINE_OR_TWIN = ['Multi Engine Piston', 'Turboprop', 'Light Jet', 'Midsize Jet', 'Heavy Jet'];
+  const FIXED_WING_POWERED = ['Single Engine Piston', 'Multi Engine Piston', 'Turboprop'];
+  const canBePressurised = !catFilter || TURBINE_OR_TWIN.includes(catFilter);
+  const canBeRetractable = !catFilter || FIXED_WING_POWERED.includes(catFilter);
+
+  // Price preset handler — toggle preset chips
+  const setPricePreset = (min, max) => {
+    setMinPrice(min);
+    setMaxPrice(max);
+  };
+  const isPricePreset = (min, max) =>
+    String(minPrice || '') === String(min || '') && String(maxPrice || '') === String(max || '');
+
+  // Hours preset handler
+  const setHoursPreset = (max) => setMaxHours(max);
+  const isHoursPreset = (max) => String(maxHours || '') === String(max || '');
+
   return (
     <>
-      {/* Editorial page header — establishes the page identity above the chrome */}
-      <div className="fs-buy-hero">
-        <div className="fs-container">
-          <div className="fs-buy-hero-eyebrow">Marketplace</div>
-          <h1 className="fs-buy-hero-title">Aircraft for sale</h1>
-          <p className="fs-buy-hero-sub">
-            Browse {systemTotal > 0 ? `${systemTotal}+ ` : ''}verified listings from dealers and private sellers across Australia.
-          </p>
-        </div>
-      </div>
+      <div className="fs-buy-shell">
+        {/* SIDEBAR — flush left, sticky full-page rail */}
+        <aside className={`fs-buy-sidebar${sideOpen ? " open" : ""}`}>
+          <div className="fs-buy-sidebar-inner">
 
-      {/* Search bar — AI-aware, full-bleed */}
-      <div className="fs-search-page-bar">
-        <div className="fs-container fs-search-page-inner">
-          <div className="fs-buy-search-input-wrap">
-            <span className="fs-buy-search-icon">{Icons.search}</span>
-            <input
-              className="fs-search-inline-input"
-              placeholder={rotatingPlaceholder}
-              value={search}
-              onChange={e => setSearch(e.target.value)}
-              onKeyDown={e => { if (e.key === "Enter" && e.target.value) handleAiSearch(e.target.value); }}
-            />
-            <span className="fs-buy-search-hint">↵ Search</span>
-          </div>
-          <button className="fs-mobile-filter-btn" onClick={() => setSideOpen(!sideOpen)}>
-            {Icons.filter} Filters{activeFilterCount > 0 ? ` · ${activeFilterCount}` : ""}
-          </button>
-        </div>
-      </div>
-
-      <section className="fs-section" style={{ paddingTop: 24, paddingBottom: 64 }}>
-        <div className="fs-container">
-          <div className="fs-buy-layout">
-            {/* SIDEBAR — filters + user-flow info cards */}
-            <div className={`fs-sidebar${sideOpen ? " open" : ""}`}>
-              {/* Filter card */}
-              <div className="fs-sidebar-card">
-                <div className="fs-sidebar-header">
-                  <div className="fs-sidebar-title">Filters</div>
-                  {activeFilterCount > 0 && (
-                    <button onClick={resetFilters} className="fs-sidebar-clear">Clear all</button>
-                  )}
-                </div>
-
-                {/* Active-filter summary chips at top of sidebar */}
-                {activeChips.length > 0 && (
-                  <div className="fs-sidebar-active">
-                    {activeChips.map(chip => (
-                      <button key={chip.key} onClick={chip.clear} className="fs-sidebar-active-chip" title="Remove filter">
-                        {chip.label}
-                        <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-                      </button>
-                    ))}
-                  </div>
-                )}
-
-                {/* LOCATION */}
-                <div className="fs-sidebar-section">
-                  <div className="fs-sidebar-section-title">Location</div>
-                  <div className="fs-sidebar-group">
-                    <label className="fs-sidebar-label">State</label>
-                    <select className="fs-sidebar-select" value={stateFilter} onChange={e => setStateFilter(e.target.value)}>
-                      <option value="">All states</option>
-                      {STATES.map(s => <option key={s} value={s}>{s}</option>)}
-                    </select>
-                  </div>
-                </div>
-
-                {/* AIRCRAFT */}
-                <div className="fs-sidebar-section">
-                  <div className="fs-sidebar-section-title">Aircraft</div>
-                  <div className="fs-sidebar-group">
-                    <label className="fs-sidebar-label">Category</label>
-                    <select className="fs-sidebar-select" value={catFilter} onChange={e => setCatFilter(e.target.value)}>
-                      <option value="">All categories</option>
-                      {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
-                    </select>
-                  </div>
-                  <div className="fs-sidebar-group">
-                    <label className="fs-sidebar-label">Manufacturer</label>
-                    <select className="fs-sidebar-select" value={makeFilter} onChange={e => setMakeFilter(e.target.value)}>
-                      <option value="">All manufacturers</option>
-                      {MANUFACTURERS.map(m => <option key={m} value={m}>{m}</option>)}
-                    </select>
-                  </div>
-                  <div className="fs-sidebar-group">
-                    <label className="fs-sidebar-label">Condition</label>
-                    <select className="fs-sidebar-select" value={condFilter} onChange={e => setCondFilter(e.target.value)}>
-                      <option value="">Any condition</option>
-                      {CONDITIONS.map(c => <option key={c} value={c}>{c}</option>)}
-                    </select>
-                  </div>
-                </div>
-
-                {/* PRICE */}
-                <div className="fs-sidebar-section">
-                  <div className="fs-sidebar-section-title">Price (AUD)</div>
-                  <div className="fs-sidebar-group">
-                    <div className="fs-sidebar-range">
-                      <input type="number" placeholder="Min" value={minPrice} onChange={e => setMinPrice(e.target.value)} />
-                      <span>—</span>
-                      <input type="number" placeholder="Max" value={maxPrice} onChange={e => setMaxPrice(e.target.value)} />
-                    </div>
-                  </div>
-                </div>
-
-                {/* USAGE & FEATURES */}
-                <div className="fs-sidebar-section">
-                  <div className="fs-sidebar-section-title">Usage & features</div>
-                  <div className="fs-sidebar-group">
-                    <label className="fs-sidebar-label">Max total hours</label>
-                    <input
-                      type="number"
-                      placeholder="e.g. 2000"
-                      value={maxHours}
-                      onChange={e => setMaxHours(e.target.value)}
-                      className="fs-sidebar-select"
-                      style={{ cursor: 'text' }}
-                    />
-                  </div>
-                  <label className="fs-sidebar-check">
-                    <input type="checkbox" checked={ifrOnly} onChange={e => setIfrOnly(e.target.checked)} /> IFR capable
-                  </label>
-                  <label className="fs-sidebar-check">
-                    <input type="checkbox" checked={glassOnly} onChange={e => setGlassOnly(e.target.checked)} /> Glass cockpit
-                  </label>
-                </div>
-
-                {/* ADVANCED — collapsible */}
-                <details className="fs-sidebar-advanced">
-                  <summary>
-                    Advanced filters
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" className="fs-sidebar-advanced-chev"><polyline points="6 9 12 15 18 9"/></svg>
-                  </summary>
-                  <div className="fs-sidebar-advanced-body">
-                    <p className="fs-sidebar-advanced-note">Refine by airframe details. More options coming as listings grow.</p>
-                    <label className="fs-sidebar-check">
-                      <input type="checkbox" disabled /> Pressurised <span className="fs-sidebar-soon">soon</span>
-                    </label>
-                    <label className="fs-sidebar-check">
-                      <input type="checkbox" disabled /> Retractable gear <span className="fs-sidebar-soon">soon</span>
-                    </label>
-                    <label className="fs-sidebar-check">
-                      <input type="checkbox" disabled /> Has parachute system <span className="fs-sidebar-soon">soon</span>
-                    </label>
-                  </div>
-                </details>
-              </div>
-
-              {/* Save search / alerts CTA */}
-              <div className="fs-sidebar-info-card">
-                <div className="fs-sidebar-info-icon">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
-                </div>
-                <div className="fs-sidebar-info-title">Get aircraft alerts</div>
-                <p className="fs-sidebar-info-text">Save this search and we'll email you when new aircraft match.</p>
-                <button className="fs-sidebar-info-cta" onClick={() => user ? null : setPage && setPage('login')}>
-                  {activeChips.length > 0 ? 'Save this search' : 'Set up alerts'}
-                </button>
-              </div>
-
-              {/* Trust signals */}
-              <div className="fs-sidebar-trust">
-                <div className="fs-sidebar-trust-row"><span>✓</span> All listings reviewed</div>
-                <div className="fs-sidebar-trust-row"><span>✓</span> Transparent pricing</div>
-                <div className="fs-sidebar-trust-row"><span>✓</span> Direct seller contact</div>
-                <div className="fs-sidebar-trust-row"><span>✓</span> No hidden fees</div>
-              </div>
-
-              {/* Help link */}
-              <div className="fs-sidebar-help">
-                <div className="fs-sidebar-help-title">Need help?</div>
-                <p className="fs-sidebar-help-text">Talk to our team — we'll help you find the right aircraft.</p>
-                <a href="#contact" onClick={(e) => { e.preventDefault(); setPage && setPage('contact'); }} className="fs-sidebar-help-link">Contact us →</a>
-              </div>
-            </div>
-
-            {/* RESULTS */}
-            <div>
-              <div className="fs-results-bar">
-                <span className="fs-results-count">
-                  {dbLoading ? (
-                    <span style={{ color: 'var(--fs-ink-3)' }}>Searching…</span>
-                  ) : (
-                    <>
-                      <span style={{ color: "var(--fs-ink)", fontWeight: 700, fontSize: 22, letterSpacing: "-0.02em" }}>{filtered.length}</span>
-                      <span style={{ marginLeft: 6 }}>{filtered.length === 1 ? 'aircraft' : 'aircraft'}</span>
-                      {aiQuery && <span style={{ color: "var(--fs-ink-3)", marginLeft: 8, fontStyle: 'italic' }}>for "{aiQuery}"</span>}
-                    </>
-                  )}
-                </span>
-                <div className="fs-results-sort">
-                  <span className="fs-results-sort-label">Sort by</span>
-                  <select className="fs-sort-select" value={sortBy} onChange={e => { setSortBy(e.target.value); setResultPage(1); }}>
-                    <option value="newest">Newest first</option>
-                    <option value="price-asc">Price: low to high</option>
-                    <option value="price-desc">Price: high to low</option>
-                    <option value="hours-low">Hours: low to high</option>
-                  </select>
-                </div>
-              </div>
-              {dbLoading ? (
-                <div className="fs-grid">
-                  {[1,2,3,4,5,6].map(i => <div key={i} style={{ height: 360, background: "var(--fs-bg-2)", borderRadius: "var(--fs-radius)", animation: "fs-pulse 1.5s infinite" }} />)}
-                </div>
-              ) : filtered.length === 0 ? (
-                <div className="fs-empty" style={{ padding: "80px 20px" }}>
-                  <div style={{ fontSize: 16, fontWeight: 600, color: "var(--fs-ink)", marginBottom: 8, letterSpacing: "-0.02em" }}>No aircraft match your filters</div>
-                  <p style={{ color: "var(--fs-ink-3)", fontSize: 14, marginBottom: 20 }}>Try widening your price range, removing a feature, or clearing filters.</p>
-                  <button className="fs-btn fs-btn-primary" onClick={resetFilters}>Clear all filters</button>
-                </div>
-              ) : (
-                <>
-                  <div className="fs-grid">
-                    {filtered.slice((resultPage - 1) * PAGE_SIZE, resultPage * PAGE_SIZE).map(l => (
-                      <ListingCard
-                        key={l.id}
-                        listing={l}
-                        onClick={setSelectedListing}
-                        onSave={onSave}
-                        saved={savedIds.has(l.id)}
-                        onQuickLook={setQuickLook}
-                        onCompareToggle={toggleCompare}
-                        isComparing={compareIds.includes(l.id)}
-                      />
-                    ))}
-                  </div>
-                  {totalPages > 1 && (
-                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 48, paddingTop: 24, borderTop: "1px solid var(--fs-line)", flexWrap: "wrap", gap: 16 }}>
-                      <span style={{ fontSize: 13, color: "var(--fs-ink-3)", fontWeight: 500 }}>
-                        Page {resultPage} of {totalPages}
-                      </span>
-                      <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                        <button
-                          onClick={() => { setResultPage(p => Math.max(1, p - 1)); window.scrollTo({ top: 200, behavior: 'smooth' }); }}
-                          disabled={resultPage === 1}
-                          style={{ width: 40, height: 40, borderRadius: "50%", border: "1px solid var(--fs-line)", background: resultPage === 1 ? "var(--fs-bg-2)" : "white", cursor: resultPage === 1 ? "default" : "pointer", color: resultPage === 1 ? "var(--fs-ink-4)" : "var(--fs-ink)", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "var(--fs-font)" }}
-                          aria-label="Previous"
-                        >{Icons.chevronLeft}</button>
-                        {(() => {
-                          const pages = [];
-                          const showRange = 5;
-                          let start = Math.max(1, resultPage - Math.floor(showRange / 2));
-                          let end = Math.min(totalPages, start + showRange - 1);
-                          start = Math.max(1, end - showRange + 1);
-                          for (let p = start; p <= end; p++) pages.push(p);
-                          return pages.map(p => (
-                            <button key={p} onClick={() => { setResultPage(p); window.scrollTo({ top: 200, behavior: 'smooth' }); }}
-                              style={{ width: 40, height: 40, borderRadius: "50%", border: "none", background: p === resultPage ? "var(--fs-ink)" : "transparent", color: p === resultPage ? "white" : "var(--fs-ink)", fontWeight: p === resultPage ? 600 : 500, fontSize: 14, cursor: "pointer", fontFamily: "var(--fs-font)", letterSpacing: "-0.005em" }}
-                            >{p}</button>
-                          ));
-                        })()}
-                        <button
-                          onClick={() => { setResultPage(p => Math.min(totalPages, p + 1)); window.scrollTo({ top: 200, behavior: 'smooth' }); }}
-                          disabled={resultPage === totalPages}
-                          style={{ width: 40, height: 40, borderRadius: "50%", border: "1px solid var(--fs-line)", background: resultPage === totalPages ? "var(--fs-bg-2)" : "white", cursor: resultPage === totalPages ? "default" : "pointer", color: resultPage === totalPages ? "var(--fs-ink-4)" : "var(--fs-ink)", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "var(--fs-font)" }}
-                          aria-label="Next"
-                        >{Icons.chevronRight}</button>
-                      </div>
-                    </div>
-                  )}
-                </>
+            {/* Header: title + clear */}
+            <div className="fs-sidebar-header">
+              <div className="fs-sidebar-title">Filters</div>
+              {activeFilterCount > 0 && (
+                <button onClick={resetFilters} className="fs-sidebar-clear">Clear · {activeFilterCount}</button>
               )}
             </div>
-          </div>
-        </div>
-      </section>
 
-      {/* Bottom-padding spacer when compare drawer is open */}
-      {compareIds.length > 0 && <div style={{ height: 80 }} />}
+            {/* Live result count — confirms filters are working */}
+            <div className="fs-sidebar-livecount">
+              {dbLoading ? (
+                <span className="fs-sidebar-livecount-num">…</span>
+              ) : (
+                <span className="fs-sidebar-livecount-num">{filtered.length}</span>
+              )}
+              <span className="fs-sidebar-livecount-label">aircraft match</span>
+            </div>
+
+            {/* Active filter chips */}
+            {activeChips.length > 0 && (
+              <div className="fs-sidebar-active">
+                {activeChips.map(chip => (
+                  <button key={chip.key} onClick={chip.clear} className="fs-sidebar-active-chip" title="Remove filter">
+                    {chip.label}
+                    <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                  </button>
+                ))}
+              </div>
+            )}
+
+            {/* LOCATION */}
+            <div className="fs-sidebar-section">
+              <div className="fs-sidebar-section-title">Location</div>
+              <div className="fs-sidebar-group">
+                <label className="fs-sidebar-label">State</label>
+                <select className="fs-sidebar-select" value={stateFilter} onChange={e => setStateFilter(e.target.value)}>
+                  <option value="">All states</option>
+                  {STATES.map(s => <option key={s} value={s}>{s}</option>)}
+                </select>
+              </div>
+            </div>
+
+            {/* AIRCRAFT */}
+            <div className="fs-sidebar-section">
+              <div className="fs-sidebar-section-title">Aircraft</div>
+              <div className="fs-sidebar-group">
+                <label className="fs-sidebar-label">Category</label>
+                <select className="fs-sidebar-select" value={catFilter} onChange={e => setCatFilter(e.target.value)}>
+                  <option value="">All categories</option>
+                  {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
+                </select>
+              </div>
+              <div className="fs-sidebar-group">
+                <label className="fs-sidebar-label">Manufacturer</label>
+                <select className="fs-sidebar-select" value={makeFilter} onChange={e => setMakeFilter(e.target.value)}>
+                  <option value="">All manufacturers</option>
+                  {MANUFACTURERS.map(m => <option key={m} value={m}>{m}</option>)}
+                </select>
+              </div>
+              <div className="fs-sidebar-group">
+                <label className="fs-sidebar-label">Condition</label>
+                <select className="fs-sidebar-select" value={condFilter} onChange={e => setCondFilter(e.target.value)}>
+                  <option value="">Any condition</option>
+                  {CONDITIONS.map(c => <option key={c} value={c}>{c}</option>)}
+                </select>
+              </div>
+            </div>
+
+            {/* PRICE — with preset chips */}
+            <div className="fs-sidebar-section">
+              <div className="fs-sidebar-section-title">Price (AUD)</div>
+              <div className="fs-sidebar-presets">
+                <button onClick={() => setPricePreset('', '100000')} className={`fs-sidebar-preset${isPricePreset('', '100000') ? ' active' : ''}`}>Under $100k</button>
+                <button onClick={() => setPricePreset('', '300000')} className={`fs-sidebar-preset${isPricePreset('', '300000') ? ' active' : ''}`}>Under $300k</button>
+                <button onClick={() => setPricePreset('', '1000000')} className={`fs-sidebar-preset${isPricePreset('', '1000000') ? ' active' : ''}`}>Under $1M</button>
+                <button onClick={() => setPricePreset('1000000', '')} className={`fs-sidebar-preset${isPricePreset('1000000', '') ? ' active' : ''}`}>$1M+</button>
+              </div>
+              <div className="fs-sidebar-range">
+                <input type="number" placeholder="Min" value={minPrice} onChange={e => setMinPrice(e.target.value)} />
+                <span>—</span>
+                <input type="number" placeholder="Max" value={maxPrice} onChange={e => setMaxPrice(e.target.value)} />
+              </div>
+            </div>
+
+            {/* PERFORMANCE — TTAF preset chips */}
+            <div className="fs-sidebar-section">
+              <div className="fs-sidebar-section-title">Performance</div>
+              <div className="fs-sidebar-presets">
+                <button onClick={() => setHoursPreset('500')} className={`fs-sidebar-preset${isHoursPreset('500') ? ' active' : ''}`}>Low time &lt;500</button>
+                <button onClick={() => setHoursPreset('2000')} className={`fs-sidebar-preset${isHoursPreset('2000') ? ' active' : ''}`}>Mid &lt;2000</button>
+                <button onClick={() => setHoursPreset('')} className={`fs-sidebar-preset${isHoursPreset('') ? ' active' : ''}`}>Any</button>
+              </div>
+              <div className="fs-sidebar-group" style={{ marginTop: 8 }}>
+                <label className="fs-sidebar-label">Max total hours (TTAF)</label>
+                <input
+                  type="number"
+                  placeholder="e.g. 2000"
+                  value={maxHours}
+                  onChange={e => setMaxHours(e.target.value)}
+                  className="fs-sidebar-select"
+                  style={{ cursor: 'text' }}
+                />
+              </div>
+            </div>
+
+            {/* EQUIPMENT — category-aware */}
+            <div className="fs-sidebar-section">
+              <div className="fs-sidebar-section-title">Equipment</div>
+              <label className="fs-sidebar-check">
+                <input type="checkbox" checked={ifrOnly} onChange={e => setIfrOnly(e.target.checked)} /> IFR capable
+              </label>
+              <label className="fs-sidebar-check">
+                <input type="checkbox" checked={glassOnly} onChange={e => setGlassOnly(e.target.checked)} /> Glass cockpit
+              </label>
+              {canBePressurised && (
+                <label className="fs-sidebar-check fs-sidebar-check-cat">
+                  <input type="checkbox" disabled /> Pressurised <span className="fs-sidebar-soon">soon</span>
+                </label>
+              )}
+              {canBeRetractable && (
+                <label className="fs-sidebar-check fs-sidebar-check-cat">
+                  <input type="checkbox" disabled /> Retractable gear <span className="fs-sidebar-soon">soon</span>
+                </label>
+              )}
+            </div>
+
+            {/* ADVANCED — collapsible */}
+            <details className="fs-sidebar-advanced">
+              <summary>
+                Advanced filters
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" className="fs-sidebar-advanced-chev"><polyline points="6 9 12 15 18 9"/></svg>
+              </summary>
+              <div className="fs-sidebar-advanced-body">
+                <p className="fs-sidebar-advanced-note">More criteria coming as listings grow:</p>
+                <label className="fs-sidebar-check">
+                  <input type="checkbox" disabled /> Engine cycles <span className="fs-sidebar-soon">soon</span>
+                </label>
+                <label className="fs-sidebar-check">
+                  <input type="checkbox" disabled /> Annual due within 6 months <span className="fs-sidebar-soon">soon</span>
+                </label>
+                <label className="fs-sidebar-check">
+                  <input type="checkbox" disabled /> No damage history <span className="fs-sidebar-soon">soon</span>
+                </label>
+                <label className="fs-sidebar-check">
+                  <input type="checkbox" disabled /> ADS-B Out compliant <span className="fs-sidebar-soon">soon</span>
+                </label>
+                <label className="fs-sidebar-check">
+                  <input type="checkbox" disabled /> CASA-registered only <span className="fs-sidebar-soon">soon</span>
+                </label>
+              </div>
+            </details>
+
+            {/* Save search / alerts CTA */}
+            <div className="fs-sidebar-info-card">
+              <div className="fs-sidebar-info-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+              </div>
+              <div className="fs-sidebar-info-title">Get aircraft alerts</div>
+              <p className="fs-sidebar-info-text">Save this search and we'll email you when new aircraft match.</p>
+              <button className="fs-sidebar-info-cta" onClick={() => user ? null : setPage && setPage('login')}>
+                {activeChips.length > 0 ? 'Save this search' : 'Set up alerts'}
+              </button>
+            </div>
+
+            {/* Trust signals */}
+            <div className="fs-sidebar-trust">
+              <div className="fs-sidebar-trust-row"><span>✓</span> All listings reviewed</div>
+              <div className="fs-sidebar-trust-row"><span>✓</span> Transparent pricing</div>
+              <div className="fs-sidebar-trust-row"><span>✓</span> Direct seller contact</div>
+              <div className="fs-sidebar-trust-row"><span>✓</span> No hidden fees</div>
+            </div>
+
+            {/* Help link */}
+            <div className="fs-sidebar-help">
+              <div className="fs-sidebar-help-title">Need help?</div>
+              <p className="fs-sidebar-help-text">Talk to our team — we'll help you find the right aircraft.</p>
+              <a href="#contact" onClick={(e) => { e.preventDefault(); setPage && setPage('contact'); }} className="fs-sidebar-help-link">Contact us →</a>
+            </div>
+          </div>
+        </aside>
+
+        {/* MAIN CONTENT — shifted right */}
+        <main className="fs-buy-main">
+
+          {/* Hero inside main column */}
+          <div className="fs-buy-main-hero">
+            <div className="fs-buy-hero-eyebrow">Marketplace</div>
+            <h1 className="fs-buy-hero-title">Aircraft for sale</h1>
+            <p className="fs-buy-hero-sub">
+              Browse {systemTotal > 0 ? `${systemTotal}+ ` : ''}verified listings from dealers and private sellers across Australia.
+            </p>
+          </div>
+
+          {/* Search bar — sticky inside main column */}
+          <div className="fs-buy-main-search">
+            <div className="fs-buy-search-input-wrap">
+              <span className="fs-buy-search-icon">{Icons.search}</span>
+              <input
+                className="fs-search-inline-input"
+                placeholder={rotatingPlaceholder}
+                value={search}
+                onChange={e => setSearch(e.target.value)}
+                onKeyDown={e => { if (e.key === "Enter" && e.target.value) handleAiSearch(e.target.value); }}
+              />
+              {search ? (
+                <button onClick={() => { setSearch(""); setAiQuery(""); }} className="fs-buy-search-clear" aria-label="Clear search">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                </button>
+              ) : (
+                <span className="fs-buy-search-hint">↵ Search</span>
+              )}
+            </div>
+            <button className="fs-mobile-filter-btn" onClick={() => setSideOpen(!sideOpen)}>
+              {Icons.filter} Filters{activeFilterCount > 0 ? ` · ${activeFilterCount}` : ""}
+            </button>
+          </div>
+
+          {/* Toolbar */}
+          <div className="fs-buy-main-toolbar">
+            <span className="fs-results-count">
+              {dbLoading ? (
+                <span style={{ color: 'var(--fs-ink-3)' }}>Searching…</span>
+              ) : (
+                <>
+                  <span style={{ color: "var(--fs-ink)", fontWeight: 700, fontSize: 22, letterSpacing: "-0.02em" }}>{filtered.length}</span>
+                  <span style={{ marginLeft: 6 }}>aircraft</span>
+                  {aiQuery && <span style={{ color: "var(--fs-ink-3)", marginLeft: 8, fontStyle: 'italic' }}>for "{aiQuery}"</span>}
+                </>
+              )}
+            </span>
+            <div className="fs-results-sort">
+              <span className="fs-results-sort-label">Sort by</span>
+              <select className="fs-sort-select" value={sortBy} onChange={e => { setSortBy(e.target.value); setResultPage(1); }}>
+                <option value="newest">Newest first</option>
+                <option value="price-asc">Price: low to high</option>
+                <option value="price-desc">Price: high to low</option>
+                <option value="hours-low">Hours: low to high</option>
+              </select>
+            </div>
+          </div>
+
+          {/* Grid */}
+          {dbLoading ? (
+            <div className="fs-grid">
+              {[1,2,3,4,5,6].map(i => <div key={i} style={{ height: 360, background: "var(--fs-bg-2)", borderRadius: "var(--fs-radius)", animation: "fs-pulse 1.5s infinite" }} />)}
+            </div>
+          ) : filtered.length === 0 ? (
+            <div className="fs-empty" style={{ padding: "80px 20px" }}>
+              <div style={{ fontSize: 16, fontWeight: 600, color: "var(--fs-ink)", marginBottom: 8, letterSpacing: "-0.02em" }}>No aircraft match your filters</div>
+              <p style={{ color: "var(--fs-ink-3)", fontSize: 14, marginBottom: 20 }}>Try widening your price range, removing a feature, or clearing filters.</p>
+              <button className="fs-btn fs-btn-primary" onClick={resetFilters}>Clear all filters</button>
+            </div>
+          ) : (
+            <>
+              <div className="fs-grid">
+                {filtered.slice((resultPage - 1) * PAGE_SIZE, resultPage * PAGE_SIZE).map(l => (
+                  <ListingCard
+                    key={l.id}
+                    listing={l}
+                    onClick={setSelectedListing}
+                    onSave={onSave}
+                    saved={savedIds.has(l.id)}
+                    onQuickLook={setQuickLook}
+                  />
+                ))}
+              </div>
+              {totalPages > 1 && (
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 48, paddingTop: 24, borderTop: "1px solid var(--fs-line)", flexWrap: "wrap", gap: 16 }}>
+                  <span style={{ fontSize: 13, color: "var(--fs-ink-3)", fontWeight: 500 }}>
+                    Page {resultPage} of {totalPages}
+                  </span>
+                  <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                    <button
+                      onClick={() => { setResultPage(p => Math.max(1, p - 1)); window.scrollTo({ top: 200, behavior: 'smooth' }); }}
+                      disabled={resultPage === 1}
+                      style={{ width: 40, height: 40, borderRadius: "50%", border: "1px solid var(--fs-line)", background: resultPage === 1 ? "var(--fs-bg-2)" : "white", cursor: resultPage === 1 ? "default" : "pointer", color: resultPage === 1 ? "var(--fs-ink-4)" : "var(--fs-ink)", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "var(--fs-font)" }}
+                      aria-label="Previous"
+                    >{Icons.chevronLeft}</button>
+                    {(() => {
+                      const pages = [];
+                      const showRange = 5;
+                      let start = Math.max(1, resultPage - Math.floor(showRange / 2));
+                      let end = Math.min(totalPages, start + showRange - 1);
+                      start = Math.max(1, end - showRange + 1);
+                      for (let p = start; p <= end; p++) pages.push(p);
+                      return pages.map(p => (
+                        <button key={p} onClick={() => { setResultPage(p); window.scrollTo({ top: 200, behavior: 'smooth' }); }}
+                          style={{ width: 40, height: 40, borderRadius: "50%", border: "none", background: p === resultPage ? "var(--fs-ink)" : "transparent", color: p === resultPage ? "white" : "var(--fs-ink)", fontWeight: p === resultPage ? 600 : 500, fontSize: 14, cursor: "pointer", fontFamily: "var(--fs-font)", letterSpacing: "-0.005em" }}
+                        >{p}</button>
+                      ));
+                    })()}
+                    <button
+                      onClick={() => { setResultPage(p => Math.min(totalPages, p + 1)); window.scrollTo({ top: 200, behavior: 'smooth' }); }}
+                      disabled={resultPage === totalPages}
+                      style={{ width: 40, height: 40, borderRadius: "50%", border: "1px solid var(--fs-line)", background: resultPage === totalPages ? "var(--fs-bg-2)" : "white", cursor: resultPage === totalPages ? "default" : "pointer", color: resultPage === totalPages ? "var(--fs-ink-4)" : "var(--fs-ink)", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "var(--fs-font)" }}
+                      aria-label="Next"
+                    >{Icons.chevronRight}</button>
+                  </div>
+                </div>
+              )}
+            </>
+          )}
+        </main>
+      </div>
 
       {/* Quick-look modal */}
       {quickLook && (
@@ -2731,21 +2754,6 @@ const BuyPage = ({ setSelectedListing, savedIds, onSave, initialFilters, user, s
 
       {/* Inline enquiry from quick-look */}
       {enquireFor && <EnquiryModal listing={enquireFor} onClose={() => setEnquireFor(null)} user={user} />}
-
-      {/* Compare drawer & modal */}
-      <CompareDrawer
-        listings={filtered.filter(l => compareIds.includes(l.id))}
-        onRemove={(id) => setCompareIds(prev => prev.filter(x => x !== id))}
-        onClear={() => setCompareIds([])}
-        onCompare={() => setShowCompareModal(true)}
-      />
-      {showCompareModal && (
-        <CompareModal
-          listings={filtered.filter(l => compareIds.includes(l.id))}
-          onClose={() => setShowCompareModal(false)}
-          onViewListing={(l) => { setShowCompareModal(false); setCompareIds([]); setSelectedListing(l); }}
-        />
-      )}
     </>
   );
 };
