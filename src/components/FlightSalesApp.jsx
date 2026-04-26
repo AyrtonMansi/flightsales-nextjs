@@ -577,6 +577,27 @@ a { color: inherit; text-decoration: none; }
   margin-bottom: 12px;
 }
 .fs-card-meta-sep { color: var(--fs-ink-4); margin: 0 6px; }
+
+/* Card spec list — clean two-column rows: label left, value right */
+.fs-card-specs {
+  margin: 0 0 12px;
+  padding: 10px 0 2px;
+  border-top: 1px solid var(--fs-line);
+  display: flex; flex-direction: column; gap: 4px;
+}
+.fs-card-specs-row {
+  display: flex; justify-content: space-between; align-items: baseline;
+  font-size: 12.5px; line-height: 1.4;
+}
+.fs-card-specs-row dt {
+  color: var(--fs-ink-3); font-weight: 500;
+  letter-spacing: -0.005em;
+}
+.fs-card-specs-row dd {
+  color: var(--fs-ink); font-weight: 600;
+  margin: 0; letter-spacing: -0.005em;
+  font-feature-settings: "tnum";
+}
 .fs-card-dealer {
   display: flex; align-items: center; gap: 6px;
   font-size: 12px; color: var(--fs-ink-2); font-weight: 500;
@@ -1535,34 +1556,35 @@ const ListingCard = ({ listing, onClick, onSave, saved, onQuickLook }) => {
         )}
       </div>
       <div className="fs-card-body">
-        {/* Eyebrow: Year · Category — establishes context before the title */}
-        <div className="fs-card-eyebrow">
-          {[listing.year, listing.category].filter(Boolean).join(' · ')}
-        </div>
+        {/* Eyebrow: category only — year already lives in the title */}
+        {listing.category && (
+          <div className="fs-card-eyebrow">{listing.category}</div>
+        )}
 
-        {/* Title — serif, the visual hero of the card */}
+        {/* Title — main identifier (year + manufacturer + model) */}
         <div className="fs-card-title">{listing.title}</div>
 
-        {/* Price — separated by hairline rule, anchors the card */}
+        {/* Price — flows directly under title, no hairline divider */}
         <div className="fs-card-price">{formatPriceFull(listing.price)}</div>
 
-        {/* Specs — single elegant line with dot separators */}
+        {/* Spec list — label/value rows. Hides rows that have no data. */}
         {(() => {
-          const items = [
-            hasTT && `${formatHours(listing.ttaf)} TT`,
-            hasSMOH && `${formatHours(listing.eng_hours)} SMOH`,
-            ...tags,
+          const rows = [
+            hasTT && ['Total time', `${formatHours(listing.ttaf)} hrs`],
+            hasSMOH && ['Engine SMOH', `${formatHours(listing.eng_hours)} hrs`],
+            listing.ifr !== undefined && ['IFR', listing.ifr ? 'Yes' : 'No'],
+            listing.glass_cockpit !== undefined && ['Glass cockpit', listing.glass_cockpit ? 'Yes' : 'No'],
           ].filter(Boolean);
-          if (items.length === 0) return null;
+          if (rows.length === 0) return null;
           return (
-            <div className="fs-card-meta">
-              {items.map((v, i) => (
-                <span key={i}>
-                  {v}
-                  {i < items.length - 1 && <span className="fs-card-meta-sep">·</span>}
-                </span>
+            <dl className="fs-card-specs">
+              {rows.map(([k, v]) => (
+                <div key={k} className="fs-card-specs-row">
+                  <dt>{k}</dt>
+                  <dd>{v}</dd>
+                </div>
               ))}
-            </div>
+            </dl>
           );
         })()}
 
@@ -1856,8 +1878,8 @@ const HomePage = ({ setPage, setSelectedListing, savedIds, onSave, setSearchFilt
   const { articles: newsFromDB } = useNews(3);
   const { total: totalListings } = useAircraft({});
 
-  const featured = featuredFromDB.length > 0 ? featuredFromDB : SAMPLE_LISTINGS.filter(l => l.featured).slice(0, 4);
-  const latest = latestFromDB.length > 0 ? latestFromDB : [...SAMPLE_LISTINGS].sort((a, b) => new Date(b.created_at || b.created) - new Date(a.created_at || a.created)).slice(0, 4);
+  const featured = featuredFromDB.length > 0 ? featuredFromDB : SAMPLE_LISTINGS.filter(l => l.featured).slice(0, 3);
+  const latest = latestFromDB.length > 0 ? latestFromDB : [...SAMPLE_LISTINGS].sort((a, b) => new Date(b.created_at || b.created) - new Date(a.created_at || a.created)).slice(0, 3);
   const displayDealers = dealersFromDB.length > 0 ? dealersFromDB : DEALERS;
   const displayNews = newsFromDB.length > 0 ? newsFromDB : NEWS_ARTICLES;
 

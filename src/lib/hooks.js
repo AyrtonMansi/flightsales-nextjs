@@ -76,7 +76,7 @@ export function useFeaturedAircraft() {
           .eq('featured', true)
           .eq('status', 'active')
           .order('created_at', { ascending: false })
-          .limit(4);
+          .limit(3);
         if (err) throw err;
         setAircraft(data || []);
       } catch (err) {
@@ -103,7 +103,7 @@ export function useLatestAircraft() {
           .select(`*, dealer:dealers(id, name, location, rating, verified)`)
           .eq('status', 'active')
           .order('created_at', { ascending: false })
-          .limit(4);
+          .limit(3);
         setAircraft(data || []);
       } finally {
         setLoading(false);
