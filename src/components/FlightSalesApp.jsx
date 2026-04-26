@@ -2103,29 +2103,25 @@ const BuyPage = ({ setSelectedListing, savedIds, onSave, initialFilters, user })
   }), [catFilter, makeFilter, stateFilter, condFilter, minPrice, maxPrice, maxHours, ifrOnly, glassOnly, search, sortBy]);
 
   const { aircraft: dbAircraft, loading: dbLoading, total: dbTotal } = useAircraft(dbFilters);
+  // Separate unfiltered count to know if the system is genuinely empty (vs. just filtered to nothing)
+  const { total: systemTotal } = useAircraft({});
 
-  // Fall back to client-side filtered mock data if DB returns empty
+  const hasFilters = activeFilterCount > 0 || !!search;
+
+  // Source-of-truth selection:
+  // - If system has any aircraft → trust DB (even when filters return 0)
+  // - If system is empty AND no filters active → show SAMPLE_LISTINGS as demo
+  // - If system is empty AND filters active → show empty state (no fake fallback)
   const filtered = useMemo(() => {
-    if (dbAircraft.length > 0) return dbAircraft;
-    let results = SAMPLE_LISTINGS.filter(l => {
-      if (search && !l.title.toLowerCase().includes(search.toLowerCase()) && !l.manufacturer.toLowerCase().includes(search.toLowerCase())) return false;
-      if (catFilter && l.category !== catFilter) return false;
-      if (stateFilter && l.state !== stateFilter) return false;
-      if (makeFilter && l.manufacturer !== makeFilter) return false;
-      if (condFilter && l.condition !== condFilter) return false;
-      if (minPrice && l.price < parseInt(minPrice)) return false;
-      if (maxPrice && l.price > parseInt(maxPrice)) return false;
-      if (maxHours && l.ttaf > parseInt(maxHours)) return false;
-      if (ifrOnly && !l.ifr) return false;
-      if (glassOnly && !l.glass_cockpit) return false;
-      return true;
-    });
+    if (systemTotal > 0) return dbAircraft;
+    if (hasFilters) return [];
+    let results = [...SAMPLE_LISTINGS];
     if (sortBy === "price-asc") results.sort((a, b) => a.price - b.price);
     if (sortBy === "price-desc") results.sort((a, b) => b.price - a.price);
     if (sortBy === "newest") results.sort((a, b) => new Date(b.created_at || b.created) - new Date(a.created_at || a.created));
     if (sortBy === "hours-low") results.sort((a, b) => a.ttaf - b.ttaf);
     return results;
-  }, [dbAircraft, search, sortBy, catFilter, stateFilter, makeFilter, condFilter, minPrice, maxPrice, maxHours, ifrOnly, glassOnly]);
+  }, [dbAircraft, systemTotal, hasFilters, sortBy]);
 
   // Active filter chips — compute labels for display
   const activeChips = [
@@ -3767,8 +3763,8 @@ const ContactPage = () => {
   );
 };
 
-const LoginPage = ({ setPage, signIn, signUp, signInWithGoogle }) => {
-  const [mode, setMode] = useState('login');
+const LoginPage = ({ setPage, signIn, signUp, signInWithGoogle, resetPassword }) => {
+  const [mode, setMode] = useState('login'); // 'login' | 'register' | 'forgot'
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [fullName, setFullName] = useState('');
@@ -3777,6 +3773,7 @@ const LoginPage = ({ setPage, signIn, signUp, signInWithGoogle }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [registerSuccess, setRegisterSuccess] = useState(false);
+  const [resetSent, setResetSent] = useState(false);
 
   const handleGoogleAuth = async () => {
     setLoading(true);
@@ -3790,6 +3787,18 @@ const LoginPage = ({ setPage, signIn, signUp, signInWithGoogle }) => {
     }
   };
 
+  const handleResetPassword = async (e) => {
+    e.preventDefault();
+    setLoading(true); setError(null);
+    try {
+      if (!email) throw new Error('Enter your email');
+      await resetPassword(email);
+      setResetSent(true);
+    } catch (err) {
+      setError(err.message || 'Could not send reset link.');
+    } finally { setLoading(false); }
+  };
+
   const handleEmailAuth = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -3798,7 +3807,7 @@ const LoginPage = ({ setPage, signIn, signUp, signInWithGoogle }) => {
       if (mode === 'login') {
         await signIn(email, password);
         setPage('dashboard');
-      } else {
+      } else if (mode === 'register') {
         if (password.length < 8) throw new Error('Password must be at least 8 characters.');
         await signUp(email, password, {
           full_name: fullName,
@@ -3930,6 +3939,37 @@ const LoginPage = ({ setPage, signIn, signUp, signInWithGoogle }) => {
             </div>
           )}
 
+          {mode === 'forgot' ? (
+            <form onSubmit={handleResetPassword}>
+              {resetSent ? (
+                <div style={{ padding: "32px 20px", textAlign: "center", background: "var(--fs-bg-2)", borderRadius: "var(--fs-radius)" }}>
+                  <div style={{ width: 48, height: 48, borderRadius: "50%", background: "var(--fs-ink)", color: "white", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 14px" }}>{Icons.check}</div>
+                  <h3 style={{ fontSize: 17, fontWeight: 700, marginBottom: 6, letterSpacing: "-0.02em" }}>Check your email</h3>
+                  <p style={{ fontSize: 14, color: "var(--fs-ink-3)" }}>We've sent a password reset link to <strong>{email}</strong>. The link expires in 1 hour.</p>
+                  <button type="button" onClick={() => { setMode('login'); setResetSent(false); setError(null); }} style={{ marginTop: 16, background: "none", border: "none", color: "var(--fs-ink)", fontSize: 14, fontWeight: 600, textDecoration: "underline", cursor: "pointer" }}>
+                    Back to sign in
+                  </button>
+                </div>
+              ) : (
+                <>
+                  <p style={{ fontSize: 14, color: "var(--fs-ink-3)", marginBottom: 16 }}>Enter your email and we'll send you a link to reset your password.</p>
+                  <div className="fs-form-group">
+                    <label className="fs-form-label">Email *</label>
+                    <input className="fs-form-input" type="email" placeholder="you@email.com" value={email} onChange={e => setEmail(e.target.value)} required autoComplete="email" style={{ fontSize: 15 }} />
+                  </div>
+                  <button type="submit" className="fs-form-submit" disabled={loading || !email} style={{ opacity: loading || !email ? 0.6 : 1 }}>
+                    {loading ? 'Sending...' : 'Send reset link'}
+                  </button>
+                  <p style={{ fontSize: 14, textAlign: "center", marginTop: 20, color: "var(--fs-ink-3)" }}>
+                    Remembered it?{' '}
+                    <button type="button" onClick={() => { setMode('login'); setError(null); }} style={{ background: "none", border: "none", color: "var(--fs-ink)", fontWeight: 600, fontSize: 14, cursor: "pointer", textDecoration: "underline", padding: 0 }}>
+                      Back to sign in
+                    </button>
+                  </p>
+                </>
+              )}
+            </form>
+          ) : (
           <form onSubmit={handleEmailAuth}>
             {mode === 'register' && (
               <>
@@ -4026,10 +4066,21 @@ const LoginPage = ({ setPage, signIn, signUp, signInWithGoogle }) => {
             </div>
 
             <div className="fs-form-group">
-              <label className="fs-form-label">Password *</label>
-              <input 
-                className="fs-form-input" 
-                type="password" 
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
+                <label className="fs-form-label" style={{ marginBottom: 0 }}>Password *</label>
+                {mode === 'login' && (
+                  <button
+                    type="button"
+                    onClick={() => { setMode('forgot'); setError(null); setPassword(''); }}
+                    style={{ background: "none", border: "none", color: "var(--fs-ink)", fontSize: 13, fontWeight: 500, cursor: "pointer", textDecoration: "underline", padding: 0 }}
+                  >
+                    Forgot password?
+                  </button>
+                )}
+              </div>
+              <input
+                className="fs-form-input"
+                type="password"
                 placeholder="••••••••"
                 value={password}
                 onChange={e => setPassword(e.target.value)}
@@ -4040,14 +4091,14 @@ const LoginPage = ({ setPage, signIn, signUp, signInWithGoogle }) => {
               />
               {mode === 'register' && (
                 <div style={{ marginTop: 6, display: "flex", alignItems: "center", gap: 6 }}>
-                  <span style={{ 
-                    width: password.length >= 8 ? 8 : 8, 
-                    height: 8, 
-                    borderRadius: "50%", 
-                    background: password.length >= 8 ? "#22c55e" : password.length > 0 ? "#f59e0b" : "#d1d5db",
+                  <span style={{
+                    width: 8,
+                    height: 8,
+                    borderRadius: "50%",
+                    background: password.length >= 8 ? "var(--fs-green)" : password.length > 0 ? "var(--fs-amber)" : "var(--fs-line-2)",
                     transition: "all 0.2s"
                   }} />
-                  <span style={{ fontSize: 11, color: password.length >= 8 ? "#22c55e" : password.length > 0 ? "#f59e0b" : "var(--fs-gray-400)" }}>
+                  <span style={{ fontSize: 11, color: password.length >= 8 ? "var(--fs-green)" : password.length > 0 ? "var(--fs-amber)" : "var(--fs-ink-4)" }}>
                     {password.length >= 8 ? "Password looks good" : password.length > 0 ? "At least 8 characters required" : "Must be at least 8 characters"}
                   </span>
                 </div>
@@ -4080,7 +4131,9 @@ const LoginPage = ({ setPage, signIn, signUp, signInWithGoogle }) => {
               ) : (mode === 'login' ? 'Sign In' : 'Create Account')}
             </button>
           </form>
+          )}
 
+          {mode !== 'forgot' && (
           <p style={{ fontSize: 14, textAlign: "center", marginTop: 24, color: "var(--fs-gray-500)" }}>
             {mode === 'login' ? "Don't have an account? " : "Already have an account? "}
             <button 
@@ -4107,6 +4160,7 @@ const LoginPage = ({ setPage, signIn, signUp, signInWithGoogle }) => {
               {mode === 'login' ? 'Create one' : 'Sign in'}
             </button>
           </p>
+          )}
 
           {mode === 'register' && !registerSuccess && (
             <p style={{ fontSize: 12, textAlign: "center", marginTop: 20, color: "var(--fs-gray-400)", lineHeight: 1.6, padding: "0 16px" }}>
@@ -6083,7 +6137,7 @@ export default function FlightSalesApp() {
   const [searchFilters, setSearchFilters] = useState(null);
 
   // Real auth
-  const { user: authUser, loading: authLoading, signIn, signUp, signInWithGoogle, signOut } = useAuth();
+  const { user: authUser, loading: authLoading, signIn, signUp, signInWithGoogle, signOut, resetPassword } = useAuth();
   const { profile } = useProfile(authUser?.id);
 
   // Construct a user object compatible with all child components
@@ -6162,7 +6216,7 @@ export default function FlightSalesApp() {
       {page === "news" && <NewsPage />}
       {page === "about" && <AboutPage />}
       {page === "contact" && <ContactPage />}
-      {page === "login" && <LoginPage setPage={setPageWrap} signIn={signIn} signUp={signUp} signInWithGoogle={signInWithGoogle} />}
+      {page === "login" && <LoginPage setPage={setPageWrap} signIn={signIn} signUp={signUp} signInWithGoogle={signInWithGoogle} resetPassword={resetPassword} />}
       {page === "dashboard" && <DashboardPage user={user} setPage={setPageWrap} signOut={signOut} savedIds={savedIds} savedListings={savedListings} onSave={onSave} onSelectListing={setSelectedListing} />}
       {page === "admin" && <AdminPage user={user} setPage={setPageWrap} signOut={signOut} />}
       {(page === "finance" || page === "insurance") && <ContactPage />}
