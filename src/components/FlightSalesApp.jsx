@@ -218,8 +218,11 @@ const AircraftImage = ({ listing, className = "", size = "md", style = {}, showG
 };
 
 // --- CSS ---
+// Note: web fonts (Inter, Fraunces) are loaded via <link> tags in src/app/layout.jsx.
+// They cannot be @import'd here because React server-renders the apostrophes as
+// HTML entities (&#x27;) inside <style> tags, which breaks the CSS parser AND
+// causes a hydration mismatch.
 const STYLES = `
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
 
 :root {
   /* Monochrome palette — Uber-style */
