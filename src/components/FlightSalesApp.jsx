@@ -165,7 +165,8 @@ const isJustListed = (listing) => {
 };
 
 const AircraftImage = ({ listing, className = "", size = "md", style = {}, showGallery = false }) => {
-  const heights = { sm: "140px", md: "220px", lg: "400px", full: "100%" };
+  // Card image (md) reduced from 220px → 180px so content has more visual weight
+  const heights = { sm: "140px", md: "180px", lg: "400px", full: "100%" };
   const [imgIdx, setImgIdx] = useState(0);
   const seed = typeof listing.id === 'number' ? listing.id : (listing.id?.charCodeAt(0) % 12) + 1;
   const fallback = AIRCRAFT_IMAGES[seed] || AIRCRAFT_IMAGES[1];
@@ -528,15 +529,24 @@ a { color: inherit; text-decoration: none; }
 .fs-card {
   background: var(--fs-white); border-radius: var(--fs-radius);
   overflow: hidden;
-  transition: border-color 0.15s var(--fs-ease-out), box-shadow 0.15s var(--fs-ease-out), transform 0.15s var(--fs-ease-out);
+  transition: transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1),
+              box-shadow 0.22s ease,
+              border-color 0.15s ease;
   cursor: pointer;
   border: 1px solid var(--fs-line);
   display: flex; flex-direction: column;
 }
 .fs-card:hover {
-  border-color: var(--fs-ink);
-  box-shadow: 0 6px 20px rgba(0,0,0,0.06);
-  transform: translateY(-2px);
+  border-color: var(--fs-line-2);
+  box-shadow: 0 12px 28px rgba(0,0,0,0.08);
+  transform: translateY(-3px);
+}
+.fs-card:active { transform: translateY(-1px); }
+@media (prefers-reduced-motion: reduce) {
+  .fs-card,
+  .fs-card:hover,
+  .fs-card:active { transform: none; transition: border-color 0.15s ease; }
+  .fs-card:hover img { transform: none; }
 }
 .fs-card:hover img { transform: scale(1.02); }
 /* Featured tier: subtle gold inner-glow border so it reads premium but not loud */
@@ -554,7 +564,7 @@ a { color: inherit; text-decoration: none; }
 .fs-card-eyebrow {
   font-size: 12px; font-weight: 500; color: var(--fs-ink-3);
   letter-spacing: -0.005em;
-  margin-bottom: 4px;
+  margin-bottom: 2px;
 }
 .fs-card-title {
   font-family: var(--fs-font);
@@ -597,6 +607,9 @@ a { color: inherit; text-decoration: none; }
   color: var(--fs-ink); font-weight: 600;
   margin: 0; letter-spacing: -0.005em;
   font-feature-settings: "tnum";
+}
+.fs-card-specs-row dd.fs-card-specs-empty {
+  color: var(--fs-ink-4); font-weight: 500;
 }
 .fs-card-dealer {
   display: flex; align-items: center; gap: 6px;
@@ -801,38 +814,38 @@ a { color: inherit; text-decoration: none; }
   letter-spacing: -0.005em;
 }
 
-/* BUY PAGE — App-shell layout: flush left sidebar, main content right */
+/* BUY PAGE — Sidebar inset to match header container, content right */
 .fs-buy-shell {
   display: grid;
-  grid-template-columns: 320px 1fr;
+  grid-template-columns: 280px 1fr;
+  gap: 32px;
   align-items: start;
   min-height: calc(100vh - 72px);
 }
 @media (max-width: 960px) {
-  .fs-buy-shell { grid-template-columns: 1fr; }
+  .fs-buy-shell { grid-template-columns: 1fr; gap: 0; }
   .fs-buy-sidebar { display: none; }
-  .fs-buy-sidebar.open { display: block; position: fixed; inset: 72px 0 0 0; z-index: 100; height: auto; }
+  .fs-buy-sidebar.open { display: block; position: fixed; inset: 72px 0 0 0; z-index: 100; height: auto; background: var(--fs-white); }
 }
 .fs-buy-sidebar {
-  background: var(--fs-bg-2);
-  border-right: 1px solid var(--fs-line);
   position: sticky;
-  top: 72px;
-  height: calc(100vh - 72px);
+  top: 88px;
+  align-self: start;
+  max-height: calc(100vh - 96px);
   overflow-y: auto;
   scrollbar-width: thin;
+  padding-right: 4px;
 }
 .fs-buy-sidebar::-webkit-scrollbar { width: 6px; }
 .fs-buy-sidebar::-webkit-scrollbar-thumb { background: var(--fs-line); border-radius: 3px; }
 .fs-buy-sidebar::-webkit-scrollbar-thumb:hover { background: var(--fs-ink-4); }
 .fs-buy-sidebar-inner {
-  padding: 24px 22px 32px;
+  padding: 16px 0 32px;
   display: flex; flex-direction: column;
 }
 .fs-buy-main {
   min-width: 0;
-  padding: 0 32px 64px;
-  background: var(--fs-white);
+  padding: 0 0 64px;
 }
 @media (max-width: 640px) {
   .fs-buy-main { padding: 0 16px 48px; }
@@ -1547,26 +1560,26 @@ const ListingCard = ({ listing, onClick, onSave, saved, onQuickLook }) => {
         {/* Price — flows directly under title, no hairline divider */}
         <div className="fs-card-price">{formatPriceFull(listing.price)}</div>
 
-        {/* Spec list — label/value rows. Hides rows that have no data. */}
-        {(() => {
-          const rows = [
-            hasTT && ['Total time', `${formatHours(listing.ttaf)} hrs`],
-            hasSMOH && ['Engine SMOH', `${formatHours(listing.eng_hours)} hrs`],
-            listing.ifr !== undefined && ['IFR', listing.ifr ? 'Yes' : 'No'],
-            listing.glass_cockpit !== undefined && ['Glass cockpit', listing.glass_cockpit ? 'Yes' : 'No'],
-          ].filter(Boolean);
-          if (rows.length === 0) return null;
-          return (
-            <dl className="fs-card-specs">
-              {rows.map(([k, v]) => (
-                <div key={k} className="fs-card-specs-row">
-                  <dt>{k}</dt>
-                  <dd>{v}</dd>
-                </div>
-              ))}
-            </dl>
-          );
-        })()}
+        {/* Spec list — always renders the same 4 rows so card heights match.
+            Missing values become an em-dash; booleans become ✓ or — (not "Yes/No"). */}
+        <dl className="fs-card-specs">
+          <div className="fs-card-specs-row">
+            <dt>Total time</dt>
+            <dd>{hasTT ? formatHours(listing.ttaf) : '—'}</dd>
+          </div>
+          <div className="fs-card-specs-row">
+            <dt>Engine SMOH</dt>
+            <dd>{hasSMOH ? formatHours(listing.eng_hours) : '—'}</dd>
+          </div>
+          <div className="fs-card-specs-row">
+            <dt>IFR</dt>
+            <dd className={listing.ifr ? '' : 'fs-card-specs-empty'}>{listing.ifr ? '✓' : '—'}</dd>
+          </div>
+          <div className="fs-card-specs-row">
+            <dt>Glass cockpit</dt>
+            <dd className={listing.glass_cockpit ? '' : 'fs-card-specs-empty'}>{listing.glass_cockpit ? '✓' : '—'}</dd>
+          </div>
+        </dl>
 
         {/* Dealer + location — small, at the bottom of the card */}
         <div className="fs-card-dealer">
@@ -2435,7 +2448,8 @@ const BuyPage = ({ setSelectedListing, savedIds, onSave, initialFilters, user, s
 
   return (
     <>
-      <div className="fs-buy-shell">
+      <div className="fs-container">
+        <div className="fs-buy-shell">
         {/* SIDEBAR — flush left, sticky full-page rail */}
         <aside className={`fs-buy-sidebar${sideOpen ? " open" : ""}`}>
           <div className="fs-buy-sidebar-inner">
@@ -2726,6 +2740,7 @@ const BuyPage = ({ setSelectedListing, savedIds, onSave, initialFilters, user, s
             </>
           )}
         </main>
+      </div>
       </div>
 
       {/* Quick-look modal */}
