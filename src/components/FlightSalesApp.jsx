@@ -368,11 +368,14 @@ a { color: inherit; text-decoration: none; }
 .fs-nav-link {
   color: var(--fs-ink); font-size: 15px; font-weight: 500;
   padding: 8px 14px; border-radius: var(--fs-radius-pill);
-  cursor: pointer; transition: background-color 0.15s var(--fs-ease-out); border: none; background: none;
+  cursor: pointer; border: none; background: none;
   white-space: nowrap; font-family: var(--fs-font);
   letter-spacing: -0.01em;
+  transition: background-color 0.2s ease, transform 0.15s var(--fs-ease-spring);
+  will-change: transform;
 }
-.fs-nav-link:hover { background: var(--fs-bg-2); }
+.fs-nav-link:hover { background: var(--fs-bg-2); transform: translateY(-1px); }
+.fs-nav-link:active { transform: translateY(0) scale(0.98); }
 .fs-nav-link.active { background: var(--fs-bg-2); font-weight: 600; }
 .fs-nav-actions { display: flex; gap: 8px; align-items: center; flex-shrink: 0; }
 .fs-nav-btn {
@@ -1270,6 +1273,9 @@ a { color: inherit; text-decoration: none; }
 }
 .fs-form-input:focus, .fs-form-textarea:focus, .fs-form-select:focus {
   border-color: var(--fs-ink);
+  box-shadow: 0 0 0 3px rgba(0,0,0,0.06), 0 2px 8px rgba(0,0,0,0.04);
+  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  transform: translateY(-1px);
 }
 .fs-form-textarea { resize: vertical; min-height: 100px; }
 .fs-form-submit {
@@ -1337,8 +1343,8 @@ a { color: inherit; text-decoration: none; }
 .fs-footer-brand span { color: rgba(255,255,255,0.5); font-weight: 400; }
 .fs-footer-desc { font-size: 14px; line-height: 1.5; margin-bottom: 20px; letter-spacing: -0.005em; }
 .fs-footer-heading { color: white; font-size: 15px; font-weight: 600; margin-bottom: 16px; letter-spacing: -0.01em; }
-.fs-footer-link { display: block; font-size: 14px; margin-bottom: 10px; cursor: pointer; transition: color 0.15s; letter-spacing: -0.005em; }
-.fs-footer-link:hover { color: white; }
+.fs-footer-link { display: block; font-size: 14px; margin-bottom: 10px; cursor: pointer; transition: color 0.2s ease, transform 0.15s ease; letter-spacing: -0.005em; position: relative; }
+.fs-footer-link:hover { color: white; transform: translateX(2px); }
 .fs-footer-bottom {
   border-top: 1px solid rgba(255,255,255,0.1);
   padding-top: 28px; display: flex; justify-content: space-between;
@@ -1414,18 +1420,43 @@ a { color: inherit; text-decoration: none; }
   flex-shrink: 0;
 }
 
-/* Btn primitive — Uber pill */
+/* Btn primitive — Uber pill with micro-interactions */
 .fs-btn {
   display: inline-flex; align-items: center; justify-content: center; gap: 8px;
   padding: 14px 28px; border-radius: var(--fs-radius-pill);
   font-size: 15px; font-weight: 600; cursor: pointer; border: none;
-  font-family: var(--fs-font); transition: background-color 0.15s var(--fs-ease-out);
+  font-family: var(--fs-font);
   letter-spacing: -0.01em;
+  transition: transform 0.15s var(--fs-ease-spring), 
+              background-color 0.15s var(--fs-ease-out),
+              box-shadow 0.2s ease;
+  will-change: transform;
 }
-.fs-btn-primary { background: var(--fs-ink); color: white; }
-.fs-btn-primary:hover { background: var(--fs-ink-2); }
-.fs-btn-secondary { background: var(--fs-bg-2); color: var(--fs-ink); }
-.fs-btn-secondary:hover { background: var(--fs-line); }
+.fs-btn:active {
+  transform: scale(0.96);
+}
+.fs-btn-primary { 
+  background: var(--fs-ink); 
+  color: white;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+}
+.fs-btn-primary:hover { 
+  background: var(--fs-ink-2);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+.fs-btn-primary:active {
+  box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+}
+.fs-btn-secondary { 
+  background: var(--fs-bg-2); 
+  color: var(--fs-ink);
+  border: 1px solid transparent;
+}
+.fs-btn-secondary:hover { 
+  background: var(--fs-white);
+  border-color: var(--fs-line);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+}
 `;
 
 // --- COMPONENTS ---
