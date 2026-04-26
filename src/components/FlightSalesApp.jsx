@@ -2698,91 +2698,139 @@ const FinancePage = () => {
   );
 };
 
-const ValuatePage = () => (
-  <>
-    <div className="fs-about-hero">
-      <div className="fs-container">
-        <h1 style={{ fontFamily: "var(--fs-font-serif)", fontSize: 36 }}>Aircraft Valuation</h1>
-        <p style={{ color: "rgba(255,255,255,0.6)", marginTop: 8 }}>Free market estimate based on real Australian sales data</p>
-      </div>
-    </div>
-    <section className="fs-section">
-      <div className="fs-container" style={{ maxWidth: 600, margin: "0 auto" }}>
-        <div className="fs-detail-specs" style={{ boxShadow: "var(--fs-shadow-md)" }}>
-          <h3 style={{ fontSize: 18 }}>Get Your Valuation</h3>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
-            <div className="fs-form-group">
-              <label className="fs-form-label">Manufacturer *</label>
-              <select className="fs-form-select"><option>Select...</option>{MANUFACTURERS.map(m => <option key={m}>{m}</option>)}</select>
-            </div>
-            <div className="fs-form-group">
-              <label className="fs-form-label">Model *</label>
-              <input className="fs-form-input" placeholder="e.g. SR22T" />
-            </div>
-            <div className="fs-form-group">
-              <label className="fs-form-label">Year *</label>
-              <input className="fs-form-input" type="number" placeholder="2018" />
-            </div>
-            <div className="fs-form-group">
-              <label className="fs-form-label">Total Time Airframe *</label>
-              <input className="fs-form-input" type="number" placeholder="Hours" />
-            </div>
-            <div className="fs-form-group">
-              <label className="fs-form-label">Engine Hours (SMOH)</label>
-              <input className="fs-form-input" type="number" placeholder="Hours" />
-            </div>
-            <div className="fs-form-group">
-              <label className="fs-form-label">Condition *</label>
-              <select className="fs-form-select">{CONDITIONS.map(c => <option key={c}>{c}</option>)}</select>
-            </div>
-            <div className="fs-form-group" style={{ gridColumn: "span 2" }}>
-              <label className="fs-form-label">Avionics / Notable Equipment</label>
-              <input className="fs-form-input" placeholder="e.g. Garmin G1000, ADSB-Out, autopilot" />
-            </div>
-            <div className="fs-form-group">
-              <label className="fs-form-label">Your Email *</label>
-              <input className="fs-form-input" type="email" placeholder="you@email.com" />
-            </div>
-            <div className="fs-form-group">
-              <label className="fs-form-label">Your Phone</label>
-              <input className="fs-form-input" type="tel" placeholder="04XX XXX XXX" />
-            </div>
-          </div>
-          <button className="fs-form-submit" style={{ marginTop: 16 }}>Get Free Valuation</button>
-          <p style={{ fontSize: 11, color: "var(--fs-gray-400)", marginTop: 12, textAlign: "center" }}>
-            Valuations are estimates based on recent market data and comparable sales. Not a formal appraisal.
-          </p>
+const ValuatePage = () => {
+  const [form, setForm] = useState({ manufacturer: '', model: '', year: '', ttaf: '', eng_hours: '', condition: 'Pre-Owned', avionics: '', email: '', phone: '' });
+  const [sending, setSending] = useState(false);
+  const [sent, setSent] = useState(false);
+  const [error, setError] = useState(null);
+  const set = (k, v) => setForm(f => ({ ...f, [k]: v }));
+
+  const handleSubmit = async () => {
+    if (!form.manufacturer || !form.model || !form.year || !form.email) { setError('Please fill in manufacturer, model, year, and email.'); return; }
+    setSending(true); setError(null);
+    try {
+      await submitLead('valuation', {
+        name: form.email.split('@')[0],
+        email: form.email,
+        phone: form.phone,
+        message: `Valuation request: ${form.manufacturer} ${form.model} ${form.year}, TTAF: ${form.ttaf}h, Eng SMOH: ${form.eng_hours}h, Condition: ${form.condition}, Avionics: ${form.avionics}`
+      });
+      setSent(true);
+    } catch (err) {
+      setError(err.message || 'Failed to submit. Please try again.');
+    } finally { setSending(false); }
+  };
+
+  return (
+    <>
+      <div className="fs-about-hero">
+        <div className="fs-container">
+          <h1 style={{ fontFamily: "var(--fs-font-serif)", fontSize: 36 }}>Aircraft Valuation</h1>
+          <p style={{ color: "rgba(255,255,255,0.6)", marginTop: 8 }}>Free market estimate based on real Australian sales data</p>
         </div>
       </div>
-    </section>
-  </>
-);
-
-const NewsPage = () => (
-  <>
-    <div className="fs-about-hero">
-      <div className="fs-container">
-        <h1 style={{ fontFamily: "var(--fs-font-serif)", fontSize: 36 }}>Aviation News</h1>
-        <p style={{ color: "rgba(255,255,255,0.6)", marginTop: 8 }}>Market reports, CASA updates, and industry news</p>
-      </div>
-    </div>
-    <section className="fs-section">
-      <div className="fs-container" style={{ maxWidth: 800, margin: "0 auto" }}>
-        {NEWS_ARTICLES.map(a => (
-          <div key={a.id} className="fs-news-card" style={{ marginBottom: 16 }}>
-            <span className={`fs-news-tag ${a.category.toLowerCase()}`}>{a.category}</span>
-            <div className="fs-news-title" style={{ fontSize: 20 }}>{a.title}</div>
-            <div className="fs-news-excerpt">{a.excerpt}</div>
-            <div className="fs-news-footer">
-              <span>{a.date}</span>
-              <span>{a.read_time} min read</span>
-            </div>
+      <section className="fs-section">
+        <div className="fs-container" style={{ maxWidth: 600, margin: "0 auto" }}>
+          <div className="fs-detail-specs" style={{ boxShadow: "var(--fs-shadow-md)" }}>
+            {sent ? (
+              <div style={{ textAlign: "center", padding: "32px 0" }}>
+                <div style={{ fontSize: 40, marginBottom: 12 }}>✓</div>
+                <h3 style={{ fontSize: 18, marginBottom: 8 }}>Request Received</h3>
+                <p style={{ color: "var(--fs-gray-500)", fontSize: 14 }}>We'll send your valuation estimate within 24 hours.</p>
+              </div>
+            ) : (
+              <>
+                <h3 style={{ fontSize: 18 }}>Get Your Valuation</h3>
+                {error && <p style={{ color: "#ef4444", fontSize: 13, marginBottom: 12 }}>{error}</p>}
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
+                  <div className="fs-form-group">
+                    <label className="fs-form-label">Manufacturer *</label>
+                    <select className="fs-form-select" value={form.manufacturer} onChange={e => set('manufacturer', e.target.value)}>
+                      <option value="">Select...</option>
+                      {MANUFACTURERS.map(m => <option key={m}>{m}</option>)}
+                    </select>
+                  </div>
+                  <div className="fs-form-group">
+                    <label className="fs-form-label">Model *</label>
+                    <input className="fs-form-input" placeholder="e.g. SR22T" value={form.model} onChange={e => set('model', e.target.value)} />
+                  </div>
+                  <div className="fs-form-group">
+                    <label className="fs-form-label">Year *</label>
+                    <input className="fs-form-input" type="number" placeholder="2018" value={form.year} onChange={e => set('year', e.target.value)} />
+                  </div>
+                  <div className="fs-form-group">
+                    <label className="fs-form-label">Total Time Airframe *</label>
+                    <input className="fs-form-input" type="number" placeholder="Hours" value={form.ttaf} onChange={e => set('ttaf', e.target.value)} />
+                  </div>
+                  <div className="fs-form-group">
+                    <label className="fs-form-label">Engine Hours (SMOH)</label>
+                    <input className="fs-form-input" type="number" placeholder="Hours" value={form.eng_hours} onChange={e => set('eng_hours', e.target.value)} />
+                  </div>
+                  <div className="fs-form-group">
+                    <label className="fs-form-label">Condition *</label>
+                    <select className="fs-form-select" value={form.condition} onChange={e => set('condition', e.target.value)}>
+                      {CONDITIONS.map(c => <option key={c}>{c}</option>)}
+                    </select>
+                  </div>
+                  <div className="fs-form-group" style={{ gridColumn: "span 2" }}>
+                    <label className="fs-form-label">Avionics / Notable Equipment</label>
+                    <input className="fs-form-input" placeholder="e.g. Garmin G1000, ADSB-Out, autopilot" value={form.avionics} onChange={e => set('avionics', e.target.value)} />
+                  </div>
+                  <div className="fs-form-group">
+                    <label className="fs-form-label">Your Email *</label>
+                    <input className="fs-form-input" type="email" placeholder="you@email.com" value={form.email} onChange={e => set('email', e.target.value)} />
+                  </div>
+                  <div className="fs-form-group">
+                    <label className="fs-form-label">Your Phone</label>
+                    <input className="fs-form-input" type="tel" placeholder="04XX XXX XXX" value={form.phone} onChange={e => set('phone', e.target.value)} />
+                  </div>
+                </div>
+                <button className="fs-form-submit" onClick={handleSubmit} disabled={sending} style={{ marginTop: 16, opacity: sending ? 0.7 : 1 }}>
+                  {sending ? 'Submitting...' : 'Get Free Valuation'}
+                </button>
+                <p style={{ fontSize: 11, color: "var(--fs-gray-400)", marginTop: 12, textAlign: "center" }}>
+                  Valuations are estimates based on recent market data and comparable sales. Not a formal appraisal.
+                </p>
+              </>
+            )}
           </div>
-        ))}
+        </div>
+      </section>
+    </>
+  );
+};
+
+const NewsPage = () => {
+  const { articles: dbArticles, loading } = useNews(20);
+  const articles = dbArticles.length > 0 ? dbArticles : NEWS_ARTICLES;
+  return (
+    <>
+      <div className="fs-about-hero">
+        <div className="fs-container">
+          <h1 style={{ fontFamily: "var(--fs-font-serif)", fontSize: 36 }}>Aviation News</h1>
+          <p style={{ color: "rgba(255,255,255,0.6)", marginTop: 8 }}>Market reports, CASA updates, and industry news</p>
+        </div>
       </div>
-    </section>
-  </>
-);
+      <section className="fs-section">
+        <div className="fs-container" style={{ maxWidth: 800, margin: "0 auto" }}>
+          {loading ? (
+            [1,2,3].map(i => <div key={i} className="fs-news-card" style={{ marginBottom: 16, height: 120, background: "var(--fs-gray-100)", borderRadius: 8, animation: "fs-pulse 1.5s ease-in-out infinite" }} />)
+          ) : articles.map(a => (
+            <div key={a.id} className="fs-news-card" style={{ marginBottom: 16 }}>
+              <span className={`fs-news-tag ${a.category.toLowerCase()}`}>{a.category}</span>
+              <div className="fs-news-title" style={{ fontSize: 20 }}>{a.title}</div>
+              <div className="fs-news-excerpt">{a.excerpt}</div>
+              <div className="fs-news-footer">
+                <span>{a.date}</span>
+                <span>{a.read_time} min read</span>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+    </>
+  );
+};
 
 const AboutPage = () => (
   <>
@@ -2814,66 +2862,98 @@ const AboutPage = () => (
   </>
 );
 
-const ContactPage = () => (
-  <>
-    <div className="fs-about-hero">
-      <div className="fs-container">
-        <h1 style={{ fontFamily: "var(--fs-font-serif)", fontSize: 36 }}>Contact Us</h1>
-        <p style={{ color: "rgba(255,255,255,0.6)", marginTop: 8 }}>Get in touch with the Flightsales team</p>
-      </div>
-    </div>
-    <section className="fs-section">
-      <div className="fs-container">
-        <div className="fs-contact-layout">
-          <div>
-            <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-              {[
-                { icon: Icons.mail, title: "Email", detail: "hello@flightsales.com.au", sub: "We respond within 24 hours" },
-                { icon: Icons.phone, title: "Phone", detail: "1300 FLIGHT", sub: "Mon-Fri 9am-5pm AEST" },
-                { icon: Icons.location, title: "Office", detail: "Moorabbin Airport, VIC 3194", sub: "By appointment only" },
-              ].map((c, i) => (
-                <div key={i} className="fs-contact-info-card">
-                  <div className="fs-contact-icon">{c.icon}</div>
-                  <div>
-                    <div style={{ fontWeight: 600, fontSize: 15, marginBottom: 2 }}>{c.title}</div>
-                    <div style={{ fontSize: 14, color: "var(--fs-blue)" }}>{c.detail}</div>
-                    <div style={{ fontSize: 12, color: "var(--fs-gray-400)" }}>{c.sub}</div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-          <div className="fs-detail-specs" style={{ boxShadow: "var(--fs-shadow-md)" }}>
-            <h3 style={{ fontSize: 18 }}>Send a Message</h3>
-            <div className="fs-form-group">
-              <label className="fs-form-label">Name *</label>
-              <input className="fs-form-input" placeholder="Your name" />
-            </div>
-            <div className="fs-form-group">
-              <label className="fs-form-label">Email *</label>
-              <input className="fs-form-input" type="email" placeholder="you@email.com" />
-            </div>
-            <div className="fs-form-group">
-              <label className="fs-form-label">Subject</label>
-              <select className="fs-form-select">
-                <option>General Enquiry</option>
-                <option>Selling My Aircraft</option>
-                <option>Dealer Account</option>
-                <option>Advertising</option>
-                <option>Bug Report</option>
-              </select>
-            </div>
-            <div className="fs-form-group">
-              <label className="fs-form-label">Message *</label>
-              <textarea className="fs-form-textarea" placeholder="How can we help?" />
-            </div>
-            <button className="fs-form-submit">Send Message</button>
-          </div>
+const ContactPage = () => {
+  const [form, setForm] = useState({ name: '', email: '', subject: 'General Enquiry', message: '' });
+  const [sending, setSending] = useState(false);
+  const [sent, setSent] = useState(false);
+  const [error, setError] = useState(null);
+  const set = (k, v) => setForm(f => ({ ...f, [k]: v }));
+
+  const handleSend = async () => {
+    if (!form.name || !form.email || !form.message) { setError('Please fill in your name, email, and message.'); return; }
+    setSending(true); setError(null);
+    try {
+      await submitLead('contact', { name: form.name, email: form.email, message: `[${form.subject}] ${form.message}` });
+      setSent(true);
+    } catch (err) {
+      setError(err.message || 'Failed to send message. Please try again.');
+    } finally { setSending(false); }
+  };
+
+  return (
+    <>
+      <div className="fs-about-hero">
+        <div className="fs-container">
+          <h1 style={{ fontFamily: "var(--fs-font-serif)", fontSize: 36 }}>Contact Us</h1>
+          <p style={{ color: "rgba(255,255,255,0.6)", marginTop: 8 }}>Get in touch with the Flightsales team</p>
         </div>
       </div>
-    </section>
-  </>
-);
+      <section className="fs-section">
+        <div className="fs-container">
+          <div className="fs-contact-layout">
+            <div>
+              <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+                {[
+                  { icon: Icons.mail, title: "Email", detail: "hello@flightsales.com.au", sub: "We respond within 24 hours" },
+                  { icon: Icons.phone, title: "Phone", detail: "1300 FLIGHT", sub: "Mon-Fri 9am-5pm AEST" },
+                  { icon: Icons.location, title: "Office", detail: "Moorabbin Airport, VIC 3194", sub: "By appointment only" },
+                ].map((c, i) => (
+                  <div key={i} className="fs-contact-info-card">
+                    <div className="fs-contact-icon">{c.icon}</div>
+                    <div>
+                      <div style={{ fontWeight: 600, fontSize: 15, marginBottom: 2 }}>{c.title}</div>
+                      <div style={{ fontSize: 14, color: "var(--fs-blue)" }}>{c.detail}</div>
+                      <div style={{ fontSize: 12, color: "var(--fs-gray-400)" }}>{c.sub}</div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div className="fs-detail-specs" style={{ boxShadow: "var(--fs-shadow-md)" }}>
+              {sent ? (
+                <div style={{ textAlign: "center", padding: "32px 0" }}>
+                  <div style={{ fontSize: 40, marginBottom: 12 }}>✓</div>
+                  <h3 style={{ fontSize: 18, marginBottom: 8 }}>Message Sent</h3>
+                  <p style={{ color: "var(--fs-gray-500)", fontSize: 14 }}>We'll get back to you within 24 hours.</p>
+                </div>
+              ) : (
+                <>
+                  <h3 style={{ fontSize: 18 }}>Send a Message</h3>
+                  {error && <p style={{ color: "#ef4444", fontSize: 13, marginBottom: 12 }}>{error}</p>}
+                  <div className="fs-form-group">
+                    <label className="fs-form-label">Name *</label>
+                    <input className="fs-form-input" placeholder="Your name" value={form.name} onChange={e => set('name', e.target.value)} />
+                  </div>
+                  <div className="fs-form-group">
+                    <label className="fs-form-label">Email *</label>
+                    <input className="fs-form-input" type="email" placeholder="you@email.com" value={form.email} onChange={e => set('email', e.target.value)} />
+                  </div>
+                  <div className="fs-form-group">
+                    <label className="fs-form-label">Subject</label>
+                    <select className="fs-form-select" value={form.subject} onChange={e => set('subject', e.target.value)}>
+                      <option>General Enquiry</option>
+                      <option>Selling My Aircraft</option>
+                      <option>Dealer Account</option>
+                      <option>Advertising</option>
+                      <option>Bug Report</option>
+                    </select>
+                  </div>
+                  <div className="fs-form-group">
+                    <label className="fs-form-label">Message *</label>
+                    <textarea className="fs-form-textarea" placeholder="How can we help?" value={form.message} onChange={e => set('message', e.target.value)} />
+                  </div>
+                  <button className="fs-form-submit" onClick={handleSend} disabled={sending} style={{ opacity: sending ? 0.7 : 1 }}>
+                    {sending ? 'Sending...' : 'Send Message'}
+                  </button>
+                </>
+              )}
+            </div>
+          </div>
+        </div>
+      </section>
+    </>
+  );
+};
 
 const LoginPage = ({ setPage, signIn, signUp, signInWithGoogle }) => {
   const [mode, setMode] = useState('login');
