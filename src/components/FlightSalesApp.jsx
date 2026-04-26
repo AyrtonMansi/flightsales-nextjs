@@ -552,9 +552,9 @@ a { color: inherit; text-decoration: none; }
 }
 .fs-card-body { padding: 16px 18px 16px; flex: 1; display: flex; flex-direction: column; }
 .fs-card-eyebrow {
-  font-size: 10.5px; font-weight: 600; color: var(--fs-ink-3);
-  letter-spacing: 0.08em; text-transform: uppercase;
-  margin-bottom: 6px;
+  font-size: 12px; font-weight: 500; color: var(--fs-ink-3);
+  letter-spacing: -0.005em;
+  margin-bottom: 4px;
 }
 .fs-card-title {
   font-family: var(--fs-font);
@@ -840,45 +840,44 @@ a { color: inherit; text-decoration: none; }
 
 /* In-main hero (sits at top of content column) */
 .fs-buy-main-hero {
-  padding: 32px 0 20px;
-  border-bottom: 1px solid var(--fs-line);
-  margin-bottom: 16px;
+  padding: 28px 0 16px;
+  /* No border — flows directly into the search bar below for one connected header */
 }
 .fs-buy-hero-eyebrow {
   font-size: 11px; font-weight: 600; letter-spacing: 0.14em;
   text-transform: uppercase; color: var(--fs-ink-3);
-  margin-bottom: 10px;
+  margin-bottom: 8px;
 }
 .fs-buy-hero-title {
   font-family: var(--fs-font);
-  font-size: 34px; font-weight: 700; line-height: 1.05;
+  font-size: 30px; font-weight: 700; line-height: 1.1;
   letter-spacing: -0.035em; color: var(--fs-ink);
-  margin: 0 0 8px;
+  margin: 0 0 6px;
 }
 .fs-buy-hero-sub {
-  font-size: 14.5px; color: var(--fs-ink-3); font-weight: 500;
+  font-size: 14px; color: var(--fs-ink-3); font-weight: 500;
   letter-spacing: -0.005em; max-width: 620px; line-height: 1.5;
   margin: 0;
 }
 @media (max-width: 640px) {
-  .fs-buy-main-hero { padding: 24px 0 16px; }
-  .fs-buy-hero-title { font-size: 28px; }
+  .fs-buy-main-hero { padding: 20px 0 12px; }
+  .fs-buy-hero-title { font-size: 26px; }
 }
 
 /* In-main sticky search (inside content column) */
 .fs-buy-main-search {
   display: flex; gap: 10px; align-items: center;
   background: var(--fs-white);
-  padding: 10px 0;
+  padding: 8px 0 10px;
   position: sticky; top: 72px; z-index: 40;
-  border-bottom: 1px solid var(--fs-line);
+  /* No border below — flows into the toolbar */
 }
 
-/* In-main toolbar */
+/* In-main toolbar — sits directly under search, one combined header strip */
 .fs-buy-main-toolbar {
   display: flex; justify-content: space-between; align-items: center;
-  padding: 18px 0 14px;
-  margin-bottom: 22px;
+  padding: 12px 0 14px;
+  margin-bottom: 20px;
   border-bottom: 1px solid var(--fs-line);
   flex-wrap: wrap; gap: 12px;
 }
@@ -966,25 +965,6 @@ a { color: inherit; text-decoration: none; }
 .fs-sidebar-header {
   display: flex; justify-content: space-between; align-items: baseline;
   margin-bottom: 8px;
-}
-
-/* Live result count — confirms filter changes are working */
-.fs-sidebar-livecount {
-  display: flex; align-items: baseline; gap: 8px;
-  padding: 14px 14px;
-  background: var(--fs-white);
-  border: 1px solid var(--fs-line);
-  border-radius: var(--fs-radius);
-  margin: 8px 0 14px;
-}
-.fs-sidebar-livecount-num {
-  font-size: 22px; font-weight: 700; color: var(--fs-ink);
-  letter-spacing: -0.025em; font-feature-settings: "tnum";
-  line-height: 1;
-}
-.fs-sidebar-livecount-label {
-  font-size: 12.5px; color: var(--fs-ink-3); font-weight: 500;
-  letter-spacing: -0.005em;
 }
 
 /* Preset chip rows inside sections */
@@ -2468,15 +2448,7 @@ const BuyPage = ({ setSelectedListing, savedIds, onSave, initialFilters, user, s
               )}
             </div>
 
-            {/* Live result count — confirms filters are working */}
-            <div className="fs-sidebar-livecount">
-              {dbLoading ? (
-                <span className="fs-sidebar-livecount-num">…</span>
-              ) : (
-                <span className="fs-sidebar-livecount-num">{filtered.length}</span>
-              )}
-              <span className="fs-sidebar-livecount-label">aircraft match</span>
-            </div>
+            {/* Live count moved to main toolbar to avoid duplication */}
 
             {/* Active filter chips */}
             {activeChips.length > 0 && (
