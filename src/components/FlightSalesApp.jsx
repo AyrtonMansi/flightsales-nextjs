@@ -2420,13 +2420,18 @@ const BuyPage = ({ setSelectedListing, savedIds, onSave, initialFilters, user })
   );
 };
 
-const ListingDetail = ({ listing, onBack, savedIds, onSave, user }) => {
+const ListingDetail = ({ listing, onBack, savedIds, onSave, user, onSelectDealer }) => {
   const [showEnquiry, setShowEnquiry] = useState(false);
   const { aircraft: similar } = useAircraft({ category: listing?.category, sortBy: 'newest' });
   if (!listing) return null;
   const l = listing;
-  const dealerObj = l.dealer || {};
-  const dealerName = dealerObj?.name || (typeof dealerObj === 'string' ? dealerObj : null);
+  const rawDealer = l.dealer;
+  const dealerName = (rawDealer && typeof rawDealer === 'object') ? rawDealer.name : (typeof rawDealer === 'string' ? rawDealer : null);
+  // Resolve a navigable dealer object: prefer joined object, else fall back to DEALERS lookup by id/name
+  const dealerObj = (rawDealer && typeof rawDealer === 'object')
+    ? rawDealer
+    : (DEALERS.find(d => d.id === l.dealer_id) || DEALERS.find(d => d.name === dealerName) || (dealerName ? { name: dealerName } : {}));
+  const canOpenDealer = !!(onSelectDealer && (dealerObj.id || dealerObj.name));
   const isSaved = savedIds.has(l.id);
   const monthlyEst = formatPriceFull(Math.round(l.price * 0.008));
 
@@ -2575,19 +2580,45 @@ const ListingDetail = ({ listing, onBack, savedIds, onSave, user }) => {
             {dealerName && (
               <div className="fs-detail-specs">
                 <h3>Seller</h3>
-                <div style={{ display: "flex", gap: 14, alignItems: "center", marginBottom: 14 }}>
-                  <div className="fs-dealer-avatar" style={{ width: 48, height: 48, fontSize: 14 }}>{(dealerObj.logo || dealerName?.slice(0,2))?.toUpperCase()}</div>
-                  <div>
-                    <div style={{ fontWeight: 600, fontSize: 15, letterSpacing: "-0.02em" }}>{dealerName}</div>
-                    {dealerObj.location && <div style={{ fontSize: 13, color: "var(--fs-ink-3)", display: "flex", alignItems: "center", gap: 4, marginTop: 2 }}>{Icons.location} {dealerObj.location}</div>}
+                <div
+                  role={canOpenDealer ? "button" : undefined}
+                  tabIndex={canOpenDealer ? 0 : undefined}
+                  onClick={canOpenDealer ? () => onSelectDealer(dealerObj) : undefined}
+                  onKeyDown={canOpenDealer ? (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onSelectDealer(dealerObj); } } : undefined}
+                  style={{
+                    display: "block",
+                    margin: "-8px",
+                    padding: "8px",
+                    borderRadius: 10,
+                    cursor: canOpenDealer ? "pointer" : "default",
+                    transition: "background 0.15s ease",
+                  }}
+                  onMouseEnter={(e) => { if (canOpenDealer) e.currentTarget.style.background = "var(--fs-gray-50, #f6f6f6)"; }}
+                  onMouseLeave={(e) => { if (canOpenDealer) e.currentTarget.style.background = "transparent"; }}
+                  aria-label={canOpenDealer ? `View ${dealerName} profile` : undefined}
+                >
+                  <div style={{ display: "flex", gap: 14, alignItems: "center", marginBottom: 14 }}>
+                    <div className="fs-dealer-avatar" style={{ width: 48, height: 48, fontSize: 14 }}>{(dealerObj.logo || dealerName?.slice(0,2))?.toUpperCase()}</div>
+                    <div style={{ flex: 1 }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                        <div style={{ fontWeight: 600, fontSize: 15, letterSpacing: "-0.02em" }}>{dealerName}</div>
+                        {canOpenDealer && <span style={{ fontSize: 12, color: "var(--fs-ink-3)" }}>›</span>}
+                      </div>
+                      {dealerObj.location && <div style={{ fontSize: 13, color: "var(--fs-ink-3)", display: "flex", alignItems: "center", gap: 4, marginTop: 2 }}>{Icons.location} {dealerObj.location}</div>}
+                    </div>
                   </div>
+                  {dealerObj.rating && (
+                    <div style={{ display: "flex", gap: 14, fontSize: 13, color: "var(--fs-ink-3)", fontWeight: 500 }}>
+                      <span className="fs-dealer-rating">{Icons.star} {dealerObj.rating}</span>
+                      {dealerObj.listings && <span>{dealerObj.listings} active listings</span>}
+                    </div>
+                  )}
+                  {canOpenDealer && (
+                    <div style={{ marginTop: 12, fontSize: 13, fontWeight: 600, color: "var(--fs-ink-2)" }}>
+                      View seller profile →
+                    </div>
+                  )}
                 </div>
-                {dealerObj.rating && (
-                  <div style={{ display: "flex", gap: 14, fontSize: 13, color: "var(--fs-ink-3)", fontWeight: 500 }}>
-                    <span className="fs-dealer-rating">{Icons.star} {dealerObj.rating}</span>
-                    {dealerObj.listings && <span>{dealerObj.listings} active listings</span>}
-                  </div>
-                )}
               </div>
             )}
           </div>
@@ -6208,7 +6239,7 @@ export default function FlightSalesApp() {
 
       {page === "home" && <HomePage setPage={setPageWrap} setSelectedListing={setSelectedListing} savedIds={savedIds} onSave={onSave} setSearchFilters={setSearchFilters} />}
       {page === "buy" && <BuyPage setSelectedListing={setSelectedListing} savedIds={savedIds} onSave={onSave} initialFilters={searchFilters} user={user} />}
-      {page === "detail" && <ListingDetail listing={selectedListing} onBack={() => setPageWrap("buy")} savedIds={savedIds} onSave={onSave} user={user} />}
+      {page === "detail" && <ListingDetail listing={selectedListing} onBack={() => setPageWrap("buy")} savedIds={savedIds} onSave={onSave} user={user} onSelectDealer={(d) => { setSelectedDealer(d); setPage("dealer-detail"); window.scrollTo(0, 0); }} />}
       {page === "sell" && <SellPage user={user} setPage={setPageWrap} />}
       {page === "dealers" && <DealersPage onSelectDealer={(d) => { setSelectedDealer(d); setPage("dealer-detail"); window.scrollTo(0, 0); }} />}
       {page === "dealer-detail" && <DealerDetailPage dealer={selectedDealer} onBack={() => setPageWrap("dealers")} setSelectedListing={setSelectedListing} savedIds={savedIds} onSave={onSave} />}
