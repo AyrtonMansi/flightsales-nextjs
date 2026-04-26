@@ -280,7 +280,7 @@ const STYLES = `
   --fs-shadow-lg: 0 8px 24px rgba(0,0,0,0.08);
   --fs-shadow-xl: 0 16px 48px rgba(0,0,0,0.12);
   --fs-font: 'Inter', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', system-ui, sans-serif;
-  --fs-font-serif: 'Fraunces', 'Iowan Old Style', Georgia, 'Times New Roman', serif;
+  --fs-font-serif: 'Inter', -apple-system, sans-serif;
   --fs-max-w: 1360px;
   --fs-section-y: 96px;
   --fs-section-y-mobile: 56px;
@@ -570,51 +570,44 @@ a { color: inherit; text-decoration: none; }
 @media (hover: none) {
   .fs-card-quicklook { display: none !important; }
 }
-.fs-card-body { padding: 18px 20px 20px; flex: 1; display: flex; flex-direction: column; }
-.fs-card-eyebrow {
-  font-size: 10.5px; font-weight: 600; color: var(--fs-ink-3);
-  letter-spacing: 0.08em; text-transform: uppercase;
-  margin-bottom: 10px;
+.fs-card-body { padding: 16px 18px 18px; flex: 1; display: flex; flex-direction: column; }
+.fs-card-dealer-row {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 12px; font-weight: 600; color: var(--fs-ink-3);
+  margin-bottom: 6px; min-height: 16px;
+  letter-spacing: -0.005em;
 }
+.fs-card-dealer-row svg { color: var(--fs-ink); width: 13px; height: 13px; }
 .fs-card-title {
-  font-family: var(--fs-font-serif);
-  font-size: 22px; font-weight: 500; line-height: 1.15;
-  letter-spacing: -0.025em; color: var(--fs-ink);
-  display: -webkit-box; -webkit-line-clamp: 2;
+  font-family: var(--fs-font);
+  font-size: 17px; font-weight: 600; line-height: 1.25;
+  letter-spacing: -0.02em; color: var(--fs-ink);
+  display: -webkit-box; -webkit-line-clamp: 1;
   -webkit-box-orient: vertical; overflow: hidden;
-  margin-bottom: 16px;
-  min-height: 50px;
+  margin-bottom: 2px;
 }
 .fs-card-price {
   font-family: var(--fs-font);
   font-size: 26px; font-weight: 700; color: var(--fs-ink);
-  letter-spacing: -0.03em; line-height: 1;
-  font-feature-settings: "tnum";
-  border-top: 1px solid var(--fs-line);
-  padding-top: 14px;
-  margin-bottom: 12px;
+  letter-spacing: -0.035em; line-height: 1.05;
+  font-feature-settings: "tnum"; margin-top: 0;
 }
 .fs-card-meta {
+  display: flex; flex-wrap: wrap; gap: 4px 14px;
   font-size: 13px; color: var(--fs-ink-3); font-weight: 500;
-  letter-spacing: -0.005em; line-height: 1.5;
+  margin-top: 14px; letter-spacing: -0.005em;
 }
-.fs-card-meta-sep { color: var(--fs-ink-4); margin: 0 7px; }
-.fs-card-dealer {
-  display: flex; align-items: center; gap: 6px;
-  font-size: 12.5px; color: var(--fs-ink-2); font-weight: 500;
-  letter-spacing: -0.005em;
-  margin-top: auto; padding-top: 14px;
-  border-top: 1px solid var(--fs-line);
-}
-.fs-card-dealer svg { width: 12px; height: 12px; color: var(--fs-ink-3); flex-shrink: 0; }
-.fs-card-dealer-sep { color: var(--fs-ink-4); }
-.fs-card-dealer-loc { color: var(--fs-ink-3); }
+.fs-card-meta-item { display: flex; align-items: center; gap: 5px; white-space: nowrap; }
+.fs-card-meta-item svg { color: var(--fs-ink-4); flex-shrink: 0; width: 14px; height: 14px; }
 .fs-card-footer {
-  display: none; /* footer info now lives inside card body */
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 12px 18px; border-top: 1px solid var(--fs-line);
+  font-size: 12px; color: var(--fs-ink-3); font-weight: 500;
+  background: var(--fs-white);
 }
 .fs-card-location {
   display: flex; align-items: center; gap: 4px;
-  color: var(--fs-ink-2); font-weight: 500;
+  color: var(--fs-ink); font-weight: 500;
 }
 .fs-card-location svg { color: var(--fs-ink-4); width: 13px; height: 13px; }
 
@@ -799,58 +792,11 @@ a { color: inherit; text-decoration: none; }
   letter-spacing: -0.005em;
 }
 
-/* BUY PAGE — Editorial header */
-.fs-buy-hero {
-  background: linear-gradient(180deg, var(--fs-bg-2) 0%, var(--fs-white) 100%);
-  padding: 28px 0 24px;
-  border-bottom: 1px solid var(--fs-line);
-}
-.fs-buy-hero-eyebrow {
-  font-size: 11px; font-weight: 600; letter-spacing: 0.14em;
-  text-transform: uppercase; color: var(--fs-ink-3);
-  margin-bottom: 10px;
-}
-.fs-buy-hero-title {
-  font-family: var(--fs-font-serif);
-  font-size: 44px; font-weight: 500; line-height: 1.05;
-  letter-spacing: -0.035em; color: var(--fs-ink);
-  margin: 0 0 8px;
-}
-.fs-buy-hero-sub {
-  font-size: 15px; color: var(--fs-ink-3); font-weight: 500;
-  letter-spacing: -0.005em; max-width: 580px; line-height: 1.45;
-  margin: 0;
-}
-@media (max-width: 640px) {
-  .fs-buy-hero { padding: 20px 0 18px; }
-  .fs-buy-hero-title { font-size: 32px; }
-  .fs-buy-hero-sub { font-size: 14px; }
-}
-
-/* SEARCH PAGE — refined input */
+/* SEARCH PAGE — Uber */
 .fs-search-page-bar {
-  background: var(--fs-white); padding: 14px 0;
+  background: var(--fs-white); padding: 8px 0 12px;
   border-bottom: 1px solid var(--fs-line);
   position: sticky; top: 72px; z-index: 50;
-}
-.fs-buy-search-input-wrap {
-  position: relative; flex: 1; min-width: 240px;
-  display: flex; align-items: center;
-}
-.fs-buy-search-icon {
-  position: absolute; left: 16px; top: 50%; transform: translateY(-50%);
-  color: var(--fs-ink-3); pointer-events: none; display: flex;
-}
-.fs-buy-search-hint {
-  position: absolute; right: 14px; top: 50%; transform: translateY(-50%);
-  font-size: 11.5px; color: var(--fs-ink-4); font-weight: 600;
-  letter-spacing: 0.04em; padding: 3px 8px;
-  border: 1px solid var(--fs-line); border-radius: 4px;
-  background: var(--fs-bg-2); pointer-events: none;
-}
-.fs-buy-search-input-wrap .fs-search-inline-input {
-  padding: 14px 80px 14px 44px;
-  font-size: 15px; font-weight: 500;
 }
 .fs-search-page-inner {
   display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
@@ -876,112 +822,36 @@ a { color: inherit; text-decoration: none; }
 .fs-filter-chip.active { background: var(--fs-ink); color: white; }
 .fs-results-bar {
   display: flex; justify-content: space-between; align-items: center;
-  margin-bottom: 24px; flex-wrap: wrap; gap: 12px;
-  padding-bottom: 16px; border-bottom: 1px solid var(--fs-line);
+  margin-bottom: 20px; flex-wrap: wrap; gap: 12px;
 }
-.fs-results-count {
-  font-size: 14px; color: var(--fs-ink-2); font-weight: 500;
-  letter-spacing: -0.005em;
-  display: flex; align-items: baseline;
-}
-.fs-results-sort {
-  display: flex; align-items: center; gap: 8px;
-}
-.fs-results-sort-label {
-  font-size: 12px; color: var(--fs-ink-3); font-weight: 500;
-  text-transform: uppercase; letter-spacing: 0.04em;
-}
+.fs-results-count { font-size: 14px; color: var(--fs-ink-3); font-weight: 500; letter-spacing: -0.005em; }
 .fs-sort-select {
-  padding: 8px 30px 8px 14px;
-  border: 1px solid var(--fs-line);
-  border-radius: var(--fs-radius);
-  font-size: 13.5px;
-  font-family: var(--fs-font); outline: none; cursor: pointer;
-  background: var(--fs-white);
+  padding: 10px 14px; border: 1px solid var(--fs-line);
+  border-radius: var(--fs-radius); font-size: 14px;
+  font-family: var(--fs-font); outline: none; cursor: pointer; background: var(--fs-white);
   font-weight: 500; color: var(--fs-ink); letter-spacing: -0.005em;
-  appearance: none;
-  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6' fill='none'><path d='M1 1l4 4 4-4' stroke='%23666' stroke-width='1.5' stroke-linecap='round'/></svg>");
-  background-repeat: no-repeat;
-  background-position: right 12px center;
-  transition: border-color 0.15s;
 }
-.fs-sort-select:hover { border-color: var(--fs-ink-3); }
-.fs-sort-select:focus { border-color: var(--fs-ink); }
-/* SIDEBAR LAYOUT — full-page left rail */
+/* SIDEBAR LAYOUT */
 .fs-buy-layout {
-  display: grid; grid-template-columns: 300px 1fr; gap: 36px;
-  align-items: start;
+  display: grid; grid-template-columns: 280px 1fr; gap: 32px;
 }
-@media (max-width: 960px) {
+@media (max-width: 860px) {
   .fs-buy-layout { grid-template-columns: 1fr; }
   .fs-sidebar { display: none; }
   .fs-sidebar.open { display: block; }
 }
 .fs-sidebar {
-  position: sticky;
-  top: 132px; /* nav (72) + sticky search bar (~60) */
-  align-self: start;
-  max-height: calc(100vh - 140px);
-  overflow-y: auto;
-  padding-right: 4px;
-  display: flex; flex-direction: column; gap: 16px;
-  scrollbar-width: thin;
+  position: sticky; top: 152px; align-self: start;
 }
-.fs-sidebar::-webkit-scrollbar { width: 6px; }
-.fs-sidebar::-webkit-scrollbar-thumb { background: var(--fs-line); border-radius: 3px; }
-.fs-sidebar::-webkit-scrollbar-thumb:hover { background: var(--fs-ink-4); }
-
 .fs-sidebar-card {
   background: var(--fs-white); border: 1px solid var(--fs-line);
-  border-radius: var(--fs-radius); padding: 20px;
-}
-.fs-sidebar-header {
-  display: flex; justify-content: space-between; align-items: baseline;
-  margin-bottom: 14px;
+  border-radius: var(--fs-radius); padding: 18px;
 }
 .fs-sidebar-title {
-  font-family: var(--fs-font-serif);
-  font-size: 19px; font-weight: 500; color: var(--fs-ink);
-  letter-spacing: -0.025em;
+  font-size: 15px; font-weight: 700; color: var(--fs-ink);
+  margin-bottom: 14px; letter-spacing: -0.02em;
 }
-.fs-sidebar-clear {
-  background: none; border: none; cursor: pointer;
-  font-size: 12.5px; font-weight: 500; color: var(--fs-ink-3);
-  text-decoration: underline; padding: 0;
-  font-family: var(--fs-font);
-}
-.fs-sidebar-clear:hover { color: var(--fs-ink); }
-
-/* Active filter chips at top of sidebar */
-.fs-sidebar-active {
-  display: flex; flex-wrap: wrap; gap: 6px;
-  padding: 12px 0; margin-bottom: 8px;
-  border-bottom: 1px solid var(--fs-line);
-}
-.fs-sidebar-active-chip {
-  display: inline-flex; align-items: center; gap: 5px;
-  background: var(--fs-ink); color: white;
-  border: none; padding: 5px 6px 5px 10px;
-  border-radius: var(--fs-radius-pill);
-  font-size: 12px; font-weight: 500; cursor: pointer;
-  font-family: var(--fs-font); letter-spacing: -0.005em;
-}
-.fs-sidebar-active-chip:hover { background: var(--fs-ink-2); }
-
-/* Sidebar sections — grouped by purpose */
-.fs-sidebar-section {
-  padding: 14px 0;
-  border-top: 1px solid var(--fs-line);
-}
-.fs-sidebar-section:first-of-type { border-top: none; padding-top: 4px; }
-.fs-sidebar-section-title {
-  font-size: 11px; font-weight: 700; color: var(--fs-ink-3);
-  letter-spacing: 0.08em; text-transform: uppercase;
-  margin-bottom: 10px;
-}
-
-.fs-sidebar-group { margin-bottom: 10px; }
-.fs-sidebar-group:last-child { margin-bottom: 0; }
+.fs-sidebar-group { margin-bottom: 12px; }
 .fs-sidebar-label {
   font-size: 11px; font-weight: 600; color: var(--fs-ink-3);
   margin-bottom: 5px; display: block; letter-spacing: 0.02em;
@@ -994,7 +864,6 @@ a { color: inherit; text-decoration: none; }
   background: var(--fs-white); color: var(--fs-ink); font-weight: 500;
   transition: border-color 0.15s; letter-spacing: -0.005em;
 }
-.fs-sidebar-select:hover { border-color: var(--fs-ink-3); }
 .fs-sidebar-select:focus { border-color: var(--fs-ink); }
 .fs-sidebar-range {
   display: flex; gap: 6px; align-items: center;
@@ -1009,105 +878,19 @@ a { color: inherit; text-decoration: none; }
 .fs-sidebar-range input:focus { border-color: var(--fs-ink); }
 .fs-sidebar-range span { color: var(--fs-ink-4); font-size: 13px; }
 .fs-sidebar-check {
-  display: flex; align-items: center; gap: 10px; padding: 6px 0;
+  display: flex; align-items: center; gap: 10px; padding: 4px 0;
   font-size: 13.5px; color: var(--fs-ink); cursor: pointer; font-weight: 500;
   letter-spacing: -0.005em;
 }
 .fs-sidebar-check input { width: 16px; height: 16px; accent-color: var(--fs-ink); cursor: pointer; }
-.fs-sidebar-check input:disabled + * { color: var(--fs-ink-4); }
-
-/* Advanced collapsible */
-.fs-sidebar-advanced {
-  margin-top: 8px;
-  border-top: 1px solid var(--fs-line);
-  padding-top: 14px;
-}
-.fs-sidebar-advanced > summary {
-  list-style: none; cursor: pointer;
-  display: flex; justify-content: space-between; align-items: center;
-  font-size: 12.5px; font-weight: 600; color: var(--fs-ink-2);
-  letter-spacing: -0.005em;
-  padding: 4px 0;
-}
-.fs-sidebar-advanced > summary::-webkit-details-marker { display: none; }
-.fs-sidebar-advanced[open] > summary .fs-sidebar-advanced-chev { transform: rotate(180deg); }
-.fs-sidebar-advanced-chev { transition: transform 0.2s var(--fs-ease-out); color: var(--fs-ink-3); }
-.fs-sidebar-advanced-body { padding-top: 10px; }
-.fs-sidebar-advanced-note {
-  font-size: 12px; color: var(--fs-ink-3); line-height: 1.5;
-  margin: 0 0 10px;
-}
-.fs-sidebar-soon {
-  font-size: 10px; font-weight: 600; color: var(--fs-ink-4);
-  letter-spacing: 0.06em; text-transform: uppercase;
-  margin-left: 4px;
-}
-
-/* Sidebar info-flow cards */
-.fs-sidebar-info-card {
-  background: var(--fs-ink); color: white;
-  border-radius: var(--fs-radius); padding: 18px;
-  position: relative;
-}
-.fs-sidebar-info-icon {
-  width: 36px; height: 36px; border-radius: 8px;
-  background: rgba(255,255,255,0.08);
-  display: flex; align-items: center; justify-content: center;
-  margin-bottom: 12px; color: white;
-}
-.fs-sidebar-info-title {
-  font-size: 14.5px; font-weight: 600; letter-spacing: -0.015em;
-  margin-bottom: 4px;
-}
-.fs-sidebar-info-text {
-  font-size: 12.5px; color: rgba(255,255,255,0.7);
-  line-height: 1.5; margin: 0 0 14px;
-  letter-spacing: -0.005em;
-}
-.fs-sidebar-info-cta {
-  width: 100%; padding: 10px;
-  background: white; color: var(--fs-ink);
+.fs-sidebar-reset {
+  width: 100%; padding: 12px; background: var(--fs-bg-2);
   border: none; border-radius: var(--fs-radius);
-  font-size: 13px; font-weight: 600; cursor: pointer;
-  font-family: var(--fs-font); letter-spacing: -0.01em;
-  transition: opacity 0.15s;
+  font-size: 14px; font-weight: 600; color: var(--fs-ink);
+  cursor: pointer; font-family: var(--fs-font); margin-top: 8px;
+  transition: background 0.15s; letter-spacing: -0.01em;
 }
-.fs-sidebar-info-cta:hover { opacity: 0.9; }
-
-/* Trust signals */
-.fs-sidebar-trust {
-  background: var(--fs-bg-2);
-  border-radius: var(--fs-radius); padding: 16px 18px;
-  display: flex; flex-direction: column; gap: 8px;
-}
-.fs-sidebar-trust-row {
-  display: flex; align-items: center; gap: 10px;
-  font-size: 12.5px; color: var(--fs-ink-2); font-weight: 500;
-  letter-spacing: -0.005em;
-}
-.fs-sidebar-trust-row span:first-child {
-  color: var(--fs-green); font-weight: 700;
-  width: 14px; flex-shrink: 0;
-}
-
-/* Help card */
-.fs-sidebar-help {
-  background: var(--fs-white); border: 1px solid var(--fs-line);
-  border-radius: var(--fs-radius); padding: 18px;
-}
-.fs-sidebar-help-title {
-  font-size: 13px; font-weight: 700; color: var(--fs-ink);
-  letter-spacing: -0.01em; margin-bottom: 4px;
-}
-.fs-sidebar-help-text {
-  font-size: 12.5px; color: var(--fs-ink-3); line-height: 1.5;
-  margin: 0 0 10px;
-}
-.fs-sidebar-help-link {
-  font-size: 13px; font-weight: 600; color: var(--fs-ink);
-  text-decoration: none; letter-spacing: -0.005em;
-}
-.fs-sidebar-help-link:hover { text-decoration: underline; }
+.fs-sidebar-reset:hover { background: var(--fs-line); }
 .fs-mobile-filter-btn {
   display: none; padding: 10px 18px; background: var(--fs-ink);
   color: white; border: none; border-radius: var(--fs-radius-pill);
@@ -1481,68 +1264,36 @@ const ListingCard = ({ listing, onClick, onSave, saved, onQuickLook, onCompareTo
         )}
       </div>
       <div className="fs-card-body">
-        {/* Eyebrow: Year · Category — establishes context before the title */}
-        <div className="fs-card-eyebrow">
-          {[listing.year, listing.category].filter(Boolean).join(' · ')}
-        </div>
-
-        {/* Title — serif, the visual hero of the card */}
-        <div className="fs-card-title">{listing.title}</div>
-
-        {/* Price — separated by hairline rule, anchors the card */}
-        <div className="fs-card-price">{formatPriceFull(listing.price)}</div>
-
-        {/* Specs — single elegant line with dot separators */}
-        {(() => {
-          const items = [
-            hasTT && `${formatHours(listing.ttaf)} TT`,
-            hasSMOH && `${formatHours(listing.eng_hours)} SMOH`,
-            ...tags,
-          ].filter(Boolean);
-          if (items.length === 0) return null;
-          return (
-            <div className="fs-card-meta">
-              {items.map((v, i) => (
-                <span key={i}>
-                  {v}
-                  {i < items.length - 1 && <span className="fs-card-meta-sep">·</span>}
-                </span>
-              ))}
-            </div>
-          );
-        })()}
-
-        {/* Dealer + location — small, at the bottom of the card */}
-        <div className="fs-card-dealer">
+        <div className="fs-card-dealer-row">
           {dealerName ? (
-            <>
-              {Icons.shield}
-              <span>{dealerName}</span>
-              {location && (
-                <>
-                  <span className="fs-card-dealer-sep">·</span>
-                  <span className="fs-card-dealer-loc">{location}</span>
-                </>
-              )}
-              <span style={{ marginLeft: 'auto', color: 'var(--fs-ink-4)', fontSize: 11.5 }}>
-                {isNew ? "Just listed" : timeAgo(listing.created_at || listing.created)}
-              </span>
-            </>
+            <>{Icons.shield}<span>{dealerName}</span></>
           ) : (
-            <>
-              <span style={{ color: "var(--fs-ink-3)" }}>Private seller</span>
-              {location && (
-                <>
-                  <span className="fs-card-dealer-sep">·</span>
-                  <span className="fs-card-dealer-loc">{location}</span>
-                </>
-              )}
-              <span style={{ marginLeft: 'auto', color: 'var(--fs-ink-4)', fontSize: 11.5 }}>
-                {isNew ? "Just listed" : timeAgo(listing.created_at || listing.created)}
-              </span>
-            </>
+            <span style={{ color: "var(--fs-ink-4)" }}>Private seller</span>
           )}
         </div>
+        <div className="fs-card-title">{listing.title}</div>
+        <div className="fs-card-price">{formatPriceFull(listing.price)}</div>
+        {(hasTT || hasSMOH) && (
+          <div className="fs-card-meta">
+            {hasTT && <span className="fs-card-meta-item">{Icons.clock} {formatHours(listing.ttaf)} TT</span>}
+            {hasSMOH && <span className="fs-card-meta-item">{Icons.gauge} {formatHours(listing.eng_hours)} SMOH</span>}
+          </div>
+        )}
+        {tags.length > 0 && (
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 4, marginTop: 8 }}>
+            {tags.map(t => (
+              <span key={t} style={{ fontSize: 11, fontWeight: 600, padding: "3px 8px", borderRadius: "var(--fs-radius-sm)", background: "var(--fs-bg-2)", color: "var(--fs-ink-2)", letterSpacing: "-0.005em" }}>{t}</span>
+            ))}
+          </div>
+        )}
+      </div>
+      <div className="fs-card-footer">
+        {location ? (
+          <span className="fs-card-location">{Icons.location}{location}</span>
+        ) : <span />}
+        <span style={{ color: isNew ? "var(--fs-ink)" : "var(--fs-ink-3)", fontWeight: isNew ? 600 : 500 }}>
+          {isNew ? "Just listed" : timeAgo(listing.created_at || listing.created)}
+        </span>
       </div>
     </div>
   );
@@ -2195,7 +1946,7 @@ const HomePage = ({ setPage, setSelectedListing, savedIds, onSave, setSearchFilt
   );
 };
 
-const BuyPage = ({ setSelectedListing, savedIds, onSave, initialFilters, user, setPage }) => {
+const BuyPage = ({ setSelectedListing, savedIds, onSave, initialFilters, user }) => {
   const [search, setSearch] = useState(initialFilters?.query || "");
   const [aiQuery, setAiQuery] = useState(initialFilters?.query || "");
   const [sortBy, setSortBy] = useState("newest");
@@ -2454,22 +2205,11 @@ const BuyPage = ({ setSelectedListing, savedIds, onSave, initialFilters, user, s
 
   return (
     <>
-      {/* Editorial page header — establishes the page identity above the chrome */}
-      <div className="fs-buy-hero">
-        <div className="fs-container">
-          <div className="fs-buy-hero-eyebrow">Marketplace</div>
-          <h1 className="fs-buy-hero-title">Aircraft for sale</h1>
-          <p className="fs-buy-hero-sub">
-            Browse {systemTotal > 0 ? `${systemTotal}+ ` : ''}verified listings from dealers and private sellers across Australia.
-          </p>
-        </div>
-      </div>
-
-      {/* Search bar — AI-aware, full-bleed */}
+      {/* Search bar — wide, single line */}
       <div className="fs-search-page-bar">
         <div className="fs-container fs-search-page-inner">
-          <div className="fs-buy-search-input-wrap">
-            <span className="fs-buy-search-icon">{Icons.search}</span>
+          <div style={{ position: "relative", flex: 1, minWidth: 240 }}>
+            <span style={{ position: "absolute", left: 16, top: "50%", transform: "translateY(-50%)", color: "var(--fs-ink-4)", pointerEvents: "none" }}>{Icons.search}</span>
             <input
               className="fs-search-inline-input"
               placeholder={rotatingPlaceholder}
@@ -2477,104 +2217,114 @@ const BuyPage = ({ setSelectedListing, savedIds, onSave, initialFilters, user, s
               onChange={e => setSearch(e.target.value)}
               onKeyDown={e => { if (e.key === "Enter" && e.target.value) handleAiSearch(e.target.value); }}
             />
-            <span className="fs-buy-search-hint">↵ Search</span>
           </div>
           <button className="fs-mobile-filter-btn" onClick={() => setSideOpen(!sideOpen)}>
             {Icons.filter} Filters{activeFilterCount > 0 ? ` · ${activeFilterCount}` : ""}
           </button>
+          <select className="fs-sort-select" value={sortBy} onChange={e => { setSortBy(e.target.value); setResultPage(1); }}>
+            <option value="newest">Newest first</option>
+            <option value="price-asc">Price: low to high</option>
+            <option value="price-desc">Price: high to low</option>
+            <option value="hours-low">Hours: low to high</option>
+          </select>
         </div>
       </div>
 
-      <section className="fs-section" style={{ paddingTop: 24, paddingBottom: 64 }}>
+      {/* Quick filter pills — one-tap common filters */}
+      <div style={{ borderBottom: "1px solid var(--fs-line)", background: "var(--fs-white)" }}>
+        <div className="fs-container" style={{ padding: "12px 40px", display: "flex", gap: 8, flexWrap: "wrap", overflowX: "auto" }}>
+          {[
+            { label: "Just listed", active: false, action: () => setSortBy("newest") },
+            { label: "Under $300k", active: maxPrice === "300000", action: () => { setMaxPrice(maxPrice === "300000" ? "" : "300000"); setMinPrice(""); } },
+            { label: "Under $1M", active: maxPrice === "1000000", action: () => { setMaxPrice(maxPrice === "1000000" ? "" : "1000000"); setMinPrice(""); } },
+            { label: "$1M+", active: minPrice === "1000000" && !maxPrice, action: () => { setMinPrice(minPrice === "1000000" && !maxPrice ? "" : "1000000"); setMaxPrice(""); } },
+            { label: "IFR", active: ifrOnly, action: () => setIfrOnly(!ifrOnly) },
+            { label: "Glass cockpit", active: glassOnly, action: () => setGlassOnly(!glassOnly) },
+            { label: "Single Engine", active: catFilter === "Single Engine Piston", action: () => setCatFilter(catFilter === "Single Engine Piston" ? "" : "Single Engine Piston") },
+            { label: "Multi Engine", active: catFilter === "Multi Engine Piston", action: () => setCatFilter(catFilter === "Multi Engine Piston" ? "" : "Multi Engine Piston") },
+            { label: "Helicopter", active: catFilter === "Helicopter", action: () => setCatFilter(catFilter === "Helicopter" ? "" : "Helicopter") },
+            { label: "LSA", active: catFilter === "LSA", action: () => setCatFilter(catFilter === "LSA" ? "" : "LSA") },
+            { label: "Turboprop", active: catFilter === "Turboprop", action: () => setCatFilter(catFilter === "Turboprop" ? "" : "Turboprop") },
+            { label: "Low hours (<1000)", active: maxHours === "1000", action: () => setMaxHours(maxHours === "1000" ? "" : "1000") },
+          ].map(p => (
+            <button
+              key={p.label}
+              onClick={p.action}
+              className="fs-cat-pill"
+              style={{
+                background: p.active ? "var(--fs-ink)" : "var(--fs-bg-2)",
+                color: p.active ? "white" : "var(--fs-ink)",
+                fontSize: 13, padding: "8px 14px", whiteSpace: "nowrap"
+              }}
+            >{p.label}</button>
+          ))}
+        </div>
+      </div>
+
+      <section className="fs-section" style={{ paddingTop: 20, paddingBottom: 64 }}>
         <div className="fs-container">
           <div className="fs-buy-layout">
-            {/* SIDEBAR — filters + user-flow info cards */}
+            {/* SIDEBAR — compressed */}
             <div className={`fs-sidebar${sideOpen ? " open" : ""}`}>
-              {/* Filter card */}
               <div className="fs-sidebar-card">
-                <div className="fs-sidebar-header">
-                  <div className="fs-sidebar-title">Filters</div>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 18 }}>
+                  <div className="fs-sidebar-title" style={{ marginBottom: 0 }}>Filters</div>
                   {activeFilterCount > 0 && (
-                    <button onClick={resetFilters} className="fs-sidebar-clear">Clear all</button>
+                    <button onClick={resetFilters} style={{ background: "none", border: "none", color: "var(--fs-ink-3)", fontSize: 13, fontWeight: 500, cursor: "pointer", textDecoration: "underline", padding: 0 }}>
+                      Clear all
+                    </button>
                   )}
                 </div>
 
-                {/* Active-filter summary chips at top of sidebar */}
-                {activeChips.length > 0 && (
-                  <div className="fs-sidebar-active">
-                    {activeChips.map(chip => (
-                      <button key={chip.key} onClick={chip.clear} className="fs-sidebar-active-chip" title="Remove filter">
-                        {chip.label}
-                        <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-                      </button>
-                    ))}
-                  </div>
-                )}
+                <div className="fs-sidebar-group">
+                  <label className="fs-sidebar-label">Category</label>
+                  <select className="fs-sidebar-select" value={catFilter} onChange={e => setCatFilter(e.target.value)}>
+                    <option value="">All</option>
+                    {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
+                  </select>
+                </div>
 
-                {/* LOCATION */}
-                <div className="fs-sidebar-section">
-                  <div className="fs-sidebar-section-title">Location</div>
-                  <div className="fs-sidebar-group">
-                    <label className="fs-sidebar-label">State</label>
-                    <select className="fs-sidebar-select" value={stateFilter} onChange={e => setStateFilter(e.target.value)}>
-                      <option value="">All states</option>
-                      {STATES.map(s => <option key={s} value={s}>{s}</option>)}
-                    </select>
+                <div className="fs-sidebar-group">
+                  <label className="fs-sidebar-label">Manufacturer</label>
+                  <select className="fs-sidebar-select" value={makeFilter} onChange={e => setMakeFilter(e.target.value)}>
+                    <option value="">All</option>
+                    {MANUFACTURERS.map(m => <option key={m} value={m}>{m}</option>)}
+                  </select>
+                </div>
+
+                <div className="fs-sidebar-group">
+                  <label className="fs-sidebar-label">State</label>
+                  <select className="fs-sidebar-select" value={stateFilter} onChange={e => setStateFilter(e.target.value)}>
+                    <option value="">All</option>
+                    {STATES.map(s => <option key={s} value={s}>{s}</option>)}
+                  </select>
+                </div>
+
+                <div className="fs-sidebar-group">
+                  <label className="fs-sidebar-label">Condition</label>
+                  <select className="fs-sidebar-select" value={condFilter} onChange={e => setCondFilter(e.target.value)}>
+                    <option value="">Any</option>
+                    {CONDITIONS.map(c => <option key={c} value={c}>{c}</option>)}
+                  </select>
+                </div>
+
+                <div className="fs-sidebar-group">
+                  <label className="fs-sidebar-label">Price ($)</label>
+                  <div className="fs-sidebar-range">
+                    <input type="number" placeholder="Min" value={minPrice} onChange={e => setMinPrice(e.target.value)} />
+                    <span>—</span>
+                    <input type="number" placeholder="Max" value={maxPrice} onChange={e => setMaxPrice(e.target.value)} />
                   </div>
                 </div>
 
-                {/* AIRCRAFT */}
-                <div className="fs-sidebar-section">
-                  <div className="fs-sidebar-section-title">Aircraft</div>
-                  <div className="fs-sidebar-group">
-                    <label className="fs-sidebar-label">Category</label>
-                    <select className="fs-sidebar-select" value={catFilter} onChange={e => setCatFilter(e.target.value)}>
-                      <option value="">All categories</option>
-                      {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
-                    </select>
-                  </div>
-                  <div className="fs-sidebar-group">
-                    <label className="fs-sidebar-label">Manufacturer</label>
-                    <select className="fs-sidebar-select" value={makeFilter} onChange={e => setMakeFilter(e.target.value)}>
-                      <option value="">All manufacturers</option>
-                      {MANUFACTURERS.map(m => <option key={m} value={m}>{m}</option>)}
-                    </select>
-                  </div>
-                  <div className="fs-sidebar-group">
-                    <label className="fs-sidebar-label">Condition</label>
-                    <select className="fs-sidebar-select" value={condFilter} onChange={e => setCondFilter(e.target.value)}>
-                      <option value="">Any condition</option>
-                      {CONDITIONS.map(c => <option key={c} value={c}>{c}</option>)}
-                    </select>
-                  </div>
+                <div className="fs-sidebar-group">
+                  <label className="fs-sidebar-label">Max total hours</label>
+                  <input type="number" placeholder="e.g. 2000" value={maxHours} onChange={e => setMaxHours(e.target.value)}
+                    style={{ width: "100%", padding: "11px 14px", border: "1px solid var(--fs-line)", borderRadius: "var(--fs-radius)", fontSize: 14, fontFamily: "var(--fs-font)", outline: "none", fontWeight: 500, color: "var(--fs-ink)" }} />
                 </div>
 
-                {/* PRICE */}
-                <div className="fs-sidebar-section">
-                  <div className="fs-sidebar-section-title">Price (AUD)</div>
-                  <div className="fs-sidebar-group">
-                    <div className="fs-sidebar-range">
-                      <input type="number" placeholder="Min" value={minPrice} onChange={e => setMinPrice(e.target.value)} />
-                      <span>—</span>
-                      <input type="number" placeholder="Max" value={maxPrice} onChange={e => setMaxPrice(e.target.value)} />
-                    </div>
-                  </div>
-                </div>
-
-                {/* USAGE & FEATURES */}
-                <div className="fs-sidebar-section">
-                  <div className="fs-sidebar-section-title">Usage & features</div>
-                  <div className="fs-sidebar-group">
-                    <label className="fs-sidebar-label">Max total hours</label>
-                    <input
-                      type="number"
-                      placeholder="e.g. 2000"
-                      value={maxHours}
-                      onChange={e => setMaxHours(e.target.value)}
-                      className="fs-sidebar-select"
-                      style={{ cursor: 'text' }}
-                    />
-                  </div>
+                <div className="fs-sidebar-group" style={{ marginBottom: 0 }}>
+                  <label className="fs-sidebar-label">Features</label>
                   <label className="fs-sidebar-check">
                     <input type="checkbox" checked={ifrOnly} onChange={e => setIfrOnly(e.target.checked)} /> IFR capable
                   </label>
@@ -2582,79 +2332,49 @@ const BuyPage = ({ setSelectedListing, savedIds, onSave, initialFilters, user, s
                     <input type="checkbox" checked={glassOnly} onChange={e => setGlassOnly(e.target.checked)} /> Glass cockpit
                   </label>
                 </div>
-
-                {/* ADVANCED — collapsible */}
-                <details className="fs-sidebar-advanced">
-                  <summary>
-                    Advanced filters
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" className="fs-sidebar-advanced-chev"><polyline points="6 9 12 15 18 9"/></svg>
-                  </summary>
-                  <div className="fs-sidebar-advanced-body">
-                    <p className="fs-sidebar-advanced-note">Refine by airframe details. More options coming as listings grow.</p>
-                    <label className="fs-sidebar-check">
-                      <input type="checkbox" disabled /> Pressurised <span className="fs-sidebar-soon">soon</span>
-                    </label>
-                    <label className="fs-sidebar-check">
-                      <input type="checkbox" disabled /> Retractable gear <span className="fs-sidebar-soon">soon</span>
-                    </label>
-                    <label className="fs-sidebar-check">
-                      <input type="checkbox" disabled /> Has parachute system <span className="fs-sidebar-soon">soon</span>
-                    </label>
-                  </div>
-                </details>
-              </div>
-
-              {/* Save search / alerts CTA */}
-              <div className="fs-sidebar-info-card">
-                <div className="fs-sidebar-info-icon">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
-                </div>
-                <div className="fs-sidebar-info-title">Get aircraft alerts</div>
-                <p className="fs-sidebar-info-text">Save this search and we'll email you when new aircraft match.</p>
-                <button className="fs-sidebar-info-cta" onClick={() => user ? null : setPage && setPage('login')}>
-                  {activeChips.length > 0 ? 'Save this search' : 'Set up alerts'}
-                </button>
-              </div>
-
-              {/* Trust signals */}
-              <div className="fs-sidebar-trust">
-                <div className="fs-sidebar-trust-row"><span>✓</span> All listings reviewed</div>
-                <div className="fs-sidebar-trust-row"><span>✓</span> Transparent pricing</div>
-                <div className="fs-sidebar-trust-row"><span>✓</span> Direct seller contact</div>
-                <div className="fs-sidebar-trust-row"><span>✓</span> No hidden fees</div>
-              </div>
-
-              {/* Help link */}
-              <div className="fs-sidebar-help">
-                <div className="fs-sidebar-help-title">Need help?</div>
-                <p className="fs-sidebar-help-text">Talk to our team — we'll help you find the right aircraft.</p>
-                <a href="#contact" onClick={(e) => { e.preventDefault(); setPage && setPage('contact'); }} className="fs-sidebar-help-link">Contact us →</a>
               </div>
             </div>
 
             {/* RESULTS */}
             <div>
+              {/* Active filter chips */}
+              {activeChips.length > 0 && (
+                <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 20, alignItems: "center" }}>
+                  {activeChips.map(chip => (
+                    <button
+                      key={chip.key}
+                      onClick={chip.clear}
+                      style={{
+                        display: "inline-flex", alignItems: "center", gap: 6,
+                        background: "var(--fs-ink)", color: "white",
+                        border: "none", padding: "7px 8px 7px 14px",
+                        borderRadius: "var(--fs-radius-pill)",
+                        fontSize: 13, fontWeight: 500, cursor: "pointer",
+                        fontFamily: "var(--fs-font)", letterSpacing: "-0.005em",
+                      }}
+                    >
+                      {chip.label}
+                      <span style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", width: 18, height: 18, borderRadius: "50%", background: "rgba(255,255,255,0.15)" }}>
+                        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                      </span>
+                    </button>
+                  ))}
+                  <button onClick={resetFilters} style={{ background: "none", border: "none", color: "var(--fs-ink-3)", fontSize: 13, fontWeight: 500, cursor: "pointer", padding: "7px 10px", textDecoration: "underline" }}>
+                    Clear all
+                  </button>
+                </div>
+              )}
+
               <div className="fs-results-bar">
                 <span className="fs-results-count">
-                  {dbLoading ? (
-                    <span style={{ color: 'var(--fs-ink-3)' }}>Searching…</span>
-                  ) : (
+                  {dbLoading ? "Searching..." : (
                     <>
-                      <span style={{ color: "var(--fs-ink)", fontWeight: 700, fontSize: 22, letterSpacing: "-0.02em", fontFamily: 'var(--fs-font-serif)' }}>{filtered.length}</span>
-                      <span style={{ marginLeft: 6 }}>{filtered.length === 1 ? 'aircraft' : 'aircraft'}</span>
-                      {aiQuery && <span style={{ color: "var(--fs-ink-3)", marginLeft: 8, fontStyle: 'italic' }}>for "{aiQuery}"</span>}
+                      <span style={{ color: "var(--fs-ink)", fontWeight: 700, fontSize: 22, letterSpacing: "-0.02em" }}>{filtered.length}</span>
+                      <span style={{ marginLeft: 6 }}>aircraft</span>
+                      {aiQuery && <span style={{ color: "var(--fs-ink-3)", marginLeft: 8 }}>for "{aiQuery}"</span>}
                     </>
                   )}
                 </span>
-                <div className="fs-results-sort">
-                  <span className="fs-results-sort-label">Sort by</span>
-                  <select className="fs-sort-select" value={sortBy} onChange={e => { setSortBy(e.target.value); setResultPage(1); }}>
-                    <option value="newest">Newest first</option>
-                    <option value="price-asc">Price: low to high</option>
-                    <option value="price-desc">Price: high to low</option>
-                    <option value="hours-low">Hours: low to high</option>
-                  </select>
-                </div>
               </div>
               {dbLoading ? (
                 <div className="fs-grid">
@@ -6615,7 +6335,7 @@ export default function FlightSalesApp() {
       {page !== 'home' && page !== 'detail' && <Breadcrumbs />}
 
       {page === "home" && <HomePage setPage={setPageWrap} setSelectedListing={setSelectedListing} savedIds={savedIds} onSave={onSave} setSearchFilters={setSearchFilters} />}
-      {page === "buy" && <BuyPage setSelectedListing={setSelectedListing} savedIds={savedIds} onSave={onSave} initialFilters={searchFilters} user={user} setPage={setPageWrap} />}
+      {page === "buy" && <BuyPage setSelectedListing={setSelectedListing} savedIds={savedIds} onSave={onSave} initialFilters={searchFilters} user={user} />}
       {page === "detail" && <ListingDetail listing={selectedListing} onBack={() => setPageWrap("buy")} savedIds={savedIds} onSave={onSave} user={user} onSelectDealer={(d) => { setSelectedDealer(d); setPage("dealer-detail"); window.scrollTo(0, 0); }} />}
       {page === "sell" && <SellPage user={user} setPage={setPageWrap} />}
       {page === "dealers" && <DealersPage onSelectDealer={(d) => { setSelectedDealer(d); setPage("dealer-detail"); window.scrollTo(0, 0); }} />}
