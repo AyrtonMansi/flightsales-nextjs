@@ -593,6 +593,8 @@ a { color: inherit; text-decoration: none; }
 .fs-categories {
   display: flex; gap: 8px; flex-wrap: wrap;
   margin-top: 32px;
+  max-width: 100%;
+  justify-content: center;
 }
 .fs-cat-pill {
   background: var(--fs-bg-2); border: none;
@@ -600,6 +602,8 @@ a { color: inherit; text-decoration: none; }
   padding: 10px 18px; font-size: 14px; font-weight: 500;
   cursor: pointer; transition: background-color 0.15s var(--fs-ease-out);
   font-family: var(--fs-font); letter-spacing: -0.005em;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 .fs-cat-pill:hover { background: var(--fs-line); }
 .fs-cat-pill.active { background: var(--fs-ink); color: white; }
@@ -1580,12 +1584,38 @@ const EnquiryModal = ({ listing, onClose, user }) => {
   );
 };
 
+// Rotating placeholder examples for the AI search input.
+// Kept short and concrete so users immediately see the kinds of queries that work.
+const AI_SEARCH_EXAMPLES = [
+  "Cessna 172",
+  "Cirrus SR22",
+  "Helicopter under $500k",
+  "IFR aircraft in VIC",
+  "Twin engine in NSW",
+  "Diamond DA40 with glass cockpit",
+  "Robinson R44",
+  "Piper Cherokee under $200k",
+  "Turboprop in QLD",
+  "Low hours Sling TSi",
+];
+
+function useRotatingPlaceholder(examples, intervalMs = 2800) {
+  const [index, setIndex] = useState(0);
+  useEffect(() => {
+    if (!examples || examples.length < 2) return undefined;
+    const t = setInterval(() => setIndex(i => (i + 1) % examples.length), intervalMs);
+    return () => clearInterval(t);
+  }, [examples, intervalMs]);
+  return examples[index];
+}
+
 // --- PAGES ---
 const HomePage = ({ setPage, setSelectedListing, savedIds, onSave, setSearchFilters }) => {
   const [searchCat, setSearchCat] = useState("");
   const [searchMake, setSearchMake] = useState("");
   const [searchState, setSearchState] = useState("");
   const [aiQuery, setAiQuery] = useState("");
+  const rotatingPlaceholder = useRotatingPlaceholder(AI_SEARCH_EXAMPLES);
 
   const { aircraft: featuredFromDB, loading: featuredLoading } = useFeaturedAircraft();
   const { aircraft: latestFromDB, loading: latestLoading } = useLatestAircraft();
@@ -1735,7 +1765,7 @@ const HomePage = ({ setPage, setSelectedListing, savedIds, onSave, setSearchFilt
               </div>
               <input
                 className="fs-search-ai-input"
-                placeholder='Try "4-seat IFR under $500k in VIC" or "best trainer aircraft"'
+                placeholder={rotatingPlaceholder}
                 value={aiQuery}
                 onChange={e => setAiQuery(e.target.value)}
                 onKeyDown={e => { if (e.key === "Enter") handleAiSearch(e.target.value); }}
@@ -1770,7 +1800,8 @@ const HomePage = ({ setPage, setSelectedListing, savedIds, onSave, setSearchFilt
           </div>
 
           <div className="fs-categories">
-            {CATEGORIES.slice(0, 6).map(c => (
+            {/* Ordered by Australian market volume — single engine dominates, jets are tail */}
+            {["Single Engine Piston", "Multi Engine Piston", "Turboprop", "Helicopter", "LSA", "Light Jet"].map(c => (
               <button key={c} className="fs-cat-pill" onClick={() => {
                 if (setSearchFilters) setSearchFilters({ cat: c });
                 setPage("buy");
@@ -1889,6 +1920,7 @@ const BuyPage = ({ setSelectedListing, savedIds, onSave, initialFilters, user })
   const [sortBy, setSortBy] = useState("newest");
   const [resultPage, setResultPage] = useState(1);
   const PAGE_SIZE = 12;
+  const rotatingPlaceholder = useRotatingPlaceholder(AI_SEARCH_EXAMPLES);
   const [catFilter, setCatFilter] = useState(initialFilters?.cat || "");
   const [stateFilter, setStateFilter] = useState(initialFilters?.state || "");
   const [makeFilter, setMakeFilter] = useState(initialFilters?.make || "");
@@ -2148,7 +2180,7 @@ const BuyPage = ({ setSelectedListing, savedIds, onSave, initialFilters, user })
             <span style={{ position: "absolute", left: 16, top: "50%", transform: "translateY(-50%)", color: "var(--fs-ink-4)", pointerEvents: "none" }}>{Icons.search}</span>
             <input
               className="fs-search-inline-input"
-              placeholder="Try '4-seat IFR under $500k in VIC' or 'Cirrus SR22'"
+              placeholder={rotatingPlaceholder}
               value={search}
               onChange={e => setSearch(e.target.value)}
               onKeyDown={e => { if (e.key === "Enter" && e.target.value) handleAiSearch(e.target.value); }}
