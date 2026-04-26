@@ -339,6 +339,15 @@ export function useMyEnquiries(userId) {
 
   useEffect(() => { fetchEnquiries(); }, [fetchEnquiries]);
 
+  // Light polling — refetch every 30s while the tab is visible so sellers see new enquiries
+  // without manual refresh. Safe with Supabase; no Realtime channel required.
+  useEffect(() => {
+    if (!userId) return undefined;
+    const tick = () => { if (document.visibilityState === 'visible') fetchEnquiries(); };
+    const id = setInterval(tick, 30000);
+    return () => clearInterval(id);
+  }, [userId, fetchEnquiries]);
+
   const updateStatus = async (id, status) => {
     await supabase.from('enquiries').update({ status }).eq('id', id);
     setEnquiries(prev => prev.map(e => e.id === id ? { ...e, status } : e));
@@ -548,6 +557,13 @@ export function useAdminEnquiries() {
   }, []);
 
   useEffect(() => { fetchAll(); }, [fetchAll]);
+
+  // Light polling so the admin inbox stays fresh while open.
+  useEffect(() => {
+    const tick = () => { if (document.visibilityState === 'visible') fetchAll(); };
+    const id = setInterval(tick, 30000);
+    return () => clearInterval(id);
+  }, [fetchAll]);
 
   const updateStatus = async (id, status) => {
     await supabase.from('enquiries').update({ status }).eq('id', id);
