@@ -5409,7 +5409,7 @@ export default function FlightSalesApp() {
       {page === "detail" && <ListingDetail listing={selectedListing} onBack={() => setPageWrap("buy")} savedIds={savedIds} onSave={onSave} user={user} />}
       {page === "sell" && <SellPage user={user} setPage={setPageWrap} />}
       {page === "dealers" && <DealersPage />}
-      {page === "valuate" && <ValuatePage />}
+      {page === "valuate" && <ContactPage />}
       {page === "news" && <NewsPage />}
       {page === "about" && <AboutPage />}
       {page === "contact" && <ContactPage />}
