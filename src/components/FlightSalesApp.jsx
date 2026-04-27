@@ -2757,7 +2757,7 @@ const BuyPage = ({ setSelectedListing, savedIds, onSave, initialFilters, user, s
                 {activeChips.map(chip => (
                   <button key={chip.key} onClick={chip.clear} className="fs-sidebar-active-chip" title="Remove filter">
                     {chip.label}
-                    <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                    <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" style={{ opacity: 0.6 }}><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
                   </button>
                 ))}
               </div>
