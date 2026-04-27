@@ -2067,16 +2067,10 @@ const EnquiryModal = ({ listing, onClose, user }) => {
 // Rotating placeholder examples for the AI search input.
 // Kept short and concrete so users immediately see the kinds of queries that work.
 const AI_SEARCH_EXAMPLES = [
-  "Cessna 172",
-  "Cirrus SR22",
-  "Helicopter under $500k",
-  "IFR aircraft in VIC",
-  "Twin engine in NSW",
   "Diamond DA40 with glass cockpit",
-  "Robinson R44",
-  "Piper Cherokee under $200k",
-  "Turboprop in QLD",
-  "Low hours Sling TSi",
+  "Cirrus SR22 under $700k",
+  "Low-hours Robinson R44",
+  "IFR turboprop in QLD",
 ];
 
 function useRotatingPlaceholder(examples, intervalMs = 2800) {
