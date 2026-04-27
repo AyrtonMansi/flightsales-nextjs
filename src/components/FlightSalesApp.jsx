@@ -2088,10 +2088,10 @@ const HomePage = ({ setPage, setSelectedListing, savedIds, onSave, setSearchFilt
   const [searchCat, setSearchCat] = useState("");
   const [searchMake, setSearchMake] = useState("");
   const [searchState, setSearchState] = useState("");
-  const [searchYearFrom, setSearchYearFrom] = useState("");
-  const [searchYearTo, setSearchYearTo] = useState("");
-  const [searchPriceMin, setSearchPriceMin] = useState("");
-  const [searchPriceMax, setSearchPriceMax] = useState("");
+  const [yearFrom, setYearFrom] = useState("");
+  const [yearTo, setYearTo] = useState("");
+  const [priceFrom, setPriceFrom] = useState("");
+  const [priceTo, setPriceTo] = useState("");
   const [aiQuery, setAiQuery] = useState("");
   const rotatingPlaceholder = useRotatingPlaceholder(AI_SEARCH_EXAMPLES);
 
@@ -2220,10 +2220,10 @@ const HomePage = ({ setPage, setSelectedListing, savedIds, onSave, setSearchFilt
       cat: searchCat,
       make: searchMake,
       state: searchState,
-      yearFrom: searchYearFrom,
-      yearTo: searchYearTo,
-      minPrice: searchPriceMin,
-      maxPrice: searchPriceMax,
+      yearFrom,
+      yearTo,
+      priceFrom,
+      priceTo,
       query: ""
     };
     if (setSearchFilters) setSearchFilters(filters);
@@ -2278,37 +2278,61 @@ const HomePage = ({ setPage, setSelectedListing, savedIds, onSave, setSearchFilt
               </div>
             </div>
 
-            {/* Row 2: Range filters */}
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, marginTop: 12 }}>
-              <div>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
+              <div className="fs-search-field">
                 <span className="fs-search-label">Year</span>
-                <div style={{ display: "flex", gap: 8, alignItems: "center", marginTop: 4 }}>
-                  <select className="fs-search-select" style={{ flex: 1 }} value={searchYearFrom} onChange={e => setSearchYearFrom(e.target.value)}>
+                <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                  <select
+                    className="fs-search-select"
+                    value={yearFrom}
+                    onChange={e => setYearFrom(e.target.value)}
+                    style={{ flex: 1 }}
+                  >
                     <option value="">From</option>
-                    {[2024, 2020, 2015, 2010, 2005, 2000, 1995, 1990, 1985, 1980, 1975, 1970, 1965, 1960, 1955, 1950].map(y => <option key={y} value={y}>{y}</option>)}
+                    {Array.from({ length: 50 }, (_, i) => 2026 - i).map(y => (
+                      <option key={y} value={y}>{y}</option>
+                    ))}
                   </select>
-                  <span style={{ fontSize: 13, color: "var(--fs-ink-3)", fontWeight: 500 }}>→</span>
-                  <select className="fs-search-select" style={{ flex: 1 }} value={searchYearTo} onChange={e => setSearchYearTo(e.target.value)}>
+                  <span style={{ color: "var(--fs-ink-4)", fontSize: 12 }}>→</span>
+                  <select
+                    className="fs-search-select"
+                    value={yearTo}
+                    onChange={e => setYearTo(e.target.value)}
+                    style={{ flex: 1 }}
+                  >
                     <option value="">To</option>
-                    {[2024, 2020, 2015, 2010, 2005, 2000, 1995, 1990, 1985, 1980, 1975, 1970, 1965, 1960, 1955, 1950].map(y => <option key={y} value={y}>{y}</option>)}
+                    {Array.from({ length: 50 }, (_, i) => 2026 - i).map(y => (
+                      <option key={y} value={y}>{y}</option>
+                    ))}
                   </select>
                 </div>
               </div>
-              <div>
+              <div className="fs-search-field">
                 <span className="fs-search-label">Price</span>
-                <div style={{ display: "flex", gap: 8, alignItems: "center", marginTop: 4 }}>
-                  <select className="fs-search-select" style={{ flex: 1 }} value={searchPriceMin} onChange={e => setSearchPriceMin(e.target.value)}>
+                <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                  <select
+                    className="fs-search-select"
+                    value={priceFrom}
+                    onChange={e => setPriceFrom(e.target.value)}
+                    style={{ flex: 1 }}
+                  >
                     <option value="">Min</option>
-                    <option value="0">$0</option>
                     <option value="50000">$50k</option>
                     <option value="100000">$100k</option>
                     <option value="200000">$200k</option>
                     <option value="300000">$300k</option>
                     <option value="500000">$500k</option>
                     <option value="1000000">$1M</option>
+                    <option value="2000000">$2M</option>
+                    <option value="5000000">$5M</option>
                   </select>
-                  <span style={{ fontSize: 13, color: "var(--fs-ink-3)", fontWeight: 500 }}>→</span>
-                  <select className="fs-search-select" style={{ flex: 1 }} value={searchPriceMax} onChange={e => setSearchPriceMax(e.target.value)}>
+                  <span style={{ color: "var(--fs-ink-4)", fontSize: 12 }}>→</span>
+                  <select
+                    className="fs-search-select"
+                    value={priceTo}
+                    onChange={e => setPriceTo(e.target.value)}
+                    style={{ flex: 1 }}
+                  >
                     <option value="">Max</option>
                     <option value="100000">$100k</option>
                     <option value="200000">$200k</option>
@@ -2316,7 +2340,8 @@ const HomePage = ({ setPage, setSelectedListing, savedIds, onSave, setSearchFilt
                     <option value="500000">$500k</option>
                     <option value="1000000">$1M</option>
                     <option value="2000000">$2M</option>
-                    <option value="5000000">$5M+</option>
+                    <option value="5000000">$5M</option>
+                    <option value="10000000">$10M+</option>
                   </select>
                 </div>
               </div>
