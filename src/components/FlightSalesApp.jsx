@@ -1038,7 +1038,7 @@ a { color: inherit; text-decoration: none; }
 
 /* Preset chip rows inside sections */
 .fs-sidebar-presets {
-  display: flex; flex-wrap: wrap; gap: 6px;
+  display: flex; flex-wrap: wrap; gap: 8px;
   margin-bottom: 10px;
 }
 .fs-sidebar-preset {
@@ -1046,8 +1046,9 @@ a { color: inherit; text-decoration: none; }
   border: 1px solid var(--fs-line);
   color: var(--fs-ink-2);
   font-family: var(--fs-font);
-  font-size: 12px; font-weight: 500;
-  padding: 6px 10px;
+  font-size: 13px; font-weight: 500;
+  padding: 10px 16px;
+  min-height: 40px;
   border-radius: var(--fs-radius-pill);
   cursor: pointer;
   letter-spacing: -0.005em;
@@ -1123,8 +1124,27 @@ a { color: inherit; text-decoration: none; }
 .fs-sidebar-group { margin-bottom: 8px; }
 .fs-sidebar-group:last-child { margin-bottom: 0; }
 .fs-sidebar-label {
-  font-size: 12px; font-weight: 500; color: var(--fs-ink-3);
-  margin-bottom: 5px; display: block; letter-spacing: -0.005em;
+  font-size: 13px; font-weight: 600; color: var(--fs-ink);
+  margin-bottom: 10px; display: block; letter-spacing: -0.005em;
+}
+.fs-year-range {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: 8px;
+  align-items: center;
+}
+.fs-year-arrow {
+  color: var(--fs-ink-4);
+  font-size: 12px;
+}
+@media (max-width: 480px) {
+  .fs-year-range {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+  .fs-year-arrow {
+    display: none;
+  }
 }
 .fs-sidebar-select {
   width: 100%; padding: 9px 12px; border: 1px solid var(--fs-line);
@@ -1635,83 +1655,105 @@ const CardSkeleton = () => (
 
 // --- EMPTY STATE COMPONENT ---
 // --- MOBILE FILTER BOTTOM SHEET ---
-const MobileFilterSheet = ({ isOpen, onClose, children }) => {
+const MobileFilterSheet = ({ isOpen, onClose, children, filteredCount, onClear }) => {
   if (!isOpen) return null;
-  
+
   return (
-    <div 
-      style={{
-        position: 'fixed',
-        inset: 0,
-        zIndex: 200,
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'flex-end'
-      }}
-      onClick={onClose}
-    >
-      {/* Backdrop */}
-      <div 
+    <>
+      {/* Backdrop scrim */}
+      <div
+        onClick={onClose}
         style={{
-          position: 'absolute',
+          position: 'fixed',
           inset: 0,
           background: 'rgba(0,0,0,0.5)',
-          animation: 'fs-fade-in 0.2s ease'
+          zIndex: 999
         }}
       />
-      
+
       {/* Sheet */}
-      <div 
-        style={{
-          position: 'relative',
-          background: 'white',
-          borderRadius: '20px 20px 0 0',
-          maxHeight: '85vh',
-          overflow: 'auto',
-          animation: 'fs-slide-up 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)'
-        }}
-        onClick={e => e.stopPropagation()}
-      >
-        {/* Handle bar */}
-        <div style={{ 
-          display: 'flex', 
-          justifyContent: 'center', 
-          padding: '12px 0 8px',
-          position: 'sticky',
-          top: 0,
-          background: 'white',
-          zIndex: 1
+      <div style={{
+        position: 'fixed',
+        bottom: 0,
+        left: 0,
+        right: 0,
+        height: '85vh',
+        background: 'var(--fs-white)',
+        borderRadius: '16px 16px 0 0',
+        zIndex: 1000,
+        display: 'flex',
+        flexDirection: 'column'
+      }}>
+        {/* Sticky header */}
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          padding: '20px 20px 16px',
+          borderBottom: '1px solid var(--fs-line)',
+          flexShrink: 0
         }}>
-          <div style={{ width: 40, height: 4, background: 'var(--fs-line-2)', borderRadius: 2 }} />
+          <span style={{ fontSize: 18, fontWeight: 700, letterSpacing: '-0.02em' }}>Filters</span>
+          <button
+            onClick={onClose}
+            style={{
+              width: 36, height: 36, borderRadius: '50%',
+              background: 'var(--fs-bg-2)', border: 'none',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              cursor: 'pointer'
+            }}
+            aria-label="Close filters"
+          >
+            {Icons.x}
+          </button>
         </div>
-        
-        {/* Close button */}
-        <button 
-          onClick={onClose}
-          style={{
-            position: 'absolute',
-            top: 12,
-            right: 16,
-            width: 32,
-            height: 32,
-            borderRadius: '50%',
-            border: 'none',
-            background: 'var(--fs-bg-2)',
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center'
-          }}
-        >
-          {Icons.x}
-        </button>
-        
-        {/* Content */}
-        <div style={{ padding: '0 20px 24px' }}>
+
+        {/* Scrollable filter body */}
+        <div style={{ flex: 1, overflowY: 'auto', padding: '16px 20px 20px' }}>
           {children}
         </div>
+
+        {/* Sticky footer */}
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          padding: '16px 20px',
+          borderTop: '1px solid var(--fs-line)',
+          gap: 16,
+          flexShrink: 0,
+          background: 'var(--fs-white)'
+        }}>
+          <button
+            onClick={onClear}
+            style={{
+              fontSize: 14, fontWeight: 500, color: 'var(--fs-ink-3)',
+              background: 'none', border: 'none', cursor: 'pointer',
+              padding: '12px 0', textDecoration: 'underline'
+            }}
+          >
+            Clear all
+          </button>
+          <button
+            onClick={onClose}
+            style={{
+              flex: 1,
+              padding: '14px 24px',
+              background: 'var(--fs-ink)',
+              color: 'white',
+              border: 'none',
+              borderRadius: 'var(--fs-radius-pill)',
+              fontSize: 15,
+              fontWeight: 600,
+              cursor: 'pointer',
+              minHeight: 48
+            }}
+          >
+            Show {filteredCount} {filteredCount === 1 ? 'aircraft' : 'aircraft'}
+          </button>
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 
@@ -2798,7 +2840,7 @@ const BuyPage = ({ setSelectedListing, savedIds, onSave, initialFilters, user, s
 
             {/* Live result count */}
             <div style={{ fontSize: 13, color: "var(--fs-ink-3)", padding: "8px 0 16px", borderBottom: "1px solid var(--fs-line)" }}>
-              <span style={{ color: "var(--fs-ink)", fontWeight: 600 }}>{filtered.length}</span> of {systemTotal} aircraft
+              <span style={{ color: "var(--fs-ink)", fontWeight: 600 }}>{filtered.length}</span> of {systemTotal || filtered.length} aircraft
             </div>
 
             {/* Category */}
@@ -2843,7 +2885,7 @@ const BuyPage = ({ setSelectedListing, savedIds, onSave, initialFilters, user, s
             {/* Year */}
             <div className="fs-sidebar-section">
               <label className="fs-sidebar-label">Year</label>
-              <div style={{ display: "grid", gridTemplateColumns: "1fr auto 1fr", gap: 6, alignItems: "center" }}>
+              <div className="fs-year-range">
                 <select
                   className="fs-sidebar-select"
                   value={yearFrom}
@@ -2854,7 +2896,7 @@ const BuyPage = ({ setSelectedListing, savedIds, onSave, initialFilters, user, s
                     <option key={y} value={y}>{y}</option>
                   ))}
                 </select>
-                <span style={{ color: "var(--fs-ink-4)", fontSize: 12 }}>→</span>
+                <span className="fs-year-arrow">→</span>
                 <select
                   className="fs-sidebar-select"
                   value={yearTo}
@@ -3049,6 +3091,126 @@ const BuyPage = ({ setSelectedListing, savedIds, onSave, initialFilters, user, s
           onEnquire={(l) => { setQuickLook(null); setEnquireFor(l); }}
         />
       )}
+
+      {/* Mobile filter sheet */}
+      <MobileFilterSheet
+        isOpen={sideOpen}
+        onClose={() => setSideOpen(false)}
+        filteredCount={filtered.length}
+        onClear={resetFilters}
+      >
+        <div className="fs-buy-sidebar-inner">
+
+          {/* Live result count */}
+          <div style={{ fontSize: 13, color: "var(--fs-ink-3)", padding: "8px 0 16px", borderBottom: "1px solid var(--fs-line)" }}>
+            <span style={{ color: "var(--fs-ink)", fontWeight: 600 }}>{filtered.length}</span> of {systemTotal || filtered.length} aircraft
+          </div>
+
+          {/* Category */}
+          <div className="fs-sidebar-section">
+            <label className="fs-sidebar-label">Category</label>
+            <select className="fs-sidebar-select" value={catFilter} onChange={e => setCatFilter(e.target.value)}>
+              <option value="">All categories</option>
+              {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
+            </select>
+          </div>
+
+          {/* Location */}
+          <div className="fs-sidebar-section">
+            <label className="fs-sidebar-label">Location</label>
+            <select className="fs-sidebar-select" value={stateFilter} onChange={e => setStateFilter(e.target.value)}>
+              <option value="">All states</option>
+              {STATES.map(s => <option key={s} value={s}>{s}</option>)}
+            </select>
+          </div>
+
+          {/* Price */}
+          <div className="fs-sidebar-section">
+            <label className="fs-sidebar-label">Price</label>
+            <div className="fs-sidebar-presets">
+              <button onClick={() => setPricePreset('', '100000')} className={`fs-sidebar-preset${isPricePreset('', '100000') ? ' active' : ''}`}>&lt;$100k</button>
+              <button onClick={() => setPricePreset('', '300000')} className={`fs-sidebar-preset${isPricePreset('', '300000') ? ' active' : ''}`}>&lt;$300k</button>
+              <button onClick={() => setPricePreset('', '1000000')} className={`fs-sidebar-preset${isPricePreset('', '1000000') ? ' active' : ''}`}>&lt;$1M</button>
+              <button onClick={() => setPricePreset('1000000', '')} className={`fs-sidebar-preset${isPricePreset('1000000', '') ? ' active' : ''}`}>$1M+</button>
+            </div>
+          </div>
+
+          {/* Total time */}
+          <div className="fs-sidebar-section">
+            <label className="fs-sidebar-label">Total time</label>
+            <div className="fs-sidebar-presets">
+              <button onClick={() => setHoursPreset('500')} className={`fs-sidebar-preset${isHoursPreset('500') ? ' active' : ''}`}>&lt;500</button>
+              <button onClick={() => setHoursPreset('1000')} className={`fs-sidebar-preset${isHoursPreset('1000') ? ' active' : ''}`}>&lt;1,000</button>
+              <button onClick={() => setHoursPreset('2000')} className={`fs-sidebar-preset${isHoursPreset('2000') ? ' active' : ''}`}>&lt;2,000</button>
+            </div>
+          </div>
+
+          {/* Year */}
+          <div className="fs-sidebar-section">
+            <label className="fs-sidebar-label">Year</label>
+            <div className="fs-year-range">
+              <select
+                className="fs-sidebar-select"
+                value={yearFrom}
+                onChange={e => setYearFrom(e.target.value)}
+              >
+                <option value="">From</option>
+                {Array.from({ length: 51 }, (_, i) => 2026 - i).map(y => (
+                  <option key={y} value={y}>{y}</option>
+                ))}
+              </select>
+              <span className="fs-year-arrow">→</span>
+              <select
+                className="fs-sidebar-select"
+                value={yearTo}
+                onChange={e => setYearTo(e.target.value)}
+              >
+                <option value="">To</option>
+                {Array.from({ length: 51 }, (_, i) => 2026 - i).map(y => (
+                  <option key={y} value={y}>{y}</option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          {/* Equipment */}
+          <div className="fs-sidebar-section">
+            <label className="fs-sidebar-label">Equipment</label>
+            <div className="fs-sidebar-presets">
+              <button onClick={() => setIfrOnly(!ifrOnly)} className={`fs-sidebar-preset${ifrOnly ? ' active' : ''}`}>IFR</button>
+              <button onClick={() => setGlassOnly(!glassOnly)} className={`fs-sidebar-preset${glassOnly ? ' active' : ''}`}>Glass cockpit</button>
+              <button onClick={() => setAutopilot(!autopilot)} className={`fs-sidebar-preset${autopilot ? ' active' : ''}`}>Autopilot</button>
+              <button onClick={() => setAirCon(!airCon)} className={`fs-sidebar-preset${airCon ? ' active' : ''}`}>Air conditioning</button>
+              <button onClick={() => setDeIce(!deIce)} className={`fs-sidebar-preset${deIce ? ' active' : ''}`}>De-ice</button>
+              <button onClick={() => setRetractable(!retractable)} className={`fs-sidebar-preset${retractable ? ' active' : ''}`}>Retractable gear</button>
+            </div>
+          </div>
+
+          {/* Advanced filters */}
+          <details className="fs-sidebar-advanced">
+            <summary>
+              Advanced filters
+              <span className="fs-sidebar-advanced-chev">{Icons.chevronDown}</span>
+            </summary>
+            <div className="fs-sidebar-advanced-body">
+              <div className="fs-sidebar-section">
+                <label className="fs-sidebar-label">Manufacturer</label>
+                <select className="fs-sidebar-select" value={makeFilter} onChange={e => setMakeFilter(e.target.value)}>
+                  <option value="">All manufacturers</option>
+                  {MANUFACTURERS.map(m => <option key={m} value={m}>{m}</option>)}
+                </select>
+              </div>
+              <div className="fs-sidebar-section">
+                <label className="fs-sidebar-label">Condition</label>
+                <select className="fs-sidebar-select" value={condFilter} onChange={e => setCondFilter(e.target.value)}>
+                  <option value="">Any condition</option>
+                  {CONDITIONS.map(c => <option key={c} value={c}>{c}</option>)}
+                </select>
+              </div>
+            </div>
+          </details>
+        </div>
+      </MobileFilterSheet>
 
       {/* Inline enquiry from quick-look */}
       {enquireFor && <EnquiryModal listing={enquireFor} onClose={() => setEnquireFor(null)} user={user} />}
