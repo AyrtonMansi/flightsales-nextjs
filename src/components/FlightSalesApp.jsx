@@ -490,7 +490,9 @@ a { color: inherit; text-decoration: none; }
   letter-spacing: -0.01em;
 }
 .fs-search-ai-input::placeholder { color: var(--fs-ink-4); font-weight: 400; }
-.fs-search-fields-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.fs-search-fields-row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
+@media (max-width: 900px) { .fs-search-fields-row { grid-template-columns: repeat(3, 1fr); } }
+@media (max-width: 600px) { .fs-search-fields-row { grid-template-columns: 1fr; } }
 .fs-search-field {
   display: flex; flex-direction: column; padding: 12px 16px;
   background: var(--fs-white); border-radius: var(--fs-radius);
