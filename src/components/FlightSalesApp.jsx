@@ -3223,7 +3223,7 @@ const SellPage = ({ user, setPage }) => {
                 width: 80, 
                 height: 80, 
                 borderRadius: '50%', 
-                background: '#eff6ff',
+                background: 'var(--fs-bg-2)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
