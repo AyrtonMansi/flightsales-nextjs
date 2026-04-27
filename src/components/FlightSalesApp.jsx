@@ -803,7 +803,7 @@ a { color: inherit; text-decoration: none; }
   display: flex; flex-direction: column; gap: 20px;
 }
 .fs-detail-sticky {
-  position: sticky; top: 88px;
+  position: sticky; top: 88px; z-index: 10;
 }
 .fs-detail-mobile-cta {
   display: none;
