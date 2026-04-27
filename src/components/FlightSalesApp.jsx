@@ -2861,6 +2861,24 @@ const BuyPage = ({ setSelectedListing, savedIds, onSave, initialFilters, user, s
               </select>
             </div>
 
+            {/* Manufacturer */}
+            <div className="fs-sidebar-section">
+              <label className="fs-sidebar-label">Manufacturer</label>
+              <select className="fs-sidebar-select" value={makeFilter} onChange={e => setMakeFilter(e.target.value)}>
+                <option value="">All manufacturers</option>
+                {MANUFACTURERS.map(m => <option key={m} value={m}>{m}</option>)}
+              </select>
+            </div>
+
+            {/* Condition */}
+            <div className="fs-sidebar-section">
+              <label className="fs-sidebar-label">Condition</label>
+              <select className="fs-sidebar-select" value={condFilter} onChange={e => setCondFilter(e.target.value)}>
+                <option value="">Any condition</option>
+                {CONDITIONS.map(c => <option key={c} value={c}>{c}</option>)}
+              </select>
+            </div>
+
             {/* Price */}
             <div className="fs-sidebar-section">
               <label className="fs-sidebar-label">Price</label>
@@ -2910,19 +2928,6 @@ const BuyPage = ({ setSelectedListing, savedIds, onSave, initialFilters, user, s
               </div>
             </div>
 
-            {/* Equipment */}
-            <div className="fs-sidebar-section">
-              <label className="fs-sidebar-label">Equipment</label>
-              <div className="fs-sidebar-presets">
-                <button onClick={() => setIfrOnly(!ifrOnly)} className={`fs-sidebar-preset${ifrOnly ? ' active' : ''}`}>IFR</button>
-                <button onClick={() => setGlassOnly(!glassOnly)} className={`fs-sidebar-preset${glassOnly ? ' active' : ''}`}>Glass cockpit</button>
-                <button onClick={() => setAutopilot(!autopilot)} className={`fs-sidebar-preset${autopilot ? ' active' : ''}`}>Autopilot</button>
-                <button onClick={() => setAirCon(!airCon)} className={`fs-sidebar-preset${airCon ? ' active' : ''}`}>Air conditioning</button>
-                <button onClick={() => setDeIce(!deIce)} className={`fs-sidebar-preset${deIce ? ' active' : ''}`}>De-ice</button>
-                <button onClick={() => setRetractable(!retractable)} className={`fs-sidebar-preset${retractable ? ' active' : ''}`}>Retractable gear</button>
-              </div>
-            </div>
-
             {/* Advanced filters */}
             <details className="fs-sidebar-advanced">
               <summary>
@@ -2930,19 +2935,17 @@ const BuyPage = ({ setSelectedListing, savedIds, onSave, initialFilters, user, s
                 <span className="fs-sidebar-advanced-chev">{Icons.chevronDown}</span>
               </summary>
               <div className="fs-sidebar-advanced-body">
+                {/* Equipment */}
                 <div className="fs-sidebar-section">
-                  <label className="fs-sidebar-label">Manufacturer</label>
-                  <select className="fs-sidebar-select" value={makeFilter} onChange={e => setMakeFilter(e.target.value)}>
-                    <option value="">All manufacturers</option>
-                    {MANUFACTURERS.map(m => <option key={m} value={m}>{m}</option>)}
-                  </select>
-                </div>
-                <div className="fs-sidebar-section">
-                  <label className="fs-sidebar-label">Condition</label>
-                  <select className="fs-sidebar-select" value={condFilter} onChange={e => setCondFilter(e.target.value)}>
-                    <option value="">Any condition</option>
-                    {CONDITIONS.map(c => <option key={c} value={c}>{c}</option>)}
-                  </select>
+                  <label className="fs-sidebar-label">Equipment</label>
+                  <div className="fs-sidebar-presets">
+                    <button onClick={() => setIfrOnly(!ifrOnly)} className={`fs-sidebar-preset${ifrOnly ? ' active' : ''}`}>IFR</button>
+                    <button onClick={() => setGlassOnly(!glassOnly)} className={`fs-sidebar-preset${glassOnly ? ' active' : ''}`}>Glass cockpit</button>
+                    <button onClick={() => setAutopilot(!autopilot)} className={`fs-sidebar-preset${autopilot ? ' active' : ''}`}>Autopilot</button>
+                    <button onClick={() => setAirCon(!airCon)} className={`fs-sidebar-preset${airCon ? ' active' : ''}`}>Air conditioning</button>
+                    <button onClick={() => setDeIce(!deIce)} className={`fs-sidebar-preset${deIce ? ' active' : ''}`}>De-ice</button>
+                    <button onClick={() => setRetractable(!retractable)} className={`fs-sidebar-preset${retractable ? ' active' : ''}`}>Retractable gear</button>
+                  </div>
                 </div>
               </div>
             </details>
@@ -3124,6 +3127,24 @@ const BuyPage = ({ setSelectedListing, savedIds, onSave, initialFilters, user, s
             </select>
           </div>
 
+          {/* Manufacturer */}
+          <div className="fs-sidebar-section">
+            <label className="fs-sidebar-label">Manufacturer</label>
+            <select className="fs-sidebar-select" value={makeFilter} onChange={e => setMakeFilter(e.target.value)}>
+              <option value="">All manufacturers</option>
+              {MANUFACTURERS.map(m => <option key={m} value={m}>{m}</option>)}
+            </select>
+          </div>
+
+          {/* Condition */}
+          <div className="fs-sidebar-section">
+            <label className="fs-sidebar-label">Condition</label>
+            <select className="fs-sidebar-select" value={condFilter} onChange={e => setCondFilter(e.target.value)}>
+              <option value="">Any condition</option>
+              {CONDITIONS.map(c => <option key={c} value={c}>{c}</option>)}
+            </select>
+          </div>
+
           {/* Price */}
           <div className="fs-sidebar-section">
             <label className="fs-sidebar-label">Price</label>
@@ -3173,19 +3194,6 @@ const BuyPage = ({ setSelectedListing, savedIds, onSave, initialFilters, user, s
             </div>
           </div>
 
-          {/* Equipment */}
-          <div className="fs-sidebar-section">
-            <label className="fs-sidebar-label">Equipment</label>
-            <div className="fs-sidebar-presets">
-              <button onClick={() => setIfrOnly(!ifrOnly)} className={`fs-sidebar-preset${ifrOnly ? ' active' : ''}`}>IFR</button>
-              <button onClick={() => setGlassOnly(!glassOnly)} className={`fs-sidebar-preset${glassOnly ? ' active' : ''}`}>Glass cockpit</button>
-              <button onClick={() => setAutopilot(!autopilot)} className={`fs-sidebar-preset${autopilot ? ' active' : ''}`}>Autopilot</button>
-              <button onClick={() => setAirCon(!airCon)} className={`fs-sidebar-preset${airCon ? ' active' : ''}`}>Air conditioning</button>
-              <button onClick={() => setDeIce(!deIce)} className={`fs-sidebar-preset${deIce ? ' active' : ''}`}>De-ice</button>
-              <button onClick={() => setRetractable(!retractable)} className={`fs-sidebar-preset${retractable ? ' active' : ''}`}>Retractable gear</button>
-            </div>
-          </div>
-
           {/* Advanced filters */}
           <details className="fs-sidebar-advanced">
             <summary>
@@ -3193,19 +3201,17 @@ const BuyPage = ({ setSelectedListing, savedIds, onSave, initialFilters, user, s
               <span className="fs-sidebar-advanced-chev">{Icons.chevronDown}</span>
             </summary>
             <div className="fs-sidebar-advanced-body">
+              {/* Equipment */}
               <div className="fs-sidebar-section">
-                <label className="fs-sidebar-label">Manufacturer</label>
-                <select className="fs-sidebar-select" value={makeFilter} onChange={e => setMakeFilter(e.target.value)}>
-                  <option value="">All manufacturers</option>
-                  {MANUFACTURERS.map(m => <option key={m} value={m}>{m}</option>)}
-                </select>
-              </div>
-              <div className="fs-sidebar-section">
-                <label className="fs-sidebar-label">Condition</label>
-                <select className="fs-sidebar-select" value={condFilter} onChange={e => setCondFilter(e.target.value)}>
-                  <option value="">Any condition</option>
-                  {CONDITIONS.map(c => <option key={c} value={c}>{c}</option>)}
-                </select>
+                <label className="fs-sidebar-label">Equipment</label>
+                <div className="fs-sidebar-presets">
+                  <button onClick={() => setIfrOnly(!ifrOnly)} className={`fs-sidebar-preset${ifrOnly ? ' active' : ''}`}>IFR</button>
+                  <button onClick={() => setGlassOnly(!glassOnly)} className={`fs-sidebar-preset${glassOnly ? ' active' : ''}`}>Glass cockpit</button>
+                  <button onClick={() => setAutopilot(!autopilot)} className={`fs-sidebar-preset${autopilot ? ' active' : ''}`}>Autopilot</button>
+                  <button onClick={() => setAirCon(!airCon)} className={`fs-sidebar-preset${airCon ? ' active' : ''}`}>Air conditioning</button>
+                  <button onClick={() => setDeIce(!deIce)} className={`fs-sidebar-preset${deIce ? ' active' : ''}`}>De-ice</button>
+                  <button onClick={() => setRetractable(!retractable)} className={`fs-sidebar-preset${retractable ? ' active' : ''}`}>Retractable gear</button>
+                </div>
               </div>
             </div>
           </details>
@@ -4636,7 +4642,7 @@ const ContactPage = () => {
   );
 };
 
-const LoginPage = ({ setPage, signIn, signUp, signInWithGoogle, resetPassword }) => {
+const LoginPage = ({ setPage, signIn, signUp, signInWithGoogle, resetPassword, loginDemo }) => {
   const [mode, setMode] = useState('login'); // 'login' | 'register' | 'forgot'
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -5050,6 +5056,64 @@ const LoginPage = ({ setPage, signIn, signUp, signInWithGoogle, resetPassword })
             <p style={{ fontSize: 13, color: "#065f46" }}>We've sent a confirmation link to <strong>{email}</strong>. Click it to activate your account.</p>
           </div>
         )}
+
+        {/* Demo Access */}
+        <div style={{ marginTop: 32, padding: "24px", background: "var(--fs-gray-50)", borderRadius: "var(--fs-radius)", border: "1px dashed var(--fs-gray-300)" }}>
+          <p style={{ fontSize: 13, fontWeight: 600, color: "var(--fs-gray-700)", marginBottom: 12, textAlign: "center" }}>Demo Access (No login required)</p>
+          <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+            <button
+              onClick={() => loginDemo('private')}
+              style={{
+                flex: 1,
+                minWidth: 120,
+                padding: "10px 16px",
+                background: "white",
+                border: "1px solid var(--fs-gray-200)",
+                borderRadius: "var(--fs-radius-sm)",
+                fontSize: 13,
+                fontWeight: 500,
+                cursor: "pointer",
+                color: "var(--fs-gray-700)"
+              }}
+            >
+              👤 Private Seller
+            </button>
+            <button
+              onClick={() => loginDemo('dealer')}
+              style={{
+                flex: 1,
+                minWidth: 120,
+                padding: "10px 16px",
+                background: "white",
+                border: "1px solid var(--fs-gray-200)",
+                borderRadius: "var(--fs-radius-sm)",
+                fontSize: 13,
+                fontWeight: 500,
+                cursor: "pointer",
+                color: "var(--fs-gray-700)"
+              }}
+            >
+              🏢 Dealer
+            </button>
+            <button
+              onClick={() => loginDemo('admin')}
+              style={{
+                flex: 1,
+                minWidth: 120,
+                padding: "10px 16px",
+                background: "white",
+                border: "1px solid var(--fs-gray-200)",
+                borderRadius: "var(--fs-radius-sm)",
+                fontSize: 13,
+                fontWeight: 500,
+                cursor: "pointer",
+                color: "var(--fs-gray-700)"
+              }}
+            >
+              ⚙️ Admin
+            </button>
+          </div>
+        </div>
       </div>
     </section>
   );
@@ -7075,13 +7139,28 @@ export default function FlightSalesApp() {
     window.scrollTo(0, 0);
   };
 
+  // Demo mode for testing dashboards without auth
+  const [demoUser, setDemoUser] = useState(null);
+  const effectiveUser = demoUser || user;
+  
+  const loginDemo = (role) => {
+    setDemoUser({
+      id: 'demo-' + role,
+      email: role + '@flightsales.demo',
+      full_name: 'Demo ' + role.charAt(0).toUpperCase() + role.slice(1),
+      role: role,
+      created_at: new Date().toISOString(),
+    });
+    setPage(role === 'admin' ? 'admin' : 'dashboard');
+  };
+
   // Auth-gate redirects (run as side effects, never during render)
   useEffect(() => {
-    if (authLoading) return; // wait for session to resolve
-    if (page === 'dashboard' && !authUser) setPage('login');
-    if (page === 'dashboard' && user?.role === 'admin') setPage('admin');
-    if (page === 'admin' && user?.role !== 'admin') setPage(authUser ? 'dashboard' : 'login');
-  }, [page, authUser, authLoading, user?.role]);
+    if (authLoading && !demoUser) return; // wait for session to resolve
+    if (page === 'dashboard' && !authUser && !demoUser) setPage('login');
+    if (page === 'dashboard' && effectiveUser?.role === 'admin') setPage('admin');
+    if (page === 'admin' && effectiveUser?.role !== 'admin') setPage(authUser || demoUser ? 'dashboard' : 'login');
+  }, [page, authUser, authLoading, effectiveUser?.role, demoUser]);
 
   const onSave = async (id) => {
     if (!authUser) { setToast("Sign in to save aircraft"); return; }
@@ -7131,9 +7210,9 @@ export default function FlightSalesApp() {
       {page === "news" && <NewsPage />}
       {page === "about" && <AboutPage />}
       {page === "contact" && <ContactPage />}
-      {page === "login" && <LoginPage setPage={setPageWrap} signIn={signIn} signUp={signUp} signInWithGoogle={signInWithGoogle} resetPassword={resetPassword} />}
-      {page === "dashboard" && user && user.role !== 'admin' && <DashboardPage user={user} setPage={setPageWrap} signOut={signOut} savedIds={savedIds} savedListings={savedListings} onSave={onSave} onSelectListing={setSelectedListing} />}
-      {page === "admin" && user?.role === 'admin' && <AdminPage user={user} setPage={setPageWrap} signOut={signOut} />}
+      {page === "login" && <LoginPage setPage={setPageWrap} signIn={signIn} signUp={signUp} signInWithGoogle={signInWithGoogle} resetPassword={resetPassword} loginDemo={loginDemo} />}
+      {page === "dashboard" && effectiveUser && effectiveUser.role !== 'admin' && <DashboardPage user={effectiveUser} setPage={setPageWrap} signOut={signOut} savedIds={savedIds} savedListings={savedListings} onSave={onSave} onSelectListing={setSelectedListing} />}
+      {page === "admin" && effectiveUser?.role === 'admin' && <AdminPage user={effectiveUser} setPage={setPageWrap} signOut={signOut} />}
       {(page === "finance" || page === "insurance") && <ContactPage />}
 
       <Footer setPage={setPageWrap} />
