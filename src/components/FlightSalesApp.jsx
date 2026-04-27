@@ -2490,6 +2490,10 @@ const BuyPage = ({ setSelectedListing, savedIds, onSave, initialFilters, user, s
   const [glassOnly, setGlassOnly] = useState(initialFilters?.glassOnly || false);
   const [yearFrom, setYearFrom] = useState(initialFilters?.yearFrom || "");
   const [yearTo, setYearTo] = useState(initialFilters?.yearTo || "");
+  const [autopilot, setAutopilot] = useState(initialFilters?.autopilot || false);
+  const [airCon, setAirCon] = useState(initialFilters?.airCon || false);
+  const [deIce, setDeIce] = useState(initialFilters?.deIce || false);
+  const [retractable, setRetractable] = useState(initialFilters?.retractable || false);
   const [sideOpen, setSideOpen] = useState(false);
   const [quickLook, setQuickLook] = useState(null);
   const [enquireFor, setEnquireFor] = useState(null);
@@ -2684,9 +2688,11 @@ const BuyPage = ({ setSelectedListing, savedIds, onSave, initialFilters, user, s
     setSearch(""); setCatFilter(""); setStateFilter(""); setMakeFilter("");
     setCondFilter(""); setMinPrice(""); setMaxPrice(""); setMaxHours("");
     setIfrOnly(false); setGlassOnly(false); setAiQuery(""); setYearFrom(""); setYearTo("");
+    setAutopilot(false); setAirCon(false); setDeIce(false); setRetractable(false);
   };
 
-  const activeFilterCount = [catFilter, stateFilter, makeFilter, condFilter, minPrice, maxPrice, maxHours, ifrOnly, glassOnly].filter(Boolean).length;
+  const hasActiveFilters = !!(catFilter || stateFilter || makeFilter || condFilter || minPrice || maxPrice || maxHours || ifrOnly || glassOnly || yearFrom || yearTo || autopilot || airCon || deIce || retractable);
+  const activeFilterCount = [catFilter, stateFilter, makeFilter, condFilter, minPrice, maxPrice, maxHours, ifrOnly, glassOnly, yearFrom, yearTo, autopilot, airCon, deIce, retractable].filter(Boolean).length;
 
   const dbFilters = useMemo(() => ({
     category: catFilter || undefined,
@@ -2732,7 +2738,11 @@ const BuyPage = ({ setSelectedListing, savedIds, onSave, initialFilters, user, s
     (minPrice || maxPrice) && { key: 'price', label: `$${minPrice ? `${(minPrice/1000).toFixed(0)}k` : '0'}–${maxPrice ? `${(maxPrice/1000).toFixed(0)}k` : '∞'}`, clear: () => { setMinPrice(""); setMaxPrice(""); } },
     maxHours && { key: 'hours', label: `< ${maxHours} hrs`, clear: () => setMaxHours("") },
     ifrOnly && { key: 'ifr', label: 'IFR', clear: () => setIfrOnly(false) },
-    glassOnly && { key: 'glass', label: 'Glass', clear: () => setGlassOnly(false) },
+    glassOnly && { key: 'glass', label: 'Glass cockpit', clear: () => setGlassOnly(false) },
+    autopilot && { key: 'autopilot', label: 'Autopilot', clear: () => setAutopilot(false) },
+    airCon && { key: 'airCon', label: 'Air conditioning', clear: () => setAirCon(false) },
+    deIce && { key: 'deIce', label: 'De-ice', clear: () => setDeIce(false) },
+    retractable && { key: 'retractable', label: 'Retractable gear', clear: () => setRetractable(false) },
   ].filter(Boolean);
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
@@ -2766,15 +2776,13 @@ const BuyPage = ({ setSelectedListing, savedIds, onSave, initialFilters, user, s
         <aside className={`fs-buy-sidebar${sideOpen ? " open" : ""}`}>
           <div className="fs-buy-sidebar-inner">
 
-            {/* Header: title + clear */}
+            {/* Header bar */}
             <div className="fs-sidebar-header">
-              <div className="fs-sidebar-title">Filters</div>
-              {activeFilterCount > 0 && (
-                <button onClick={resetFilters} className="fs-sidebar-clear">Clear · {activeFilterCount}</button>
+              <span className="fs-sidebar-title">Filters</span>
+              {hasActiveFilters && (
+                <button className="fs-sidebar-clear" onClick={resetFilters}>Clear all</button>
               )}
             </div>
-
-            {/* Live count moved to main toolbar to avoid duplication */}
 
             {/* Active filter chips */}
             {activeChips.length > 0 && (
@@ -2788,70 +2796,30 @@ const BuyPage = ({ setSelectedListing, savedIds, onSave, initialFilters, user, s
               </div>
             )}
 
-            {/* All filters — ordered by buyer priority */}
-            <div className="fs-sidebar-section">
-              <div className="fs-sidebar-group">
-                <label className="fs-sidebar-label">Location</label>
-                <select className="fs-sidebar-select" value={stateFilter} onChange={e => setStateFilter(e.target.value)}>
-                  <option value="">All states</option>
-                  {STATES.map(s => <option key={s} value={s}>{s}</option>)}
-                </select>
-              </div>
-              <div className="fs-sidebar-group">
-                <label className="fs-sidebar-label">Aircraft Type</label>
-                <select className="fs-sidebar-select" value={catFilter} onChange={e => setCatFilter(e.target.value)}>
-                  <option value="">All categories</option>
-                  {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
-                </select>
-              </div>
-              <div className="fs-sidebar-group">
-                <label className="fs-sidebar-label">Manufacturer</label>
-                <select className="fs-sidebar-select" value={makeFilter} onChange={e => setMakeFilter(e.target.value)}>
-                  <option value="">All manufacturers</option>
-                  {MANUFACTURERS.map(m => <option key={m} value={m}>{m}</option>)}
-                </select>
-              </div>
+            {/* Live result count */}
+            <div style={{ fontSize: 13, color: "var(--fs-ink-3)", padding: "8px 0 16px", borderBottom: "1px solid var(--fs-line)" }}>
+              <span style={{ color: "var(--fs-ink)", fontWeight: 600 }}>{filtered.length}</span> of {systemTotal} aircraft
             </div>
 
-            {/* EQUIPMENT — high signal filters */}
+            {/* Category */}
             <div className="fs-sidebar-section">
-              <label className="fs-sidebar-label">Equipment</label>
-              <label className="fs-sidebar-check">
-                <input type="checkbox" checked={ifrOnly} onChange={e => setIfrOnly(e.target.checked)} /> IFR equipped
-              </label>
-              <label className="fs-sidebar-check">
-                <input type="checkbox" checked={glassOnly} onChange={e => setGlassOnly(e.target.checked)} /> Glass cockpit
-              </label>
+              <label className="fs-sidebar-label">Category</label>
+              <select className="fs-sidebar-select" value={catFilter} onChange={e => setCatFilter(e.target.value)}>
+                <option value="">All categories</option>
+                {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
+              </select>
             </div>
 
-            {/* CONDITION */}
+            {/* Location */}
             <div className="fs-sidebar-section">
-              <div className="fs-sidebar-group">
-                <label className="fs-sidebar-label">Condition</label>
-                <select className="fs-sidebar-select" value={condFilter} onChange={e => setCondFilter(e.target.value)}>
-                  <option value="">Any condition</option>
-                  {CONDITIONS.map(c => <option key={c} value={c}>{c}</option>)}
-                </select>
-              </div>
+              <label className="fs-sidebar-label">Location</label>
+              <select className="fs-sidebar-select" value={stateFilter} onChange={e => setStateFilter(e.target.value)}>
+                <option value="">All states</option>
+                {STATES.map(s => <option key={s} value={s}>{s}</option>)}
+              </select>
             </div>
 
-            {/* YEAR */}
-            <div className="fs-sidebar-section">
-              <label className="fs-sidebar-label">Year</label>
-              <div className="fs-sidebar-range">
-                <select value={yearFrom} onChange={e => setYearFrom(e.target.value)}>
-                  <option value="">From</option>
-                  {[2024, 2020, 2015, 2010, 2005, 2000, 1995, 1990, 1985, 1980, 1970, 1960, 1950].map(y => <option key={y} value={y}>{y}</option>)}
-                </select>
-                <span>to</span>
-                <select value={yearTo} onChange={e => setYearTo(e.target.value)}>
-                  <option value="">To</option>
-                  {[2024, 2020, 2015, 2010, 2005, 2000, 1995, 1990, 1985, 1980, 1970, 1960, 1950].map(y => <option key={y} value={y}>{y}</option>)}
-                </select>
-              </div>
-            </div>
-
-            {/* PRICE — pills only */}
+            {/* Price */}
             <div className="fs-sidebar-section">
               <label className="fs-sidebar-label">Price</label>
               <div className="fs-sidebar-presets">
@@ -2862,15 +2830,80 @@ const BuyPage = ({ setSelectedListing, savedIds, onSave, initialFilters, user, s
               </div>
             </div>
 
-            {/* TOTAL TIME — pills only */}
+            {/* Total time */}
             <div className="fs-sidebar-section">
-              <label className="fs-sidebar-label">Total Time</label>
+              <label className="fs-sidebar-label">Total time</label>
               <div className="fs-sidebar-presets">
                 <button onClick={() => setHoursPreset('500')} className={`fs-sidebar-preset${isHoursPreset('500') ? ' active' : ''}`}>&lt;500</button>
                 <button onClick={() => setHoursPreset('1000')} className={`fs-sidebar-preset${isHoursPreset('1000') ? ' active' : ''}`}>&lt;1,000</button>
                 <button onClick={() => setHoursPreset('2000')} className={`fs-sidebar-preset${isHoursPreset('2000') ? ' active' : ''}`}>&lt;2,000</button>
               </div>
             </div>
+
+            {/* Year */}
+            <div className="fs-sidebar-section">
+              <label className="fs-sidebar-label">Year</label>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr auto 1fr", gap: 6, alignItems: "center" }}>
+                <select
+                  className="fs-sidebar-select"
+                  value={yearFrom}
+                  onChange={e => setYearFrom(e.target.value)}
+                >
+                  <option value="">From</option>
+                  {Array.from({ length: 51 }, (_, i) => 2026 - i).map(y => (
+                    <option key={y} value={y}>{y}</option>
+                  ))}
+                </select>
+                <span style={{ color: "var(--fs-ink-4)", fontSize: 12 }}>→</span>
+                <select
+                  className="fs-sidebar-select"
+                  value={yearTo}
+                  onChange={e => setYearTo(e.target.value)}
+                >
+                  <option value="">To</option>
+                  {Array.from({ length: 51 }, (_, i) => 2026 - i).map(y => (
+                    <option key={y} value={y}>{y}</option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
+            {/* Equipment */}
+            <div className="fs-sidebar-section">
+              <label className="fs-sidebar-label">Equipment</label>
+              <div className="fs-sidebar-presets">
+                <button onClick={() => setIfrOnly(!ifrOnly)} className={`fs-sidebar-preset${ifrOnly ? ' active' : ''}`}>IFR</button>
+                <button onClick={() => setGlassOnly(!glassOnly)} className={`fs-sidebar-preset${glassOnly ? ' active' : ''}`}>Glass cockpit</button>
+                <button onClick={() => setAutopilot(!autopilot)} className={`fs-sidebar-preset${autopilot ? ' active' : ''}`}>Autopilot</button>
+                <button onClick={() => setAirCon(!airCon)} className={`fs-sidebar-preset${airCon ? ' active' : ''}`}>Air conditioning</button>
+                <button onClick={() => setDeIce(!deIce)} className={`fs-sidebar-preset${deIce ? ' active' : ''}`}>De-ice</button>
+                <button onClick={() => setRetractable(!retractable)} className={`fs-sidebar-preset${retractable ? ' active' : ''}`}>Retractable gear</button>
+              </div>
+            </div>
+
+            {/* Advanced filters */}
+            <details className="fs-sidebar-advanced">
+              <summary>
+                Advanced filters
+                <span className="fs-sidebar-advanced-chev">{Icons.chevronDown}</span>
+              </summary>
+              <div className="fs-sidebar-advanced-body">
+                <div className="fs-sidebar-section">
+                  <label className="fs-sidebar-label">Manufacturer</label>
+                  <select className="fs-sidebar-select" value={makeFilter} onChange={e => setMakeFilter(e.target.value)}>
+                    <option value="">All manufacturers</option>
+                    {MANUFACTURERS.map(m => <option key={m} value={m}>{m}</option>)}
+                  </select>
+                </div>
+                <div className="fs-sidebar-section">
+                  <label className="fs-sidebar-label">Condition</label>
+                  <select className="fs-sidebar-select" value={condFilter} onChange={e => setCondFilter(e.target.value)}>
+                    <option value="">Any condition</option>
+                    {CONDITIONS.map(c => <option key={c} value={c}>{c}</option>)}
+                  </select>
+                </div>
+              </div>
+            </details>
           </div>
         </aside>
 
