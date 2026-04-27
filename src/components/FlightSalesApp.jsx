@@ -6404,7 +6404,11 @@ const AdminPage = ({ user, setPage, signOut }) => {
               listingsLoading ? (
                 <div style={{ padding: 48, textAlign: 'center', color: 'var(--fs-gray-500)' }}>Loading listings…</div>
               ) : listingsView.length === 0 ? (
-                <div style={{ padding: 48, textAlign: 'center', color: 'var(--fs-gray-500)' }}>No listings yet.</div>
+                <div style={{ padding: 48, textAlign: 'center' }}>
+                  <h3 style={{ fontSize: 18, fontWeight: 700, marginBottom: 8 }}>No listings yet</h3>
+                  <p style={{ fontSize: 14, color: 'var(--fs-gray-500)', marginBottom: 24 }}>List your first aircraft to start receiving enquiries.</p>
+                  <button className="fs-nav-btn-primary" onClick={() => setPage('sell')}>List Aircraft</button>
+                </div>
               ) : (
               <table style={{ width: "100%", borderCollapse: "collapse" }}>
                 <thead>
