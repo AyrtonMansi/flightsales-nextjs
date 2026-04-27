@@ -3089,11 +3089,10 @@ const ListingDetail = ({ listing, onBack, savedIds, onSave, user, onSelectDealer
             <div className="fs-detail-specs" style={{ marginBottom: 20 }}>
               <h3>Cost of Ownership (est.)</h3>
               {[
-                ["Annual Insurance", formatPriceFull(Math.round(l.price * 0.015))],
-                ["Annual Inspection", l.category === "Helicopter" ? "$8,000–$15,000" : "$3,000–$8,000"],
+                ["Annual Insurance", l.category === "Helicopter" ? "$12,000–$25,000" : l.category === "Turboprop" ? "$25,000–$60,000" : l.category === "Light Jet" ? "$40,000–$100,000" : "$5,000–$15,000"],
+                ["Annual Inspection", l.category === "Helicopter" ? "$8,000–$15,000" : l.category === "Turboprop" ? "$15,000–$30,000" : l.category === "Light Jet" ? "$20,000–$50,000" : "$3,000–$8,000"],
                 ["Hangar (monthly)", "$400–$1,200"],
                 l.fuel_burn && ["Fuel per hour", `$${(l.fuel_burn * 2.8).toFixed(0)}`],
-                l.fuel_burn && ["Hourly Operating Cost", `~$${(l.fuel_burn * 2.8 + (l.eng_tbo ? (l.price * 0.3 / l.eng_tbo) : 50) + 30).toFixed(0)}`],
               ].filter(Boolean).map(([label, value]) => (
                 <div key={label} className="fs-detail-spec-row">
                   <span className="fs-detail-spec-label">{label}</span>
@@ -3146,12 +3145,10 @@ const ListingDetail = ({ listing, onBack, savedIds, onSave, user, onSelectDealer
                 <div style={{ fontSize: 12, color: "var(--fs-ink-4)", marginTop: 4 }}>80% LVR · 7.5% · 10 years</div>
               </div>
 
-              {/* Trust signals */}
+              {/* Trust signals — only show what's backed by real data */}
               <div style={{ marginTop: 16, paddingTop: 16, borderTop: "1px solid var(--fs-line)", display: "flex", flexDirection: "column", gap: 10 }}>
                 {l.rego && <div style={{ fontSize: 13, color: "var(--fs-ink-2)", display: "flex", alignItems: "center", gap: 8, fontWeight: 500 }}><span style={{ color: "var(--fs-green)" }}>{Icons.check}</span> CASA registered ({l.rego})</div>}
                 {dealerName && <div style={{ fontSize: 13, color: "var(--fs-ink-2)", display: "flex", alignItems: "center", gap: 8, fontWeight: 500 }}><span style={{ color: "var(--fs-green)" }}>{Icons.check}</span> Verified dealer listing</div>}
-                <div style={{ fontSize: 13, color: "var(--fs-ink-2)", display: "flex", alignItems: "center", gap: 8, fontWeight: 500 }}><span style={{ color: "var(--fs-green)" }}>{Icons.check}</span> Transparent pricing</div>
-                <div style={{ fontSize: 13, color: "var(--fs-ink-2)", display: "flex", alignItems: "center", gap: 8, fontWeight: 500 }}><span style={{ color: "var(--fs-green)" }}>{Icons.check}</span> No hidden fees</div>
               </div>
             </div>
 
