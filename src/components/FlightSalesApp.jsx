@@ -796,8 +796,12 @@ a { color: inherit; text-decoration: none; }
   display: grid; grid-template-columns: 1fr 380px; gap: 32px;
   padding: 32px 0 64px;
 }
+.fs-dealer-layout {
+  display: grid; grid-template-columns: 1fr 360px; gap: 32px;
+}
 @media (max-width: 900px) {
   .fs-detail-layout { grid-template-columns: 1fr; gap: 24px; padding: 24px 0 48px; }
+  .fs-dealer-layout { grid-template-columns: 1fr; gap: 24px; }
 }
 .fs-detail-sidebar {
   display: flex; flex-direction: column; gap: 20px;
@@ -4032,7 +4036,7 @@ const DealerDetailPage = ({ dealer, onBack, setSelectedListing, savedIds, onSave
 
       <section className="fs-section" style={{ paddingTop: 48 }}>
         <div className="fs-container">
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 360px", gap: 32 }}>
+          <div className="fs-dealer-layout">
             {/* Listings */}
             <div>
               <div className="fs-section-header" style={{ marginBottom: 24 }}>
