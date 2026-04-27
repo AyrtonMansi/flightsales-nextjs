@@ -3025,6 +3025,7 @@ const BuyPage = ({ setSelectedListing, savedIds, onSave, initialFilters, user, s
 
 const ListingDetail = ({ listing, onBack, savedIds, onSave, user, onSelectDealer }) => {
   const [showEnquiry, setShowEnquiry] = useState(false);
+  const [showDetailedSpecs, setShowDetailedSpecs] = useState(false);
   const { aircraft: similar } = useAircraft({ category: listing?.category, sortBy: 'newest' });
   if (!listing) return null;
   const l = listing;
@@ -3038,10 +3039,16 @@ const ListingDetail = ({ listing, onBack, savedIds, onSave, user, onSelectDealer
   const isSaved = savedIds.has(l.id);
   // monthlyEst removed — was a naive l.price * 0.008 multiplier, not real amortisation
 
-  const specs = [
-    ["Year", l.year], ["Manufacturer", l.manufacturer], ["Model", l.model],
+  const casaSpecs = [
+    ["Year", l.year],
+    ["Manufacturer", l.manufacturer],
+    ["Model", l.model],
     l.rego && ["Registration", l.rego],
-    ["Category", l.category], ["Condition", l.condition],
+    ["Category", l.category],
+    ["Condition", l.condition],
+  ].filter(Boolean);
+
+  const detailSpecs = [
     l.ttaf != null && ["Total Time Airframe", formatHours(l.ttaf)],
     l.eng_hours != null && ["Engine Hours (SMOH)", formatHours(l.eng_hours)],
     l.eng_tbo && ["Engine TBO", formatHours(l.eng_tbo)],
@@ -3100,14 +3107,48 @@ const ListingDetail = ({ listing, onBack, savedIds, onSave, user, onSelectDealer
             )}
 
             <div className="fs-detail-specs" style={{ marginBottom: 20 }}>
-              <h3>Key Specifications</h3>
-              {specs.map(([label, value]) => (
+              <h3>Aircraft Details</h3>
+              {casaSpecs.map(([label, value]) => (
                 <div key={label} className="fs-detail-spec-row">
                   <span className="fs-detail-spec-label">{label}</span>
-                  <span className="fs-detail-spec-value" style={{ color: String(value).startsWith('✓') ? "var(--fs-green)" : undefined }}>{value}</span>
+                  <span className="fs-detail-spec-value">{value}</span>
                 </div>
               ))}
             </div>
+
+            {detailSpecs.length > 0 && (
+              <div className="fs-detail-specs" style={{ marginBottom: 20 }}>
+                <button
+                  onClick={() => setShowDetailedSpecs(!showDetailedSpecs)}
+                  style={{
+                    width: "100%",
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    padding: "12px 0",
+                    background: "none",
+                    border: "none",
+                    borderBottom: "1px solid var(--fs-line)",
+                    cursor: "pointer",
+                    fontSize: 16,
+                    fontWeight: 700,
+                    fontFamily: "var(--fs-font)",
+                    color: "var(--fs-ink)",
+                  }}
+                >
+                  <span>Key Specifications</span>
+                  <span style={{ fontSize: 12, color: "var(--fs-ink-3)", fontWeight: 500 }}>
+                    {showDetailedSpecs ? "Hide" : `Show ${detailSpecs.length} specs`}
+                  </span>
+                </button>
+                {showDetailedSpecs && detailSpecs.map(([label, value]) => (
+                  <div key={label} className="fs-detail-spec-row">
+                    <span className="fs-detail-spec-label">{label}</span>
+                    <span className="fs-detail-spec-value" style={{ color: String(value).startsWith('✓') ? "var(--fs-green)" : undefined }}>{value}</span>
+                  </div>
+                ))}
+              </div>
+            )}
 
             <div className="fs-detail-specs" style={{ marginBottom: 20 }}>
               <h3>Cost of Ownership (est.)</h3>
