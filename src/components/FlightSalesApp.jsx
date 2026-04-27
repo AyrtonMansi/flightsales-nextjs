@@ -2231,7 +2231,7 @@ const HomePage = ({ setPage, setSelectedListing, savedIds, onSave, setSearchFilt
           <div className="fs-search-bar">
             <div className="fs-search-ai">
               <div className="fs-search-ai-icon">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M12 2a4 4 0 0 0-4 4v2H6a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V10a2 2 0 0 0-2-2h-2V6a4 4 0 0 0-4-4z"/><circle cx="12" cy="15" r="2"/></svg>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M15 4V2"/><path d="M15 16a5 5 0 1 1-4.995-5.217L9.6 7.6l-2.3.77a1 1 0 0 1-1.264-1.264l.77-2.3L7.6 3.4a5 5 0 0 1 9.9 1.005L18 4v2h2l1.005.005a5 5 0 1 1-9.9 0L12 6h-2l-1.005-.005a5 5 0 0 1 1.005-9.9L10 2v2"/><path d="m9 15 3 3"/><path d="m12 18 3-3"/></svg>
               </div>
               <input
                 className="fs-search-ai-input"
@@ -2331,9 +2331,9 @@ const HomePage = ({ setPage, setSelectedListing, savedIds, onSave, setSearchFilt
           </div>
 
           <div className="fs-stats">
-            <div className="fs-stat"><div className="fs-stat-num">{totalListings > 0 ? `${totalListings}+` : `${SAMPLE_LISTINGS.length}+`}</div><div className="fs-stat-label">Aircraft Listed</div></div>
+            <div className="fs-stat"><div className="fs-stat-num">{totalListings > 0 ? totalListings.toLocaleString() : SAMPLE_LISTINGS.length}</div><div className="fs-stat-label">Aircraft Listed</div></div>
             <div className="fs-stat"><div className="fs-stat-num">{displayDealers.length}</div><div className="fs-stat-label">Verified Dealers</div></div>
-            <div className="fs-stat"><div className="fs-stat-num">2.4K+</div><div className="fs-stat-label">Monthly Buyers</div></div>
+            <div className="fs-stat"><div className="fs-stat-num">{new Set(SAMPLE_LISTINGS.map(l => l.state)).size}</div><div className="fs-stat-label">States Covered</div></div>
           </div>
         </div>
       </section>
