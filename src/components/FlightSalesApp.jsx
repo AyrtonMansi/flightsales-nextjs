@@ -2751,17 +2751,17 @@ const BuyPage = ({ setSelectedListing, savedIds, onSave, initialFilters, user, s
               </div>
             )}
 
-            {/* All filters live as simple labelled fields — no eyebrow group titles */}
+            {/* All filters — ordered by buyer priority */}
             <div className="fs-sidebar-section">
               <div className="fs-sidebar-group">
-                <label className="fs-sidebar-label">State</label>
+                <label className="fs-sidebar-label">Location</label>
                 <select className="fs-sidebar-select" value={stateFilter} onChange={e => setStateFilter(e.target.value)}>
                   <option value="">All states</option>
                   {STATES.map(s => <option key={s} value={s}>{s}</option>)}
                 </select>
               </div>
               <div className="fs-sidebar-group">
-                <label className="fs-sidebar-label">Category</label>
+                <label className="fs-sidebar-label">Aircraft Type</label>
                 <select className="fs-sidebar-select" value={catFilter} onChange={e => setCatFilter(e.target.value)}>
                   <option value="">All categories</option>
                   {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
@@ -2774,6 +2774,21 @@ const BuyPage = ({ setSelectedListing, savedIds, onSave, initialFilters, user, s
                   {MANUFACTURERS.map(m => <option key={m} value={m}>{m}</option>)}
                 </select>
               </div>
+            </div>
+
+            {/* EQUIPMENT — high signal filters */}
+            <div className="fs-sidebar-section">
+              <label className="fs-sidebar-label">Equipment</label>
+              <label className="fs-sidebar-check">
+                <input type="checkbox" checked={ifrOnly} onChange={e => setIfrOnly(e.target.checked)} /> IFR equipped
+              </label>
+              <label className="fs-sidebar-check">
+                <input type="checkbox" checked={glassOnly} onChange={e => setGlassOnly(e.target.checked)} /> Glass cockpit
+              </label>
+            </div>
+
+            {/* CONDITION */}
+            <div className="fs-sidebar-section">
               <div className="fs-sidebar-group">
                 <label className="fs-sidebar-label">Condition</label>
                 <select className="fs-sidebar-select" value={condFilter} onChange={e => setCondFilter(e.target.value)}>
@@ -2799,55 +2814,25 @@ const BuyPage = ({ setSelectedListing, savedIds, onSave, initialFilters, user, s
               </div>
             </div>
 
-            {/* PRICE */}
+            {/* PRICE — pills only */}
             <div className="fs-sidebar-section">
               <label className="fs-sidebar-label">Price</label>
-              <div className="fs-sidebar-range">
-                <select value={minPrice} onChange={e => setMinPrice(e.target.value)}>
-                  <option value="">Min</option>
-                  <option value="0">$0</option>
-                  <option value="50000">$50k</option>
-                  <option value="100000">$100k</option>
-                  <option value="200000">$200k</option>
-                  <option value="300000">$300k</option>
-                  <option value="500000">$500k</option>
-                  <option value="1000000">$1M</option>
-                </select>
-                <span>to</span>
-                <select value={maxPrice} onChange={e => setMaxPrice(e.target.value)}>
-                  <option value="">Max</option>
-                  <option value="100000">$100k</option>
-                  <option value="200000">$200k</option>
-                  <option value="300000">$300k</option>
-                  <option value="500000">$500k</option>
-                  <option value="1000000">$1M</option>
-                  <option value="2000000">$2M</option>
-                  <option value="5000000">$5M+</option>
-                </select>
+              <div className="fs-sidebar-presets">
+                <button onClick={() => setPricePreset('', '100000')} className={`fs-sidebar-preset${isPricePreset('', '100000') ? ' active' : ''}`}>&lt;$100k</button>
+                <button onClick={() => setPricePreset('', '300000')} className={`fs-sidebar-preset${isPricePreset('', '300000') ? ' active' : ''}`}>&lt;$300k</button>
+                <button onClick={() => setPricePreset('', '1000000')} className={`fs-sidebar-preset${isPricePreset('', '1000000') ? ' active' : ''}`}>&lt;$1M</button>
+                <button onClick={() => setPricePreset('1000000', '')} className={`fs-sidebar-preset${isPricePreset('1000000', '') ? ' active' : ''}`}>$1M+</button>
               </div>
             </div>
 
-            {/* HOURS */}
+            {/* TOTAL TIME — pills only */}
             <div className="fs-sidebar-section">
               <label className="fs-sidebar-label">Total Time</label>
-              <select value={maxHours} onChange={e => setMaxHours(e.target.value)} className="fs-sidebar-select">
-                <option value="">Any hours</option>
-                <option value="500">Under 500 hrs</option>
-                <option value="1000">Under 1,000 hrs</option>
-                <option value="2000">Under 2,000 hrs</option>
-                <option value="5000">Under 5,000 hrs</option>
-              </select>
-            </div>
-
-            {/* EQUIPMENT */}
-            <div className="fs-sidebar-section">
-              <label className="fs-sidebar-label">Equipment</label>
-              <label className="fs-sidebar-check">
-                <input type="checkbox" checked={ifrOnly} onChange={e => setIfrOnly(e.target.checked)} /> IFR equipped
-              </label>
-              <label className="fs-sidebar-check">
-                <input type="checkbox" checked={glassOnly} onChange={e => setGlassOnly(e.target.checked)} /> Glass cockpit
-              </label>
+              <div className="fs-sidebar-presets">
+                <button onClick={() => setHoursPreset('500')} className={`fs-sidebar-preset${isHoursPreset('500') ? ' active' : ''}`}>&lt;500</button>
+                <button onClick={() => setHoursPreset('1000')} className={`fs-sidebar-preset${isHoursPreset('1000') ? ' active' : ''}`}>&lt;1,000</button>
+                <button onClick={() => setHoursPreset('2000')} className={`fs-sidebar-preset${isHoursPreset('2000') ? ' active' : ''}`}>&lt;2,000</button>
+              </div>
             </div>
           </div>
         </aside>
@@ -2900,15 +2885,17 @@ const BuyPage = ({ setSelectedListing, savedIds, onSave, initialFilters, user, s
                 </>
               )}
             </span>
-            <div className="fs-results-sort">
-              <span className="fs-results-sort-label">Sort by</span>
-              <select className="fs-sort-select" value={sortBy} onChange={e => { setSortBy(e.target.value); setResultPage(1); }}>
-                <option value="newest">Newest first</option>
-                <option value="price-asc">Price: low to high</option>
-                <option value="price-desc">Price: high to low</option>
-                <option value="hours-low">Hours: low to high</option>
-              </select>
-            </div>
+            {filtered.length > 0 && (
+              <div className="fs-results-sort">
+                <span className="fs-results-sort-label">Sort by</span>
+                <select className="fs-sort-select" value={sortBy} onChange={e => { setSortBy(e.target.value); setResultPage(1); }}>
+                  <option value="newest">Newest first</option>
+                  <option value="price-asc">Price: low to high</option>
+                  <option value="price-desc">Price: high to low</option>
+                  <option value="hours-low">Hours: low to high</option>
+                </select>
+              </div>
+            )}
           </div>
 
           {/* Grid */}
