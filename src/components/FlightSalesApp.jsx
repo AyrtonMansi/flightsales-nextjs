@@ -3856,12 +3856,14 @@ const DealersPage = ({ onSelectDealer }) => {
                 <div key={d.id} className="fs-dealer-card" onClick={() => onSelectDealer && onSelectDealer(d)} style={{ flexDirection: "column", alignItems: "flex-start", gap: 0, cursor: "pointer" }}>
                   <div style={{ display: "flex", gap: 14, alignItems: "center", width: "100%", marginBottom: 12 }}>
                     <div className="fs-dealer-avatar" style={{ width: 56, height: 56, fontSize: 16 }}>{d.logo}</div>
-                    <div>
-                      <div className="fs-dealer-name" style={{ fontSize: 17 }}>{d.name}</div>
+                    <div style={{ flex: 1 }}>
+                      <div className="fs-dealer-name" style={{ fontSize: 17, display: "flex", alignItems: "center", gap: 8 }}>
+                        {d.name}
+                        <span style={{ color: "var(--fs-green)", display: "flex", alignItems: "center" }}>{Icons.shield}</span>
+                      </div>
                       <div className="fs-dealer-loc">{Icons.location} {d.location}</div>
                     </div>
                   </div>
-                  <div style={{ fontSize: 13, color: "var(--fs-gray-500)", marginBottom: 12 }}>Specialising in {d.speciality}</div>
                   <div style={{ display: "flex", gap: 16, fontSize: 13, width: "100%", paddingTop: 12, borderTop: "1px solid var(--fs-gray-100)" }}>
                     <span>{d.listings} active listings</span>
                     <span className="fs-dealer-rating">{Icons.star} {d.rating}</span>
@@ -3951,7 +3953,7 @@ const DealerDetailPage = ({ dealer, onBack, setSelectedListing, savedIds, onSave
             <div>
               <div className="fs-section-header" style={{ marginBottom: 24 }}>
                 <h2 style={{ fontSize: 24, fontWeight: 700, letterSpacing: "-0.03em" }}>
-                  {listings.length} aircraft from {dealer.name}
+                  {listings.length} aircraft
                 </h2>
               </div>
               {loading ? (
