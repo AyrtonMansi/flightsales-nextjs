@@ -4316,7 +4316,7 @@ const ContactPage = () => {
       <div className="fs-about-hero">
         <div className="fs-container">
           <h1 style={{ fontFamily: "var(--fs-font)", fontSize: 40, fontWeight: 700, letterSpacing: "-0.03em" }}>Contact Us</h1>
-          <p style={{ color: "rgba(255,255,255,0.6)", marginTop: 8 }}>Get in touch with the Flightsales team</p>
+          <p style={{ color: "var(--fs-ink-3)", marginTop: 8 }}>Get in touch with the Flightsales team</p>
         </div>
       </div>
       <section className="fs-section">
@@ -4333,7 +4333,7 @@ const ContactPage = () => {
                     <div className="fs-contact-icon">{c.icon}</div>
                     <div>
                       <div style={{ fontWeight: 600, fontSize: 15, marginBottom: 2 }}>{c.title}</div>
-                      <div style={{ fontSize: 14, color: "var(--fs-blue)" }}>{c.detail}</div>
+                      <div style={{ fontSize: 14, color: "var(--fs-ink)", fontWeight: 500 }}>{c.detail}</div>
                       <div style={{ fontSize: 12, color: "var(--fs-gray-400)" }}>{c.sub}</div>
                     </div>
                   </div>
