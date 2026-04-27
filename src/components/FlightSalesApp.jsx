@@ -3036,7 +3036,7 @@ const ListingDetail = ({ listing, onBack, savedIds, onSave, user, onSelectDealer
     : (DEALERS.find(d => d.id === l.dealer_id) || DEALERS.find(d => d.name === dealerName) || (dealerName ? { name: dealerName } : {}));
   const canOpenDealer = !!(onSelectDealer && (dealerObj.id || dealerObj.name));
   const isSaved = savedIds.has(l.id);
-  const monthlyEst = formatPriceFull(Math.round(l.price * 0.008));
+  // monthlyEst removed — was a naive l.price * 0.008 multiplier, not real amortisation
 
   const specs = [
     ["Year", l.year], ["Manufacturer", l.manufacturer], ["Model", l.model],
@@ -3055,10 +3055,10 @@ const ListingDetail = ({ listing, onBack, savedIds, onSave, user, onSelectDealer
     l.range_nm && ["Range", l.range_nm + " nm"],
     l.cruise_kts && ["Cruise Speed", l.cruise_kts + " kts"],
     l.fuel_burn && ["Fuel Burn", l.fuel_burn + " L/hr"],
-    ["IFR Capable", l.ifr ? "✓ Yes" : "No"],
-    ["Retractable Gear", l.retractable ? "✓ Yes" : "No"],
-    l.pressurised !== undefined && ["Pressurised", l.pressurised ? "✓ Yes" : "No"],
-    ["Glass Cockpit", l.glass_cockpit ? "✓ Yes" : "No"],
+    ["IFR Capable", l.ifr ? "✓" : "—"],
+    ["Retractable Gear", l.retractable ? "✓" : "—"],
+    l.pressurised !== undefined && ["Pressurised", l.pressurised ? "✓" : "—"],
+    ["Glass Cockpit", l.glass_cockpit ? "✓" : "—"],
     l.specs?.parachute && ["Parachute", l.specs.parachute],
   ].filter(Boolean);
 
@@ -3101,14 +3101,12 @@ const ListingDetail = ({ listing, onBack, savedIds, onSave, user, onSelectDealer
 
             <div className="fs-detail-specs" style={{ marginBottom: 20 }}>
               <h3>Key Specifications</h3>
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0" }}>
-                {specs.map(([label, value]) => (
-                  <div key={label} className="fs-detail-spec-row" style={{ gridColumn: label === "Avionics" ? "span 2" : undefined }}>
-                    <span className="fs-detail-spec-label">{label}</span>
-                    <span className="fs-detail-spec-value" style={{ color: String(value).startsWith('✓') ? "var(--fs-green)" : undefined }}>{value}</span>
-                  </div>
-                ))}
-              </div>
+              {specs.map(([label, value]) => (
+                <div key={label} className="fs-detail-spec-row">
+                  <span className="fs-detail-spec-label">{label}</span>
+                  <span className="fs-detail-spec-value" style={{ color: String(value).startsWith('✓') ? "var(--fs-green)" : undefined }}>{value}</span>
+                </div>
+              ))}
             </div>
 
             <div className="fs-detail-specs" style={{ marginBottom: 20 }}>
@@ -3164,10 +3162,11 @@ const ListingDetail = ({ listing, onBack, savedIds, onSave, user, onSelectDealer
                 {isSaved ? Icons.heartFull : Icons.heart}&nbsp; {isSaved ? "Saved ✓" : "Save to Watchlist"}
               </button>
 
-              <div style={{ marginTop: 20, padding: "16px 0 0", borderTop: "1px solid var(--fs-line)" }}>
-                <div style={{ fontSize: 13, color: "var(--fs-ink-3)", marginBottom: 6, fontWeight: 500 }}>Est. monthly finance</div>
-                <div style={{ fontSize: 22, fontWeight: 700, letterSpacing: "-0.03em" }}>{monthlyEst}<span style={{ fontSize: 14, fontWeight: 500, color: "var(--fs-ink-3)" }}>/mo</span></div>
-                <div style={{ fontSize: 12, color: "var(--fs-ink-4)", marginTop: 4 }}>80% LVR · 7.5% · 10 years</div>
+              <div style={{ marginTop: 16, paddingTop: 16, borderTop: "1px solid var(--fs-line)" }}>
+                <div style={{ fontSize: 13, color: "var(--fs-ink-3)", marginBottom: 4 }}>Finance available</div>
+                <div style={{ fontSize: 14, fontWeight: 500, color: "var(--fs-ink)" }}>
+                  Speak to an aviation finance specialist for a tailored quote.
+                </div>
               </div>
 
               {/* Trust signals — only show what's backed by real data */}
