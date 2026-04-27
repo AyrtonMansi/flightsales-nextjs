@@ -490,9 +490,11 @@ a { color: inherit; text-decoration: none; }
   letter-spacing: -0.01em;
 }
 .fs-search-ai-input::placeholder { color: var(--fs-ink-4); font-weight: 400; }
-.fs-search-fields-row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
-@media (max-width: 900px) { .fs-search-fields-row { grid-template-columns: repeat(3, 1fr); } }
-@media (max-width: 600px) { .fs-search-fields-row { grid-template-columns: 1fr; } }
+.fs-search-fields-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+@media (max-width: 768px) { 
+  .fs-search-fields-row { grid-template-columns: 1fr; }
+  .fs-search-fields-row + div[style*="gridTemplateColumns: \"1fr 1fr\""] { grid-template-columns: 1fr !important; }
+}
 .fs-search-field {
   display: flex; flex-direction: column; padding: 12px 16px;
   background: var(--fs-white); border-radius: var(--fs-radius);
@@ -588,6 +590,11 @@ a { color: inherit; text-decoration: none; }
   cursor: pointer;
   border: 1px solid var(--fs-line);
   display: flex; flex-direction: column;
+}
+.fs-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 16px 32px rgba(0,0,0,0.08);
+  border-color: var(--fs-line-2);
 }
 .fs-card:hover {
   border-color: var(--fs-line-2);
@@ -1491,6 +1498,11 @@ const Nav = ({ page, setPage, setMobileOpen, mobileOpen, user }) => (
         {[["buy", "Buy"], ["sell", "Sell"], ["dealers", "Dealers"], ["news", "News"]].map(([p, label]) => (
           <button key={p} className={`fs-nav-link${page === p ? " active" : ""}`} onClick={() => { setPage(p); setMobileOpen(false); }}>{label}</button>
         ))}
+        {mobileOpen && (
+          <button className="fs-nav-link" onClick={() => { setPage("buy"); setMobileOpen(false); }} style={{ display: "flex", alignItems: "center", gap: 6 }}>
+            {Icons.search} Search Aircraft
+          </button>
+        )}
       </div>
       <div className={`fs-nav-actions${mobileOpen ? " open" : ""}`}>
         {user ? (
@@ -2237,38 +2249,50 @@ const HomePage = ({ setPage, setSelectedListing, savedIds, onSave, setSearchFilt
                 onKeyDown={e => { if (e.key === "Enter") handleAiSearch(e.target.value); }}
               />
             </div>
-            <div className="fs-search-fields-row">
+            {/* Row 1: Simple filters */}
+            <div className="fs-search-fields-row" style={{ gridTemplateColumns: "repeat(3, 1fr)" }}>
               <div className="fs-search-field">
                 <span className="fs-search-label">Type</span>
                 <select className="fs-search-select" value={searchCat} onChange={e => setSearchCat(e.target.value)}>
-                  <option value="">All</option>
+                  <option value="">All types</option>
                   {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
                 </select>
               </div>
               <div className="fs-search-field">
                 <span className="fs-search-label">Make</span>
                 <select className="fs-search-select" value={searchMake} onChange={e => setSearchMake(e.target.value)}>
-                  <option value="">All</option>
+                  <option value="">All makes</option>
                   {MANUFACTURERS.map(m => <option key={m} value={m}>{m}</option>)}
                 </select>
               </div>
               <div className="fs-search-field">
+                <span className="fs-search-label">Location</span>
+                <select className="fs-search-select" value={searchState} onChange={e => setSearchState(e.target.value)}>
+                  <option value="">All Australia</option>
+                  {STATES.map(s => <option key={s} value={s}>{s}</option>)}
+                </select>
+              </div>
+            </div>
+
+            {/* Row 2: Range filters */}
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, marginTop: 12 }}>
+              <div>
                 <span className="fs-search-label">Year</span>
-                <div style={{ display: "flex", gap: 4, alignItems: "center" }}>
+                <div style={{ display: "flex", gap: 8, alignItems: "center", marginTop: 4 }}>
                   <select className="fs-search-select" style={{ flex: 1 }} value={searchYearFrom} onChange={e => setSearchYearFrom(e.target.value)}>
                     <option value="">From</option>
-                    {[2024, 2020, 2015, 2010, 2005, 2000, 1990, 1980, 1970, 1960, 1950].map(y => <option key={y} value={y}>{y}</option>)}
+                    {[2024, 2020, 2015, 2010, 2005, 2000, 1995, 1990, 1985, 1980, 1975, 1970, 1965, 1960, 1955, 1950].map(y => <option key={y} value={y}>{y}</option>)}
                   </select>
-                  <span style={{ fontSize: 11, color: "var(--fs-ink-3)" }}>to</span>
+                  <span style={{ fontSize: 13, color: "var(--fs-ink-3)", fontWeight: 500 }}>→</span>
                   <select className="fs-search-select" style={{ flex: 1 }} value={searchYearTo} onChange={e => setSearchYearTo(e.target.value)}>
                     <option value="">To</option>
-                    {[2024, 2020, 2015, 2010, 2005, 2000, 1990, 1980, 1970, 1960, 1950].map(y => <option key={y} value={y}>{y}</option>)}
+                    {[2024, 2020, 2015, 2010, 2005, 2000, 1995, 1990, 1985, 1980, 1975, 1970, 1965, 1960, 1955, 1950].map(y => <option key={y} value={y}>{y}</option>)}
                   </select>
                 </div>
               </div>
-              <div className="fs-search-field">
+              <div>
                 <span className="fs-search-label">Price</span>
-                <div style={{ display: "flex", gap: 4, alignItems: "center" }}>
+                <div style={{ display: "flex", gap: 8, alignItems: "center", marginTop: 4 }}>
                   <select className="fs-search-select" style={{ flex: 1 }} value={searchPriceMin} onChange={e => setSearchPriceMin(e.target.value)}>
                     <option value="">Min</option>
                     <option value="0">$0</option>
@@ -2277,8 +2301,9 @@ const HomePage = ({ setPage, setSelectedListing, savedIds, onSave, setSearchFilt
                     <option value="200000">$200k</option>
                     <option value="300000">$300k</option>
                     <option value="500000">$500k</option>
+                    <option value="1000000">$1M</option>
                   </select>
-                  <span style={{ fontSize: 11, color: "var(--fs-ink-3)" }}>to</span>
+                  <span style={{ fontSize: 13, color: "var(--fs-ink-3)", fontWeight: 500 }}>→</span>
                   <select className="fs-search-select" style={{ flex: 1 }} value={searchPriceMax} onChange={e => setSearchPriceMax(e.target.value)}>
                     <option value="">Max</option>
                     <option value="100000">$100k</option>
@@ -2287,15 +2312,9 @@ const HomePage = ({ setPage, setSelectedListing, savedIds, onSave, setSearchFilt
                     <option value="500000">$500k</option>
                     <option value="1000000">$1M</option>
                     <option value="2000000">$2M</option>
+                    <option value="5000000">$5M+</option>
                   </select>
                 </div>
-              </div>
-              <div className="fs-search-field">
-                <span className="fs-search-label">Location</span>
-                <select className="fs-search-select" value={searchState} onChange={e => setSearchState(e.target.value)}>
-                  <option value="">All</option>
-                  {STATES.map(s => <option key={s} value={s}>{s}</option>)}
-                </select>
               </div>
             </div>
             <button className="fs-search-btn" onClick={handleManualSearch}>
@@ -2844,12 +2863,11 @@ const BuyPage = ({ setSelectedListing, savedIds, onSave, initialFilters, user, s
         {/* MAIN CONTENT — shifted right */}
         <main className="fs-buy-main">
 
-          {/* Hero inside main column */}
-          <div className="fs-buy-main-hero">
-            <div className="fs-buy-hero-eyebrow">Marketplace</div>
-            <h1 className="fs-buy-hero-title">Aircraft for sale</h1>
-            <p className="fs-buy-hero-sub">
-              Browse {systemTotal > 0 ? `${systemTotal}+ ` : ''}verified listings from dealers and private sellers across Australia.
+          {/* Header */}
+          <div style={{ padding: "24px 0 16px", borderBottom: "1px solid var(--fs-line)", marginBottom: 20 }}>
+            <h1 style={{ fontSize: 28, fontWeight: 700, margin: "0 0 6px", letterSpacing: "-0.02em" }}>Aircraft for sale</h1>
+            <p style={{ fontSize: 14, color: "var(--fs-ink-3)", margin: 0 }}>
+              {systemTotal > 0 ? `${systemTotal.toLocaleString()}+ verified listings` : 'Verified listings from dealers and private sellers'}
             </p>
           </div>
 
