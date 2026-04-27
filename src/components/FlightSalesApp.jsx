@@ -1409,7 +1409,6 @@ a { color: inherit; text-decoration: none; }
   background: var(--fs-bg-2); color: var(--fs-ink);
 }
 /* Tag variants — all monochrome in this design system */
-.fs-tag-blue, .fs-tag-green, .fs-tag-amber { background: var(--fs-bg-2); color: var(--fs-ink); }
 
 /* ABOUT PAGE */
 .fs-about-hero {
@@ -3745,7 +3744,7 @@ const SellPage = ({ user, setPage }) => {
                           <div style={{ display: "flex", flexWrap: "wrap", gap: 8, justifyContent: "center", margin: "12px 0" }}>
                             {uploadedImages.map((url, i) => (
                               <div key={i} style={{ position: "relative" }}>
-                                <img src={url} alt="" style={{ width: 72, height: 72, objectFit: "cover", borderRadius: 8, border: "2px solid var(--fs-green)" }} />
+                                <img src={url} alt="" style={{ width: 72, height: 72, objectFit: "cover", borderRadius: "var(--fs-radius)", border: "2px solid var(--fs-green)" }} />
                                 <button onClick={() => setUploadedImages(prev => prev.filter((_, j) => j !== i))}
                                   style={{ position: "absolute", top: -6, right: -6, width: 18, height: 18, borderRadius: "50%", background: "#ef4444", color: "white", border: "none", cursor: "pointer", fontSize: 10, display: "flex", alignItems: "center", justifyContent: "center" }}>✕</button>
                               </div>
@@ -4238,7 +4237,7 @@ const NewsPage = () => {
       <section className="fs-section">
         <div className="fs-container" style={{ maxWidth: 800, margin: "0 auto" }}>
           {loading ? (
-            [1,2,3].map(i => <div key={i} className="fs-news-card" style={{ marginBottom: 16, height: 120, background: "var(--fs-gray-100)", borderRadius: 8, animation: "fs-pulse 1.5s ease-in-out infinite" }} />)
+            [1,2,3].map(i => <div key={i} className="fs-news-card" style={{ marginBottom: 16, height: 120, background: "var(--fs-gray-100)", borderRadius: "var(--fs-radius)", animation: "fs-pulse 1.5s ease-in-out infinite" }} />)
           ) : articles.map(a => (
             <div key={a.id} className="fs-news-card" style={{ marginBottom: 16 }}>
               <span className={`fs-news-tag ${a.category.toLowerCase()}`}>{a.category}</span>
@@ -5223,7 +5222,7 @@ const DashboardPage = ({ user, setPage, signOut, savedIds, savedListings, onSave
 
                   <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr", gap: 24 }}>
                     {/* Recent Activity */}
-                    <div className="fs-detail-specs" style={{ padding: 0, borderRadius: 12, overflow: 'hidden' }}>
+                    <div className="fs-detail-specs" style={{ padding: 0, borderRadius: "var(--fs-radius-lg)", overflow: 'hidden' }}>
                       <div style={{ padding: "20px", borderBottom: "1px solid var(--fs-gray-100)", display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                         <h3 style={{ fontSize: 16, fontWeight: 700 }}>Recent Activity</h3>
                         <button style={{ fontSize: 13, color: 'var(--fs-blue)', background: 'none', border: 'none', cursor: 'pointer' }}>View All</button>
@@ -5234,7 +5233,7 @@ const DashboardPage = ({ user, setPage, signOut, savedIds, savedListings, onSave
                             <div style={{ 
                               width: 36, 
                               height: 36, 
-                              borderRadius: 8, 
+                              borderRadius: "var(--fs-radius)", 
                               background: activity.type === 'enquiry' ? '#dcfce7' : activity.type === 'alert' ? '#fef3c7' : '#eff6ff',
                               display: 'flex',
                               alignItems: 'center',
@@ -5255,7 +5254,7 @@ const DashboardPage = ({ user, setPage, signOut, savedIds, savedListings, onSave
 
                     {/* Quick Actions */}
                     <div>
-                      <div className="fs-detail-specs" style={{ padding: "20px", borderRadius: 12, marginBottom: 16 }}>
+                      <div className="fs-detail-specs" style={{ padding: "20px", borderRadius: "var(--fs-radius-lg)", marginBottom: 16 }}>
                         <h3 style={{ fontSize: 16, fontWeight: 700, marginBottom: 16 }}>Quick Actions</h3>
                         <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
                           <button 
@@ -5265,7 +5264,7 @@ const DashboardPage = ({ user, setPage, signOut, savedIds, savedListings, onSave
                               background: "var(--fs-gray-900)", 
                               color: "white",
                               border: "none",
-                              borderRadius: 8,
+                              borderRadius: "var(--fs-radius)",
                               fontSize: 14,
                               cursor: "pointer",
                               textAlign: 'left',
@@ -5283,7 +5282,7 @@ const DashboardPage = ({ user, setPage, signOut, savedIds, savedListings, onSave
                               background: "var(--fs-gray-100)", 
                               color: "var(--fs-gray-900)",
                               border: "none",
-                              borderRadius: 8,
+                              borderRadius: "var(--fs-radius)",
                               fontSize: 14,
                               cursor: "pointer",
                               textAlign: 'left'
@@ -5295,7 +5294,7 @@ const DashboardPage = ({ user, setPage, signOut, savedIds, savedListings, onSave
                       </div>
 
                       {/* Tips Card */}
-                      <div className="fs-detail-specs" style={{ padding: "20px", borderRadius: 12, background: 'linear-gradient(135deg, #eff6ff 0%, #ffffff 100%)' }}>
+                      <div className="fs-detail-specs" style={{ padding: "20px", borderRadius: "var(--fs-radius-lg)", background: 'linear-gradient(135deg, #eff6ff 0%, #ffffff 100%)' }}>
                         <h3 style={{ fontSize: 14, fontWeight: 700, marginBottom: 8 }}>💡 Selling Tip</h3>
                         <p style={{ fontSize: 13, color: 'var(--fs-gray-600)', lineHeight: 1.5 }}>
                           Aircraft with 10+ photos get 3x more enquiries. Add more photos to your listings to increase visibility.
@@ -5349,7 +5348,7 @@ const DashboardPage = ({ user, setPage, signOut, savedIds, savedListings, onSave
                       </button>
                     </div>
                   ) : (
-                    <div className="fs-detail-specs" style={{ padding: 0, borderRadius: 12, overflow: 'hidden' }}>
+                    <div className="fs-detail-specs" style={{ padding: 0, borderRadius: "var(--fs-radius-lg)", overflow: 'hidden' }}>
                       <table style={{ width: "100%", borderCollapse: "collapse" }}>
                         <thead>
                           <tr style={{ borderBottom: "1px solid var(--fs-gray-200)", background: '#fafafa' }}>
@@ -5501,7 +5500,7 @@ const DashboardPage = ({ user, setPage, signOut, savedIds, savedListings, onSave
                             <div 
                               key={enquiry.id} 
                               className="fs-detail-specs" 
-                              style={{ padding: "20px", borderRadius: 12, cursor: 'pointer', transition: 'all 0.15s' }}
+                              style={{ padding: "20px", borderRadius: "var(--fs-radius-lg)", cursor: 'pointer', transition: 'all 0.15s' }}
                               onClick={() => setSelectedEnquiry(enquiry)}
                               onMouseEnter={e => e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.08)'}
                               onMouseLeave={e => e.currentTarget.style.boxShadow = 'var(--fs-shadow)'}
@@ -5569,7 +5568,7 @@ const DashboardPage = ({ user, setPage, signOut, savedIds, savedListings, onSave
 
                       <div style={{ display: "grid", gridTemplateColumns: "1fr 320px", gap: 24 }}>
                         {/* Message Thread */}
-                        <div className="fs-detail-specs" style={{ padding: 0, borderRadius: 12, overflow: 'hidden' }}>
+                        <div className="fs-detail-specs" style={{ padding: 0, borderRadius: "var(--fs-radius-lg)", overflow: 'hidden' }}>
                           <div style={{ padding: "20px", borderBottom: "1px solid var(--fs-gray-100)" }}>
                             <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 12 }}>
                               <div style={{ 
@@ -5614,7 +5613,7 @@ const DashboardPage = ({ user, setPage, signOut, savedIds, savedListings, onSave
                                   {selectedEnquiry.from.charAt(0)}
                                 </div>
                                 <div style={{ flex: 1 }}>
-                                  <div style={{ background: '#f3f4f6', padding: 12, borderRadius: 12, borderBottomLeftRadius: 4 }}>
+                                  <div style={{ background: '#f3f4f6', padding: 12, borderRadius: "var(--fs-radius-lg)", borderBottomLeftRadius: 4 }}>
                                     <p style={{ fontSize: 14, lineHeight: 1.6 }}>{selectedEnquiry.message}</p>
                                   </div>
                                   <p style={{ fontSize: 11, color: 'var(--fs-gray-400)', marginTop: 4 }}>{formatTimeAgo(selectedEnquiry.date)}</p>
@@ -5623,7 +5622,7 @@ const DashboardPage = ({ user, setPage, signOut, savedIds, savedListings, onSave
                             </div>
 
                             {selectedEnquiry.hasReplied && (
-                              <div style={{ padding: "12px 16px", background: '#ecfdf5', borderRadius: 8, fontSize: 13, color: '#065f46', display: 'flex', alignItems: 'center', gap: 8 }}>
+                              <div style={{ padding: "12px 16px", background: '#ecfdf5', borderRadius: "var(--fs-radius)", fontSize: 13, color: '#065f46', display: 'flex', alignItems: 'center', gap: 8 }}>
                                 <span>✓</span>
                                 <span>You've replied to this enquiry. Future replies are tracked by status only — full message threads are coming soon.</span>
                               </div>
@@ -5656,7 +5655,7 @@ const DashboardPage = ({ user, setPage, signOut, savedIds, savedListings, onSave
                         {/* Sidebar */}
                         <div>
                           {/* Buyer Info */}
-                          <div className="fs-detail-specs" style={{ padding: "20px", borderRadius: 12, marginBottom: 16 }}>
+                          <div className="fs-detail-specs" style={{ padding: "20px", borderRadius: "var(--fs-radius-lg)", marginBottom: 16 }}>
                             <h4 style={{ fontSize: 14, fontWeight: 700, marginBottom: 16, textTransform: 'uppercase', letterSpacing: 0.5, color: 'var(--fs-gray-500)' }}>Buyer Details</h4>
                             <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
                               <a href={`mailto:${selectedEnquiry.email}`} style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 14, color: "var(--fs-blue)" }}>
@@ -5669,7 +5668,7 @@ const DashboardPage = ({ user, setPage, signOut, savedIds, savedListings, onSave
                           </div>
 
                           {/* Actions */}
-                          <div className="fs-detail-specs" style={{ padding: "20px", borderRadius: 12, marginBottom: 16 }}>
+                          <div className="fs-detail-specs" style={{ padding: "20px", borderRadius: "var(--fs-radius-lg)", marginBottom: 16 }}>
                             <h4 style={{ fontSize: 14, fontWeight: 700, marginBottom: 16, textTransform: 'uppercase', letterSpacing: 0.5, color: 'var(--fs-gray-500)' }}>Actions</h4>
                             <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                               {['new', 'contacted', 'negotiating', 'sold', 'archived'].map(status => (
@@ -5681,7 +5680,7 @@ const DashboardPage = ({ user, setPage, signOut, savedIds, savedListings, onSave
                                     background: selectedEnquiry.status === status ? '#eff6ff' : 'var(--fs-gray-100)', 
                                     color: selectedEnquiry.status === status ? 'var(--fs-blue)' : 'var(--fs-gray-700)',
                                     border: selectedEnquiry.status === status ? '1px solid var(--fs-blue)' : 'none',
-                                    borderRadius: 8,
+                                    borderRadius: "var(--fs-radius)",
                                     fontSize: 13,
                                     cursor: "pointer",
                                     textAlign: 'left',
@@ -5705,7 +5704,7 @@ const DashboardPage = ({ user, setPage, signOut, savedIds, savedListings, onSave
                                   background: 'transparent', 
                                   color: '#ef4444',
                                   border: 'none',
-                                  borderRadius: 8,
+                                  borderRadius: "var(--fs-radius)",
                                   fontSize: 13,
                                   cursor: "pointer",
                                   textAlign: 'left'
@@ -5760,7 +5759,7 @@ const DashboardPage = ({ user, setPage, signOut, savedIds, savedListings, onSave
                   ) : (
                     <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
                       {drafts.map(draft => (
-                        <div key={draft.id} className="fs-detail-specs" style={{ padding: "20px", borderRadius: 12, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <div key={draft.id} className="fs-detail-specs" style={{ padding: "20px", borderRadius: "var(--fs-radius-lg)", display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                           <div>
                             <h4 style={{ fontSize: 16, fontWeight: 600, marginBottom: 4 }}>{draft.title}</h4>
                             <p style={{ fontSize: 13, color: 'var(--fs-gray-500)' }}>Last edited: {draft.lastEdited}</p>
@@ -5820,7 +5819,7 @@ const DashboardPage = ({ user, setPage, signOut, savedIds, savedListings, onSave
                               {offer.status}
                             </span>
                           </div>
-                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: "12px", background: "var(--fs-gray-50)", borderRadius: 8, marginBottom: 12 }}>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: "12px", background: "var(--fs-gray-50)", borderRadius: "var(--fs-radius)", marginBottom: 12 }}>
                             <span style={{ fontSize: 14, color: 'var(--fs-gray-500)' }}>Offer Amount</span>
                             <span style={{ fontSize: 18, fontWeight: 700 }}>${offer.amount.toLocaleString()}</span>
                           </div>
@@ -5957,7 +5956,7 @@ const DashboardPage = ({ user, setPage, signOut, savedIds, savedListings, onSave
                             style={{
                               width: 48,
                               height: 24,
-                              borderRadius: 12,
+                              borderRadius: "var(--fs-radius-lg)",
                               background: notifications[item.key] ? 'var(--fs-blue)' : 'var(--fs-gray-200)',
                               border: 'none',
                               cursor: 'pointer',
@@ -5996,7 +5995,7 @@ const DashboardPage = ({ user, setPage, signOut, savedIds, savedListings, onSave
                             style={{
                               width: 48,
                               height: 24,
-                              borderRadius: 12,
+                              borderRadius: "var(--fs-radius-lg)",
                               background: notifications[item.key] ? 'var(--fs-blue)' : 'var(--fs-gray-200)',
                               border: 'none',
                               cursor: 'pointer',
@@ -6034,7 +6033,7 @@ const DashboardPage = ({ user, setPage, signOut, savedIds, savedListings, onSave
                             style={{
                               width: 48,
                               height: 24,
-                              borderRadius: 12,
+                              borderRadius: "var(--fs-radius-lg)",
                               background: notifications[item.key] ? 'var(--fs-blue)' : 'var(--fs-gray-200)',
                               border: 'none',
                               cursor: 'pointer',
@@ -6081,12 +6080,12 @@ const DashboardPage = ({ user, setPage, signOut, savedIds, savedListings, onSave
                   ) : (
                     <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 16 }}>
                       {discounts.map(discount => (
-                        <div key={discount.id} className="fs-detail-specs" style={{ padding: "24px", borderRadius: 12, position: 'relative', opacity: discount.used ? 0.6 : 1 }}>
+                        <div key={discount.id} className="fs-detail-specs" style={{ padding: "24px", borderRadius: "var(--fs-radius-lg)", position: 'relative', opacity: discount.used ? 0.6 : 1 }}>
                           {discount.used && (
                             <div style={{ position: 'absolute', top: 12, right: 12, padding: '4px 8px', background: 'var(--fs-gray-200)', borderRadius: 4, fontSize: 11, fontWeight: 600 }}>USED</div>
                           )}
                           <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16 }}>
-                            <div style={{ width: 48, height: 48, borderRadius: 12, background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 24 }}>
+                            <div style={{ width: 48, height: 48, borderRadius: "var(--fs-radius-lg)", background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 24 }}>
                               🎁
                             </div>
                             <div>
@@ -6094,7 +6093,7 @@ const DashboardPage = ({ user, setPage, signOut, savedIds, savedListings, onSave
                               <p style={{ fontSize: 13, color: 'var(--fs-gray-500)' }}>Expires: {discount.expiry}</p>
                             </div>
                           </div>
-                          <div style={{ padding: "12px", background: "var(--fs-gray-100)", borderRadius: 8, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                          <div style={{ padding: "12px", background: "var(--fs-gray-100)", borderRadius: "var(--fs-radius)", display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                             <code style={{ fontSize: 14, fontWeight: 600, letterSpacing: 1 }}>{discount.code}</code>
                             {!discount.used && (
                               <button style={{ padding: "6px 12px", background: "var(--fs-blue)", color: 'white', border: "none", borderRadius: 4, fontSize: 12, cursor: "pointer" }}>Copy</button>
@@ -6652,7 +6651,7 @@ const AdminPage = ({ user, setPage, signOut }) => {
                     <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr", gap: 24 }}>
                       {/* Main Info */}
                       <div>
-                        <div className="fs-detail-specs" style={{ padding: "24px", borderRadius: 12, marginBottom: 16 }}>
+                        <div className="fs-detail-specs" style={{ padding: "24px", borderRadius: "var(--fs-radius-lg)", marginBottom: 16 }}>
                           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 20 }}>
                             <div>
                               <h2 style={{ fontSize: 24, fontWeight: 700, marginBottom: 8 }}>{selectedLead.name}</h2>
@@ -6691,7 +6690,7 @@ const AdminPage = ({ user, setPage, signOut }) => {
 
                       {/* Sidebar Actions */}
                       <div>
-                        <div className="fs-detail-specs" style={{ padding: "20px", borderRadius: 12, marginBottom: 16 }}>
+                        <div className="fs-detail-specs" style={{ padding: "20px", borderRadius: "var(--fs-radius-lg)", marginBottom: 16 }}>
                           <h4 style={{ fontSize: 14, fontWeight: 700, marginBottom: 16 }}>Update Status</h4>
                           <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                             {['new', 'contacted', 'qualified', 'assigned', 'converted', 'lost'].map(status => (
@@ -6703,7 +6702,7 @@ const AdminPage = ({ user, setPage, signOut }) => {
                                   background: selectedLead.status === status ? '#eff6ff' : 'var(--fs-gray-100)', 
                                   color: selectedLead.status === status ? 'var(--fs-blue)' : 'var(--fs-gray-700)',
                                   border: selectedLead.status === status ? '1px solid var(--fs-blue)' : 'none',
-                                  borderRadius: 8,
+                                  borderRadius: "var(--fs-radius)",
                                   fontSize: 13,
                                   cursor: "pointer",
                                   textAlign: 'left',
@@ -6717,7 +6716,7 @@ const AdminPage = ({ user, setPage, signOut }) => {
                           </div>
                         </div>
 
-                        <div className="fs-detail-specs" style={{ padding: "20px", borderRadius: 12, marginBottom: 16 }}>
+                        <div className="fs-detail-specs" style={{ padding: "20px", borderRadius: "var(--fs-radius-lg)", marginBottom: 16 }}>
                           <h4 style={{ fontSize: 14, fontWeight: 700, marginBottom: 16 }}>Assign Provider</h4>
                           <select 
                             className="fs-form-select"
