@@ -4219,6 +4219,10 @@ const ValuatePage = () => {
 const NewsPage = () => {
   const { articles: dbArticles, loading } = useNews(20);
   const articles = dbArticles.length > 0 ? dbArticles : NEWS_ARTICLES;
+  const [activeCategory, setActiveCategory] = useState('All');
+  const categories = ['All', 'Market', 'Regulation', 'Industry', 'Technology', 'Reviews'];
+  const filteredArticles = activeCategory === 'All' ? articles : articles.filter(a => a.category === activeCategory);
+  
   return (
     <>
       <div className="fs-about-hero">
@@ -4229,9 +4233,20 @@ const NewsPage = () => {
       </div>
       <section className="fs-section">
         <div className="fs-container" style={{ maxWidth: 800, margin: "0 auto" }}>
+          <div style={{ display: "flex", gap: 8, marginBottom: 24, flexWrap: "wrap" }}>
+            {categories.map(cat => (
+              <button
+                key={cat}
+                onClick={() => setActiveCategory(cat)}
+                className={`fs-cat-pill${activeCategory === cat ? ' active' : ''}`}
+              >
+                {cat}
+              </button>
+            ))}
+          </div>
           {loading ? (
             [1,2,3].map(i => <div key={i} className="fs-news-card" style={{ marginBottom: 16, height: 120, background: "var(--fs-gray-100)", borderRadius: "var(--fs-radius)", animation: "fs-pulse 1.5s ease-in-out infinite" }} />)
-          ) : articles.map(a => (
+          ) : filteredArticles.map(a => (
             <div key={a.id} className="fs-news-card" style={{ marginBottom: 16 }}>
               <span className={`fs-news-tag ${a.category.toLowerCase()}`}>{a.category}</span>
               <div className="fs-news-title" style={{ fontSize: 20 }}>{a.title}</div>
