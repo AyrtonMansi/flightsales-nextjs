@@ -798,6 +798,7 @@ a { color: inherit; text-decoration: none; }
 }
 @media (max-width: 900px) {
   .fs-detail-layout { grid-template-columns: 1fr; gap: 24px; padding: 24px 0 48px; }
+  .fs-detail-sidebar { display: none; }
 }
 .fs-detail-sidebar {
   display: flex; flex-direction: column; gap: 20px;
