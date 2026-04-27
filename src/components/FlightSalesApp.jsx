@@ -798,7 +798,6 @@ a { color: inherit; text-decoration: none; }
 }
 @media (max-width: 900px) {
   .fs-detail-layout { grid-template-columns: 1fr; gap: 24px; padding: 24px 0 48px; }
-  .fs-detail-sidebar { display: none; }
 }
 .fs-detail-sidebar {
   display: flex; flex-direction: column; gap: 20px;
@@ -806,12 +805,8 @@ a { color: inherit; text-decoration: none; }
 .fs-detail-sticky {
   position: sticky; top: 88px; z-index: 10;
 }
-.fs-detail-mobile-cta {
-  display: none;
-}
 @media (max-width: 900px) {
   .fs-detail-sticky { position: static; }
-  .fs-detail-mobile-cta { display: block; margin-bottom: 16px; }
 }
 .fs-detail-price-card {
   background: var(--fs-white); border-radius: var(--fs-radius);
@@ -3200,16 +3195,6 @@ const ListingDetail = ({ listing, onBack, savedIds, onSave, user, onSelectDealer
                 </div>
               ))}
               <p style={{ fontSize: 11, color: "var(--fs-gray-400)", marginTop: 12 }}>Estimates only. Based on Australian averages. Actual costs vary.</p>
-            </div>
-
-            {/* Mobile CTA — shown below specs on mobile */}
-            <div className="fs-detail-mobile-cta">
-              <button className="fs-detail-cta fs-detail-cta-primary" onClick={() => setShowEnquiry(true)} style={{ marginBottom: 10 }}>
-                {Icons.mail}&nbsp; Contact Seller
-              </button>
-              <button className="fs-detail-cta fs-detail-cta-secondary" onClick={() => onSave(l.id)}>
-                {isSaved ? Icons.heartFull : Icons.heart}&nbsp; {isSaved ? "Saved" : "Save to Watchlist"}
-              </button>
             </div>
 
             {/* Similar aircraft */}
