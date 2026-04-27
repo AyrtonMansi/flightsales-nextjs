@@ -3114,7 +3114,9 @@ const ListingDetail = ({ listing, onBack, savedIds, onSave, user, onSelectDealer
             <span style={{ color: "var(--fs-ink)" }}>{l.title}</span>
           </div>
           <h1 style={{ fontSize: 40, fontWeight: 700, marginBottom: 10, letterSpacing: "-0.03em", color: "var(--fs-ink)" }}>{l.title}</h1>
-          <div style={{ display: "flex", gap: 10, fontSize: 13, color: "var(--fs-ink-3)", alignItems: "center", flexWrap: "wrap", fontWeight: 500 }}>
+          <div style={{ display: "flex", gap: 10, fontSize: 13, color: "var(--fs-ink-3)", alignItems: "center", flexWrap: "wrap", fontWeight: 500, marginBottom: 8 }}>
+            <span style={{ fontSize: 24, fontWeight: 700, color: "var(--fs-ink)", letterSpacing: "-0.02em" }}>{formatPriceFull(l.price)}</span>
+            <span>·</span>
             <span style={{ display: "flex", alignItems: "center", gap: 4 }}>{Icons.location} {[l.city, l.state].filter(Boolean).join(', ')}</span>
             <span>·</span>
             <span>Listed {timeAgo(l.created_at || l.created)}</span>
@@ -3201,7 +3203,6 @@ const ListingDetail = ({ listing, onBack, savedIds, onSave, user, onSelectDealer
 
             {/* Mobile CTA — shown below specs on mobile */}
             <div className="fs-detail-mobile-cta">
-              <div style={{ fontWeight: 800, fontSize: 28, letterSpacing: "-0.02em", marginBottom: 4 }}>{formatPriceFull(l.price)}</div>
               <button className="fs-detail-cta fs-detail-cta-primary" onClick={() => setShowEnquiry(true)} style={{ marginBottom: 10 }}>
                 {Icons.mail}&nbsp; Contact Seller
               </button>
@@ -3226,7 +3227,6 @@ const ListingDetail = ({ listing, onBack, savedIds, onSave, user, onSelectDealer
           {/* Sticky Sidebar */}
           <div className="fs-detail-sidebar">
             <div className="fs-detail-price-card fs-detail-sticky">
-              <div className="fs-detail-price">{formatPriceFull(l.price)}</div>
               {l.rego && <div className="fs-detail-rego">{l.rego} &middot; {l.condition}</div>}
 
               <button className="fs-detail-cta fs-detail-cta-primary" onClick={() => setShowEnquiry(true)}>
