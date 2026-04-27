@@ -3164,7 +3164,7 @@ const ListingDetail = ({ listing, onBack, savedIds, onSave, user, onSelectDealer
                     display: "block",
                     margin: "-8px",
                     padding: "8px",
-                    borderRadius: 10,
+                    borderRadius: "var(--fs-radius-lg)",
                     cursor: canOpenDealer ? "pointer" : "default",
                     transition: "background 0.15s ease",
                   }}
@@ -5025,7 +5025,7 @@ const DashboardPage = ({ user, setPage, signOut, savedIds, savedListings, onSave
                     color: 'white',
                     fontSize: 10,
                     padding: '2px 6px',
-                    borderRadius: 10,
+                    borderRadius: "var(--fs-radius-lg)",
                     fontWeight: 600
                   }}>✓</span>
                 )}
@@ -5124,7 +5124,7 @@ const DashboardPage = ({ user, setPage, signOut, savedIds, savedListings, onSave
                               color: activeTab === item.id ? 'white' : 'var(--fs-gray-600)', 
                               fontSize: 11, 
                               padding: '2px 8px', 
-                              borderRadius: 10,
+                              borderRadius: "var(--fs-radius-lg)",
                               fontWeight: 600
                             }}>
                               {item.count}
@@ -5160,7 +5160,7 @@ const DashboardPage = ({ user, setPage, signOut, savedIds, savedListings, onSave
                               color: activeTab === section.id ? 'white' : 'var(--fs-gray-600)', 
                               fontSize: 11, 
                               padding: '2px 8px', 
-                              borderRadius: 10,
+                              borderRadius: "var(--fs-radius-lg)",
                               fontWeight: 600
                             }}>
                               {section.count}
@@ -5399,7 +5399,7 @@ const DashboardPage = ({ user, setPage, signOut, savedIds, savedListings, onSave
                               <td style={{ padding: "16px", textAlign: "center" }}>
                                 <span style={{ 
                                   padding: "4px 10px", 
-                                  borderRadius: 10, 
+                                  borderRadius: "var(--fs-radius-lg)", 
                                   fontSize: 12,
                                   fontWeight: 600,
                                   background: listing.enquiries > 0 ? '#dcfce7' : 'transparent',
@@ -6388,7 +6388,7 @@ const AdminPage = ({ user, setPage, signOut }) => {
                     color: activeTab === tab.id ? 'white' : 'var(--fs-gray-600)', 
                     fontSize: 11, 
                     padding: '2px 8px', 
-                    borderRadius: 10,
+                    borderRadius: "var(--fs-radius-lg)",
                     fontWeight: 600
                   }}>
                     {tab.badge}
