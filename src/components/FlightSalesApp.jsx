@@ -1754,6 +1754,7 @@ const ListingCard = ({ listing, onClick, onSave, saved, onQuickLook }) => {
   const isNew = isJustListed(listing);
   const location = [listing.city, listing.state].filter(Boolean).join(', ');
   const hasTT = listing.ttaf != null && listing.ttaf > 0;
+  const hasSMOH = listing.eng_hours != null && listing.eng_hours > 0;
 
   return (
     <div className={`fs-card${listing.featured ? ' fs-card-featured' : ''}`} onClick={() => onClick(listing)}>
@@ -1764,16 +1765,30 @@ const ListingCard = ({ listing, onClick, onSave, saved, onQuickLook }) => {
             onClick={e => { e.stopPropagation(); onSave(listing.id); }}
             aria-label={saved ? "Unsave" : "Save"}
             style={{
-              width: 38, height: 38, borderRadius: "50%",
+              width: 32, height: 32, borderRadius: "50%",
               background: saved ? "#000" : "rgba(255,255,255,0.95)",
-              border: "none", cursor: "pointer",
+              border: "1px solid var(--fs-line)", cursor: "pointer",
               display: "flex", alignItems: "center", justifyContent: "center",
               color: saved ? "#fff" : "#000",
-              boxShadow: "0 2px 8px rgba(0,0,0,0.12)",
             }}
           >
             {saved ? Icons.heartFull : Icons.heart}
           </button>
+          {onQuickLook && (
+            <button
+              onClick={e => { e.stopPropagation(); onQuickLook(listing); }}
+              className="fs-card-quicklook"
+              style={{
+                width: 32, height: 32, borderRadius: "50%",
+                background: "rgba(255,255,255,0.95)",
+                border: "1px solid var(--fs-line)", cursor: "pointer",
+                display: "flex", alignItems: "center", justifyContent: "center",
+                color: "#000", opacity: 0, transition: "opacity 0.2s",
+              }}
+            >
+              {Icons.eye}
+            </button>
+          )}
         </div>
       </div>
       <div className="fs-card-body">
@@ -1784,15 +1799,19 @@ const ListingCard = ({ listing, onClick, onSave, saved, onQuickLook }) => {
         <div className="fs-card-price">{formatPriceFull(listing.price)}</div>
         <dl className="fs-card-specs">
           <div className="fs-card-specs-row">
-            <dt>TTAF</dt>
+            <dt>Total time</dt>
             <dd>{hasTT ? formatHours(listing.ttaf) : '—'}</dd>
+          </div>
+          <div className="fs-card-specs-row">
+            <dt>Engine SMOH</dt>
+            <dd>{hasSMOH ? formatHours(listing.eng_hours) : '—'}</dd>
           </div>
           <div className="fs-card-specs-row">
             <dt>IFR</dt>
             <dd>{listing.ifr ? '✓' : '—'}</dd>
           </div>
           <div className="fs-card-specs-row">
-            <dt>Glass</dt>
+            <dt>Glass cockpit</dt>
             <dd>{listing.glass_cockpit ? '✓' : '—'}</dd>
           </div>
         </dl>
