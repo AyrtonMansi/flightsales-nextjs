@@ -87,6 +87,25 @@ const NEWS_ARTICLES = [
 const formatPrice = (p) => p >= 1000000 ? `$${(p/1000000).toFixed(1)}M` : `$${(p/1000).toFixed(0)}K`;
 const formatPriceFull = (p) => new Intl.NumberFormat('en-AU', { style: 'currency', currency: 'AUD', maximumFractionDigits: 0 }).format(p);
 const formatHours = (h) => h ? h.toLocaleString() + " hrs" : "N/A";
+
+const getCategoryDisplayName = (category) => {
+  const mapping = {
+    "Single Engine Piston": "Piston",
+    "Multi Engine Piston": "Piston",
+    "Turboprop": "Turboprop",
+    "Light Jet": "Jet",
+    "Midsize Jet": "Jet",
+    "Heavy Jet": "Jet",
+    "Helicopter": "Helicopter",
+    "Gyrocopter": "Gyrocopter",
+    "Ultralight": "Ultralight",
+    "LSA": "LSA",
+    "Warbird": "Warbird",
+    "Glider": "Glider",
+    "Amphibious/Seaplane": "Amphibious"
+  };
+  return mapping[category] || category;
+};
 const timeAgo = (d) => {
   if (!d) return "";
   const days = Math.floor((Date.now() - new Date(d).getTime()) / 86400000);
@@ -1729,19 +1748,11 @@ const ListingCard = ({ listing, onClick, onSave, saved, onQuickLook }) => {
   const isNew = isJustListed(listing);
   const location = [listing.city, listing.state].filter(Boolean).join(', ');
   const hasTT = listing.ttaf != null && listing.ttaf > 0;
-  const hasSMOH = listing.eng_hours != null && listing.eng_hours > 0;
-  const tags = [
-    listing.ifr && "IFR",
-    listing.glass_cockpit && "Glass",
-    listing.pressurised && "Pressurised",
-    listing.retractable && "Retractable",
-  ].filter(Boolean);
 
   return (
     <div className={`fs-card${listing.featured ? ' fs-card-featured' : ''}`} onClick={() => onClick(listing)}>
       <div className="fs-card-image-wrap" style={{ position: "relative" }}>
         <AircraftImage listing={listing} />
-        {/* Top-right action stack: Save heart + Quick look (on hover) */}
         <div style={{ position: "absolute", top: 12, right: 12, display: "flex", flexDirection: "column", gap: 8 }}>
           <button
             onClick={e => { e.stopPropagation(); onSave(listing.id); }}
@@ -1753,68 +1764,32 @@ const ListingCard = ({ listing, onClick, onSave, saved, onQuickLook }) => {
               display: "flex", alignItems: "center", justifyContent: "center",
               color: saved ? "#fff" : "#000",
               boxShadow: "0 2px 8px rgba(0,0,0,0.12)",
-              transition: "transform 0.15s var(--fs-ease-out), background-color 0.15s",
             }}
-            onMouseEnter={e => e.currentTarget.style.transform = "scale(1.08)"}
-            onMouseLeave={e => e.currentTarget.style.transform = "scale(1)"}
           >
             {saved ? Icons.heartFull : Icons.heart}
           </button>
         </div>
-        {/* Quick look button — bottom right, fades in on hover */}
-        {onQuickLook && (
-          <button
-            onClick={e => { e.stopPropagation(); onQuickLook(listing); }}
-            className="fs-card-quicklook"
-            style={{
-              position: "absolute", bottom: 12, right: 12,
-              padding: "8px 14px", borderRadius: "var(--fs-radius-pill)",
-              background: "rgba(0,0,0,0.85)", color: "white",
-              border: "none", cursor: "pointer",
-              display: "flex", alignItems: "center", gap: 6,
-              fontSize: 12.5, fontWeight: 600, fontFamily: "var(--fs-font)",
-              opacity: 0, transition: "opacity 0.2s var(--fs-ease-out)",
-              backdropFilter: "blur(8px)", letterSpacing: "-0.005em",
-            }}
-          >
-            {Icons.eye} Quick look
-          </button>
-        )}
       </div>
       <div className="fs-card-body">
-        {/* Eyebrow: category only — year already lives in the title */}
         {listing.category && (
-          <div className="fs-card-eyebrow">{listing.category}</div>
+          <div className="fs-card-eyebrow">{getCategoryDisplayName(listing.category)}</div>
         )}
-
-        {/* Title — main identifier (year + manufacturer + model) */}
         <div className="fs-card-title">{listing.title}</div>
-
-        {/* Price — flows directly under title, no hairline divider */}
         <div className="fs-card-price">{formatPriceFull(listing.price)}</div>
-
-        {/* Spec list — always renders the same 4 rows so card heights match.
-            Missing values become an em-dash; booleans become ✓ or — (not "Yes/No"). */}
         <dl className="fs-card-specs">
           <div className="fs-card-specs-row">
-            <dt>Total time</dt>
+            <dt>TTAF</dt>
             <dd>{hasTT ? formatHours(listing.ttaf) : '—'}</dd>
           </div>
           <div className="fs-card-specs-row">
-            <dt>Engine SMOH</dt>
-            <dd>{hasSMOH ? formatHours(listing.eng_hours) : '—'}</dd>
-          </div>
-          <div className="fs-card-specs-row">
             <dt>IFR</dt>
-            <dd className={listing.ifr ? '' : 'fs-card-specs-empty'}>{listing.ifr ? '✓' : '—'}</dd>
+            <dd>{listing.ifr ? '✓' : '—'}</dd>
           </div>
           <div className="fs-card-specs-row">
-            <dt>Glass cockpit</dt>
-            <dd className={listing.glass_cockpit ? '' : 'fs-card-specs-empty'}>{listing.glass_cockpit ? '✓' : '—'}</dd>
+            <dt>Glass</dt>
+            <dd>{listing.glass_cockpit ? '✓' : '—'}</dd>
           </div>
         </dl>
-
-        {/* Dealer + location — small, at the bottom of the card */}
         <div className="fs-card-dealer">
           {dealerName ? (
             <>
@@ -2095,6 +2070,10 @@ const HomePage = ({ setPage, setSelectedListing, savedIds, onSave, setSearchFilt
   const [searchCat, setSearchCat] = useState("");
   const [searchMake, setSearchMake] = useState("");
   const [searchState, setSearchState] = useState("");
+  const [searchYearFrom, setSearchYearFrom] = useState("");
+  const [searchYearTo, setSearchYearTo] = useState("");
+  const [searchPriceMin, setSearchPriceMin] = useState("");
+  const [searchPriceMax, setSearchPriceMax] = useState("");
   const [aiQuery, setAiQuery] = useState("");
   const rotatingPlaceholder = useRotatingPlaceholder(AI_SEARCH_EXAMPLES);
 
@@ -2223,6 +2202,10 @@ const HomePage = ({ setPage, setSelectedListing, savedIds, onSave, setSearchFilt
       cat: searchCat,
       make: searchMake,
       state: searchState,
+      yearFrom: searchYearFrom,
+      yearTo: searchYearTo,
+      minPrice: searchPriceMin,
+      maxPrice: searchPriceMax,
       query: ""
     };
     if (setSearchFilters) setSearchFilters(filters);
@@ -2254,23 +2237,61 @@ const HomePage = ({ setPage, setSelectedListing, savedIds, onSave, setSearchFilt
             </div>
             <div className="fs-search-fields-row">
               <div className="fs-search-field">
-                <span className="fs-search-label">Category</span>
+                <span className="fs-search-label">Type</span>
                 <select className="fs-search-select" value={searchCat} onChange={e => setSearchCat(e.target.value)}>
-                  <option value="">All Categories</option>
+                  <option value="">All</option>
                   {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
                 </select>
               </div>
               <div className="fs-search-field">
                 <span className="fs-search-label">Make</span>
                 <select className="fs-search-select" value={searchMake} onChange={e => setSearchMake(e.target.value)}>
-                  <option value="">All Makes</option>
+                  <option value="">All</option>
                   {MANUFACTURERS.map(m => <option key={m} value={m}>{m}</option>)}
                 </select>
               </div>
               <div className="fs-search-field">
-                <span className="fs-search-label">State</span>
+                <span className="fs-search-label">Year</span>
+                <div style={{ display: "flex", gap: 4, alignItems: "center" }}>
+                  <select className="fs-search-select" style={{ flex: 1 }} value={searchYearFrom} onChange={e => setSearchYearFrom(e.target.value)}>
+                    <option value="">From</option>
+                    {[2024, 2020, 2015, 2010, 2005, 2000, 1990, 1980, 1970, 1960, 1950].map(y => <option key={y} value={y}>{y}</option>)}
+                  </select>
+                  <span style={{ fontSize: 11, color: "var(--fs-ink-3)" }}>to</span>
+                  <select className="fs-search-select" style={{ flex: 1 }} value={searchYearTo} onChange={e => setSearchYearTo(e.target.value)}>
+                    <option value="">To</option>
+                    {[2024, 2020, 2015, 2010, 2005, 2000, 1990, 1980, 1970, 1960, 1950].map(y => <option key={y} value={y}>{y}</option>)}
+                  </select>
+                </div>
+              </div>
+              <div className="fs-search-field">
+                <span className="fs-search-label">Price</span>
+                <div style={{ display: "flex", gap: 4, alignItems: "center" }}>
+                  <select className="fs-search-select" style={{ flex: 1 }} value={searchPriceMin} onChange={e => setSearchPriceMin(e.target.value)}>
+                    <option value="">Min</option>
+                    <option value="0">$0</option>
+                    <option value="50000">$50k</option>
+                    <option value="100000">$100k</option>
+                    <option value="200000">$200k</option>
+                    <option value="300000">$300k</option>
+                    <option value="500000">$500k</option>
+                  </select>
+                  <span style={{ fontSize: 11, color: "var(--fs-ink-3)" }}>to</span>
+                  <select className="fs-search-select" style={{ flex: 1 }} value={searchPriceMax} onChange={e => setSearchPriceMax(e.target.value)}>
+                    <option value="">Max</option>
+                    <option value="100000">$100k</option>
+                    <option value="200000">$200k</option>
+                    <option value="300000">$300k</option>
+                    <option value="500000">$500k</option>
+                    <option value="1000000">$1M</option>
+                    <option value="2000000">$2M</option>
+                  </select>
+                </div>
+              </div>
+              <div className="fs-search-field">
+                <span className="fs-search-label">Location</span>
                 <select className="fs-search-select" value={searchState} onChange={e => setSearchState(e.target.value)}>
-                  <option value="">All States</option>
+                  <option value="">All</option>
                   {STATES.map(s => <option key={s} value={s}>{s}</option>)}
                 </select>
               </div>
@@ -2281,10 +2302,16 @@ const HomePage = ({ setPage, setSelectedListing, savedIds, onSave, setSearchFilt
           </div>
 
           <div className="fs-categories">
-            {/* Ordered by Australian market volume — single engine dominates, jets are tail */}
-            {["Single Engine Piston", "Multi Engine Piston", "Turboprop", "Helicopter", "LSA", "Light Jet"].map(c => (
+            {["Piston", "Turboprop", "Jet", "Helicopter", "LSA"].map(c => (
               <button key={c} className="fs-cat-pill" onClick={() => {
-                if (setSearchFilters) setSearchFilters({ cat: c });
+                const catMap = {
+                  "Piston": "Single Engine Piston",
+                  "Turboprop": "Turboprop",
+                  "Jet": "Light Jet",
+                  "Helicopter": "Helicopter",
+                  "LSA": "LSA"
+                };
+                if (setSearchFilters) setSearchFilters({ cat: catMap[c] });
                 setPage("buy");
               }}>{c}</button>
             ))}
@@ -2411,6 +2438,8 @@ const BuyPage = ({ setSelectedListing, savedIds, onSave, initialFilters, user, s
   const [maxHours, setMaxHours] = useState(initialFilters?.maxHours || "");
   const [ifrOnly, setIfrOnly] = useState(initialFilters?.ifrOnly || false);
   const [glassOnly, setGlassOnly] = useState(initialFilters?.glassOnly || false);
+  const [yearFrom, setYearFrom] = useState(initialFilters?.yearFrom || "");
+  const [yearTo, setYearTo] = useState(initialFilters?.yearTo || "");
   const [sideOpen, setSideOpen] = useState(false);
   const [quickLook, setQuickLook] = useState(null);
   const [enquireFor, setEnquireFor] = useState(null);
@@ -2604,7 +2633,7 @@ const BuyPage = ({ setSelectedListing, savedIds, onSave, initialFilters, user, s
   const resetFilters = () => {
     setSearch(""); setCatFilter(""); setStateFilter(""); setMakeFilter("");
     setCondFilter(""); setMinPrice(""); setMaxPrice(""); setMaxHours("");
-    setIfrOnly(false); setGlassOnly(false); setAiQuery("");
+    setIfrOnly(false); setGlassOnly(false); setAiQuery(""); setYearFrom(""); setYearTo("");
   };
 
   const activeFilterCount = [catFilter, stateFilter, makeFilter, condFilter, minPrice, maxPrice, maxHours, ifrOnly, glassOnly].filter(Boolean).length;
@@ -2741,112 +2770,71 @@ const BuyPage = ({ setSelectedListing, savedIds, onSave, initialFilters, user, s
               </div>
             </div>
 
+            {/* YEAR */}
+            <div className="fs-sidebar-section">
+              <label className="fs-sidebar-label">Year</label>
+              <div className="fs-sidebar-range">
+                <select value={yearFrom} onChange={e => setYearFrom(e.target.value)}>
+                  <option value="">From</option>
+                  {[2024, 2020, 2015, 2010, 2005, 2000, 1995, 1990, 1985, 1980, 1970, 1960, 1950].map(y => <option key={y} value={y}>{y}</option>)}
+                </select>
+                <span>to</span>
+                <select value={yearTo} onChange={e => setYearTo(e.target.value)}>
+                  <option value="">To</option>
+                  {[2024, 2020, 2015, 2010, 2005, 2000, 1995, 1990, 1985, 1980, 1970, 1960, 1950].map(y => <option key={y} value={y}>{y}</option>)}
+                </select>
+              </div>
+            </div>
+
             {/* PRICE */}
             <div className="fs-sidebar-section">
-              <label className="fs-sidebar-label">Price (AUD)</label>
-              <div className="fs-sidebar-presets">
-                <button onClick={() => setPricePreset('', '100000')} className={`fs-sidebar-preset${isPricePreset('', '100000') ? ' active' : ''}`}>&lt;$100k</button>
-                <button onClick={() => setPricePreset('', '300000')} className={`fs-sidebar-preset${isPricePreset('', '300000') ? ' active' : ''}`}>&lt;$300k</button>
-                <button onClick={() => setPricePreset('', '1000000')} className={`fs-sidebar-preset${isPricePreset('', '1000000') ? ' active' : ''}`}>&lt;$1M</button>
-                <button onClick={() => setPricePreset('1000000', '')} className={`fs-sidebar-preset${isPricePreset('1000000', '') ? ' active' : ''}`}>$1M+</button>
-              </div>
+              <label className="fs-sidebar-label">Price</label>
               <div className="fs-sidebar-range">
-                <input type="number" placeholder="Min" value={minPrice} onChange={e => setMinPrice(e.target.value)} />
-                <span>—</span>
-                <input type="number" placeholder="Max" value={maxPrice} onChange={e => setMaxPrice(e.target.value)} />
+                <select value={minPrice} onChange={e => setMinPrice(e.target.value)}>
+                  <option value="">Min</option>
+                  <option value="0">$0</option>
+                  <option value="50000">$50k</option>
+                  <option value="100000">$100k</option>
+                  <option value="200000">$200k</option>
+                  <option value="300000">$300k</option>
+                  <option value="500000">$500k</option>
+                  <option value="1000000">$1M</option>
+                </select>
+                <span>to</span>
+                <select value={maxPrice} onChange={e => setMaxPrice(e.target.value)}>
+                  <option value="">Max</option>
+                  <option value="100000">$100k</option>
+                  <option value="200000">$200k</option>
+                  <option value="300000">$300k</option>
+                  <option value="500000">$500k</option>
+                  <option value="1000000">$1M</option>
+                  <option value="2000000">$2M</option>
+                  <option value="5000000">$5M+</option>
+                </select>
               </div>
             </div>
 
             {/* HOURS */}
             <div className="fs-sidebar-section">
-              <label className="fs-sidebar-label">Total time (hours)</label>
-              <div className="fs-sidebar-presets">
-                <button onClick={() => setHoursPreset('500')} className={`fs-sidebar-preset${isHoursPreset('500') ? ' active' : ''}`}>&lt;500</button>
-                <button onClick={() => setHoursPreset('2000')} className={`fs-sidebar-preset${isHoursPreset('2000') ? ' active' : ''}`}>&lt;2,000</button>
-                <button onClick={() => setHoursPreset('')} className={`fs-sidebar-preset${isHoursPreset('') ? ' active' : ''}`}>Any</button>
-              </div>
-              <input
-                type="number"
-                placeholder="Max hours"
-                value={maxHours}
-                onChange={e => setMaxHours(e.target.value)}
-                className="fs-sidebar-select"
-                style={{ cursor: 'text' }}
-              />
+              <label className="fs-sidebar-label">Total Time</label>
+              <select value={maxHours} onChange={e => setMaxHours(e.target.value)} className="fs-sidebar-select">
+                <option value="">Any hours</option>
+                <option value="500">Under 500 hrs</option>
+                <option value="1000">Under 1,000 hrs</option>
+                <option value="2000">Under 2,000 hrs</option>
+                <option value="5000">Under 5,000 hrs</option>
+              </select>
             </div>
 
-            {/* EQUIPMENT — category-aware */}
+            {/* EQUIPMENT */}
             <div className="fs-sidebar-section">
               <label className="fs-sidebar-label">Equipment</label>
               <label className="fs-sidebar-check">
-                <input type="checkbox" checked={ifrOnly} onChange={e => setIfrOnly(e.target.checked)} /> IFR capable
+                <input type="checkbox" checked={ifrOnly} onChange={e => setIfrOnly(e.target.checked)} /> IFR equipped
               </label>
               <label className="fs-sidebar-check">
                 <input type="checkbox" checked={glassOnly} onChange={e => setGlassOnly(e.target.checked)} /> Glass cockpit
               </label>
-              {canBePressurised && (
-                <label className="fs-sidebar-check fs-sidebar-check-cat">
-                  <input type="checkbox" disabled /> Pressurised <span className="fs-sidebar-soon">soon</span>
-                </label>
-              )}
-              {canBeRetractable && (
-                <label className="fs-sidebar-check fs-sidebar-check-cat">
-                  <input type="checkbox" disabled /> Retractable gear <span className="fs-sidebar-soon">soon</span>
-                </label>
-              )}
-            </div>
-
-            {/* ADVANCED — collapsible */}
-            <details className="fs-sidebar-advanced">
-              <summary>
-                Advanced filters
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" className="fs-sidebar-advanced-chev"><polyline points="6 9 12 15 18 9"/></svg>
-              </summary>
-              <div className="fs-sidebar-advanced-body">
-                <p className="fs-sidebar-advanced-note">More criteria coming as listings grow:</p>
-                <label className="fs-sidebar-check">
-                  <input type="checkbox" disabled /> Engine cycles <span className="fs-sidebar-soon">soon</span>
-                </label>
-                <label className="fs-sidebar-check">
-                  <input type="checkbox" disabled /> Annual due within 6 months <span className="fs-sidebar-soon">soon</span>
-                </label>
-                <label className="fs-sidebar-check">
-                  <input type="checkbox" disabled /> No damage history <span className="fs-sidebar-soon">soon</span>
-                </label>
-                <label className="fs-sidebar-check">
-                  <input type="checkbox" disabled /> ADS-B Out compliant <span className="fs-sidebar-soon">soon</span>
-                </label>
-                <label className="fs-sidebar-check">
-                  <input type="checkbox" disabled /> CASA-registered only <span className="fs-sidebar-soon">soon</span>
-                </label>
-              </div>
-            </details>
-
-            {/* Save search / alerts CTA */}
-            <div className="fs-sidebar-info-card">
-              <div className="fs-sidebar-info-icon">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
-              </div>
-              <div className="fs-sidebar-info-title">Get aircraft alerts</div>
-              <p className="fs-sidebar-info-text">Save this search and we'll email you when new aircraft match.</p>
-              <button className="fs-sidebar-info-cta" onClick={() => user ? null : setPage && setPage('login')}>
-                {activeChips.length > 0 ? 'Save this search' : 'Set up alerts'}
-              </button>
-            </div>
-
-            {/* Trust signals */}
-            <div className="fs-sidebar-trust">
-              <div className="fs-sidebar-trust-row"><span>✓</span> All listings reviewed</div>
-              <div className="fs-sidebar-trust-row"><span>✓</span> Transparent pricing</div>
-              <div className="fs-sidebar-trust-row"><span>✓</span> Direct seller contact</div>
-              <div className="fs-sidebar-trust-row"><span>✓</span> No hidden fees</div>
-            </div>
-
-            {/* Help link */}
-            <div className="fs-sidebar-help">
-              <div className="fs-sidebar-help-title">Need help?</div>
-              <p className="fs-sidebar-help-text">Talk to our team — we'll help you find the right aircraft.</p>
-              <a href="#contact" onClick={(e) => { e.preventDefault(); setPage && setPage('contact'); }} className="fs-sidebar-help-link">Contact us →</a>
             </div>
           </div>
         </aside>
