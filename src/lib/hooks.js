@@ -81,11 +81,15 @@ export function useFeaturedAircraft() {
         setAircraft(data || []);
       } catch (err) {
         setError(err.message);
+        console.error('[useFeaturedAircraft]', err.message);
       } finally {
         setLoading(false);
       }
     }
     fetch();
+    // Timeout: stop loading after 5s if Supabase is unresponsive
+    const timer = setTimeout(() => setLoading(false), 5000);
+    return () => clearTimeout(timer);
   }, []);
 
   return { aircraft, loading, error };
@@ -105,11 +109,16 @@ export function useLatestAircraft() {
           .order('created_at', { ascending: false })
           .limit(3);
         setAircraft(data || []);
+      } catch (err) {
+        console.error('[useLatestAircraft]', err.message);
       } finally {
         setLoading(false);
       }
     }
     fetch();
+    // Timeout: stop loading after 5s if Supabase is unresponsive
+    const timer = setTimeout(() => setLoading(false), 5000);
+    return () => clearTimeout(timer);
   }, []);
 
   return { aircraft, loading };
