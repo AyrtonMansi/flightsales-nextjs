@@ -3104,7 +3104,7 @@ const ListingDetail = ({ listing, onBack, savedIds, onSave, user, onSelectDealer
 
             {/* Mobile CTA — shown below specs on mobile */}
             <div className="fs-detail-mobile-cta">
-              <div style={{ fontWeight: 800, fontSize: 26, letterSpacing: "-0.02em", marginBottom: 4 }}>{formatPriceFull(l.price)}</div>
+              <div style={{ fontWeight: 800, fontSize: 28, letterSpacing: "-0.02em", marginBottom: 4 }}>{formatPriceFull(l.price)}</div>
               <button className="fs-detail-cta fs-detail-cta-primary" onClick={() => setShowEnquiry(true)} style={{ marginBottom: 10 }}>
                 {Icons.mail}&nbsp; Contact Seller
               </button>
@@ -3857,7 +3857,7 @@ const DealersPage = ({ onSelectDealer }) => {
                   <div style={{ display: "flex", gap: 14, alignItems: "center", width: "100%", marginBottom: 12 }}>
                     <div className="fs-dealer-avatar" style={{ width: 56, height: 56, fontSize: 16 }}>{d.logo}</div>
                     <div style={{ flex: 1 }}>
-                      <div className="fs-dealer-name" style={{ fontSize: 17, display: "flex", alignItems: "center", gap: 8 }}>
+                      <div className="fs-dealer-name" style={{ fontSize: 18, display: "flex", alignItems: "center", gap: 8 }}>
                         {d.name}
                         <span style={{ color: "var(--fs-green)", display: "flex", alignItems: "center" }}>{Icons.shield}</span>
                       </div>
@@ -3933,7 +3933,7 @@ const DealerDetailPage = ({ dealer, onBack, setSelectedListing, savedIds, onSave
           <div style={{ display: "flex", gap: 20, alignItems: "center", flexWrap: "wrap" }}>
             <div className="fs-dealer-avatar" style={{ width: 80, height: 80, fontSize: 22, borderRadius: 16 }}>{dealer.logo}</div>
             <div style={{ flex: 1, minWidth: 220 }}>
-              <h1 style={{ fontSize: 32, fontWeight: 700, letterSpacing: "-0.04em", marginBottom: 8 }}>{dealer.name}</h1>
+              <h1 style={{ fontSize: 28, fontWeight: 700, letterSpacing: "-0.04em", marginBottom: 8 }}>{dealer.name}</h1>
               <div style={{ display: "flex", gap: 16, flexWrap: "wrap", fontSize: 14, color: "var(--fs-ink-3)", fontWeight: 500 }}>
                 <span style={{ display: "flex", alignItems: "center", gap: 4 }}>{Icons.location} {dealer.location}</span>
                 <span style={{ display: "flex", alignItems: "center", gap: 4, color: "var(--fs-ink)" }}>{Icons.shield} Verified dealer</span>
@@ -4034,7 +4034,7 @@ const FinancePage = () => {
     <>
       <div className="fs-finance-hero">
         <div className="fs-container">
-          <h1 style={{ fontFamily: "var(--fs-font)", fontSize: 36, marginBottom: 8 }}>Aircraft Finance</h1>
+          <h1 style={{ fontFamily: "var(--fs-font)", fontSize: 40, marginBottom: 8 }}>Aircraft Finance</h1>
           <p style={{ color: "var(--fs-ink-3)", maxWidth: 500, margin: "0 auto", fontSize: 16 }}>
             Competitive rates from Australia's leading aviation finance providers. Get pre-approved in minutes.
           </p>
@@ -4485,7 +4485,7 @@ const LoginPage = ({ setPage, signIn, signUp, signInWithGoogle, resetPassword })
           }}>
             <span style={{ color: "white", fontSize: 32 }}>{mode === 'login' ? '👋' : '✈️'}</span>
           </div>
-          <h1 style={{ fontFamily: "var(--fs-font)", fontSize: 30, marginBottom: 8, fontWeight: 700 }}>
+          <h1 style={{ fontFamily: "var(--fs-font)", fontSize: 28, marginBottom: 8, fontWeight: 700 }}>
             {mode === 'login' ? 'Welcome back' : 'Create your account'}
           </h1>
           <p style={{ fontSize: 15, color: "var(--fs-gray-500)", lineHeight: 1.5 }}>
@@ -4567,7 +4567,7 @@ const LoginPage = ({ setPage, signIn, signUp, signInWithGoogle, resetPassword })
               {resetSent ? (
                 <div style={{ padding: "32px 20px", textAlign: "center", background: "var(--fs-bg-2)", borderRadius: "var(--fs-radius)" }}>
                   <div style={{ width: 48, height: 48, borderRadius: "50%", background: "var(--fs-ink)", color: "white", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 14px" }}>{Icons.check}</div>
-                  <h3 style={{ fontSize: 17, fontWeight: 700, marginBottom: 6, letterSpacing: "-0.02em" }}>Check your email</h3>
+                  <h3 style={{ fontSize: 18, fontWeight: 700, marginBottom: 6, letterSpacing: "-0.02em" }}>Check your email</h3>
                   <p style={{ fontSize: 14, color: "var(--fs-ink-3)" }}>We've sent a password reset link to <strong>{email}</strong>. The link expires in 1 hour.</p>
                   <button type="button" onClick={() => { setMode('login'); setResetSent(false); setError(null); }} style={{ marginTop: 16, background: "none", border: "none", color: "var(--fs-ink)", fontSize: 14, fontWeight: 600, textDecoration: "underline", cursor: "pointer" }}>
                     Back to sign in
@@ -5031,7 +5031,7 @@ const DashboardPage = ({ user, setPage, signOut, savedIds, savedListings, onSave
                 )}
               </div>
               <div>
-                <h1 style={{ fontFamily: "var(--fs-font)", fontSize: 32, marginBottom: 6 }}>
+                <h1 style={{ fontFamily: "var(--fs-font)", fontSize: 28, marginBottom: 6 }}>
                   Welcome back, {user.full_name?.split(' ')[0]}
                 </h1>
                 <p style={{ color: "rgba(255,255,255,0.7)", fontSize: 15 }}>
