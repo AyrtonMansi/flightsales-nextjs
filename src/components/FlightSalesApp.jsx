@@ -258,11 +258,8 @@ const STYLES = `
   --fs-bg-2: #F6F6F6;
   --fs-bg-3: #F0F0F0;
   --fs-white: #FFFFFF;
-  /* Legacy aliases (used across the codebase) */
+  /* Legacy aliases — kept for backward compat, map to monochrome */
   --fs-navy-light: #1F1F1F;
-  --fs-blue: #000000;
-  --fs-blue-light: #1F1F1F;
-  --fs-sky: #000000;
   --fs-amber: #F5A623;
   --fs-green: #06C167;
   --fs-red: #E11900;
@@ -289,7 +286,6 @@ const STYLES = `
   --fs-shadow-lg: 0 8px 24px rgba(0,0,0,0.08);
   --fs-shadow-xl: 0 16px 48px rgba(0,0,0,0.12);
   --fs-font: 'Inter', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', system-ui, sans-serif;
-  --fs-font-serif: 'Fraunces', 'Iowan Old Style', Georgia, 'Times New Roman', serif;
   --fs-max-w: 1360px;
   --fs-section-y: 96px;
   --fs-section-y-mobile: 56px;
@@ -1412,6 +1408,7 @@ a { color: inherit; text-decoration: none; }
   border-radius: var(--fs-radius-sm); letter-spacing: -0.005em;
   background: var(--fs-bg-2); color: var(--fs-ink);
 }
+/* Tag variants — all monochrome in this design system */
 .fs-tag-blue, .fs-tag-green, .fs-tag-amber { background: var(--fs-bg-2); color: var(--fs-ink); }
 
 /* ABOUT PAGE */
@@ -3186,7 +3183,7 @@ const SellPage = ({ user, setPage }) => {
       <>
         <div className="fs-about-hero">
           <div className="fs-container">
-            <h1 style={{ fontFamily: "var(--fs-font-serif)", fontSize: 36 }}>Sell Your Aircraft</h1>
+            <h1 style={{ fontFamily: "var(--fs-font)", fontSize: 40, fontWeight: 700, letterSpacing: "-0.03em" }}>Sell Your Aircraft</h1>
             <p style={{ color: "var(--fs-ink-3)", marginTop: 8, fontSize: 16 }}>Reach thousands of qualified buyers across Australia</p>
           </div>
         </div>
@@ -3365,7 +3362,7 @@ const SellPage = ({ user, setPage }) => {
     <>
       <div className="fs-about-hero">
         <div className="fs-container">
-          <h1 style={{ fontFamily: "var(--fs-font-serif)", fontSize: 36 }}>Sell Your Aircraft</h1>
+          <h1 style={{ fontFamily: "var(--fs-font)", fontSize: 40, fontWeight: 700, letterSpacing: "-0.03em" }}>Sell Your Aircraft</h1>
           <p style={{ color: "var(--fs-ink-3)", marginTop: 8, fontSize: 16 }}>Reach thousands of qualified buyers across Australia</p>
         </div>
       </div>
@@ -3818,7 +3815,7 @@ const DealersPage = ({ onSelectDealer }) => {
     <>
       <div className="fs-about-hero">
         <div className="fs-container">
-          <h1 style={{ fontFamily: "var(--fs-font-serif)", fontSize: 36 }}>Verified Dealers</h1>
+          <h1 style={{ fontFamily: "var(--fs-font)", fontSize: 40, fontWeight: 700, letterSpacing: "-0.03em" }}>Verified Dealers</h1>
           <p style={{ color: "var(--fs-ink-3)", marginTop: 8, fontSize: 16 }}>Trusted aviation businesses across Australia</p>
         </div>
       </div>
@@ -4006,7 +4003,7 @@ const FinancePage = () => {
     <>
       <div className="fs-finance-hero">
         <div className="fs-container">
-          <h1 style={{ fontFamily: "var(--fs-font-serif)", fontSize: 36, marginBottom: 8 }}>Aircraft Finance</h1>
+          <h1 style={{ fontFamily: "var(--fs-font)", fontSize: 36, marginBottom: 8 }}>Aircraft Finance</h1>
           <p style={{ color: "var(--fs-ink-3)", maxWidth: 500, margin: "0 auto", fontSize: 16 }}>
             Competitive rates from Australia's leading aviation finance providers. Get pre-approved in minutes.
           </p>
@@ -4113,7 +4110,7 @@ const ValuatePage = () => {
     <>
       <div className="fs-about-hero">
         <div className="fs-container">
-          <h1 style={{ fontFamily: "var(--fs-font-serif)", fontSize: 36 }}>Aircraft Valuation</h1>
+          <h1 style={{ fontFamily: "var(--fs-font)", fontSize: 40, fontWeight: 700, letterSpacing: "-0.03em" }}>Aircraft Valuation</h1>
           <p style={{ color: "var(--fs-ink-3)", marginTop: 8, fontSize: 16 }}>Free market estimate based on real Australian sales data</p>
         </div>
       </div>
@@ -4195,7 +4192,7 @@ const NewsPage = () => {
     <>
       <div className="fs-about-hero">
         <div className="fs-container">
-          <h1 style={{ fontFamily: "var(--fs-font-serif)", fontSize: 36 }}>Aviation News</h1>
+          <h1 style={{ fontFamily: "var(--fs-font)", fontSize: 40, fontWeight: 700, letterSpacing: "-0.03em" }}>Aviation News</h1>
           <p style={{ color: "var(--fs-ink-3)", marginTop: 8, fontSize: 16 }}>Market reports, CASA updates, and industry news</p>
         </div>
       </div>
@@ -4224,7 +4221,7 @@ const AboutPage = () => (
   <>
     <div className="fs-about-hero" style={{ padding: "72px 0" }}>
       <div className="fs-container">
-        <h1 style={{ fontFamily: "var(--fs-font-serif)", fontSize: 40, marginBottom: 12 }}>About Flightsales</h1>
+        <h1 style={{ fontFamily: "var(--fs-font)", fontSize: 40, marginBottom: 12 }}>About Flightsales</h1>
         <p style={{ color: "var(--fs-ink-3)", maxWidth: 600, margin: "0 auto", fontSize: 16, lineHeight: 1.5 }}>
           We're building Australia's most trusted aircraft marketplace. A place where pilots, owners, and dealers can buy and sell with transparency, confidence, and fair pricing.
         </p>
@@ -4272,7 +4269,7 @@ const ContactPage = () => {
     <>
       <div className="fs-about-hero">
         <div className="fs-container">
-          <h1 style={{ fontFamily: "var(--fs-font-serif)", fontSize: 36 }}>Contact Us</h1>
+          <h1 style={{ fontFamily: "var(--fs-font)", fontSize: 40, fontWeight: 700, letterSpacing: "-0.03em" }}>Contact Us</h1>
           <p style={{ color: "rgba(255,255,255,0.6)", marginTop: 8 }}>Get in touch with the Flightsales team</p>
         </div>
       </div>
@@ -4442,7 +4439,7 @@ const LoginPage = ({ setPage, signIn, signUp, signInWithGoogle, resetPassword })
           }}>
             <span style={{ color: "white", fontSize: 32 }}>{mode === 'login' ? '👋' : '✈️'}</span>
           </div>
-          <h1 style={{ fontFamily: "var(--fs-font-serif)", fontSize: 30, marginBottom: 8, fontWeight: 700 }}>
+          <h1 style={{ fontFamily: "var(--fs-font)", fontSize: 30, marginBottom: 8, fontWeight: 700 }}>
             {mode === 'login' ? 'Welcome back' : 'Create your account'}
           </h1>
           <p style={{ fontSize: 15, color: "var(--fs-gray-500)", lineHeight: 1.5 }}>
@@ -4988,7 +4985,7 @@ const DashboardPage = ({ user, setPage, signOut, savedIds, savedListings, onSave
                 )}
               </div>
               <div>
-                <h1 style={{ fontFamily: "var(--fs-font-serif)", fontSize: 32, marginBottom: 6 }}>
+                <h1 style={{ fontFamily: "var(--fs-font)", fontSize: 32, marginBottom: 6 }}>
                   Welcome back, {user.full_name?.split(' ')[0]}
                 </h1>
                 <p style={{ color: "rgba(255,255,255,0.7)", fontSize: 15 }}>
@@ -6269,7 +6266,7 @@ const AdminPage = ({ user, setPage, signOut }) => {
                 {Icons.shield}
               </div>
               <div>
-                <h1 style={{ fontFamily: "var(--fs-font-serif)", fontSize: 24, marginBottom: 4 }}>
+                <h1 style={{ fontFamily: "var(--fs-font)", fontSize: 24, marginBottom: 4 }}>
                   Admin Dashboard
                 </h1>
                 <p style={{ color: "rgba(255,255,255,0.6)", fontSize: 13 }}>
