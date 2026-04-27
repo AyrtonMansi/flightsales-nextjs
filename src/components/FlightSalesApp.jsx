@@ -3400,7 +3400,7 @@ const SellPage = ({ user, setPage }) => {
           {/* Progress */}
           <div style={{ display: "flex", gap: 4, marginBottom: 32 }}>
             {[1,2,3].map(s => (
-              <div key={s} style={{ flex: 1, height: 4, borderRadius: 2, background: s <= step ? "var(--fs-blue)" : "var(--fs-gray-200)", transition: "background 0.3s" }} />
+              <div key={s} style={{ flex: 1, height: 4, borderRadius: 2, background: s <= step ? "var(--fs-ink)" : "var(--fs-gray-200)", transition: "background 0.3s" }} />
             ))}
           </div>
           
@@ -3753,12 +3753,12 @@ const SellPage = ({ user, setPage }) => {
                           { name: "Featured", price: "$149", features: ["60-day listing", "Up to 20 photos", "Homepage featured", "Priority in search"], recommended: true },
                           { name: "Premium", price: "$299", features: ["90-day listing", "Unlimited photos", "Top placement", "Dedicated support"] },
                         ].map(plan => (
-                          <label key={plan.name} style={{ display: "flex", gap: 12, padding: "12px", marginBottom: 8, borderRadius: "var(--fs-radius-sm)", border: selectedPlan === plan.name ? "2px solid var(--fs-blue)" : "1px solid var(--fs-gray-200)", cursor: "pointer", background: "white" }}>
+                          <label key={plan.name} style={{ display: "flex", gap: 12, padding: "12px", marginBottom: 8, borderRadius: "var(--fs-radius-sm)", border: selectedPlan === plan.name ? "2px solid var(--fs-ink)" : "1px solid var(--fs-gray-200)", cursor: "pointer", background: "white" }}>
                             <input type="radio" name="plan" checked={selectedPlan === plan.name} onChange={() => setSelectedPlan(plan.name)} style={{ marginTop: 2 }} />
                             <div style={{ flex: 1 }}>
                               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                                 <span style={{ fontWeight: 600, fontSize: 14 }}>{plan.name}</span>
-                                <span style={{ fontWeight: 700, color: "var(--fs-blue)" }}>{plan.price}</span>
+                                <span style={{ fontWeight: 700, color: "var(--fs-ink)" }}>{plan.price}</span>
                               </div>
                               <div style={{ fontSize: 12, color: "var(--fs-gray-500)", marginTop: 4 }}>{plan.features.join(" · ")}</div>
                             </div>
@@ -3879,7 +3879,7 @@ const DealersPage = ({ onSelectDealer }) => {
               Get a branded storefront, lead management tools, and access to Australia's largest aviation audience.
             </p>
             {applied ? (
-              <p style={{ color: "var(--fs-blue)", fontWeight: 600 }}>✓ Application received — we'll be in touch within 2 business days.</p>
+              <p style={{ color: "var(--fs-ink)", fontWeight: 600 }}>✓ Application received — we'll be in touch within 2 business days.</p>
             ) : showApply ? (
               <div style={{ maxWidth: 400, margin: "0 auto", textAlign: "left" }}>
                 {applyError && <p style={{ color: "#ef4444", fontSize: 13, marginBottom: 8 }}>{applyError}</p>}
@@ -4085,7 +4085,7 @@ const FinancePage = () => {
               </div>
             </div>
             {finSent ? (
-              <p style={{ textAlign: "center", color: "var(--fs-blue)", fontWeight: 600, marginTop: 20 }}>✓ Request received — a finance specialist will contact you within 1 business day.</p>
+              <p style={{ textAlign: "center", color: "var(--fs-ink)", fontWeight: 600, marginTop: 20 }}>✓ Request received — a finance specialist will contact you within 1 business day.</p>
             ) : showFinForm ? (
               <div style={{ marginTop: 20, borderTop: "1px solid var(--fs-gray-100)", paddingTop: 20 }}>
                 {finError && <p style={{ color: "#ef4444", fontSize: 13, marginBottom: 8 }}>{finError}</p>}
@@ -4604,7 +4604,7 @@ const LoginPage = ({ setPage, signIn, signUp, signInWithGoogle, resetPassword })
                       style={{ 
                         padding: "14px 12px", 
                         borderRadius: "var(--fs-radius-sm)",
-                        border: accountType === 'private' ? "2px solid var(--fs-blue)" : "1px solid var(--fs-gray-200)",
+                        border: accountType === 'private' ? "2px solid var(--fs-ink)" : "1px solid var(--fs-gray-200)",
                         background: accountType === 'private' ? "#eff6ff" : "white",
                         cursor: "pointer",
                         textAlign: "center",
@@ -4616,7 +4616,7 @@ const LoginPage = ({ setPage, signIn, signUp, signInWithGoogle, resetPassword })
                       }}
                     >
                       <span style={{ fontSize: 20 }}>👤</span>
-                      <span style={{ fontSize: 14, fontWeight: accountType === 'private' ? 600 : 400, color: accountType === 'private' ? "var(--fs-blue)" : "var(--fs-gray-700)" }}>
+                      <span style={{ fontSize: 14, fontWeight: accountType === 'private' ? 600 : 400, color: accountType === 'private' ? "var(--fs-ink)" : "var(--fs-gray-700)" }}>
                         Private Seller
                       </span>
                       <span style={{ fontSize: 11, color: "var(--fs-gray-400)" }}>Individual owner</span>
@@ -4626,7 +4626,7 @@ const LoginPage = ({ setPage, signIn, signUp, signInWithGoogle, resetPassword })
                       style={{ 
                         padding: "14px 12px", 
                         borderRadius: "var(--fs-radius-sm)",
-                        border: accountType === 'dealer' ? "2px solid var(--fs-blue)" : "1px solid var(--fs-gray-200)",
+                        border: accountType === 'dealer' ? "2px solid var(--fs-ink)" : "1px solid var(--fs-gray-200)",
                         background: accountType === 'dealer' ? "#eff6ff" : "white",
                         cursor: "pointer",
                         textAlign: "center",
@@ -4638,7 +4638,7 @@ const LoginPage = ({ setPage, signIn, signUp, signInWithGoogle, resetPassword })
                       }}
                     >
                       <span style={{ fontSize: 20 }}>🏢</span>
-                      <span style={{ fontSize: 14, fontWeight: accountType === 'dealer' ? 600 : 400, color: accountType === 'dealer' ? "var(--fs-blue)" : "var(--fs-gray-700)" }}>
+                      <span style={{ fontSize: 14, fontWeight: accountType === 'dealer' ? 600 : 400, color: accountType === 'dealer' ? "var(--fs-ink)" : "var(--fs-gray-700)" }}>
                         Dealer
                       </span>
                       <span style={{ fontSize: 11, color: "var(--fs-gray-400)" }}>Business account</span>
@@ -4766,7 +4766,7 @@ const LoginPage = ({ setPage, signIn, signUp, signInWithGoogle, resetPassword })
                 setPassword('');
               }}
               style={{ 
-                color: "var(--fs-blue)", 
+                color: "var(--fs-ink)", 
                 fontWeight: 600, 
                 cursor: "pointer",
                 background: "none",
@@ -5107,20 +5107,20 @@ const DashboardPage = ({ user, setPage, signOut, savedIds, savedListings, onSave
                             gap: 12,
                             background: activeTab === item.id ? '#eff6ff' : 'none',
                             border: "none",
-                            borderLeft: activeTab === item.id ? '3px solid var(--fs-blue)' : '3px solid transparent',
+                            borderLeft: activeTab === item.id ? '3px solid var(--fs-ink)' : '3px solid transparent',
                             cursor: "pointer",
                             fontSize: 14,
-                            color: activeTab === item.id ? "var(--fs-blue)" : "var(--fs-gray-700)",
+                            color: activeTab === item.id ? "var(--fs-ink)" : "var(--fs-gray-700)",
                             fontWeight: activeTab === item.id ? 600 : 400,
                             textAlign: "left",
                             transition: 'all 0.15s ease'
                           }}
                         >
-                          <span style={{ color: activeTab === item.id ? "var(--fs-blue)" : "var(--fs-gray-400)", width: 20 }}>{item.icon}</span>
+                          <span style={{ color: activeTab === item.id ? "var(--fs-ink)" : "var(--fs-gray-400)", width: 20 }}>{item.icon}</span>
                           <span style={{ flex: 1 }}>{item.label}</span>
                           {item.count > 0 && (
                             <span style={{ 
-                              background: activeTab === item.id ? 'var(--fs-blue)' : 'var(--fs-gray-200)', 
+                              background: activeTab === item.id ? 'var(--fs-ink)' : 'var(--fs-gray-200)', 
                               color: activeTab === item.id ? 'white' : 'var(--fs-gray-600)', 
                               fontSize: 11, 
                               padding: '2px 8px', 
@@ -5143,20 +5143,20 @@ const DashboardPage = ({ user, setPage, signOut, savedIds, savedListings, onSave
                             gap: 12,
                             background: activeTab === section.id ? '#eff6ff' : 'none',
                             border: "none",
-                            borderLeft: activeTab === section.id ? '3px solid var(--fs-blue)' : '3px solid transparent',
+                            borderLeft: activeTab === section.id ? '3px solid var(--fs-ink)' : '3px solid transparent',
                             cursor: "pointer",
                             fontSize: 14,
-                            color: activeTab === section.id ? "var(--fs-blue)" : "var(--fs-gray-700)",
+                            color: activeTab === section.id ? "var(--fs-ink)" : "var(--fs-gray-700)",
                             fontWeight: activeTab === section.id ? 600 : 400,
                             textAlign: "left",
                             transition: 'all 0.15s ease'
                           }}
                         >
-                          <span style={{ color: activeTab === section.id ? "var(--fs-blue)" : "var(--fs-gray-400)", width: 20 }}>{section.icon}</span>
+                          <span style={{ color: activeTab === section.id ? "var(--fs-ink)" : "var(--fs-gray-400)", width: 20 }}>{section.icon}</span>
                           <span style={{ flex: 1 }}>{section.label}</span>
                           {section.count > 0 && (
                             <span style={{ 
-                              background: activeTab === section.id ? 'var(--fs-blue)' : 'var(--fs-gray-200)', 
+                              background: activeTab === section.id ? 'var(--fs-ink)' : 'var(--fs-gray-200)', 
                               color: activeTab === section.id ? 'white' : 'var(--fs-gray-600)', 
                               fontSize: 11, 
                               padding: '2px 8px', 
@@ -5199,7 +5199,7 @@ const DashboardPage = ({ user, setPage, signOut, savedIds, savedListings, onSave
                   <div style={{ padding: "16px 20px", borderTop: "1px solid var(--fs-gray-100)", background: '#fafafa' }}>
                     <p style={{ fontSize: 11, color: "var(--fs-gray-500)", marginBottom: 8 }}>Plan: Professional</p>
                     <div style={{ height: 4, background: '#e5e5e5', borderRadius: 2, marginBottom: 8 }}>
-                      <div style={{ height: '100%', width: '65%', background: 'var(--fs-blue)', borderRadius: 2 }} />
+                      <div style={{ height: '100%', width: '65%', background: 'var(--fs-ink)', borderRadius: 2 }} />
                     </div>
                     <p style={{ fontSize: 11, color: "var(--fs-gray-400)" }}>13 of 20 listings used</p>
                   </div>
@@ -5215,7 +5215,7 @@ const DashboardPage = ({ user, setPage, signOut, savedIds, savedListings, onSave
                   {/* Stats Row */}
                   <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 16, marginBottom: 24 }}>
                     {[
-                      { label: 'Total Views', value: stats.totalViews.toLocaleString(), change: stats.totalViews === 0 ? 'Tracking soon' : null, color: 'var(--fs-blue)' },
+                      { label: 'Total Views', value: stats.totalViews.toLocaleString(), change: stats.totalViews === 0 ? 'Tracking soon' : null, color: 'var(--fs-ink)' },
                       { label: 'Enquiries', value: stats.totalEnquiries, change: stats.newEnquiries > 0 ? `${stats.newEnquiries} new` : (stats.totalEnquiries > 0 ? 'All read' : null), color: 'var(--fs-green)' },
                       { label: 'Active Listings', value: stats.activeListings, change: stats.pendingListings > 0 ? `${stats.pendingListings} pending` : null, color: 'var(--fs-gray-900)' },
                       { label: 'Saved by buyers', value: stats.totalWatchers, change: null, color: 'var(--fs-amber)' },
@@ -5233,7 +5233,7 @@ const DashboardPage = ({ user, setPage, signOut, savedIds, savedListings, onSave
                     <div className="fs-detail-specs" style={{ padding: 0, borderRadius: "var(--fs-radius-lg)", overflow: 'hidden' }}>
                       <div style={{ padding: "20px", borderBottom: "1px solid var(--fs-gray-100)", display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                         <h3 style={{ fontSize: 16, fontWeight: 700 }}>Recent Activity</h3>
-                        <button style={{ fontSize: 13, color: 'var(--fs-blue)', background: 'none', border: 'none', cursor: 'pointer' }}>View All</button>
+                        <button style={{ fontSize: 13, color: 'var(--fs-ink)', background: 'none', border: 'none', cursor: 'pointer' }}>View All</button>
                       </div>
                       <div style={{ padding: "8px 0" }}>
                         {activities.map(activity => (
@@ -5246,7 +5246,7 @@ const DashboardPage = ({ user, setPage, signOut, savedIds, savedListings, onSave
                               display: 'flex',
                               alignItems: 'center',
                               justifyContent: 'center',
-                              color: activity.type === 'enquiry' ? '#166534' : activity.type === 'alert' ? '#92400e' : 'var(--fs-blue)',
+                              color: activity.type === 'enquiry' ? '#166534' : activity.type === 'alert' ? '#92400e' : 'var(--fs-ink)',
                               flexShrink: 0
                             }}>
                               {activity.icon}
@@ -5312,7 +5312,7 @@ const DashboardPage = ({ user, setPage, signOut, savedIds, savedListings, onSave
                           style={{ 
                             marginTop: 12,
                             fontSize: 13, 
-                            color: 'var(--fs-blue)', 
+                            color: 'var(--fs-ink)', 
                             background: 'none', 
                             border: 'none', 
                             cursor: 'pointer',
@@ -5424,7 +5424,7 @@ const DashboardPage = ({ user, setPage, signOut, savedIds, savedListings, onSave
                               <td style={{ padding: "16px", textAlign: "right" }}>
                                 <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
                                   <button style={{ padding: "6px 12px", background: "var(--fs-gray-100)", border: "none", borderRadius: 6, fontSize: 12, cursor: "pointer" }}>Edit</button>
-                                  <button style={{ padding: "6px 12px", background: "var(--fs-blue)", color: 'white', border: "none", borderRadius: 6, fontSize: 12, cursor: "pointer" }}>Boost</button>
+                                  <button style={{ padding: "6px 12px", background: "var(--fs-ink)", color: 'white', border: "none", borderRadius: 6, fontSize: 12, cursor: "pointer" }}>Boost</button>
                                 </div>
                               </td>
                             </tr>
@@ -5666,10 +5666,10 @@ const DashboardPage = ({ user, setPage, signOut, savedIds, savedListings, onSave
                           <div className="fs-detail-specs" style={{ padding: "20px", borderRadius: "var(--fs-radius-lg)", marginBottom: 16 }}>
                             <h4 style={{ fontSize: 14, fontWeight: 700, marginBottom: 16, textTransform: 'uppercase', letterSpacing: 0.5, color: 'var(--fs-gray-500)' }}>Buyer Details</h4>
                             <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-                              <a href={`mailto:${selectedEnquiry.email}`} style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 14, color: "var(--fs-blue)" }}>
+                              <a href={`mailto:${selectedEnquiry.email}`} style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 14, color: "var(--fs-ink)" }}>
                                 {Icons.mail} {selectedEnquiry.email}
                               </a>
-                              <a href={`tel:${selectedEnquiry.phone}`} style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 14, color: "var(--fs-blue)" }}>
+                              <a href={`tel:${selectedEnquiry.phone}`} style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 14, color: "var(--fs-ink)" }}>
                                 {Icons.phone} {selectedEnquiry.phone}
                               </a>
                             </div>
@@ -5686,8 +5686,8 @@ const DashboardPage = ({ user, setPage, signOut, savedIds, savedListings, onSave
                                   style={{ 
                                     padding: "10px 16px", 
                                     background: selectedEnquiry.status === status ? '#eff6ff' : 'var(--fs-gray-100)', 
-                                    color: selectedEnquiry.status === status ? 'var(--fs-blue)' : 'var(--fs-gray-700)',
-                                    border: selectedEnquiry.status === status ? '1px solid var(--fs-blue)' : 'none',
+                                    color: selectedEnquiry.status === status ? 'var(--fs-ink)' : 'var(--fs-gray-700)',
+                                    border: selectedEnquiry.status === status ? '1px solid var(--fs-ink)' : 'none',
                                     borderRadius: "var(--fs-radius)",
                                     fontSize: 13,
                                     cursor: "pointer",
@@ -5773,14 +5773,14 @@ const DashboardPage = ({ user, setPage, signOut, savedIds, savedListings, onSave
                             <p style={{ fontSize: 13, color: 'var(--fs-gray-500)' }}>Last edited: {draft.lastEdited}</p>
                             <div style={{ marginTop: 8, display: 'flex', alignItems: 'center', gap: 8 }}>
                               <div style={{ width: 120, height: 6, background: '#e5e5e5', borderRadius: 3 }}>
-                                <div style={{ width: `${draft.progress}%`, height: '100%', background: 'var(--fs-blue)', borderRadius: 3 }} />
+                                <div style={{ width: `${draft.progress}%`, height: '100%', background: 'var(--fs-ink)', borderRadius: 3 }} />
                               </div>
                               <span style={{ fontSize: 12, color: 'var(--fs-gray-500)' }}>{draft.progress}% complete</span>
                             </div>
                           </div>
                           <div style={{ display: 'flex', gap: 8 }}>
                             <button style={{ padding: "8px 16px", background: "var(--fs-gray-100)", border: "none", borderRadius: 6, fontSize: 13, cursor: "pointer" }}>Delete</button>
-                            <button style={{ padding: "8px 16px", background: "var(--fs-blue)", color: 'white', border: "none", borderRadius: 6, fontSize: 13, cursor: "pointer" }}>Continue</button>
+                            <button style={{ padding: "8px 16px", background: "var(--fs-ink)", color: 'white', border: "none", borderRadius: 6, fontSize: 13, cursor: "pointer" }}>Continue</button>
                           </div>
                         </div>
                       ))}
@@ -5833,7 +5833,7 @@ const DashboardPage = ({ user, setPage, signOut, savedIds, savedListings, onSave
                           </div>
                           <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
                             <button style={{ padding: "8px 16px", background: "var(--fs-gray-100)", border: "none", borderRadius: 6, fontSize: 13, cursor: "pointer" }}>Decline</button>
-                            <button style={{ padding: "8px 16px", background: "var(--fs-blue)", color: 'white', border: "none", borderRadius: 6, fontSize: 13, cursor: "pointer" }}>Accept</button>
+                            <button style={{ padding: "8px 16px", background: "var(--fs-ink)", color: 'white', border: "none", borderRadius: 6, fontSize: 13, cursor: "pointer" }}>Accept</button>
                           </div>
                         </div>
                       ))}
@@ -5916,7 +5916,7 @@ const DashboardPage = ({ user, setPage, signOut, savedIds, savedListings, onSave
                           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12 }}>
                             <div>
                               <h4 style={{ fontSize: 16, fontWeight: 600, marginBottom: 4 }}>{search.name}</h4>
-                              <p style={{ fontSize: 13, color: 'var(--fs-blue)' }}>{search.count} new matches</p>
+                              <p style={{ fontSize: 13, color: 'var(--fs-ink)' }}>{search.count} new matches</p>
                             </div>
                             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                               <span style={{ fontSize: 13, color: search.alerts ? '#10b981' : 'var(--fs-gray-400)' }}>
@@ -5933,7 +5933,7 @@ const DashboardPage = ({ user, setPage, signOut, savedIds, savedListings, onSave
                           </div>
                           <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
                             <button style={{ padding: "8px 16px", background: "transparent", border: "1px solid var(--fs-gray-200)", borderRadius: 6, fontSize: 13, cursor: "pointer" }}>Delete</button>
-                            <button style={{ padding: "8px 16px", background: "var(--fs-blue)", color: 'white', border: "none", borderRadius: 6, fontSize: 13, cursor: "pointer" }}>View Results</button>
+                            <button style={{ padding: "8px 16px", background: "var(--fs-ink)", color: 'white', border: "none", borderRadius: 6, fontSize: 13, cursor: "pointer" }}>View Results</button>
                           </div>
                         </div>
                       ))}
@@ -5965,7 +5965,7 @@ const DashboardPage = ({ user, setPage, signOut, savedIds, savedListings, onSave
                               width: 48,
                               height: 24,
                               borderRadius: "var(--fs-radius-lg)",
-                              background: notifications[item.key] ? 'var(--fs-blue)' : 'var(--fs-gray-200)',
+                              background: notifications[item.key] ? 'var(--fs-ink)' : 'var(--fs-gray-200)',
                               border: 'none',
                               cursor: 'pointer',
                               position: 'relative',
@@ -6004,7 +6004,7 @@ const DashboardPage = ({ user, setPage, signOut, savedIds, savedListings, onSave
                               width: 48,
                               height: 24,
                               borderRadius: "var(--fs-radius-lg)",
-                              background: notifications[item.key] ? 'var(--fs-blue)' : 'var(--fs-gray-200)',
+                              background: notifications[item.key] ? 'var(--fs-ink)' : 'var(--fs-gray-200)',
                               border: 'none',
                               cursor: 'pointer',
                               position: 'relative',
@@ -6042,7 +6042,7 @@ const DashboardPage = ({ user, setPage, signOut, savedIds, savedListings, onSave
                               width: 48,
                               height: 24,
                               borderRadius: "var(--fs-radius-lg)",
-                              background: notifications[item.key] ? 'var(--fs-blue)' : 'var(--fs-gray-200)',
+                              background: notifications[item.key] ? 'var(--fs-ink)' : 'var(--fs-gray-200)',
                               border: 'none',
                               cursor: 'pointer',
                               position: 'relative',
@@ -6104,7 +6104,7 @@ const DashboardPage = ({ user, setPage, signOut, savedIds, savedListings, onSave
                           <div style={{ padding: "12px", background: "var(--fs-gray-100)", borderRadius: "var(--fs-radius)", display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                             <code style={{ fontSize: 14, fontWeight: 600, letterSpacing: 1 }}>{discount.code}</code>
                             {!discount.used && (
-                              <button style={{ padding: "6px 12px", background: "var(--fs-blue)", color: 'white', border: "none", borderRadius: 4, fontSize: 12, cursor: "pointer" }}>Copy</button>
+                              <button style={{ padding: "6px 12px", background: "var(--fs-ink)", color: 'white', border: "none", borderRadius: 4, fontSize: 12, cursor: "pointer" }}>Copy</button>
                             )}
                           </div>
                         </div>
@@ -6343,7 +6343,7 @@ const AdminPage = ({ user, setPage, signOut }) => {
           {/* Stats Row — live from DB */}
           <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 16, marginBottom: 32 }}>
             {[
-              { label: 'Total Listings', value: adminStats.totalListings, color: 'var(--fs-blue)' },
+              { label: 'Total Listings', value: adminStats.totalListings, color: 'var(--fs-ink)' },
               { label: 'Pending Review', value: adminStats.pendingReview, color: 'var(--fs-amber)' },
               { label: 'Active Users', value: adminStats.activeUsers, color: 'var(--fs-green)' },
               { label: 'Dealers', value: adminStats.dealers, color: 'var(--fs-gray-900)' },
@@ -6370,12 +6370,12 @@ const AdminPage = ({ user, setPage, signOut }) => {
                 style={{
                   padding: "12px 20px",
                   border: "none",
-                  borderBottom: activeTab === tab.id ? "2px solid var(--fs-blue)" : "2px solid transparent",
+                  borderBottom: activeTab === tab.id ? "2px solid var(--fs-ink)" : "2px solid transparent",
                   background: "none",
                   cursor: "pointer",
                   fontSize: 14,
                   fontWeight: activeTab === tab.id ? 600 : 400,
-                  color: activeTab === tab.id ? "var(--fs-blue)" : "var(--fs-gray-500)",
+                  color: activeTab === tab.id ? "var(--fs-ink)" : "var(--fs-gray-500)",
                   display: 'flex',
                   alignItems: 'center',
                   gap: 8
@@ -6384,7 +6384,7 @@ const AdminPage = ({ user, setPage, signOut }) => {
                 {tab.label}
                 {tab.badge > 0 && (
                   <span style={{ 
-                    background: activeTab === tab.id ? 'var(--fs-blue)' : 'var(--fs-gray-200)', 
+                    background: activeTab === tab.id ? 'var(--fs-ink)' : 'var(--fs-gray-200)', 
                     color: activeTab === tab.id ? 'white' : 'var(--fs-gray-600)', 
                     fontSize: 11, 
                     padding: '2px 8px', 
@@ -6481,7 +6481,7 @@ const AdminPage = ({ user, setPage, signOut }) => {
                           borderRadius: 4,
                           fontSize: 12,
                           background: u.role === 'dealer' ? '#eff6ff' : '#f3f4f6',
-                          color: u.role === 'dealer' ? 'var(--fs-blue)' : 'var(--fs-gray-600)',
+                          color: u.role === 'dealer' ? 'var(--fs-ink)' : 'var(--fs-gray-600)',
                           textTransform: "capitalize"
                         }}>
                           {u.role}
@@ -6490,7 +6490,7 @@ const AdminPage = ({ user, setPage, signOut }) => {
                       <td style={{ padding: "16px" }}>{u.listings}</td>
                       <td style={{ padding: "16px", textAlign: 'right' }}>
                         {u.role !== 'dealer' && (
-                          <button onClick={() => promoteToDealer(u.id)} style={{ padding: "6px 12px", background: "var(--fs-blue)", color: 'white', border: "none", borderRadius: 4, fontSize: 12, cursor: "pointer" }}>Promote to dealer</button>
+                          <button onClick={() => promoteToDealer(u.id)} style={{ padding: "6px 12px", background: "var(--fs-ink)", color: 'white', border: "none", borderRadius: 4, fontSize: 12, cursor: "pointer" }}>Promote to dealer</button>
                         )}
                       </td>
                     </tr>
@@ -6535,7 +6535,7 @@ const AdminPage = ({ user, setPage, signOut }) => {
                         </td>
                         <td style={{ padding: "16px", fontSize: 13, color: 'var(--fs-gray-500)' }}>{new Date(e.created_at).toLocaleString()}</td>
                         <td style={{ padding: "16px", textAlign: 'right' }}>
-                          <a href={`mailto:${e.email}`} style={{ fontSize: 12, color: 'var(--fs-blue)', marginRight: 12 }}>Email</a>
+                          <a href={`mailto:${e.email}`} style={{ fontSize: 12, color: 'var(--fs-ink)', marginRight: 12 }}>Email</a>
                           {e.status === 'new' && (
                             <button onClick={() => updateEnquiryStatus(e.id, 'read')} style={{ padding: "6px 12px", background: "var(--fs-gray-100)", color: 'var(--fs-gray-700)', border: 'none', borderRadius: 4, fontSize: 12, cursor: 'pointer' }}>Mark read</button>
                           )}
@@ -6564,7 +6564,7 @@ const AdminPage = ({ user, setPage, signOut }) => {
                             onClick={() => setLeadStatusFilter(filter)}
                             style={{ 
                               padding: "6px 12px", 
-                              background: leadStatusFilter === filter ? 'var(--fs-blue)' : 'var(--fs-gray-100)', 
+                              background: leadStatusFilter === filter ? 'var(--fs-ink)' : 'var(--fs-gray-100)', 
                               color: leadStatusFilter === filter ? 'white' : 'var(--fs-gray-700)',
                               border: "none",
                               borderRadius: 6,
@@ -6620,7 +6620,7 @@ const AdminPage = ({ user, setPage, signOut }) => {
                                 onClick={() => setSelectedLead(lead)}
                                 style={{ 
                                   padding: "6px 12px", 
-                                  background: "var(--fs-blue)", 
+                                  background: "var(--fs-ink)", 
                                   color: "white",
                                   border: "none",
                                   borderRadius: 6,
@@ -6671,11 +6671,11 @@ const AdminPage = ({ user, setPage, signOut }) => {
                           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 20 }}>
                             <div>
                               <p style={{ fontSize: 12, color: 'var(--fs-gray-400)', marginBottom: 4 }}>Email</p>
-                              <a href={`mailto:${selectedLead.email}`} style={{ fontSize: 14, color: 'var(--fs-blue)' }}>{selectedLead.email}</a>
+                              <a href={`mailto:${selectedLead.email}`} style={{ fontSize: 14, color: 'var(--fs-ink)' }}>{selectedLead.email}</a>
                             </div>
                             <div>
                               <p style={{ fontSize: 12, color: 'var(--fs-gray-400)', marginBottom: 4 }}>Phone</p>
-                              <a href={`tel:${selectedLead.phone}`} style={{ fontSize: 14, color: 'var(--fs-blue)' }}>{selectedLead.phone}</a>
+                              <a href={`tel:${selectedLead.phone}`} style={{ fontSize: 14, color: 'var(--fs-ink)' }}>{selectedLead.phone}</a>
                             </div>
                             {selectedLead.amount && (
                               <div>
@@ -6708,8 +6708,8 @@ const AdminPage = ({ user, setPage, signOut }) => {
                                 style={{ 
                                   padding: "10px 16px", 
                                   background: selectedLead.status === status ? '#eff6ff' : 'var(--fs-gray-100)', 
-                                  color: selectedLead.status === status ? 'var(--fs-blue)' : 'var(--fs-gray-700)',
-                                  border: selectedLead.status === status ? '1px solid var(--fs-blue)' : 'none',
+                                  color: selectedLead.status === status ? 'var(--fs-ink)' : 'var(--fs-gray-700)',
+                                  border: selectedLead.status === status ? '1px solid var(--fs-ink)' : 'none',
                                   borderRadius: "var(--fs-radius)",
                                   fontSize: 13,
                                   cursor: "pointer",
