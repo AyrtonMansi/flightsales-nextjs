@@ -1686,27 +1686,13 @@ const MobileFilterSheet = ({ isOpen, onClose, children }) => {
   );
 };
 
-const EmptyState = ({ title, description, searchQuery, activeFilters, onClearFilters, onBrowseAll, onSetAlert, user }) => (
-  <div className="fs-empty" style={{ padding: "80px 20px", textAlign: 'center' }}>
-    <div style={{ 
-      width: 80, 
-      height: 80, 
-      margin: '0 auto 24px', 
-      borderRadius: '50%', 
-      background: 'var(--fs-bg-2)', 
-      display: 'flex', 
-      alignItems: 'center', 
-      justifyContent: 'center',
-      fontSize: 40
-    }}>
-      🔍
-    </div>
-    
-    <div style={{ fontSize: 20, fontWeight: 700, color: "var(--fs-ink)", marginBottom: 12, letterSpacing: "-0.02em" }}>
+const EmptyState = ({ title, description, searchQuery, activeFilters, onClearFilters, onBrowseAll }) => (
+  <div className="fs-empty" style={{ padding: "60px 20px", textAlign: 'center' }}>
+    <div style={{ fontSize: 18, fontWeight: 700, color: "var(--fs-ink)", marginBottom: 8, letterSpacing: "-0.02em" }}>
       {title}
     </div>
     
-    <p style={{ color: "var(--fs-ink-3)", fontSize: 15, marginBottom: 24, maxWidth: 400, margin: '0 auto 24', lineHeight: 1.5 }}>
+    <p style={{ color: "var(--fs-ink-3)", fontSize: 14, marginBottom: 20, maxWidth: 400, margin: '0 auto 20', lineHeight: 1.5 }}>
       {searchQuery ? (
         <>We couldn't find any aircraft for "<strong>{searchQuery}</strong>". {description}</>
       ) : (
@@ -1714,45 +1700,21 @@ const EmptyState = ({ title, description, searchQuery, activeFilters, onClearFil
       )}
     </p>
     
-    {activeFilters > 0 && (
-      <div style={{ marginBottom: 16 }}>
+    <div style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap' }}>
+      {activeFilters > 0 && (
         <button 
           className="fs-btn fs-btn-primary" 
           onClick={onClearFilters}
-          style={{ marginRight: 12 }}
         >
           Clear all filters
         </button>
-      </div>
-    )}
-    
-    <div style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap' }}>
+      )}
       <button 
         className="fs-btn fs-btn-secondary" 
         onClick={onBrowseAll}
       >
         Browse all aircraft
       </button>
-      
-      {!user && (
-        <button 
-          className="fs-btn fs-btn-secondary"
-          onClick={onSetAlert}
-          style={{ display: 'flex', alignItems: 'center', gap: 6 }}
-        >
-          <span>🔔</span> Get alerts
-        </button>
-      )}
-    </div>
-    
-    <div style={{ marginTop: 40, padding: '20px 24px', background: 'var(--fs-bg-2)', borderRadius: 12, maxWidth: 480, margin: '40px auto 0' }}>
-      <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--fs-ink-2)', marginBottom: 8 }}>💡 Tips</div>
-      <ul style={{ fontSize: 13, color: 'var(--fs-ink-3)', textAlign: 'left', lineHeight: 1.6, margin: 0, paddingLeft: 16 }}>
-        <li>Try searching for just the aircraft model (e.g., "Cessna 172")</li>
-        <li>Remove filters to see more results</li>
-        <li>Check different states for more options</li>
-        <li>New listings added daily — set an alert</li>
-      </ul>
     </div>
   </div>
 );
