@@ -2107,8 +2107,8 @@ const HomePage = ({ setPage, setSelectedListing, savedIds, onSave, setSearchFilt
   const { articles: newsFromDB } = useNews(3);
   const { total: totalListings } = useAircraft({});
 
-  const featured = featuredFromDB.length > 0 ? featuredFromDB : SAMPLE_LISTINGS.filter(l => l.featured).slice(0, 3);
-  const latest = latestFromDB.length > 0 ? latestFromDB : [...SAMPLE_LISTINGS].sort((a, b) => new Date(b.created_at || b.created) - new Date(a.created_at || a.created)).slice(0, 3);
+  const featured = featuredFromDB;
+  const latest = latestFromDB;
   const displayDealers = dealersFromDB.length > 0 ? dealersFromDB : DEALERS;
   const displayNews = newsFromDB.length > 0 ? newsFromDB : NEWS_ARTICLES;
 
@@ -2391,13 +2391,21 @@ const HomePage = ({ setPage, setSelectedListing, savedIds, onSave, setSearchFilt
             </div>
             <span className="fs-section-link" onClick={() => setPage("buy")}>View all {Icons.arrowRight}</span>
           </div>
-          <div className="fs-grid">
-            {featuredLoading ? (
-              [1,2,3,4].map(i => <div key={i} style={{ height: 360, background: "var(--fs-bg-2)", borderRadius: "var(--fs-radius)", animation: "fs-pulse 1.5s infinite" }} />)
-            ) : featured.map(l => (
-              <ListingCard key={l.id} listing={l} onClick={setSelectedListing} onSave={onSave} saved={savedIds.has(l.id)} />
-            ))}
-          </div>
+          {featuredLoading ? (
+            <div className="fs-grid">
+              {[1,2,3].map(i => <div key={i} style={{ height: 360, background: "var(--fs-bg-2)", borderRadius: "var(--fs-radius)", animation: "fs-pulse 1.5s infinite" }} />)}
+            </div>
+          ) : featured.length === 0 ? (
+            <div style={{ padding: "48px 24px", textAlign: "center", color: "var(--fs-ink-3)", fontSize: 14, border: "1px dashed var(--fs-line)", borderRadius: "var(--fs-radius)" }}>
+              No featured listings yet.
+            </div>
+          ) : (
+            <div className="fs-grid">
+              {featured.map(l => (
+                <ListingCard key={l.id} listing={l} onClick={setSelectedListing} onSave={onSave} saved={savedIds.has(l.id)} />
+              ))}
+            </div>
+          )}
         </div>
       </section>
 
@@ -2411,13 +2419,21 @@ const HomePage = ({ setPage, setSelectedListing, savedIds, onSave, setSearchFilt
             </div>
             <span className="fs-section-link" onClick={() => setPage("buy")}>View all {Icons.arrowRight}</span>
           </div>
-          <div className="fs-grid">
-            {latestLoading ? (
-              [1,2,3,4].map(i => <div key={i} style={{ height: 360, background: "var(--fs-line)", borderRadius: "var(--fs-radius)", animation: "fs-pulse 1.5s infinite" }} />)
-            ) : latest.map(l => (
-              <ListingCard key={l.id} listing={l} onClick={setSelectedListing} onSave={onSave} saved={savedIds.has(l.id)} />
-            ))}
-          </div>
+          {latestLoading ? (
+            <div className="fs-grid">
+              {[1,2,3].map(i => <div key={i} style={{ height: 360, background: "var(--fs-line)", borderRadius: "var(--fs-radius)", animation: "fs-pulse 1.5s infinite" }} />)}
+            </div>
+          ) : latest.length === 0 ? (
+            <div style={{ padding: "48px 24px", textAlign: "center", color: "var(--fs-ink-3)", fontSize: 14, border: "1px dashed var(--fs-line)", borderRadius: "var(--fs-radius)" }}>
+              No listings yet.
+            </div>
+          ) : (
+            <div className="fs-grid">
+              {latest.map(l => (
+                <ListingCard key={l.id} listing={l} onClick={setSelectedListing} onSave={onSave} saved={savedIds.has(l.id)} />
+              ))}
+            </div>
+          )}
         </div>
       </section>
 
