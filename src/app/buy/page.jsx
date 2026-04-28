@@ -1,5 +1,4 @@
-import FlightSalesApp from '@/components/FlightSalesApp';
-import { ErrorBoundary } from '@/components/ui/ErrorBoundary';
+import PageShell from '@/components/PageShell';
 
 const SITE = 'https://flightsales.com.au';
 
@@ -17,9 +16,5 @@ export const metadata = {
 };
 
 export default function Page() {
-  return (
-    <ErrorBoundary>
-      <FlightSalesApp initialPage="buy" />
-    </ErrorBoundary>
-  );
+  return <PageShell initialPage="buy" />;
 }

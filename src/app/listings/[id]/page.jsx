@@ -1,9 +1,8 @@
 // Real Next.js dynamic route for an individual listing.
 // Server-renders SEO metadata (title, description, OG image) from Supabase
-// and hands off to the existing FlightSalesApp client component for the UI.
+// and hands off to the client app via PageShell for the UI.
 
-import FlightSalesApp from '@/components/FlightSalesApp';
-import { ErrorBoundary } from '@/components/ui/ErrorBoundary';
+import PageShell from '@/components/PageShell';
 import { createClient } from '@supabase/supabase-js';
 
 const SITE = 'https://flightsales.com.au';
@@ -66,12 +65,10 @@ export async function generateMetadata({ params }) {
 export default async function Page({ params }) {
   const listing = await fetchListing(params.id);
   return (
-    <ErrorBoundary>
-      <FlightSalesApp
-        initialPage="detail"
-        initialListingId={params.id}
-        initialListing={listing || null}
-      />
-    </ErrorBoundary>
+    <PageShell
+      initialPage="detail"
+      initialListingId={params.id}
+      initialListing={listing || null}
+    />
   );
 }

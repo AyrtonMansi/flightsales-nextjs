@@ -1,11 +1,5 @@
-'use client';
-import FlightSalesApp from '@/components/FlightSalesApp';
-import { ErrorBoundary } from '@/components/ui/ErrorBoundary';
+import PageShell from '@/components/PageShell';
 
 export default function Page() {
-  return (
-    <ErrorBoundary>
-      <FlightSalesApp />
-    </ErrorBoundary>
-  );
+  return <PageShell initialPage="home" />;
 }
