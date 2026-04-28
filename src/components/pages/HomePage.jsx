@@ -6,7 +6,7 @@ import { useAircraft, useFeaturedAircraft, useLatestAircraft, useDealers, useNew
 import { MANUFACTURERS, CATEGORIES, STATES, DEALERS, NEWS_ARTICLES } from '../../lib/constants';
 import { useRotatingPlaceholder, AI_SEARCH_EXAMPLES } from '../../lib/useRotatingPlaceholder';
 
-const HomePage = ({ setPage, setSelectedListing, savedIds, onSave, setSearchFilters }) => {
+const HomePage = ({ setPage, setSelectedListing, savedIds, onSave, setSearchFilters, initialHomeData }) => {
   const [searchCat, setSearchCat] = useState("");
   const [searchMake, setSearchMake] = useState("");
   const [searchState, setSearchState] = useState("");
@@ -17,16 +17,24 @@ const HomePage = ({ setPage, setSelectedListing, savedIds, onSave, setSearchFilt
   const [aiQuery, setAiQuery] = useState("");
   const rotatingPlaceholder = useRotatingPlaceholder(AI_SEARCH_EXAMPLES);
 
+  // Server-fetched home data when present (eliminates the skeleton flash on
+  // first paint and makes the content crawlable without JS execution).
+  // Falls back to client hooks if the route was rendered without server data
+  // — e.g. when navigating in via setPage('home') after first load.
+  const hasServerData = !!initialHomeData;
   const { aircraft: featuredFromDB, loading: featuredLoading } = useFeaturedAircraft();
   const { aircraft: latestFromDB, loading: latestLoading } = useLatestAircraft();
   const { dealers: dealersFromDB } = useDealers();
   const { articles: newsFromDB } = useNews(3);
-  const { total: totalListings } = useAircraft({});
+  const { total: clientTotal } = useAircraft({});
 
-  const featured = featuredFromDB;
-  const latest = latestFromDB;
+  const featured = hasServerData ? initialHomeData.featured : featuredFromDB;
+  const latest = hasServerData ? initialHomeData.latest : latestFromDB;
+  const totalListings = hasServerData ? initialHomeData.totalListings : clientTotal;
   const displayDealers = dealersFromDB.length > 0 ? dealersFromDB : DEALERS;
   const displayNews = newsFromDB.length > 0 ? newsFromDB : NEWS_ARTICLES;
+  // Skeleton flag — server data is never loading
+  void featuredLoading; void latestLoading;
 
   // Parse AI search query and extract filters
   const parseAiQuery = (query) => {

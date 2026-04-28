@@ -44,7 +44,14 @@ export async function generateMetadata({ params }) {
   const description = `${listing.year || ''} ${listing.manufacturer || ''} ${listing.model || ''}`.trim()
     + (locTxt ? ` for sale in ${locTxt}.` : ' for sale.')
     + (listing.description ? ` ${listing.description.slice(0, 140)}` : '');
-  const ogImage = listing.images?.[0];
+  // Prefer the listing's actual photo; fall back to a generated OG card so
+  // every listing has a presentable share preview even with no images.
+  const ogParams = new URLSearchParams({
+    title: listing.title || 'Aircraft for sale',
+    price: String(listing.price || ''),
+    location: locTxt,
+  }).toString();
+  const ogImage = listing.images?.[0] || `${SITE}/api/og?${ogParams}`;
   return {
     title,
     description,
@@ -55,13 +62,13 @@ export async function generateMetadata({ params }) {
       url: `${SITE}/listings/${id}`,
       siteName: 'FlightSales',
       type: 'website',
-      images: ogImage ? [{ url: ogImage }] : [],
+      images: [{ url: ogImage, width: 1200, height: 630 }],
     },
     twitter: {
       card: 'summary_large_image',
       title,
       description,
-      images: ogImage ? [ogImage] : [],
+      images: [ogImage],
     },
   };
 }
