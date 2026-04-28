@@ -9,6 +9,7 @@ import { MANUFACTURERS, CATEGORIES, STATES, CONDITIONS } from '../../lib/constan
 import { useRotatingPlaceholder, AI_SEARCH_EXAMPLES } from '../../lib/useRotatingPlaceholder';
 import CardSkeleton from '../CardSkeleton';
 import MobileFilterSheet from '../MobileFilterSheet';
+import EmptyState from '../EmptyState';
 
 const BuyPage = ({ setSelectedListing, savedIds, onSave, initialFilters, user, setPage }) => {
   const [search, setSearch] = useState(initialFilters?.query || "");
