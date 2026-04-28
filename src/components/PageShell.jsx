@@ -6,7 +6,14 @@ import { ErrorBoundary } from './ui/ErrorBoundary';
 // Lives here (not in src/app) so route files can stay one-line server components
 // — server components can import + render a client component but cannot embed
 // 'use client' inline alongside generateMetadata.
-export default function PageShell({ initialPage = 'home', initialListing = null, initialListingId = null, initialDealer = null, initialDealerId = null }) {
+export default function PageShell({
+  initialPage = 'home',
+  initialListing = null,
+  initialListingId = null,
+  initialDealer = null,
+  initialDealerId = null,
+  initialHomeData = null,
+}) {
   return (
     <ErrorBoundary>
       <FlightSalesApp
@@ -15,6 +22,7 @@ export default function PageShell({ initialPage = 'home', initialListing = null,
         initialListingId={initialListingId}
         initialDealer={initialDealer}
         initialDealerId={initialDealerId}
+        initialHomeData={initialHomeData}
       />
     </ErrorBoundary>
   );
