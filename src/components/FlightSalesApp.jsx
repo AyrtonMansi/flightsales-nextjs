@@ -301,7 +301,7 @@ export default function FlightSalesApp({
       {page === "dashboard" && effectiveUser && effectiveUser.role !== 'admin' && <DashboardPage user={effectiveUser} setPage={setPageWrap} signOut={signOut} savedIds={savedIds} savedListings={savedListings} onSave={onSave} onSelectListing={setSelectedListing} />}
       {page === "admin" && effectiveUser?.role === 'admin' && <AdminPage user={effectiveUser} setPage={setPageWrap} signOut={signOut} />}
 
-      <Footer setPage={setPageWrap} />
+      <Footer />
 
       {toast && (
         <div className="fs-toast">

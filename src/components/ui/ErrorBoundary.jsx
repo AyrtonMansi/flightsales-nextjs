@@ -37,18 +37,12 @@ export class ErrorBoundary extends Component {
             boxShadow: '0 4px 24px rgba(0,0,0,0.08)'
           }}>
             <div style={{
-              width: '64px',
-              height: '64px',
-              borderRadius: '50%',
-              background: 'var(--fs-gray-100, #f5f5f5)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              margin: '0 auto 20px',
-              fontSize: '28px'
-            }}>
-              ⚠️
-            </div>
+              width: '4px',
+              height: '32px',
+              borderRadius: '2px',
+              background: 'var(--fs-gray-900, #0a0a0a)',
+              margin: '0 auto 24px'
+            }} aria-hidden="true" />
             <h1 style={{
               fontSize: '22px',
               fontWeight: 700,
