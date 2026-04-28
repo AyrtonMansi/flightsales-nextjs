@@ -2,7 +2,6 @@
 import { useState } from 'react';
 import { Icons } from '../Icons';
 import { useAircraft, submitLead } from '../../lib/hooks';
-import { SAMPLE_LISTINGS } from '../../lib/constants';
 import ListingCard from '../ListingCard';
 
 const DealerDetailPage = ({ dealer, onBack, setSelectedListing, savedIds, onSave }) => {
@@ -13,10 +12,8 @@ const DealerDetailPage = ({ dealer, onBack, setSelectedListing, savedIds, onSave
   const [contactForm, setContactForm] = useState({ name: '', email: '', phone: '', message: `Hi, I'd like to know more about the aircraft you have available at ${dealer?.name || 'your dealership'}.` });
 
   if (!dealer) return null;
-  // Filter sample listings to dealer if no DB results yet
-  const listings = dealerListings.length > 0
-    ? dealerListings
-    : SAMPLE_LISTINGS.filter(l => l.dealer_id === dealer.id);
+  // Source of truth: DB only. Empty result renders an empty grid.
+  const listings = dealerListings;
 
   const handleContact = async () => {
     if (!contactForm.name || !contactForm.email) { setContactErr('Name and email required.'); return; }
