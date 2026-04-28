@@ -7,7 +7,7 @@ export default function TermsPage() {
   return (
     <div className="fs-container" style={{ maxWidth: 800, margin: '48px auto', padding: '0 24px' }}>
       <h1 style={{ fontSize: '32px', fontWeight: 800, marginBottom: '24px' }}>Terms of Service</h1>
-      <p style={{ color: 'var(--fs-gray-500)', marginBottom: '32px' }}>Last updated: March 22, 2026</p>
+      <p style={{ color: 'var(--fs-gray-500)', marginBottom: '32px' }}>Last updated: April 2026</p>
       
       <div style={{ lineHeight: 1.7, color: 'var(--fs-gray-700)' }}>
         <h2 style={{ fontSize: '20px', fontWeight: 700, marginTop: '32px', marginBottom: '16px' }}>1. Acceptance of Terms</h2>

@@ -114,7 +114,7 @@ const DashboardPage = ({ user, setPage, signOut, savedIds, savedListings, onSave
       });
       setEditProfile(false);
     } catch (err) {
-      console.error('Profile save failed:', err);
+      // Profile save failed silently — user sees inline error
     } finally {
       setSavingProfile(false);
     }

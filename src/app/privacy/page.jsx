@@ -12,7 +12,7 @@ export default function PrivacyPage() {
       <div style={{ lineHeight: 1.7, color: 'var(--fs-gray-700)' }}>
         <h2 style={{ fontSize: '20px', fontWeight: 700, marginTop: '32px', marginBottom: '16px' }}>1. Introduction</h2>
         <p style={{ marginBottom: '16px' }}>
-          Flightsales Pty Ltd (ABN 12 345 678 901) ("we", "us", "our") is committed to protecting your privacy 
+          Flightsales Pty Ltd ("we", "us", "our") is committed to protecting your privacy 
           in accordance with the Australian Privacy Act 1988 (Cth) and the Australian Privacy Principles (APPs).
         </p>
 
@@ -85,8 +85,7 @@ export default function PrivacyPage() {
           For privacy-related questions, please contact:<br />
           Privacy Officer<br />
           Flightsales Pty Ltd<br />
-          Email: privacy@flightsales.com.au<br />
-          ABN: 12 345 678 901
+          Email: privacy@flightsales.com.au
         </p>
       </div>
     </div>

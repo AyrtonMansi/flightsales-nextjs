@@ -1,4 +1,8 @@
 User-agent: *
 Allow: /
+Disallow: /admin
+Disallow: /dashboard
+Disallow: /login
+Disallow: /auth/
 
 Sitemap: https://flightsales.com.au/sitemap.xml
