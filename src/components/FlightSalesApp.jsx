@@ -1331,42 +1331,6 @@ a { color: inherit; text-decoration: none; }
 }
 .fs-form-submit:hover { background: var(--fs-ink-2); }
 
-/* FINANCE — kept minimal (page hidden, retained for safety) */
-.fs-finance-hero {
-  background: var(--fs-bg-2);
-  padding: 64px 0; color: var(--fs-ink); text-align: center;
-}
-.fs-finance-grid {
-  display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  gap: 20px; margin-top: 32px;
-}
-.fs-finance-card {
-  background: var(--fs-white); border-radius: var(--fs-radius);
-  padding: 28px; border: 1px solid var(--fs-line); text-align: center;
-}
-.fs-finance-card-icon {
-  width: 48px; height: 48px; border-radius: var(--fs-radius);
-  background: var(--fs-bg-2); color: var(--fs-ink);
-  display: flex; align-items: center; justify-content: center;
-  margin: 0 auto 16px;
-}
-.fs-finance-card h3 { font-size: 17px; font-weight: 600; margin-bottom: 8px; letter-spacing: -0.02em; }
-.fs-finance-card p { font-size: 14px; color: var(--fs-ink-3); line-height: 1.5; letter-spacing: -0.005em; }
-
-.fs-calc-wrap {
-  background: var(--fs-white); border-radius: var(--fs-radius);
-  padding: 32px; border: 1px solid var(--fs-line);
-  max-width: 480px; margin: 32px auto 0;
-}
-.fs-calc-row { display: flex; gap: 16px; margin-bottom: 16px; }
-.fs-calc-row > * { flex: 1; }
-.fs-calc-result {
-  background: var(--fs-bg-2); border-radius: var(--fs-radius);
-  padding: 24px; text-align: center; margin-top: 20px;
-}
-.fs-calc-result-label { font-size: 14px; color: var(--fs-ink-3); margin-bottom: 4px; font-weight: 500; letter-spacing: -0.005em; }
-.fs-calc-result-value { font-size: 40px; font-weight: 700; color: var(--fs-ink); letter-spacing: -0.04em; }
-.fs-calc-result-sub { font-size: 13px; color: var(--fs-ink-4); margin-top: 4px; letter-spacing: -0.005em; }
 
 /* FOOTER — Uber: massive, simple */
 .fs-footer {
@@ -3394,13 +3358,6 @@ const ListingDetail = ({ listing, onBack, savedIds, onSave, user, onSelectDealer
                 {isSaved ? Icons.heartFull : Icons.heart}&nbsp; {isSaved ? "Saved ✓" : "Save to Watchlist"}
               </button>
 
-              <div style={{ marginTop: 16, paddingTop: 16, borderTop: "1px solid var(--fs-line)" }}>
-                <div style={{ fontSize: 13, color: "var(--fs-ink-3)", marginBottom: 4 }}>Finance available</div>
-                <div style={{ fontSize: 14, fontWeight: 500, color: "var(--fs-ink)" }}>
-                  Speak to an aviation finance specialist for a tailored quote.
-                </div>
-              </div>
-
               {/* Trust signals — only show what's backed by real data */}
               <div style={{ marginTop: 16, paddingTop: 16, borderTop: "1px solid var(--fs-line)", display: "flex", flexDirection: "column", gap: 10 }}>
                 {l.rego && <div style={{ fontSize: 13, color: "var(--fs-ink-2)", display: "flex", alignItems: "center", gap: 8, fontWeight: 500 }}><span style={{ color: "var(--fs-green)" }}>{Icons.check}</span> CASA registered ({l.rego})</div>}
@@ -4273,204 +4230,7 @@ const DealerDetailPage = ({ dealer, onBack, setSelectedListing, savedIds, onSave
   );
 };
 
-const FinancePage = () => {
-  const [amount, setAmount] = useState(400000);
-  const [deposit, setDeposit] = useState(20);
-  const [rate, setRate] = useState(7.5);
-  const [term, setTerm] = useState(10);
-  const [showFinForm, setShowFinForm] = useState(false);
-  const [finForm, setFinForm] = useState({ name: '', email: '', phone: '', aircraft: '' });
-  const [finSending, setFinSending] = useState(false);
-  const [finSent, setFinSent] = useState(false);
-  const [finError, setFinError] = useState(null);
-  const loanAmt = amount * (1 - deposit / 100);
-  const monthly = loanAmt * (rate / 100 / 12) / (1 - Math.pow(1 + rate / 100 / 12, -term * 12));
 
-  return (
-    <>
-      <div className="fs-finance-hero">
-        <div className="fs-container">
-          <h1 style={{ fontFamily: "var(--fs-font)", fontSize: 40, marginBottom: 8 }}>Aircraft Finance</h1>
-          <p style={{ color: "var(--fs-ink-3)", maxWidth: 500, margin: "0 auto", fontSize: 16 }}>
-            Competitive rates from Australia's leading aviation finance providers. Get pre-approved in minutes.
-          </p>
-        </div>
-      </div>
-      <section className="fs-section">
-        <div className="fs-container">
-          <div className="fs-finance-grid">
-            {[
-              { icon: Icons.dollar, title: "Competitive Rates", desc: "Access rates from 6.5% through our panel of specialist aviation lenders. Fixed and variable options." },
-              { icon: Icons.calculator, title: "Fast Pre-Approval", desc: "Get pre-approved online in minutes. Know your budget before you start looking." },
-              { icon: Icons.shield, title: "Aviation Specialists", desc: "Our finance partners understand aircraft. They know the market, the valuations, and the industry." },
-              { icon: Icons.plane, title: "All Aircraft Types", desc: "Finance available for single engine, multi engine, turboprop, helicopter, and LSA aircraft." },
-            ].map((c, i) => (
-              <div key={i} className="fs-finance-card">
-                <div className="fs-finance-card-icon">{c.icon}</div>
-                <h3>{c.title}</h3>
-                <p>{c.desc}</p>
-              </div>
-            ))}
-          </div>
-
-          <div className="fs-calc-wrap">
-            <h3 style={{ fontSize: 18, fontWeight: 700, marginBottom: 20, textAlign: "center" }}>Repayment Calculator</h3>
-            <div className="fs-form-group">
-              <label className="fs-form-label">Aircraft Price: {formatPriceFull(amount)}</label>
-              <input type="range" min={50000} max={5000000} step={10000} value={amount} onChange={e => setAmount(+e.target.value)} style={{ width: "100%" }} />
-            </div>
-            <div className="fs-calc-row">
-              <div className="fs-form-group">
-                <label className="fs-form-label">Deposit: {deposit}%</label>
-                <input type="range" min={0} max={50} step={5} value={deposit} onChange={e => setDeposit(+e.target.value)} style={{ width: "100%" }} />
-              </div>
-              <div className="fs-form-group">
-                <label className="fs-form-label">Rate: {rate}%</label>
-                <input type="range" min={5} max={12} step={0.25} value={rate} onChange={e => setRate(+e.target.value)} style={{ width: "100%" }} />
-              </div>
-            </div>
-            <div className="fs-form-group">
-              <label className="fs-form-label">Term: {term} years</label>
-              <input type="range" min={3} max={20} value={term} onChange={e => setTerm(+e.target.value)} style={{ width: "100%" }} />
-            </div>
-            <div className="fs-calc-result">
-              <div className="fs-calc-result-label">Estimated Monthly Repayment</div>
-              <div className="fs-calc-result-value">{formatPriceFull(Math.round(monthly))}</div>
-              <div className="fs-calc-result-sub">
-                Loan amount: {formatPriceFull(Math.round(loanAmt))} &middot; Total interest: {formatPriceFull(Math.round(monthly * term * 12 - loanAmt))}
-              </div>
-            </div>
-            {finSent ? (
-              <p style={{ textAlign: "center", color: "var(--fs-ink)", fontWeight: 600, marginTop: 20 }}>✓ Request received — a finance specialist will contact you within 1 business day.</p>
-            ) : showFinForm ? (
-              <div style={{ marginTop: 20, borderTop: "1px solid var(--fs-gray-100)", paddingTop: 20 }}>
-                {finError && <p style={{ color: "#ef4444", fontSize: 13, marginBottom: 8 }}>{finError}</p>}
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
-                  <div className="fs-form-group"><label className="fs-form-label">Your Name *</label><input className="fs-form-input" value={finForm.name} onChange={e => setFinForm(f => ({...f, name: e.target.value}))} /></div>
-                  <div className="fs-form-group"><label className="fs-form-label">Email *</label><input className="fs-form-input" type="email" value={finForm.email} onChange={e => setFinForm(f => ({...f, email: e.target.value}))} /></div>
-                  <div className="fs-form-group"><label className="fs-form-label">Phone</label><input className="fs-form-input" type="tel" value={finForm.phone} onChange={e => setFinForm(f => ({...f, phone: e.target.value}))} /></div>
-                  <div className="fs-form-group"><label className="fs-form-label">Aircraft in Mind</label><input className="fs-form-input" value={finForm.aircraft} onChange={e => setFinForm(f => ({...f, aircraft: e.target.value}))} placeholder="e.g. Cirrus SR22T" /></div>
-                </div>
-                <div style={{ display: "flex", gap: 12 }}>
-                  <button className="fs-form-submit" style={{ marginTop: 4 }} disabled={finSending} onClick={async () => {
-                    if (!finForm.name || !finForm.email) { setFinError('Name and email are required.'); return; }
-                    setFinSending(true); setFinError(null);
-                    try { await submitLead('finance', { name: finForm.name, email: finForm.email, phone: finForm.phone, message: `Finance enquiry. Loan: ${formatPriceFull(Math.round(loanAmt))}, ${term} yrs @ ${rate}%. Aircraft: ${finForm.aircraft}` }); setFinSent(true); } catch(err) { setFinError(err.message || 'Failed to submit.'); } finally { setFinSending(false); }
-                  }} style={{ marginTop: 4, opacity: finSending ? 0.7 : 1 }}>{finSending ? 'Sending...' : 'Submit'}</button>
-                  <button className="fs-detail-cta fs-detail-cta-secondary" style={{ marginTop: 4 }} onClick={() => setShowFinForm(false)}>Cancel</button>
-                </div>
-              </div>
-            ) : (
-              <button className="fs-form-submit" style={{ marginTop: 20 }} onClick={() => setShowFinForm(true)}>Get Pre-Approved</button>
-            )}
-          </div>
-        </div>
-      </section>
-    </>
-  );
-};
-
-const ValuatePage = () => {
-  const [form, setForm] = useState({ manufacturer: '', model: '', year: '', ttaf: '', eng_hours: '', condition: 'Pre-Owned', avionics: '', email: '', phone: '' });
-  const [sending, setSending] = useState(false);
-  const [sent, setSent] = useState(false);
-  const [error, setError] = useState(null);
-  const set = (k, v) => setForm(f => ({ ...f, [k]: v }));
-
-  const handleSubmit = async () => {
-    if (!form.manufacturer || !form.model || !form.year || !form.email) { setError('Please fill in manufacturer, model, year, and email.'); return; }
-    setSending(true); setError(null);
-    try {
-      await submitLead('valuation', {
-        name: form.email.split('@')[0],
-        email: form.email,
-        phone: form.phone,
-        message: `Valuation request: ${form.manufacturer} ${form.model} ${form.year}, TTAF: ${form.ttaf}h, Eng SMOH: ${form.eng_hours}h, Condition: ${form.condition}, Avionics: ${form.avionics}`
-      });
-      setSent(true);
-    } catch (err) {
-      setError(err.message || 'Failed to submit. Please try again.');
-    } finally { setSending(false); }
-  };
-
-  return (
-    <>
-      <div className="fs-about-hero">
-        <div className="fs-container">
-          <h1 style={{ fontFamily: "var(--fs-font)", fontSize: 40, fontWeight: 700, letterSpacing: "-0.03em" }}>Aircraft Valuation</h1>
-          <p style={{ color: "var(--fs-ink-3)", marginTop: 8, fontSize: 16 }}>Free market estimate based on real Australian sales data</p>
-        </div>
-      </div>
-      <section className="fs-section">
-        <div className="fs-container" style={{ maxWidth: 600, margin: "0 auto" }}>
-          <div className="fs-detail-specs" style={{ boxShadow: "var(--fs-shadow-md)" }}>
-            {sent ? (
-              <div style={{ textAlign: "center", padding: "32px 0" }}>
-                <div style={{ fontSize: 40, marginBottom: 12 }}>✓</div>
-                <h3 style={{ fontSize: 18, marginBottom: 8 }}>Request Received</h3>
-                <p style={{ color: "var(--fs-gray-500)", fontSize: 14 }}>We'll send your valuation estimate within 24 hours.</p>
-              </div>
-            ) : (
-              <>
-                <h3 style={{ fontSize: 18 }}>Get Your Valuation</h3>
-                {error && <p style={{ color: "#ef4444", fontSize: 13, marginBottom: 12 }}>{error}</p>}
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
-                  <div className="fs-form-group">
-                    <label className="fs-form-label">Manufacturer *</label>
-                    <select className="fs-form-select" value={form.manufacturer} onChange={e => set('manufacturer', e.target.value)}>
-                      <option value="">Select...</option>
-                      {MANUFACTURERS.map(m => <option key={m}>{m}</option>)}
-                    </select>
-                  </div>
-                  <div className="fs-form-group">
-                    <label className="fs-form-label">Model *</label>
-                    <input className="fs-form-input" placeholder="e.g. SR22T" value={form.model} onChange={e => set('model', e.target.value)} />
-                  </div>
-                  <div className="fs-form-group">
-                    <label className="fs-form-label">Year *</label>
-                    <input className="fs-form-input" type="number" placeholder="2018" value={form.year} onChange={e => set('year', e.target.value)} />
-                  </div>
-                  <div className="fs-form-group">
-                    <label className="fs-form-label">Total Time Airframe *</label>
-                    <input className="fs-form-input" type="number" placeholder="Hours" value={form.ttaf} onChange={e => set('ttaf', e.target.value)} />
-                  </div>
-                  <div className="fs-form-group">
-                    <label className="fs-form-label">Engine Hours (SMOH)</label>
-                    <input className="fs-form-input" type="number" placeholder="Hours" value={form.eng_hours} onChange={e => set('eng_hours', e.target.value)} />
-                  </div>
-                  <div className="fs-form-group">
-                    <label className="fs-form-label">Condition *</label>
-                    <select className="fs-form-select" value={form.condition} onChange={e => set('condition', e.target.value)}>
-                      {CONDITIONS.map(c => <option key={c}>{c}</option>)}
-                    </select>
-                  </div>
-                  <div className="fs-form-group" style={{ gridColumn: "span 2" }}>
-                    <label className="fs-form-label">Avionics / Notable Equipment</label>
-                    <input className="fs-form-input" placeholder="e.g. Garmin G1000, ADSB-Out, autopilot" value={form.avionics} onChange={e => set('avionics', e.target.value)} />
-                  </div>
-                  <div className="fs-form-group">
-                    <label className="fs-form-label">Your Email *</label>
-                    <input className="fs-form-input" type="email" placeholder="you@email.com" value={form.email} onChange={e => set('email', e.target.value)} />
-                  </div>
-                  <div className="fs-form-group">
-                    <label className="fs-form-label">Your Phone</label>
-                    <input className="fs-form-input" type="tel" placeholder="04XX XXX XXX" value={form.phone} onChange={e => set('phone', e.target.value)} />
-                  </div>
-                </div>
-                <button className="fs-form-submit" onClick={handleSubmit} disabled={sending} style={{ marginTop: 16, opacity: sending ? 0.7 : 1 }}>
-                  {sending ? 'Submitting...' : 'Get Free Valuation'}
-                </button>
-                <p style={{ fontSize: 11, color: "var(--fs-gray-400)", marginTop: 12, textAlign: "center" }}>
-                  Valuations are estimates based on recent market data and comparable sales. Not a formal appraisal.
-                </p>
-              </>
-            )}
-          </div>
-        </div>
-      </section>
-    </>
-  );
-};
 
 const NewsPage = () => {
   const { articles: dbArticles, loading } = useNews(20);
@@ -7173,7 +6933,7 @@ export default function FlightSalesApp() {
   }, [toast]);
 
   const getBreadcrumbs = () => {
-    const crumbs = { home: [], buy: [['home', 'Home'], ['buy', 'Buy Aircraft']], detail: [['home', 'Home'], ['buy', 'Buy Aircraft'], ['detail', 'Aircraft Details']], sell: [['home', 'Home'], ['sell', 'Sell Aircraft']], dealers: [['home', 'Home'], ['dealers', 'Dealers']], news: [['home', 'Home'], ['news', 'News']], valuate: [['home', 'Home'], ['valuate', 'Valuation']], about: [['home', 'Home'], ['about', 'About Us']], contact: [['home', 'Home'], ['contact', 'Contact']], login: [['home', 'Home'], ['login', 'Sign In']], dashboard: [['home', 'Home'], ['dashboard', 'Dashboard']], admin: [['home', 'Home'], ['admin', 'Admin']] };
+    const crumbs = { home: [], buy: [['home', 'Home'], ['buy', 'Buy Aircraft']], detail: [['home', 'Home'], ['buy', 'Buy Aircraft'], ['detail', 'Aircraft Details']], sell: [['home', 'Home'], ['sell', 'Sell Aircraft']], dealers: [['home', 'Home'], ['dealers', 'Dealers']], news: [['home', 'Home'], ['news', 'News']], about: [['home', 'Home'], ['about', 'About Us']], contact: [['home', 'Home'], ['contact', 'Contact']], login: [['home', 'Home'], ['login', 'Sign In']], dashboard: [['home', 'Home'], ['dashboard', 'Dashboard']], admin: [['home', 'Home'], ['admin', 'Admin']] };
     return crumbs[page] || [];
   };
 
@@ -7206,14 +6966,13 @@ export default function FlightSalesApp() {
       {page === "sell" && <SellPage user={user} setPage={setPageWrap} />}
       {page === "dealers" && <DealersPage onSelectDealer={(d) => { setSelectedDealer(d); setPage("dealer-detail"); window.scrollTo(0, 0); }} />}
       {page === "dealer-detail" && <DealerDetailPage dealer={selectedDealer} onBack={() => setPageWrap("dealers")} setSelectedListing={setSelectedListing} savedIds={savedIds} onSave={onSave} />}
-      {page === "valuate" && <ContactPage />}
       {page === "news" && <NewsPage />}
       {page === "about" && <AboutPage />}
       {page === "contact" && <ContactPage />}
       {page === "login" && <LoginPage setPage={setPageWrap} signIn={signIn} signUp={signUp} signInWithGoogle={signInWithGoogle} resetPassword={resetPassword} loginDemo={loginDemo} />}
       {page === "dashboard" && effectiveUser && effectiveUser.role !== 'admin' && <DashboardPage user={effectiveUser} setPage={setPageWrap} signOut={signOut} savedIds={savedIds} savedListings={savedListings} onSave={onSave} onSelectListing={setSelectedListing} />}
       {page === "admin" && effectiveUser?.role === 'admin' && <AdminPage user={effectiveUser} setPage={setPageWrap} signOut={signOut} />}
-      {(page === "finance" || page === "insurance") && <ContactPage />}
+      {page === "insurance" && <ContactPage />}
 
       <Footer setPage={setPageWrap} />
 
