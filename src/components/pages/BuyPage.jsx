@@ -521,7 +521,6 @@ const BuyPage = ({ setSelectedListing, savedIds, onSave, initialFilters, user, s
                   <ListingCard
                     key={l.id}
                     listing={l}
-                    onClick={setSelectedListing}
                     onSave={onSave}
                     saved={savedIds.has(l.id)}
                     onQuickLook={setQuickLook}

@@ -655,7 +655,7 @@ const DashboardPage = ({ user, setPage, signOut, savedIds, savedListings, onSave
                   ) : (
                     <div className="fs-grid">
                       {savedAircraft.map(listing => (
-                        <ListingCard key={listing.id} listing={listing} onClick={onSelectListing} onSave={onSave} saved={true} />
+                        <ListingCard key={listing.id} listing={listing} onSave={onSave} saved={true} />
                       ))}
                     </div>
                   )}

@@ -1,22 +1,45 @@
 'use client';
+import Link from 'next/link';
 import AircraftImage from './AircraftImage';
 import { Icons } from './Icons';
-import { formatPriceFull, formatHours, timeAgo, isJustListed } from '../lib/format';
+import {
+  formatPriceFull, formatHours, timeAgo, isJustListed, getCategoryDisplayName,
+} from '../lib/format';
 
-const ListingCard = ({ listing, onClick, onSave, saved, onQuickLook }) => {
+// Real <Link> anchor: middle-click / right-click / "copy link address" all
+// work, the listing URL is in the rendered HTML for crawlers, and Next.js
+// prefetches the route on viewport. Save / quick-look buttons inside use
+// preventDefault + stopPropagation so clicking them doesn't navigate.
+const ListingCard = ({ listing, onSave, saved, onQuickLook }) => {
   const dealerName = listing.dealer?.name || (typeof listing.dealer === 'string' ? listing.dealer : null);
   const isNew = isJustListed(listing);
   const location = [listing.city, listing.state].filter(Boolean).join(', ');
   const hasTT = listing.ttaf != null && listing.ttaf > 0;
   const hasSMOH = listing.eng_hours != null && listing.eng_hours > 0;
 
+  const handleSave = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (onSave) onSave(listing.id);
+  };
+
+  const handleQuickLook = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (onQuickLook) onQuickLook(listing);
+  };
+
   return (
-    <div className={`fs-card${listing.featured ? ' fs-card-featured' : ''}`} onClick={() => onClick(listing)}>
+    <Link
+      href={`/listings/${listing.id}`}
+      className={`fs-card${listing.featured ? ' fs-card-featured' : ''}`}
+      style={{ textDecoration: 'none', color: 'inherit', display: 'block' }}
+    >
       <div className="fs-card-image-wrap" style={{ position: "relative" }}>
         <AircraftImage listing={listing} />
         <div style={{ position: "absolute", top: 12, right: 12, display: "flex", flexDirection: "column", gap: 8 }}>
           <button
-            onClick={e => { e.stopPropagation(); onSave(listing.id); }}
+            onClick={handleSave}
             aria-label={saved ? "Unsave" : "Save"}
             style={{
               width: 32, height: 32, borderRadius: "50%",
@@ -30,8 +53,9 @@ const ListingCard = ({ listing, onClick, onSave, saved, onQuickLook }) => {
           </button>
           {onQuickLook && (
             <button
-              onClick={e => { e.stopPropagation(); onQuickLook(listing); }}
+              onClick={handleQuickLook}
               className="fs-card-quicklook"
+              aria-label="Quick look"
               style={{
                 width: 32, height: 32, borderRadius: "50%",
                 background: "rgba(255,255,255,0.95)",
@@ -100,7 +124,7 @@ const ListingCard = ({ listing, onClick, onSave, saved, onQuickLook }) => {
           )}
         </div>
       </div>
-    </div>
+    </Link>
   );
 };
 
