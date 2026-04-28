@@ -7170,11 +7170,33 @@ export default function FlightSalesApp({
     }
   };
 
+  // Mapping from internal page state to real URLs. Used to keep the browser
+  // URL in sync as the user navigates inside the SPA so each page has a
+  // shareable, refreshable address.
+  const PAGE_URL = {
+    home: "/",
+    buy: "/buy",
+    sell: "/sell",
+    dealers: "/dealers",
+    news: "/news",
+    about: "/about",
+    contact: "/contact",
+    login: "/login",
+    dashboard: "/dashboard",
+    admin: "/admin",
+  };
+
   const setPageWrap = (p) => {
     setPage(p);
     setSelectedListingRaw(null);
     setMobileOpen(false);
-    window.scrollTo(0, 0);
+    if (typeof window !== "undefined") {
+      const url = PAGE_URL[p];
+      if (url && window.location.pathname !== url) {
+        window.history.pushState({}, "", url);
+      }
+      window.scrollTo(0, 0);
+    }
   };
 
   // Demo mode for testing dashboards without auth
