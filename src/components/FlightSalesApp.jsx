@@ -4813,7 +4813,6 @@ const LoginPage = ({ setPage, signIn, signUp, signInWithGoogle, resetPassword, l
               alignItems: "center",
               gap: 10
             }}>
-              <span style={{ color: "#dc2626", fontSize: 16 }}>⚠️</span>
               <p style={{ fontSize: 13, color: "#dc2626", margin: 0, fontWeight: 500 }}>{error}</p>
             </div>
           )}
@@ -5656,7 +5655,6 @@ const DashboardPage = ({ user, setPage, signOut, savedIds, savedListings, onSave
 
                   {myListings.length === 0 ? (
                     <div className="fs-detail-specs" style={{ padding: "64px", textAlign: "center", borderRadius: 12 }}>
-                      <div style={{ fontSize: 56, marginBottom: 20, opacity: 0.5 }}>✈️</div>
                       <h3 style={{ fontSize: 20, fontWeight: 700, marginBottom: 8 }}>No active listings</h3>
                       <p style={{ fontSize: 15, color: "var(--fs-gray-500)", marginBottom: 24, maxWidth: 400, margin: '0 auto 24px' }}>
                         Get started by listing your first aircraft. It only takes a few minutes and you'll reach thousands of qualified buyers.
@@ -6013,7 +6011,7 @@ const DashboardPage = ({ user, setPage, signOut, savedIds, savedListings, onSave
                                   {status === 'new' && '✨ '} 
                                   {status === 'contacted' && '✓ '} 
                                   {status === 'negotiating' && '💬 '} 
-                                  {status === 'sold' && '🎉 '} 
+                                  {status === 'sold' && ''}
                                   {status === 'archived' && '📁 '}
                                   Mark as {status}
                                 </button>
@@ -6590,7 +6588,7 @@ const AdminPage = ({ user, setPage, signOut }) => {
   };
 
   const getLeadTypeLabel = (type) => {
-    const labels = { finance: '💰 Finance', insurance: '🛡️ Insurance', valuation: '📊 Valuation' };
+    const labels = { finance: 'Finance', insurance: 'Insurance', valuation: 'Valuation' };
     return labels[type] || type;
   };
 
