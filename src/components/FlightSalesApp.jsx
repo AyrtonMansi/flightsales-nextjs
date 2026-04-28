@@ -1332,6 +1332,59 @@ a { color: inherit; text-decoration: none; }
 .fs-form-submit:hover { background: var(--fs-ink-2); }
 
 
+/* LOGIN — 50/50 split: brand panel left, form right */
+.fs-login-shell {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  min-height: calc(100vh - 72px);
+}
+.fs-login-brand {
+  background: var(--fs-ink);
+  color: white;
+  display: flex;
+  align-items: flex-start;
+  padding: 96px 48px 48px;
+}
+.fs-login-brand-inner { max-width: 420px; }
+.fs-login-brand-wordmark {
+  font-family: var(--fs-font);
+  font-size: 32px;
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  color: white;
+  margin-bottom: 12px;
+}
+.fs-login-brand-tagline {
+  font-size: 18px;
+  color: rgba(255,255,255,0.7);
+  font-weight: 400;
+  letter-spacing: -0.005em;
+  line-height: 1.45;
+  margin: 0;
+}
+.fs-login-form-col {
+  background: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 24px;
+}
+.fs-login-form-inner {
+  width: 100%;
+  max-width: 420px;
+}
+@media (max-width: 768px) {
+  .fs-login-shell { grid-template-columns: 1fr; }
+  .fs-login-brand {
+    height: 160px;
+    padding: 32px 24px;
+    align-items: center;
+  }
+  .fs-login-brand-wordmark { font-size: 24px; margin-bottom: 6px; }
+  .fs-login-brand-tagline { font-size: 14px; }
+  .fs-login-form-col { padding: 32px 20px; }
+}
+
 /* FOOTER — Uber: massive, simple */
 .fs-footer {
   background: var(--fs-ink); color: rgba(255,255,255,0.6);
@@ -4477,8 +4530,15 @@ const LoginPage = ({ setPage, signIn, signUp, signInWithGoogle, resetPassword, l
   };
 
   return (
-    <section className="fs-section" style={{ minHeight: "70vh", display: "flex", alignItems: "center", padding: "32px 0" }}>
-      <div className="fs-container" style={{ maxWidth: 480, margin: "0 auto", padding: "0 20px" }}>
+    <div className="fs-login-shell">
+      <aside className="fs-login-brand">
+        <div className="fs-login-brand-inner">
+          <div className="fs-login-brand-wordmark">FlightSales</div>
+          <p className="fs-login-brand-tagline">Australia's marketplace for aircraft.</p>
+        </div>
+      </aside>
+      <div className="fs-login-form-col">
+        <div className="fs-login-form-inner">
         {/* Back Button */}
         <button 
           onClick={() => setPage('home')}
@@ -4501,21 +4561,8 @@ const LoginPage = ({ setPage, signIn, signUp, signInWithGoogle, resetPassword, l
           <span style={{ fontSize: 12 }}>←</span> Back to home
         </button>
 
-        <div style={{ textAlign: "center", marginBottom: 32 }}>
-          <div style={{ 
-            width: 72, 
-            height: 72, 
-            borderRadius: "50%", 
-            background: "var(--fs-gray-900)", 
-            display: "flex", 
-            alignItems: "center", 
-            justifyContent: "center",
-            margin: "0 auto 20px",
-            boxShadow: "var(--fs-shadow-md)"
-          }}>
-            <span style={{ color: "white", fontSize: 32 }}>{mode === 'login' ? '👋' : '✈️'}</span>
-          </div>
-          <h1 style={{ fontFamily: "var(--fs-font)", fontSize: 28, marginBottom: 8, fontWeight: 700 }}>
+        <div style={{ marginBottom: 28 }}>
+          <h1 style={{ fontFamily: "var(--fs-font)", fontSize: 28, marginBottom: 8, fontWeight: 700, letterSpacing: "-0.02em" }}>
             {mode === 'login' ? 'Welcome back' : 'Create your account'}
           </h1>
           <p style={{ fontSize: 15, color: "var(--fs-gray-500)", lineHeight: 1.5 }}>
@@ -4888,8 +4935,9 @@ const LoginPage = ({ setPage, signIn, signUp, signInWithGoogle, resetPassword, l
             </button>
           </div>
         </div>
+        </div>
       </div>
-    </section>
+    </div>
   );
 };
 
