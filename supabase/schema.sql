@@ -106,9 +106,16 @@ CREATE TABLE IF NOT EXISTS profiles (
   location TEXT,
   is_dealer BOOLEAN DEFAULT false,
   dealer_id UUID REFERENCES dealers(id),
+  -- Role: 'private' (default), 'dealer' (kept for backwards-compat with is_dealer), 'admin'.
+  -- Replaces the hardcoded admin-email check that previously lived in client code.
+  role TEXT DEFAULT 'private' CHECK (role IN ('private', 'dealer', 'admin')),
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
+
+-- Migration for existing deployments: add the column if it's missing.
+ALTER TABLE profiles ADD COLUMN IF NOT EXISTS role TEXT DEFAULT 'private'
+  CHECK (role IN ('private', 'dealer', 'admin'));
 
 -- ============================================
 -- SAVED/WATCHLIST TABLE
