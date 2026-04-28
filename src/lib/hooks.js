@@ -1,6 +1,13 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { supabase } from './supabase';
 
+// Helper to check if Supabase is properly configured
+function isSupabaseConfigured() {
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co';
+  const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'placeholder';
+  return supabaseUrl !== 'https://placeholder.supabase.co' && supabaseKey !== 'placeholder';
+}
+
 // ─── Aircraft ───────────────────────────────────────────────────────────────
 
 export function useAircraft(filters = {}) {
@@ -14,6 +21,15 @@ export function useAircraft(filters = {}) {
   const fetchAircraft = useCallback(async () => {
     setLoading(true);
     setError(null);
+    
+    // Skip database queries if Supabase is not properly configured
+    if (!isSupabaseConfigured()) {
+      setAircraft([]);
+      setTotal(0);
+      setLoading(false);
+      return;
+    }
+    
     try {
       let query = supabase
         .from('aircraft')
@@ -190,8 +206,19 @@ export function useAuth() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    // Skip auth if Supabase is not properly configured
+    if (!isSupabaseConfigured()) {
+      setUser(null);
+      setLoading(false);
+      return;
+    }
+    
     supabase.auth.getSession().then(({ data: { session } }) => {
       setUser(session?.user ?? null);
+      setLoading(false);
+    }).catch((err) => {
+      console.warn('[useAuth] Failed to get session:', err.message);
+      setUser(null);
       setLoading(false);
     });
 
@@ -203,6 +230,9 @@ export function useAuth() {
   }, []);
 
   const signUp = async (email, password, metadata = {}) => {
+    if (!isSupabaseConfigured()) {
+      throw new Error('Authentication not available - Supabase not configured');
+    }
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
@@ -213,12 +243,18 @@ export function useAuth() {
   };
 
   const signIn = async (email, password) => {
+    if (!isSupabaseConfigured()) {
+      throw new Error('Authentication not available - Supabase not configured');
+    }
     const { data, error } = await supabase.auth.signInWithPassword({ email, password });
     if (error) throw error;
     return data;
   };
 
   const signInWithGoogle = async () => {
+    if (!isSupabaseConfigured()) {
+      throw new Error('Authentication not available - Supabase not configured');
+    }
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: { redirectTo: `${window.location.origin}/auth/callback` }
@@ -228,11 +264,17 @@ export function useAuth() {
   };
 
   const signOut = async () => {
+    if (!isSupabaseConfigured()) {
+      return; // No-op when not configured
+    }
     const { error } = await supabase.auth.signOut();
     if (error) throw error;
   };
 
   const resetPassword = async (email) => {
+    if (!isSupabaseConfigured()) {
+      throw new Error('Password reset not available - Supabase not configured');
+    }
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
       redirectTo: `${window.location.origin}/auth/reset-password`,
     });
@@ -240,6 +282,9 @@ export function useAuth() {
   };
 
   const updatePassword = async (newPassword) => {
+    if (!isSupabaseConfigured()) {
+      throw new Error('Password update not available - Supabase not configured');
+    }
     const { error } = await supabase.auth.updateUser({ password: newPassword });
     if (error) throw error;
   };
