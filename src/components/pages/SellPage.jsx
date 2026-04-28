@@ -5,66 +5,15 @@ import { createListing, uploadImage } from '../../lib/hooks';
 import { MANUFACTURERS, CATEGORIES, STATES, CONDITIONS } from '../../lib/constants';
 
 const SellPage = ({ user, setPage }) => {
-  // Require login to sell
-  if (!user) {
-    return (
-      <>
-        <div className="fs-about-hero">
-          <div className="fs-container">
-            <h1 style={{ fontFamily: "var(--fs-font)", fontSize: 40, fontWeight: 700, letterSpacing: "-0.03em" }}>Sell Your Aircraft</h1>
-            <p style={{ color: "var(--fs-ink-3)", marginTop: 8, fontSize: 16 }}>Reach thousands of qualified buyers across Australia</p>
-          </div>
-        </div>
-        <section className="fs-section">
-          <div className="fs-container" style={{ maxWidth: 480, margin: "0 auto" }}>
-            <div className="fs-detail-specs" style={{ textAlign: 'center', padding: '48px 32px' }}>
-              <div style={{ 
-                width: 80, 
-                height: 80, 
-                borderRadius: '50%', 
-                background: 'var(--fs-bg-2)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                margin: '0 auto 24px',
-                fontSize: 36
-              }}>
-                {Icons.user}
-              </div>
-              <h3 style={{ fontSize: 22, fontWeight: 700, marginBottom: 12 }}>Sign in to List Your Aircraft</h3>
-              <p style={{ fontSize: 14, color: 'var(--fs-gray-500)', marginBottom: 24 }}>
-                Create an account or sign in to list your aircraft for sale. 
-                It's free to create a basic listing.
-              </p>
-              <button 
-                className="fs-form-submit"
-                onClick={() => setPage('login')}
-                style={{ maxWidth: 280, margin: '0 auto 12px' }}
-              >
-                Sign In / Create Account
-              </button>
-              <button 
-                className="fs-detail-cta fs-detail-cta-secondary"
-                onClick={() => setPage('buy')}
-                style={{ maxWidth: 280, margin: '0 auto' }}
-              >
-                Browse Aircraft Instead
-              </button>
-            </div>
-          </div>
-        </section>
-      </>
-    );
-  }
-
+  // Hooks first — must run on every render in the same order regardless of
+  // auth state. The signed-out gate below renders conditionally AFTER all
+  // hooks have been declared (Rules of Hooks).
   const [step, setStep] = useState(1);
   const [submitting, setSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
   const [submitError, setSubmitError] = useState(null);
   const [uploadedImages, setUploadedImages] = useState([]);
   const [uploadingImages, setUploadingImages] = useState(false);
-  // Stripe not yet wired — every new listing is Basic until payment is integrated.
-  const selectedPlan = 'Basic';
   const fileInputRef = useRef(null);
   const [formData, setFormData] = useState({
     manufacturer: '',
@@ -88,6 +37,62 @@ const SellPage = ({ user, setPage }) => {
   const [lookupError, setLookupError] = useState(null);
   const [autoFilled, setAutoFilled] = useState(false);
   const [showManualForm, setShowManualForm] = useState(false);
+  const [errors, setErrors] = useState([]);
+
+  // Stripe not yet wired — every new listing is Basic until payment is integrated.
+  const selectedPlan = 'Basic';
+
+  // Signed-out gate
+  if (!user) {
+    return (
+      <>
+        <div className="fs-about-hero">
+          <div className="fs-container">
+            <h1 style={{ fontFamily: "var(--fs-font)", fontSize: 40, fontWeight: 700, letterSpacing: "-0.03em" }}>Sell Your Aircraft</h1>
+            <p style={{ color: "var(--fs-ink-3)", marginTop: 8, fontSize: 16 }}>Reach thousands of qualified buyers across Australia</p>
+          </div>
+        </div>
+        <section className="fs-section">
+          <div className="fs-container" style={{ maxWidth: 480, margin: "0 auto" }}>
+            <div className="fs-detail-specs" style={{ textAlign: 'center', padding: '48px 32px' }}>
+              <div style={{
+                width: 80,
+                height: 80,
+                borderRadius: '50%',
+                background: 'var(--fs-bg-2)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                margin: '0 auto 24px',
+                fontSize: 36
+              }}>
+                {Icons.user}
+              </div>
+              <h3 style={{ fontSize: 22, fontWeight: 700, marginBottom: 12 }}>Sign in to List Your Aircraft</h3>
+              <p style={{ fontSize: 14, color: 'var(--fs-gray-500)', marginBottom: 24 }}>
+                Create an account or sign in to list your aircraft for sale.
+                It's free to create a basic listing.
+              </p>
+              <button
+                className="fs-form-submit"
+                onClick={() => setPage('login')}
+                style={{ maxWidth: 280, margin: '0 auto 12px' }}
+              >
+                Sign In / Create Account
+              </button>
+              <button
+                className="fs-detail-cta fs-detail-cta-secondary"
+                onClick={() => setPage('buy')}
+                style={{ maxWidth: 280, margin: '0 auto' }}
+              >
+                Browse Aircraft Instead
+              </button>
+            </div>
+          </div>
+        </section>
+      </>
+    );
+  }
 
   const lookupCASA = async () => {
     const rego = formData.rego.toUpperCase().trim();
@@ -172,8 +177,6 @@ const SellPage = ({ user, setPage }) => {
     if (!formData.eng_hours) errors.push('Engine Hours is required');
     return errors;
   };
-
-  const [errors, setErrors] = useState([]);
 
   const handleContinue = (nextStep, validateFn) => {
     const validationErrors = validateFn();
