@@ -4582,8 +4582,6 @@ const ContactPage = () => {
               <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
                 {[
                   { icon: Icons.mail, title: "Email", detail: "hello@flightsales.com.au", sub: "We respond within 24 hours" },
-                  { icon: Icons.phone, title: "Phone", detail: "1300 FLIGHT", sub: "Mon-Fri 9am-5pm AEST" },
-                  { icon: Icons.location, title: "Office", detail: "Moorabbin Airport, VIC 3194", sub: "By appointment only" },
                 ].map((c, i) => (
                   <div key={i} className="fs-contact-info-card">
                     <div className="fs-contact-icon">{c.icon}</div>
