@@ -1,3 +1,4 @@
+'use client';
 import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import {
   useAuth, useProfile, useAircraft, useFeaturedAircraft, useLatestAircraft,
@@ -5,6 +6,7 @@ import {
   useAdminListings, useAdminUsers, useAdminEnquiries,
   submitEnquiry, createListing, uploadImage, submitLead
 } from "../lib/hooks";
+import { supabase } from "../lib/supabase";
 
 // ============================================================
 // FLIGHTSALES.COM.AU — PRODUCTION AVIATION MARKETPLACE
@@ -7099,10 +7101,19 @@ const AdminPage = ({ user, setPage, signOut }) => {
 };
 
 // --- APP ---
-export default function FlightSalesApp() {
-  const [page, setPage] = useState("home");
-  const [selectedListing, setSelectedListingRaw] = useState(null);
-  const [selectedDealer, setSelectedDealer] = useState(null);
+export default function FlightSalesApp({
+  initialPage = "home",
+  initialListing = null,
+  initialListingId = null,
+  initialDealer = null,
+  initialDealerId = null,
+} = {}) {
+  const [page, setPage] = useState(initialPage);
+  // Seed selected entities from server-side props when the route provides them
+  // (e.g. /listings/[id] passes the full listing). Falls back to a client fetch
+  // when only an id was given.
+  const [selectedListing, setSelectedListingRaw] = useState(initialListing);
+  const [selectedDealer, setSelectedDealer] = useState(initialDealer);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [toast, setToast] = useState(null);
   const [searchFilters, setSearchFilters] = useState(null);
@@ -7110,6 +7121,30 @@ export default function FlightSalesApp() {
   // Real auth
   const { user: authUser, loading: authLoading, signIn, signUp, signInWithGoogle, signOut, resetPassword } = useAuth();
   const { profile } = useProfile(authUser?.id);
+
+  // Client-side fallback: when a route gave us only the id (no full row),
+  // fetch the entity once on mount.
+  useEffect(() => {
+    let cancelled = false;
+    if (initialListingId && !selectedListing) {
+      supabase
+        .from('aircraft')
+        .select(`*, dealer:dealers(id, name, location, rating, verified)`)
+        .eq('id', initialListingId)
+        .maybeSingle()
+        .then(({ data }) => { if (!cancelled && data) setSelectedListingRaw(data); });
+    }
+    if (initialDealerId && !selectedDealer) {
+      supabase
+        .from('dealers')
+        .select('*')
+        .eq('id', initialDealerId)
+        .maybeSingle()
+        .then(({ data }) => { if (!cancelled && data) setSelectedDealer(data); });
+    }
+    return () => { cancelled = true; };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Construct a user object compatible with all child components
   const user = authUser ? {
@@ -7129,7 +7164,10 @@ export default function FlightSalesApp() {
   const setSelectedListing = (l) => {
     setSelectedListingRaw(l);
     setPage("detail");
-    window.scrollTo(0, 0);
+    if (typeof window !== "undefined") {
+      window.history.pushState({}, "", `/listings/${l.id}`);
+      window.scrollTo(0, 0);
+    }
   };
 
   const setPageWrap = (p) => {
