@@ -26,3 +26,23 @@ export const isJustListed = (listing) => {
   if (!d) return false;
   return (Date.now() - new Date(d).getTime()) < 7 * 86400000;
 };
+
+// Map full DB category names to compact display names used on cards.
+export const getCategoryDisplayName = (category) => {
+  const mapping = {
+    "Single Engine Piston": "Piston",
+    "Multi Engine Piston": "Piston",
+    "Turboprop": "Turboprop",
+    "Light Jet": "Jet",
+    "Midsize Jet": "Jet",
+    "Heavy Jet": "Jet",
+    "Helicopter": "Helicopter",
+    "Gyrocopter": "Gyrocopter",
+    "Ultralight": "Ultralight",
+    "LSA": "LSA",
+    "Warbird": "Warbird",
+    "Glider": "Glider",
+    "Amphibious/Seaplane": "Amphibious",
+  };
+  return mapping[category] || category;
+};

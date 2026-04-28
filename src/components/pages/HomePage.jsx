@@ -318,7 +318,7 @@ const HomePage = ({ setPage, setSelectedListing, savedIds, onSave, setSearchFilt
           ) : (
             <div className="fs-grid">
               {featured.map(l => (
-                <ListingCard key={l.id} listing={l} onClick={setSelectedListing} onSave={onSave} saved={savedIds.has(l.id)} />
+                <ListingCard key={l.id} listing={l} onSave={onSave} saved={savedIds.has(l.id)} />
               ))}
             </div>
           )}
@@ -346,7 +346,7 @@ const HomePage = ({ setPage, setSelectedListing, savedIds, onSave, setSearchFilt
           ) : (
             <div className="fs-grid">
               {latest.map(l => (
-                <ListingCard key={l.id} listing={l} onClick={setSelectedListing} onSave={onSave} saved={savedIds.has(l.id)} />
+                <ListingCard key={l.id} listing={l} onSave={onSave} saved={savedIds.has(l.id)} />
               ))}
             </div>
           )}
