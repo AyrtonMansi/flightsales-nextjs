@@ -1,3 +1,4 @@
+'use client';
 import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import {
   useAuth, useProfile, useAircraft, useFeaturedAircraft, useLatestAircraft,
@@ -5,6 +6,7 @@ import {
   useAdminListings, useAdminUsers, useAdminEnquiries,
   submitEnquiry, createListing, uploadImage, submitLead
 } from "../lib/hooks";
+import { supabase } from "../lib/supabase";
 
 // ============================================================
 // FLIGHTSALES.COM.AU — PRODUCTION AVIATION MARKETPLACE
@@ -6919,10 +6921,19 @@ const AdminPage = ({ user, setPage, signOut }) => {
 };
 
 // --- APP ---
-export default function FlightSalesApp() {
-  const [page, setPage] = useState("home");
-  const [selectedListing, setSelectedListingRaw] = useState(null);
-  const [selectedDealer, setSelectedDealer] = useState(null);
+export default function FlightSalesApp({
+  initialPage = "home",
+  initialListing = null,
+  initialListingId = null,
+  initialDealer = null,
+  initialDealerId = null,
+} = {}) {
+  const [page, setPage] = useState(initialPage);
+  // Seed selected entities from server-side props when the route provides them
+  // (e.g. /listings/[id] passes the full listing). Falls back to a client fetch
+  // when only an id was given.
+  const [selectedListing, setSelectedListingRaw] = useState(initialListing);
+  const [selectedDealer, setSelectedDealer] = useState(initialDealer);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [toast, setToast] = useState(null);
   const [searchFilters, setSearchFilters] = useState(null);
@@ -6930,6 +6941,30 @@ export default function FlightSalesApp() {
   // Real auth
   const { user: authUser, loading: authLoading, signIn, signUp, signInWithGoogle, signOut, resetPassword } = useAuth();
   const { profile } = useProfile(authUser?.id);
+
+  // Client-side fallback: when a route gave us only the id (no full row),
+  // fetch the entity once on mount.
+  useEffect(() => {
+    let cancelled = false;
+    if (initialListingId && !selectedListing) {
+      supabase
+        .from('aircraft')
+        .select(`*, dealer:dealers(id, name, location, rating, verified)`)
+        .eq('id', initialListingId)
+        .maybeSingle()
+        .then(({ data }) => { if (!cancelled && data) setSelectedListingRaw(data); });
+    }
+    if (initialDealerId && !selectedDealer) {
+      supabase
+        .from('dealers')
+        .select('*')
+        .eq('id', initialDealerId)
+        .maybeSingle()
+        .then(({ data }) => { if (!cancelled && data) setSelectedDealer(data); });
+    }
+    return () => { cancelled = true; };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Construct a user object compatible with all child components
   const user = authUser ? {
@@ -6949,14 +6984,39 @@ export default function FlightSalesApp() {
   const setSelectedListing = (l) => {
     setSelectedListingRaw(l);
     setPage("detail");
-    window.scrollTo(0, 0);
+    if (typeof window !== "undefined") {
+      window.history.pushState({}, "", `/listings/${l.id}`);
+      window.scrollTo(0, 0);
+    }
+  };
+
+  // Mapping from internal page state to real URLs. Used to keep the browser
+  // URL in sync as the user navigates inside the SPA so each page has a
+  // shareable, refreshable address.
+  const PAGE_URL = {
+    home: "/",
+    buy: "/buy",
+    sell: "/sell",
+    dealers: "/dealers",
+    news: "/news",
+    about: "/about",
+    contact: "/contact",
+    login: "/login",
+    dashboard: "/dashboard",
+    admin: "/admin",
   };
 
   const setPageWrap = (p) => {
     setPage(p);
     setSelectedListingRaw(null);
     setMobileOpen(false);
-    window.scrollTo(0, 0);
+    if (typeof window !== "undefined") {
+      const url = PAGE_URL[p];
+      if (url && window.location.pathname !== url) {
+        window.history.pushState({}, "", url);
+      }
+      window.scrollTo(0, 0);
+    }
   };
 
   // Demo mode for testing dashboards without auth
@@ -7022,9 +7082,9 @@ export default function FlightSalesApp() {
 
       {page === "home" && <HomePage setPage={setPageWrap} setSelectedListing={setSelectedListing} savedIds={savedIds} onSave={onSave} setSearchFilters={setSearchFilters} />}
       {page === "buy" && <BuyPage setSelectedListing={setSelectedListing} savedIds={savedIds} onSave={onSave} initialFilters={searchFilters} user={user} setPage={setPageWrap} />}
-      {page === "detail" && <ListingDetail listing={selectedListing} onBack={() => setPageWrap("buy")} savedIds={savedIds} onSave={onSave} user={user} onSelectDealer={(d) => { setSelectedDealer(d); setPage("dealer-detail"); window.scrollTo(0, 0); }} />}
+      {page === "detail" && <ListingDetail listing={selectedListing} onBack={() => setPageWrap("buy")} savedIds={savedIds} onSave={onSave} user={user} onSelectDealer={(d) => { setSelectedDealer(d); setPage("dealer-detail"); if (typeof window !== "undefined" && d?.id) { window.history.pushState({}, "", `/dealers/${d.id}`); } window.scrollTo(0, 0); }} />}
       {page === "sell" && <SellPage user={user} setPage={setPageWrap} />}
-      {page === "dealers" && <DealersPage onSelectDealer={(d) => { setSelectedDealer(d); setPage("dealer-detail"); window.scrollTo(0, 0); }} />}
+      {page === "dealers" && <DealersPage onSelectDealer={(d) => { setSelectedDealer(d); setPage("dealer-detail"); if (typeof window !== "undefined" && d?.id) { window.history.pushState({}, "", `/dealers/${d.id}`); } window.scrollTo(0, 0); }} />}
       {page === "dealer-detail" && <DealerDetailPage dealer={selectedDealer} onBack={() => setPageWrap("dealers")} setSelectedListing={setSelectedListing} savedIds={savedIds} onSave={onSave} />}
       {page === "news" && <NewsPage />}
       {page === "about" && <AboutPage />}
