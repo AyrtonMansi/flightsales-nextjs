@@ -3373,7 +3373,7 @@ const ListingDetail = ({ listing, onBack, savedIds, onSave, user, onSelectDealer
             {similarListings.length > 0 && (
               <div style={{ marginTop: 8 }}>
                 <h3 style={{ fontSize: 16, fontWeight: 700, marginBottom: 16 }}>Similar {l.category} Aircraft</h3>
-                <div className="fs-grid" style={{ gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))" }}>
+                <div className="fs-grid">
                   {similarListings.map(s => (
                     <ListingCard key={s.id} listing={s} onClick={() => { window.scrollTo(0,0); }} onSave={onSave} saved={savedIds.has(s.id)} />
                   ))}
