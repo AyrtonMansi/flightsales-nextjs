@@ -63,7 +63,8 @@ const SellPage = ({ user, setPage }) => {
   const [submitError, setSubmitError] = useState(null);
   const [uploadedImages, setUploadedImages] = useState([]);
   const [uploadingImages, setUploadingImages] = useState(false);
-  const [selectedPlan, setSelectedPlan] = useState('Featured');
+  // Stripe not yet wired — every new listing is Basic until payment is integrated.
+  const selectedPlan = 'Basic';
   const fileInputRef = useRef(null);
   const [formData, setFormData] = useState({
     manufacturer: '',
@@ -545,25 +546,11 @@ const SellPage = ({ user, setPage }) => {
                           {uploadingImages ? "Uploading..." : `Choose Files${uploadedImages.length > 0 ? ` (${uploadedImages.length} added)` : ''}`}
                         </button>
                       </div>
-                      <div style={{ background: "var(--fs-gray-50)", borderRadius: "var(--fs-radius)", padding: 20, marginBottom: 20 }}>
-                        <h4 style={{ fontSize: 14, fontWeight: 700, marginBottom: 8 }}>Listing Plan</h4>
-                        {[
-                          { name: "Basic", price: "Free", features: ["30-day listing", "Up to 8 photos", "Standard placement"] },
-                          { name: "Featured", price: "$149", features: ["60-day listing", "Up to 20 photos", "Homepage featured", "Priority in search"], recommended: true },
-                          { name: "Premium", price: "$299", features: ["90-day listing", "Unlimited photos", "Top placement", "Dedicated support"] },
-                        ].map(plan => (
-                          <label key={plan.name} style={{ display: "flex", gap: 12, padding: "12px", marginBottom: 8, borderRadius: "var(--fs-radius-sm)", border: selectedPlan === plan.name ? "2px solid var(--fs-ink)" : "1px solid var(--fs-gray-200)", cursor: "pointer", background: "white" }}>
-                            <input type="radio" name="plan" checked={selectedPlan === plan.name} onChange={() => setSelectedPlan(plan.name)} style={{ marginTop: 2 }} />
-                            <div style={{ flex: 1 }}>
-                              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                                <span style={{ fontWeight: 600, fontSize: 14 }}>{plan.name}</span>
-                                <span style={{ fontWeight: 700, color: "var(--fs-ink)" }}>{plan.price}</span>
-                              </div>
-                              <div style={{ fontSize: 12, color: "var(--fs-gray-500)", marginTop: 4 }}>{plan.features.join(" · ")}</div>
-                            </div>
-                          </label>
-                        ))}
-                      </div>
+                      {/* Listing Plan selector hidden until Stripe is wired.
+                          Showing Featured/Premium plans without a working payment flow
+                          would be a broken UX (paid radio that goes nowhere).
+                          When Stripe is integrated, restore the plan list and wire
+                          submit → Stripe Checkout. Until then every listing is Basic. */}
                       {submitError && (
                         <div style={{ padding: "10px 14px", background: "#fef2f2", border: "1px solid #fecaca", borderRadius: "var(--fs-radius-sm)", marginBottom: 12, fontSize: 13, color: "#dc2626" }}>{submitError}</div>
                       )}
