@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { supabase } from './supabase';
 
 // Helper to check if Supabase is properly configured
@@ -16,50 +16,55 @@ export function useAircraft(filters = {}) {
   const [error, setError] = useState(null);
   const [total, setTotal] = useState(0);
 
-  const stableFilters = useMemo(() => filters, [JSON.stringify(filters)]);
+  // Destructure to primitives so useCallback can depend on each value directly.
+  // Avoids the JSON.stringify(filters) hack that ran on every render.
+  const {
+    category, manufacturer, state, condition, dealerId,
+    minPrice, maxPrice, maxHours, ifrOnly, glassOnly,
+    search, sortBy, page, pageSize,
+  } = filters;
 
   const fetchAircraft = useCallback(async () => {
     setLoading(true);
     setError(null);
-    
-    // Skip database queries if Supabase is not properly configured
+
     if (!isSupabaseConfigured()) {
       setAircraft([]);
       setTotal(0);
       setLoading(false);
       return;
     }
-    
+
     try {
       let query = supabase
         .from('aircraft')
         .select(`*, dealer:dealers(id, name, location, rating, verified)`, { count: 'exact' })
         .eq('status', 'active');
 
-      if (stableFilters.category) query = query.eq('category', stableFilters.category);
-      if (stableFilters.manufacturer) query = query.eq('manufacturer', stableFilters.manufacturer);
-      if (stableFilters.state) query = query.eq('state', stableFilters.state);
-      if (stableFilters.condition) query = query.eq('condition', stableFilters.condition);
-      if (stableFilters.dealerId) query = query.eq('dealer_id', stableFilters.dealerId);
-      if (stableFilters.minPrice) query = query.gte('price', Number(stableFilters.minPrice));
-      if (stableFilters.maxPrice) query = query.lte('price', Number(stableFilters.maxPrice));
-      if (stableFilters.maxHours) query = query.lte('ttaf', Number(stableFilters.maxHours));
-      if (stableFilters.ifrOnly) query = query.eq('ifr', true);
-      if (stableFilters.glassOnly) query = query.eq('glass_cockpit', true);
-      if (stableFilters.search) {
+      if (category) query = query.eq('category', category);
+      if (manufacturer) query = query.eq('manufacturer', manufacturer);
+      if (state) query = query.eq('state', state);
+      if (condition) query = query.eq('condition', condition);
+      if (dealerId) query = query.eq('dealer_id', dealerId);
+      if (minPrice) query = query.gte('price', Number(minPrice));
+      if (maxPrice) query = query.lte('price', Number(maxPrice));
+      if (maxHours) query = query.lte('ttaf', Number(maxHours));
+      if (ifrOnly) query = query.eq('ifr', true);
+      if (glassOnly) query = query.eq('glass_cockpit', true);
+      if (search) {
         query = query.or(
-          `title.ilike.%${stableFilters.search}%,manufacturer.ilike.%${stableFilters.search}%,model.ilike.%${stableFilters.search}%`
+          `title.ilike.%${search}%,manufacturer.ilike.%${search}%,model.ilike.%${search}%`
         );
       }
 
-      if (stableFilters.sortBy === 'price-asc') query = query.order('price', { ascending: true });
-      else if (stableFilters.sortBy === 'price-desc') query = query.order('price', { ascending: false });
-      else if (stableFilters.sortBy === 'hours-low') query = query.order('ttaf', { ascending: true });
+      if (sortBy === 'price-asc') query = query.order('price', { ascending: true });
+      else if (sortBy === 'price-desc') query = query.order('price', { ascending: false });
+      else if (sortBy === 'hours-low') query = query.order('ttaf', { ascending: true });
       else query = query.order('created_at', { ascending: false });
 
-      if (stableFilters.page && stableFilters.pageSize) {
-        const from = (stableFilters.page - 1) * stableFilters.pageSize;
-        query = query.range(from, from + stableFilters.pageSize - 1);
+      if (page && pageSize) {
+        const from = (page - 1) * pageSize;
+        query = query.range(from, from + pageSize - 1);
       }
 
       const { data, error: err, count } = await query;
@@ -71,7 +76,11 @@ export function useAircraft(filters = {}) {
     } finally {
       setLoading(false);
     }
-  }, [stableFilters]);
+  }, [
+    category, manufacturer, state, condition, dealerId,
+    minPrice, maxPrice, maxHours, ifrOnly, glassOnly,
+    search, sortBy, page, pageSize,
+  ]);
 
   useEffect(() => { fetchAircraft(); }, [fetchAircraft]);
 
