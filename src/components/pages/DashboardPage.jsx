@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { Icons } from '../Icons';
 import ListingCard from '../ListingCard';
 import { useMyListings, useMyEnquiries, useProfile } from '../../lib/hooks';

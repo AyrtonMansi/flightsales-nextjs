@@ -1,5 +1,4 @@
-import FlightSalesApp from '@/components/FlightSalesApp';
-import { ErrorBoundary } from '@/components/ui/ErrorBoundary';
+import PageShell from '@/components/PageShell';
 import { createClient } from '@supabase/supabase-js';
 
 const SITE = 'https://flightsales.com.au';
@@ -50,12 +49,10 @@ export async function generateMetadata({ params }) {
 export default async function Page({ params }) {
   const dealer = await fetchDealer(params.id);
   return (
-    <ErrorBoundary>
-      <FlightSalesApp
-        initialPage="dealer-detail"
-        initialDealerId={params.id}
-        initialDealer={dealer || null}
-      />
-    </ErrorBoundary>
+    <PageShell
+      initialPage="dealer-detail"
+      initialDealerId={params.id}
+      initialDealer={dealer || null}
+    />
   );
 }
