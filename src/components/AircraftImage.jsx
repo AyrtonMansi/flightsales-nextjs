@@ -1,6 +1,7 @@
 // AircraftImage extracted from FlightSalesApp monolith.
 'use client';
 import { useState } from 'react';
+import Image from 'next/image';
 import { Icons } from './Icons';
 
 const AIRCRAFT_IMAGES = {
@@ -40,12 +41,18 @@ const AircraftImage = ({ listing, className = "", size = "md", style = {}, showG
       height: heights[size], position: "relative", overflow: "hidden",
       borderRadius: style.borderRadius || 0, background: '#1a1a1a', ...style
     }}>
-      <img
+      <Image
         src={imageUrl}
-        alt={listing.title}
-        loading="lazy"
-        style={{ width: "100%", height: "100%", objectFit: "cover", transition: "transform 0.3s ease" }}
-        onError={e => { e.target.style.display = 'none'; e.target.parentElement.style.background = '#000'; }}
+        alt={listing.title || 'Aircraft photo'}
+        fill
+        // Card grid is 3-up at desktop, 1-up under 768px. Sized so the browser
+        // can pick the right responsive variant from next/image's optimiser.
+        sizes={size === 'lg' || size === 'full'
+          ? '(max-width: 1024px) 100vw, 1024px'
+          : '(max-width: 768px) 100vw, 33vw'}
+        // Don't lazy-load LCP imagery (large hero / detail). Card thumbs lazy.
+        priority={size === 'lg' || size === 'full'}
+        style={{ objectFit: 'cover', transition: 'transform 0.3s ease' }}
       />
       <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to bottom, transparent 60%, rgba(0,0,0,0.5) 100%)", pointerEvents: "none" }} />
 

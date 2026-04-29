@@ -1,10 +1,12 @@
 'use client';
 import { useState } from 'react';
+import Link from 'next/link';
 import { Icons } from '../Icons';
 import ListingCard from '../ListingCard';
 import { useAircraft, useFeaturedAircraft, useLatestAircraft, useDealers, useNews } from '../../lib/hooks';
 import { MANUFACTURERS, CATEGORIES, STATES, DEALERS, NEWS_ARTICLES } from '../../lib/constants';
 import { useRotatingPlaceholder, AI_SEARCH_EXAMPLES } from '../../lib/useRotatingPlaceholder';
+import { parseAiQuery } from '../../lib/parseAiQuery';
 
 const HomePage = ({ setPage, setSelectedListing, savedIds, onSave, setSearchFilters, initialHomeData }) => {
   const [searchCat, setSearchCat] = useState("");
@@ -35,107 +37,6 @@ const HomePage = ({ setPage, setSelectedListing, savedIds, onSave, setSearchFilt
   const displayNews = newsFromDB.length > 0 ? newsFromDB : NEWS_ARTICLES;
   // Skeleton flag — server data is never loading
   void featuredLoading; void latestLoading;
-
-  // Parse AI search query and extract filters
-  const parseAiQuery = (query) => {
-    const q = query.toLowerCase().trim();
-    const filters = {
-      cat: "",
-      make: "",
-      state: "",
-      minPrice: "",
-      maxPrice: "",
-      maxHours: "",
-      ifrOnly: false,
-      glassOnly: false,
-      cond: "",
-      query: query
-    };
-
-    // Location / State
-    if (/\b(vic|victoria|melbourne)\b/.test(q)) filters.state = "VIC";
-    else if (/\b(nsw|new south wales|sydney)\b/.test(q)) filters.state = "NSW";
-    else if (/\b(qld|queensland|brisbane)\b/.test(q)) filters.state = "QLD";
-    else if (/\b(wa|western australia|perth)\b/.test(q)) filters.state = "WA";
-    else if (/\b(sa|south australia|adelaide)\b/.test(q)) filters.state = "SA";
-    else if (/\b(tas|tasmania|hobart)\b/.test(q)) filters.state = "TAS";
-    else if (/\b(nt|northern territory|darwin)\b/.test(q)) filters.state = "NT";
-    else if (/\b(act|canberra)\b/.test(q)) filters.state = "ACT";
-
-    // Manufacturer
-    if (/\b(cessna|182|172|152|206)\b/.test(q)) filters.make = "Cessna";
-    else if (/\b(cirrus|sr22|sr20)\b/.test(q)) filters.make = "Cirrus";
-    else if (/\b(piper|pa-28|pa28|archer|warrior)\b/.test(q)) filters.make = "Piper";
-    else if (/\b(diamond|da40|da42)\b/.test(q)) filters.make = "Diamond";
-    else if (/\b(robinson|r44|r22)\b/.test(q)) filters.make = "Robinson";
-    else if (/\b(sling|tsi)\b/.test(q)) filters.make = "Sling";
-    else if (/\b(pilatus|pc-12|pc12)\b/.test(q)) filters.make = "Pilatus";
-    else if (/\b(beech|beechcraft|baron|bonanza)\b/.test(q)) filters.make = "Beechcraft";
-    else if (/\b(jabiru)\b/.test(q)) filters.make = "Jabiru";
-    else if (/\b(mooney)\b/.test(q)) filters.make = "Mooney";
-    else if (/\b(tecnama?)\b/.test(q)) filters.make = "Tecnam";
-    else if (/\b(bristell)\b/.test(q)) filters.make = "BRM Aero";
-    else if (/\b(pipistrel)\b/.test(q)) filters.make = "Pipistrel";
-
-    // Category
-    if (/\b(helicopter|heli|chopper|rotor)\b/.test(q)) filters.cat = "Helicopter";
-    else if (/\b(single.engine|singleengine|single-engine|sep)\b/.test(q)) filters.cat = "Single Engine Piston";
-    else if (/\b(multi.engine|multiengine|multi-engine|twin.engine|twin-engine|twin)\b/.test(q)) filters.cat = "Multi Engine Piston";
-    else if (/\b(turboprop)\b/.test(q)) filters.cat = "Turboprop";
-    else if (/\b(light.jet|midsize.jet|heavy.jet|business.jet|jet)\b/.test(q)) {
-      if (/\bmidsize\b/.test(q)) filters.cat = "Midsize Jet";
-      else if (/\bheavy\b/.test(q)) filters.cat = "Heavy Jet";
-      else filters.cat = "Light Jet";
-    }
-    else if (/\b(lsa|light.sport|sport.aircraft|ultralight|trainer)\b/.test(q)) filters.cat = "LSA";
-    else if (/\b(glider|sailplane)\b/.test(q)) filters.cat = "Glider";
-    else if (/\b(gyrocopter|gyro|autogyro)\b/.test(q)) filters.cat = "Gyrocopter";
-
-    // Price - Under
-    const underPriceK = q.match(/(?:under|less than|below|up to|max|maximum)\s*\$?(\d+)\s*k/i);
-    const underPriceM = q.match(/(?:under|less than|below|up to|max|maximum)\s*\$?(\d+(?:\.\d+)?)\s*m/i);
-    if (underPriceK) filters.maxPrice = String(parseInt(underPriceK[1]) * 1000);
-    else if (underPriceM) filters.maxPrice = String(Math.round(parseFloat(underPriceM[1]) * 1000000));
-
-    // Price - Over
-    const overPriceK = q.match(/(?:over|more than|above|at least|min|minimum)\s*\$?(\d+)\s*k/i);
-    const overPriceM = q.match(/(?:over|more than|above|at least|min|minimum)\s*\$?(\d+(?:\.\d+)?)\s*m/i);
-    if (overPriceK) filters.minPrice = String(parseInt(overPriceK[1]) * 1000);
-    else if (overPriceM) filters.minPrice = String(Math.round(parseFloat(overPriceM[1]) * 1000000));
-
-    // Price Range
-    const priceRange = q.match(/\$?(\d+(?:\.\d+)?)\s*k?\s*(?:to|-|)\s*\$?(\d+(?:\.\d+)?)\s*(k|m)?/i);
-    if (priceRange && !underPriceK && !underPriceM && !overPriceK && !overPriceM) {
-      let min = parseFloat(priceRange[1]);
-      let max = parseFloat(priceRange[2]);
-      const suffix = (priceRange[3] || '').toLowerCase();
-      if (suffix === 'k' || (min < 100 && !suffix)) { min *= 1000; max *= 1000; }
-      else if (suffix === 'm' || min > 100) { min *= 1000000; max *= 1000000; }
-      else { min *= 1000; max *= 1000; }
-      filters.minPrice = String(Math.round(min));
-      filters.maxPrice = String(Math.round(max));
-    }
-
-    // Relative price terms
-    if (/\b(cheap|budget|affordable|inexpensive)\b/.test(q) && !filters.maxPrice) {
-      filters.maxPrice = "300000";
-    } else if (/\b(expensive|luxury|premium|high.end)\b/.test(q) && !filters.minPrice) {
-      filters.minPrice = "1000000";
-    }
-
-    // Hours
-    const underHours = q.match(/(?:under|less than|below|max|maximum)\s*(\d+)\s*(?:hours?|hrs?|ttaf)/i);
-    if (underHours) filters.maxHours = underHours[1];
-    else if (/\b(low hours?|low.time)\b/i.test(q)) filters.maxHours = "1000";
-
-    // Features
-    if (/\bifr|instrument\b/i.test(q)) filters.ifrOnly = true;
-    if (/\bglass|g1000|garmin\b/i.test(q)) filters.glassOnly = true;
-    if (/\bnew\b/i.test(q) && !/\bnews\b/i.test(q)) filters.cond = "New";
-    if (/\b(pre-owned|used|second.hand)\b/i.test(q)) filters.cond = "Pre-Owned";
-
-    return filters;
-  };
 
   const handleAiSearch = (query) => {
     if (!query.trim()) return;
@@ -314,7 +215,7 @@ const HomePage = ({ setPage, setSelectedListing, savedIds, onSave, setSearchFilt
               <h2 className="fs-section-title">Featured aircraft</h2>
               <p className="fs-section-sub">Hand-picked by our team. Verified by their dealers.</p>
             </div>
-            <span className="fs-section-link" onClick={() => setPage("buy")}>View all {Icons.arrowRight}</span>
+            <Link href="/buy" className="fs-section-link">View all {Icons.arrowRight}</Link>
           </div>
           {featuredLoading ? (
             <div className="fs-grid">
@@ -342,7 +243,7 @@ const HomePage = ({ setPage, setSelectedListing, savedIds, onSave, setSearchFilt
               <h2 className="fs-section-title">Just listed</h2>
               <p className="fs-section-sub">The latest aircraft to hit the market.</p>
             </div>
-            <span className="fs-section-link" onClick={() => setPage("buy")}>View all {Icons.arrowRight}</span>
+            <Link href="/buy" className="fs-section-link">View all {Icons.arrowRight}</Link>
           </div>
           {latestLoading ? (
             <div className="fs-grid">
@@ -370,11 +271,11 @@ const HomePage = ({ setPage, setSelectedListing, savedIds, onSave, setSearchFilt
               <h2 className="fs-section-title">Verified dealers</h2>
               <p className="fs-section-sub">Trusted aviation specialists across Australia.</p>
             </div>
-            <span className="fs-section-link" onClick={() => setPage("dealers")}>All dealers {Icons.arrowRight}</span>
+            <Link href="/dealers" className="fs-section-link">All dealers {Icons.arrowRight}</Link>
           </div>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(320px, 1fr))", gap: 16 }}>
             {displayDealers.slice(0, 6).map(d => (
-              <div key={d.id} className="fs-dealer-card" onClick={() => setPage("dealers")} style={{ cursor: "pointer" }}>
+              <Link key={d.id} href="/dealers" className="fs-dealer-card" style={{ cursor: "pointer", textDecoration: 'none', color: 'inherit', display: 'flex', gap: 16, alignItems: 'center' }}>
                 <div className="fs-dealer-avatar">{d.logo}</div>
                 <div className="fs-dealer-info">
                   <div className="fs-dealer-name">{d.name}</div>
@@ -384,7 +285,7 @@ const HomePage = ({ setPage, setSelectedListing, savedIds, onSave, setSearchFilt
                     <span className="fs-dealer-rating">{Icons.star} {d.rating}</span>
                   </div>
                 </div>
-              </div>
+              </Link>
             ))}
           </div>
         </div>
@@ -398,11 +299,11 @@ const HomePage = ({ setPage, setSelectedListing, savedIds, onSave, setSearchFilt
               <h2 className="fs-section-title">Aviation news</h2>
               <p className="fs-section-sub">Industry updates, market trends, and regulatory news.</p>
             </div>
-            <span className="fs-section-link" onClick={() => setPage("news")}>All articles {Icons.arrowRight}</span>
+            <Link href="/news" className="fs-section-link">All articles {Icons.arrowRight}</Link>
           </div>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: 20 }}>
             {displayNews.slice(0, 3).map(a => (
-              <div key={a.id} className="fs-news-card" onClick={() => setPage("news")}>
+              <Link key={a.id} href="/news" className="fs-news-card" style={{ textDecoration: 'none', color: 'inherit', display: 'block' }}>
                 <span className={`fs-news-tag ${a.category.toLowerCase()}`}>{a.category}</span>
                 <div className="fs-news-title">{a.title}</div>
                 <div className="fs-news-excerpt">{a.excerpt}</div>
@@ -410,7 +311,7 @@ const HomePage = ({ setPage, setSelectedListing, savedIds, onSave, setSearchFilt
                   <span>{a.date}</span>
                   <span>{a.read_time} min read</span>
                 </div>
-              </div>
+              </Link>
             ))}
           </div>
         </div>

@@ -2,6 +2,8 @@
 import { useState, useMemo } from 'react';
 import { Icons } from '../Icons';
 import { useAdminListings, useAdminUsers, useAdminEnquiries } from '../../lib/hooks';
+import { LEAD_STATUSES, ENQUIRY_STATUS, LISTING_STATUS } from '../../lib/statuses';
+import { showToast } from '../../lib/toast';
 
 const AdminPage = ({ user, setPage, signOut }) => {
   // Caller (App) already gates rendering on admin role; no render-time setPage here.
@@ -9,9 +11,16 @@ const AdminPage = ({ user, setPage, signOut }) => {
   const [selectedLead, setSelectedLead] = useState(null);
   const [leadStatusFilter, setLeadStatusFilter] = useState('all');
 
-  const { listings: adminListings, loading: listingsLoading, updateStatus: updateListingStatus } = useAdminListings();
+  const { listings: adminListings, loading: listingsLoading, updateStatus: updateListingStatusRaw } = useAdminListings();
   const { users: adminUsers, loading: usersLoading, promoteToDealer } = useAdminUsers();
   const { enquiries: adminEnquiries, updateStatus: updateEnquiryStatus } = useAdminEnquiries();
+
+  // Wrap mutation calls so failures surface to the user via toast instead of
+  // disappearing silently. The hook still throws on failure.
+  const updateListingStatus = async (id, status) => {
+    try { await updateListingStatusRaw(id, status); showToast(`Marked ${status}`); }
+    catch (err) { showToast(err?.message ? `Update failed: ${err.message}` : 'Update failed'); }
+  };
 
   // Real listings rows mapped to the existing table's expected shape
   const listingsView = useMemo(() => (adminListings || []).map(l => ({
@@ -499,7 +508,7 @@ const AdminPage = ({ user, setPage, signOut }) => {
                         <div className="fs-detail-specs" style={{ padding: "20px", borderRadius: "var(--fs-radius-lg)", marginBottom: 16 }}>
                           <h4 style={{ fontSize: 14, fontWeight: 700, marginBottom: 16 }}>Update Status</h4>
                           <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                            {['new', 'contacted', 'qualified', 'assigned', 'converted', 'lost'].map(status => (
+                            {LEAD_STATUSES.map(status => (
                               <button
                                 key={status}
                                 onClick={() => handleLeadStatusChange(selectedLead.id, status)}

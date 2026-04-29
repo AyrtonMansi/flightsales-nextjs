@@ -7,6 +7,7 @@ import QuickLookModal from '../QuickLookModal';
 import { useAircraft } from '../../lib/hooks';
 import { MANUFACTURERS, CATEGORIES, STATES, CONDITIONS } from '../../lib/constants';
 import { useRotatingPlaceholder, AI_SEARCH_EXAMPLES } from '../../lib/useRotatingPlaceholder';
+import { parseAiQuery } from '../../lib/parseAiQuery';
 import CardSkeleton from '../CardSkeleton';
 import MobileFilterSheet from '../MobileFilterSheet';
 import EmptyState from '../EmptyState';
@@ -42,184 +43,19 @@ const BuyPage = ({ setSelectedListing, savedIds, onSave, initialFilters, user, s
   useEffect(() => { setResultPage(1); }, [search, catFilter, makeFilter, stateFilter, condFilter, minPrice, maxPrice, maxHours, ifrOnly, glassOnly]);
 
   const handleAiSearch = (query) => {
-    const q = query.toLowerCase().trim();
-    if (!q) return;
-    
-    // Reset filters first for a clean search
+    if (!query.trim()) return;
     resetFilters();
-    
-    // ===== LOCATION / STATE DETECTION =====
-    const statePatterns = [
-      { pattern: /\b(vic|victoria|melbourne)\b/, state: "VIC" },
-      { pattern: /\b(nsw|new south wales|sydney)\b/, state: "NSW" },
-      { pattern: /\b(qld|queensland|brisbane)\b/, state: "QLD" },
-      { pattern: /\b(wa|western australia|perth)\b/, state: "WA" },
-      { pattern: /\b(sa|south australia|adelaide)\b/, state: "SA" },
-      { pattern: /\b(tas|tasmania|hobart)\b/, state: "TAS" },
-      { pattern: /\b(nt|northern territory|darwin)\b/, state: "NT" },
-      { pattern: /\b(act|canberra)\b/, state: "ACT" }
-    ];
-    
-    for (const { pattern, state } of statePatterns) {
-      if (pattern.test(q)) {
-        setStateFilter(state);
-        break;
-      }
-    }
-    
-    // ===== MANUFACTURER DETECTION =====
-    const makePatterns = [
-      { pattern: /\b(cessna|182|172|152|206)\b/, make: "Cessna" },
-      { pattern: /\b(cirrus|sr22|sr20)\b/, make: "Cirrus" },
-      { pattern: /\b(piper|pa-28|pa28|archer|warrior)\b/, make: "Piper" },
-      { pattern: /\b(diamond|da40|da42)\b/, make: "Diamond" },
-      { pattern: /\b(robinson|r44|r22)\b/, make: "Robinson" },
-      { pattern: /\b(sling|tsi)\b/, make: "Sling" },
-      { pattern: /\b(pilatus|pc-12|pc12)\b/, make: "Pilatus" },
-      { pattern: /\b(beech|beechcraft|baron|bonanza)\b/, make: "Beechcraft" },
-      { pattern: /\b(jabiru)\b/, make: "Jabiru" },
-      { pattern: /\b(mooney)\b/, make: "Mooney" },
-      { pattern: /\b(tecnama?)\b/, make: "Tecnam" },
-      { pattern: /\b(bristell)\b/, make: "BRM Aero" },
-      { pattern: /\b(pipistrel)\b/, make: "Pipistrel" }
-    ];
-    
-    for (const { pattern, make } of makePatterns) {
-      if (pattern.test(q)) {
-        setMakeFilter(make);
-        break;
-      }
-    }
-    
-    // ===== CATEGORY DETECTION =====
-    const explicitCategoryUsed = /\b(single.engine|singleengine|single-engine|multi.engine|multiengine|multi-engine|twin.engine|twin-engine|twin|turboprop|light.jet|midsize.jet|heavy.jet|business.jet|helicopter|heli|chopper|rotor|lsa|light.sport|sport.aircraft|ultralight|glider|sailplane|gyrocopter|gyro|autogyro)\b/.test(q);
-    if (/\b(helicopter|heli|chopper|rotor)\b/.test(q)) {
-      setCatFilter("Helicopter");
-    } else if (/\b(single.engine|singleengine|single-engine|sep)\b/.test(q)) {
-      setCatFilter("Single Engine Piston");
-    } else if (/\b(multi.engine|multiengine|multi-engine|twin.engine|twin-engine|twin)\b/.test(q)) {
-      setCatFilter("Multi Engine Piston");
-    } else if (/\b(turboprop)\b/.test(q)) {
-      setCatFilter("Turboprop");
-    } else if (/\b(light.jet|midsize.jet|heavy.jet|business.jet)\b/.test(q)) {
-      setCatFilter(/\bmidsize\b/.test(q) ? "Midsize Jet" : /\bheavy\b/.test(q) ? "Heavy Jet" : "Light Jet");
-    } else if (/\b(lsa|light.sport|sport.aircraft|ultralight)\b/.test(q)) {
-      setCatFilter("LSA");
-    } else if (/\b(glider|sailplane)\b/.test(q)) {
-      setCatFilter("Glider");
-    } else if (/\b(gyrocopter|gyro|autogyro)\b/.test(q)) {
-      setCatFilter("Gyrocopter");
-    }
-
-    // Smart defaults: when a recognised model is mentioned without an explicit
-    // category keyword, infer the category from the model. "Cessna 172" → SEP.
-    if (!explicitCategoryUsed) {
-      const modelToCategory = [
-        { pattern: /\b(172|152|182|206|cherokee|warrior|archer|sr20|sr22|da40|bonanza|mooney|tsi|sling|jabiru|cirrus)\b/, category: "Single Engine Piston" },
-        { pattern: /\b(da42|baron|seneca|310|aztec|seminole|duchess|navajo)\b/, category: "Multi Engine Piston" },
-        { pattern: /\b(pc-12|pc12|king.air|caravan|tbm|meridian|cheyenne|conquest)\b/, category: "Turboprop" },
-        { pattern: /\b(citation|hondajet|phenom|legacy|cj1|cj2|cj3|cj4|m2|mustang)\b/, category: "Light Jet" },
-        { pattern: /\b(r22|r44|r66|bell.206|bell.407|jetranger|longranger|ec120|ec130)\b/, category: "Helicopter" },
-        { pattern: /\b(tecnam|bristell|pipistrel|virus|sport.cruiser)\b/, category: "LSA" },
-      ];
-      for (const { pattern, category } of modelToCategory) {
-        if (pattern.test(q)) { setCatFilter(category); break; }
-      }
-    }
-    
-    // ===== PRICE DETECTION =====
-    // "under $500k", "less than 300k", "up to $1m"
-    const underPriceK = q.match(/(?:under|less than|below|up to|max|maximum)\s*\$?(\d+)\s*k/i);
-    const underPriceM = q.match(/(?:under|less than|below|up to|max|maximum)\s*\$?(\d+(?:\.\d+)?)\s*m/i);
-    const overPriceK = q.match(/(?:over|more than|above|at least|min|minimum)\s*\$?(\d+)\s*k/i);
-    const overPriceM = q.match(/(?:over|more than|above|at least|min|minimum)\s*\$?(\d+(?:\.\d+)?)\s*m/i);
-    const priceRange = q.match(/\$?(\d+(?:\.\d+)?)\s*k?\s*(?:to|-|)\s*\$?(\d+(?:\.\d+)?)\s*(k|m)?/i);
-    
-    if (underPriceK) {
-      setMaxPrice(String(parseInt(underPriceK[1]) * 1000));
-    } else if (underPriceM) {
-      setMaxPrice(String(Math.round(parseFloat(underPriceM[1]) * 1000000)));
-    }
-    
-    if (overPriceK) {
-      setMinPrice(String(parseInt(overPriceK[1]) * 1000));
-    } else if (overPriceM) {
-      setMinPrice(String(Math.round(parseFloat(overPriceM[1]) * 1000000)));
-    }
-    
-    // Price range: "$200k to $500k" or "300k-600k"
-    if (priceRange && !underPriceK && !underPriceM && !overPriceK && !overPriceM) {
-      let min = parseFloat(priceRange[1]);
-      let max = parseFloat(priceRange[2]);
-      const suffix = (priceRange[3] || '').toLowerCase();
-      
-      // Determine scale from suffix or magnitude
-      if (suffix === 'k' || (min < 100 && !suffix)) {
-        min *= 1000;
-        max *= 1000;
-      } else if (suffix === 'm' || min > 100) {
-        min *= 1000000;
-        max *= 1000000;
-      } else if (!suffix && max > 1000) {
-        // Already in dollars
-      } else {
-        min *= 1000;
-        max *= 1000;
-      }
-      
-      setMinPrice(String(Math.round(min)));
-      setMaxPrice(String(Math.round(max)));
-    }
-    
-    // "Cheap" or "expensive" relative terms
-    if (/\bcheap|budget|affordable|inexpensive\b/.test(q) && !minPrice && !maxPrice) {
-      setMaxPrice("300000"); // Under $300k
-    } else if (/\bexpensive|luxury|premium|high.end\b/.test(q) && !minPrice) {
-      setMinPrice("1000000"); // Over $1M
-    }
-    
-    // ===== HOURS / TIME DETECTION =====
-    const underHours = q.match(/(?:under|less than|below|max|maximum)\s*(\d+)\s*(?:hours?|hrs?|ttaf)/i);
-    const overHours = q.match(/(?:over|more than|above)\s*(\d+)\s*(?:hours?|hrs?|ttaf)/i);
-    const lowHours = /\blow hours?|low.time\b/i.test(q);
-    
-    if (underHours) {
-      setMaxHours(underHours[1]);
-    } else if (lowHours) {
-      setMaxHours("1000"); // Low hours = under 1000
-    }
-    
-    // ===== YEAR DETECTION =====
-    const yearMatch = q.match(/\b(20\d{2})\b/);
-    if (yearMatch) {
-      const year = parseInt(yearMatch[1]);
-      // Could implement year filtering when available
-    }
-    
-    // ===== FEATURE DETECTION =====
-    if (/\bifr|instrument\b/i.test(q)) {
-      setIfrOnly(true);
-    }
-    if (/\bglass|cirrus|g1000|garmin\b/i.test(q)) {
-      setGlassOnly(true);
-    }
-    if (/\bnew\b/i.test(q) && !/\bnews\b/i.test(q)) {
-      setCondFilter("New");
-    }
-    if (/\b(pre-owned|used|second.hand)\b/i.test(q)) {
-      setCondFilter("Pre-Owned");
-    }
-    
-    // ===== SEAT COUNT =====
-    const seatMatch = q.match(/\b(\d)[\s-]?(?:seat|passenger|pax|place)\b/i);
-    if (seatMatch) {
-      // Could add seat count filter when available
-    }
-    
-    // Set the display query
+    const f = parseAiQuery(query);
+    if (f.state) setStateFilter(f.state);
+    if (f.make) setMakeFilter(f.make);
+    if (f.cat) setCatFilter(f.cat);
+    if (f.minPrice) setMinPrice(f.minPrice);
+    if (f.maxPrice) setMaxPrice(f.maxPrice);
+    if (f.maxHours) setMaxHours(f.maxHours);
+    if (f.ifrOnly) setIfrOnly(true);
+    if (f.glassOnly) setGlassOnly(true);
+    if (f.cond) setCondFilter(f.cond);
     setAiQuery(query);
-    
-    // Also set the text search for title/manufacturer matching
     setSearch(query);
   };
 

@@ -1,6 +1,7 @@
 'use client';
 import { useState, useEffect } from "react";
 import { useAuth, useProfile, useSavedAircraft } from "../lib/hooks";
+import { onToast } from "../lib/toast";
 import { supabase } from "../lib/supabase";
 import { Icons } from "./Icons";
 import Nav from "./Nav";
@@ -229,11 +230,15 @@ export default function FlightSalesApp({
     }
   };
 
-  // Demo mode for testing dashboards without auth
+  // Demo mode for testing dashboards without auth. Disabled in production
+  // builds — RLS would reject any actual writes anyway, but we don't want
+  // a hidden client-side admin path on the live site.
+  const DEMO_ENABLED = process.env.NODE_ENV !== 'production';
   const [demoUser, setDemoUser] = useState(null);
   const effectiveUser = demoUser || user;
-  
+
   const loginDemo = (role) => {
+    if (!DEMO_ENABLED) return;
     setDemoUser({
       id: 'demo-' + role,
       email: role + '@flightsales.demo',
@@ -255,12 +260,17 @@ export default function FlightSalesApp({
   const onSave = async (id) => {
     if (!authUser) { setToast("Sign in to save aircraft"); return; }
     const isSaved = await toggleSave(id);
-    setToast(isSaved ? "Added to watchlist ❤️" : "Removed from watchlist");
+    setToast(isSaved ? "Added to watchlist" : "Removed from watchlist");
   };
 
   useEffect(() => {
     if (toast) { const t = setTimeout(() => setToast(null), 2500); return () => clearTimeout(t); }
   }, [toast]);
+
+  // Subscribe to the global toast bus so any module (including non-React
+  // hooks/utility code that can't reach setToast directly) can surface
+  // user-facing messages without prop-drilling.
+  useEffect(() => onToast(setToast), []);
 
   const getBreadcrumbs = () => {
     const crumbs = { home: [], buy: [['home', 'Home'], ['buy', 'Buy Aircraft']], detail: [['home', 'Home'], ['buy', 'Buy Aircraft'], ['detail', 'Aircraft Details']], sell: [['home', 'Home'], ['sell', 'Sell Aircraft']], dealers: [['home', 'Home'], ['dealers', 'Dealers']], news: [['home', 'Home'], ['news', 'News']], about: [['home', 'Home'], ['about', 'About Us']], contact: [['home', 'Home'], ['contact', 'Contact']], login: [['home', 'Home'], ['login', 'Sign In']], dashboard: [['home', 'Home'], ['dashboard', 'Dashboard']], admin: [['home', 'Home'], ['admin', 'Admin']] };

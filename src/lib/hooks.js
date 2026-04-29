@@ -360,20 +360,27 @@ export function useMyListings(userId) {
 
   useEffect(() => { fetchListings(); }, [fetchListings]);
 
+  // Mutations throw on failure so callers can toast the message. Previously
+  // we swallowed errors silently — user clicked "Delete", nothing happened,
+  // no feedback. Throwing lets the call site decide on UX (toast, modal, etc.)
+  // and keeps the hook itself stateless about presentation.
   const deleteListing = async (id) => {
-    await supabase.from('aircraft').delete().eq('id', id).eq('user_id', userId);
+    const { error } = await supabase.from('aircraft').delete().eq('id', id).eq('user_id', userId);
+    if (error) throw error;
     setListings(prev => prev.filter(l => l.id !== id));
   };
 
   const updateListingStatus = async (id, status) => {
-    const { data } = await supabase
+    const { data, error } = await supabase
       .from('aircraft')
       .update({ status })
       .eq('id', id)
       .eq('user_id', userId)
       .select()
       .single();
+    if (error) throw error;
     setListings(prev => prev.map(l => l.id === id ? data : l));
+    return data;
   };
 
   return { listings, loading, refetch: fetchListings, deleteListing, updateListingStatus };
@@ -388,13 +395,17 @@ export function useMyEnquiries(userId) {
   const fetchEnquiries = useCallback(async () => {
     if (!userId) { setEnquiries([]); setLoading(false); return; }
     try {
+      // Filter at the database level via the foreign join (aircraft.user_id).
+      // Previously we fetched all enquiries and filtered client-side, which
+      // relied entirely on RLS to prevent leaking other sellers' data — a
+      // brittle pattern. Pushing the filter to the query makes the principal
+      // explicit at the wire boundary too.
       const { data } = await supabase
         .from('enquiries')
-        .select(`*, aircraft:aircraft(id, title, rego, price, user_id)`)
+        .select(`*, aircraft:aircraft!inner(id, title, rego, price, user_id)`)
+        .eq('aircraft.user_id', userId)
         .order('created_at', { ascending: false });
-      // Filter to only enquiries on listings owned by this user
-      const mine = (data || []).filter(e => e.aircraft?.user_id === userId);
-      setEnquiries(mine);
+      setEnquiries(data || []);
     } finally {
       setLoading(false);
     }

@@ -186,8 +186,8 @@ const LoginPage = ({ setPage, signIn, signUp, signInWithGoogle, resetPassword, l
                 <>
                   <p style={{ fontSize: 14, color: "var(--fs-ink-3)", marginBottom: 16 }}>Enter your email and we'll send you a link to reset your password.</p>
                   <div className="fs-form-group">
-                    <label className="fs-form-label">Email *</label>
-                    <input className="fs-form-input" type="email" placeholder="you@email.com" value={email} onChange={e => setEmail(e.target.value)} required autoComplete="email" style={{ fontSize: 15 }} />
+                    <label className="fs-form-label" htmlFor="auth-reset-email">Email *</label>
+                    <input id="auth-reset-email" className="fs-form-input" type="email" placeholder="you@email.com" value={email} onChange={e => setEmail(e.target.value)} required autoComplete="email" style={{ fontSize: 15 }} />
                   </div>
                   <button type="submit" className="fs-form-submit" disabled={loading || !email} style={{ opacity: loading || !email ? 0.6 : 1 }}>
                     {loading ? 'Sending...' : 'Send reset link'}
@@ -257,26 +257,30 @@ const LoginPage = ({ setPage, signIn, signUp, signInWithGoogle, resetPassword, l
                 </div>
 
                 <div className="fs-form-group">
-                  <label className="fs-form-label">Full Name *</label>
-                  <input 
-                    className="fs-form-input" 
-                    type="text" 
+                  <label className="fs-form-label" htmlFor="auth-fullname">Full Name *</label>
+                  <input
+                    id="auth-fullname"
+                    className="fs-form-input"
+                    type="text"
                     placeholder="John Smith"
                     value={fullName}
                     onChange={e => setFullName(e.target.value)}
                     required={mode === 'register'}
+                    autoComplete="name"
                     style={{ fontSize: 15 }}
                   />
                 </div>
 
                 <div className="fs-form-group">
-                  <label className="fs-form-label">Phone Number</label>
-                  <input 
-                    className="fs-form-input" 
-                    type="tel" 
+                  <label className="fs-form-label" htmlFor="auth-phone">Phone Number</label>
+                  <input
+                    id="auth-phone"
+                    className="fs-form-input"
+                    type="tel"
                     placeholder="04XX XXX XXX"
                     value={phone}
                     onChange={e => setPhone(e.target.value)}
+                    autoComplete="tel"
                     style={{ fontSize: 15 }}
                   />
                 </div>
@@ -284,10 +288,11 @@ const LoginPage = ({ setPage, signIn, signUp, signInWithGoogle, resetPassword, l
             )}
 
             <div className="fs-form-group">
-              <label className="fs-form-label">Email *</label>
-              <input 
-                className="fs-form-input" 
-                type="email" 
+              <label className="fs-form-label" htmlFor="auth-email">Email *</label>
+              <input
+                id="auth-email"
+                className="fs-form-input"
+                type="email"
                 placeholder="you@email.com"
                 value={email}
                 onChange={e => setEmail(e.target.value)}
@@ -299,7 +304,7 @@ const LoginPage = ({ setPage, signIn, signUp, signInWithGoogle, resetPassword, l
 
             <div className="fs-form-group">
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
-                <label className="fs-form-label" style={{ marginBottom: 0 }}>Password *</label>
+                <label className="fs-form-label" htmlFor="auth-password" style={{ marginBottom: 0 }}>Password *</label>
                 {mode === 'login' && (
                   <button
                     type="button"
@@ -311,6 +316,7 @@ const LoginPage = ({ setPage, signIn, signUp, signInWithGoogle, resetPassword, l
                 )}
               </div>
               <input
+                id="auth-password"
                 className="fs-form-input"
                 type="password"
                 placeholder="••••••••"
@@ -410,63 +416,38 @@ const LoginPage = ({ setPage, signIn, signUp, signInWithGoogle, resetPassword, l
           </div>
         )}
 
-        {/* Demo Access */}
-        <div style={{ marginTop: 32, padding: "24px", background: "var(--fs-gray-50)", borderRadius: "var(--fs-radius)", border: "1px dashed var(--fs-gray-300)" }}>
-          <p style={{ fontSize: 13, fontWeight: 600, color: "var(--fs-gray-700)", marginBottom: 12, textAlign: "center" }}>Demo Access (No login required)</p>
-          <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-            <button
-              onClick={() => loginDemo('private')}
-              style={{
-                flex: 1,
-                minWidth: 120,
-                padding: "10px 16px",
-                background: "white",
-                border: "1px solid var(--fs-gray-200)",
-                borderRadius: "var(--fs-radius-sm)",
-                fontSize: 13,
-                fontWeight: 500,
-                cursor: "pointer",
-                color: "var(--fs-gray-700)"
-              }}
-            >
-              👤 Private Seller
-            </button>
-            <button
-              onClick={() => loginDemo('dealer')}
-              style={{
-                flex: 1,
-                minWidth: 120,
-                padding: "10px 16px",
-                background: "white",
-                border: "1px solid var(--fs-gray-200)",
-                borderRadius: "var(--fs-radius-sm)",
-                fontSize: 13,
-                fontWeight: 500,
-                cursor: "pointer",
-                color: "var(--fs-gray-700)"
-              }}
-            >
-              🏢 Dealer
-            </button>
-            <button
-              onClick={() => loginDemo('admin')}
-              style={{
-                flex: 1,
-                minWidth: 120,
-                padding: "10px 16px",
-                background: "white",
-                border: "1px solid var(--fs-gray-200)",
-                borderRadius: "var(--fs-radius-sm)",
-                fontSize: 13,
-                fontWeight: 500,
-                cursor: "pointer",
-                color: "var(--fs-gray-700)"
-              }}
-            >
-              ⚙️ Admin
-            </button>
+        {/* Demo Access — dev/preview only. process.env.NODE_ENV is statically
+            replaced at build time, so this entire block (including the
+            decorative emoji glyphs in the labels) is tree-shaken out of the
+            production bundle. */}
+        {process.env.NODE_ENV !== 'production' && (
+          <div style={{ marginTop: 32, padding: "24px", background: "var(--fs-gray-50)", borderRadius: "var(--fs-radius)", border: "1px dashed var(--fs-gray-300)" }}>
+            <p style={{ fontSize: 13, fontWeight: 600, color: "var(--fs-gray-700)", marginBottom: 12, textAlign: "center" }}>Demo Access (dev only)</p>
+            <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+              {['private', 'dealer', 'admin'].map(role => (
+                <button
+                  key={role}
+                  onClick={() => loginDemo(role)}
+                  style={{
+                    flex: 1,
+                    minWidth: 120,
+                    padding: "10px 16px",
+                    background: "white",
+                    border: "1px solid var(--fs-gray-200)",
+                    borderRadius: "var(--fs-radius-sm)",
+                    fontSize: 13,
+                    fontWeight: 500,
+                    cursor: "pointer",
+                    color: "var(--fs-gray-700)",
+                    textTransform: "capitalize"
+                  }}
+                >
+                  {role}
+                </button>
+              ))}
+            </div>
           </div>
-        </div>
+        )}
         </div>
       </div>
     </div>
