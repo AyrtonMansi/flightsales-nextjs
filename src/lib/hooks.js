@@ -690,7 +690,40 @@ export function useAdminListings() {
     return data;
   };
 
-  return { listings, loading, error, refetch: fetchAll, updateStatus };
+  // Reject + capture a reason in a single round-trip. The seller can read
+  // the reason on their dashboard and resubmit.
+  const rejectListing = async (id, reason) => {
+    const { data, error: err } = await supabase
+      .from('aircraft')
+      .update({ status: 'rejected', rejection_reason: reason || null })
+      .eq('id', id)
+      .select()
+      .single();
+    if (err) throw err;
+    setListings(prev => prev.map(l => l.id === id ? { ...l, ...data } : l));
+    return data;
+  };
+
+  const setFeatured = async (id, featured) => {
+    const { data, error: err } = await supabase
+      .from('aircraft').update({ featured }).eq('id', id).select().single();
+    if (err) throw err;
+    setListings(prev => prev.map(l => l.id === id ? { ...l, ...data } : l));
+    return data;
+  };
+
+  // Bulk status change. One request per id; failures are returned per-id so
+  // partial success is recoverable. Could be one query with `.in('id', ids)`,
+  // but per-id keeps the audit log entries one-per-listing.
+  const bulkUpdateStatus = async (ids, status) => {
+    const results = await Promise.allSettled(ids.map(id => updateStatus(id, status)));
+    return {
+      succeeded: results.filter(r => r.status === 'fulfilled').length,
+      failed: results.filter(r => r.status === 'rejected').length,
+    };
+  };
+
+  return { listings, loading, error, refetch: fetchAll, updateStatus, rejectListing, setFeatured, bulkUpdateStatus };
 }
 
 export function useAdminUsers() {
@@ -700,6 +733,10 @@ export function useAdminUsers() {
   const fetchAll = useCallback(async () => {
     setLoading(true);
     try {
+      // Client-side aggregation. Slow at scale, but works without requiring
+      // the admin_users_with_listings_count RPC to exist in Supabase. Once
+      // the schema migration runs that defines the function, we can switch
+      // to the RPC for cheaper aggregation.
       const { data: profiles } = await supabase
         .from('profiles').select('*').order('created_at', { ascending: false });
       const { data: counts } = await supabase
@@ -723,7 +760,32 @@ export function useAdminUsers() {
     setUsers(prev => prev.map(u => u.id === userId ? { ...u, is_dealer: true, dealer_id: dealerId } : u));
   };
 
-  return { users, loading, refetch: fetchAll, promoteToDealer };
+  // Suspend a user with a reason. RLS should reject any further mutations
+  // from suspended profiles; we also stamp the timestamp so the UI can
+  // surface "suspended for X days" tooltips.
+  const suspendUser = async (userId, reason) => {
+    const { error: err } = await supabase
+      .from('profiles')
+      .update({ suspended_at: new Date().toISOString(), suspension_reason: reason || null })
+      .eq('id', userId);
+    if (err) throw err;
+    setUsers(prev => prev.map(u => u.id === userId
+      ? { ...u, suspended_at: new Date().toISOString(), suspension_reason: reason || null }
+      : u));
+  };
+
+  const unsuspendUser = async (userId) => {
+    const { error: err } = await supabase
+      .from('profiles')
+      .update({ suspended_at: null, suspension_reason: null })
+      .eq('id', userId);
+    if (err) throw err;
+    setUsers(prev => prev.map(u => u.id === userId
+      ? { ...u, suspended_at: null, suspension_reason: null }
+      : u));
+  };
+
+  return { users, loading, refetch: fetchAll, promoteToDealer, suspendUser, unsuspendUser };
 }
 
 export function useAdminEnquiries() {
@@ -758,4 +820,158 @@ export function useAdminEnquiries() {
   };
 
   return { enquiries, loading, refetch: fetchAll, updateStatus };
+}
+
+// ─── Dealer applications ────────────────────────────────────────────────────
+
+// Public: a logged-in user can submit an application; admin reviews it.
+// Approval flips the user's profiles.is_dealer + (optionally) creates a
+// dealers row that ties listings to a verified org. This replaces the
+// hardcoded "No pending dealer applications" placeholder in AdminPage.
+export function useDealerApplications() {
+  const [apps, setApps] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  const fetchAll = useCallback(async () => {
+    setLoading(true);
+    try {
+      // dealer_applications.user_id FKs to auth.users(id), not profiles —
+      // PostgREST can't auto-join on that, so we fetch separately and merge
+      // by id. Cheap: applications are low-volume.
+      const { data: rows, error: err } = await supabase
+        .from('dealer_applications')
+        .select('*')
+        .order('created_at', { ascending: false });
+      if (err) throw err;
+      const userIds = [...new Set((rows || []).map(r => r.user_id).filter(Boolean))];
+      let profileById = {};
+      if (userIds.length) {
+        const { data: profiles } = await supabase
+          .from('profiles')
+          .select('id, full_name, email')
+          .in('id', userIds);
+        profileById = (profiles || []).reduce((acc, p) => { acc[p.id] = p; return acc; }, {});
+      }
+      setApps((rows || []).map(r => ({ ...r, applicant: profileById[r.user_id] || null })));
+    } catch (err) {
+      // dealer_applications table may not exist yet in environments where
+      // the schema migration hasn't been applied. Render as empty rather
+      // than throwing in the admin tab.
+      setApps([]);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => { fetchAll(); }, [fetchAll]);
+
+  const approveApp = async (app, reviewerId) => {
+    // 1) Create a dealers row mirroring the application's business info so
+    // listings can FK to it. Idempotent-ish — if a dealer with this name
+    // already exists, we still link the user.
+    const { data: dealer, error: dErr } = await supabase
+      .from('dealers')
+      .insert({
+        name: app.business_name,
+        location: app.location,
+        verified: true,
+      })
+      .select()
+      .single();
+    if (dErr && dErr.code !== '23505') throw dErr;
+    const dealerId = dealer?.id || null;
+    // 2) Flip the applicant's profile
+    const { error: pErr } = await supabase
+      .from('profiles')
+      .update({ is_dealer: true, dealer_id: dealerId })
+      .eq('id', app.user_id);
+    if (pErr) throw pErr;
+    // 3) Mark the application approved
+    const { data: updated, error: aErr } = await supabase
+      .from('dealer_applications')
+      .update({ status: 'approved', reviewed_by: reviewerId, reviewed_at: new Date().toISOString() })
+      .eq('id', app.id)
+      .select()
+      .single();
+    if (aErr) throw aErr;
+    setApps(prev => prev.map(a => a.id === app.id ? { ...a, ...updated } : a));
+    return updated;
+  };
+
+  const rejectApp = async (appId, reason, reviewerId) => {
+    const { data, error: err } = await supabase
+      .from('dealer_applications')
+      .update({
+        status: 'rejected',
+        rejection_reason: reason || null,
+        reviewed_by: reviewerId,
+        reviewed_at: new Date().toISOString(),
+      })
+      .eq('id', appId)
+      .select()
+      .single();
+    if (err) throw err;
+    setApps(prev => prev.map(a => a.id === appId ? { ...a, ...data } : a));
+    return data;
+  };
+
+  const submitApp = async (userId, payload) => {
+    const { data, error: err } = await supabase
+      .from('dealer_applications')
+      .insert({ user_id: userId, ...payload })
+      .select()
+      .single();
+    if (err) throw err;
+    setApps(prev => [data, ...prev]);
+    return data;
+  };
+
+  return { apps, loading, refetch: fetchAll, approveApp, rejectApp, submitApp };
+}
+
+// ─── News articles (admin CRUD) ─────────────────────────────────────────────
+
+export function useNewsArticles() {
+  const [articles, setArticles] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  const fetchAll = useCallback(async () => {
+    setLoading(true);
+    try {
+      const { data } = await supabase
+        .from('news_articles')
+        .select('*')
+        .order('date', { ascending: false });
+      setArticles(data || []);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => { fetchAll(); }, [fetchAll]);
+
+  const createArticle = async (payload) => {
+    const { data, error: err } = await supabase
+      .from('news_articles').insert(payload).select().single();
+    if (err) throw err;
+    setArticles(prev => [data, ...prev]);
+    return data;
+  };
+
+  const updateArticle = async (id, patch) => {
+    const { data, error: err } = await supabase
+      .from('news_articles').update(patch).eq('id', id).select().single();
+    if (err) throw err;
+    setArticles(prev => prev.map(a => a.id === id ? data : a));
+    return data;
+  };
+
+  const deleteArticle = async (id) => {
+    const { error: err } = await supabase
+      .from('news_articles').delete().eq('id', id);
+    if (err) throw err;
+    setArticles(prev => prev.filter(a => a.id !== id));
+  };
+
+  return { articles, loading, refetch: fetchAll, createArticle, updateArticle, deleteArticle };
 }

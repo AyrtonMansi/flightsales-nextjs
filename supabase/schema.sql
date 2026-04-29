@@ -150,6 +150,83 @@ ALTER TABLE aircraft ADD COLUMN IF NOT EXISTS logbooks_complete BOOLEAN DEFAULT 
 ALTER TABLE aircraft ADD COLUMN IF NOT EXISTS hangared BOOLEAN DEFAULT false;
 ALTER TABLE aircraft ADD COLUMN IF NOT EXISTS owner_count INTEGER;
 
+-- Admin moderation
+ALTER TABLE aircraft ADD COLUMN IF NOT EXISTS rejection_reason TEXT;    -- shown to seller when status='rejected'
+
+-- Profile moderation
+ALTER TABLE profiles ADD COLUMN IF NOT EXISTS suspended_at TIMESTAMP WITH TIME ZONE;
+ALTER TABLE profiles ADD COLUMN IF NOT EXISTS suspension_reason TEXT;
+
+-- ============================================
+-- DEALER APPLICATIONS
+-- ============================================
+-- Users can apply to become a verified dealer; admin approves/rejects.
+-- Approval flips profiles.is_dealer + creates a dealers row.
+CREATE TABLE IF NOT EXISTS dealer_applications (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  business_name TEXT NOT NULL,
+  abn TEXT,
+  location TEXT NOT NULL,
+  message TEXT,
+  status TEXT NOT NULL DEFAULT 'pending'
+    CHECK (status IN ('pending', 'approved', 'rejected')),
+  rejection_reason TEXT,
+  reviewed_by UUID REFERENCES auth.users(id),
+  reviewed_at TIMESTAMP WITH TIME ZONE,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+CREATE INDEX IF NOT EXISTS idx_dealer_apps_status ON dealer_applications(status, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_dealer_apps_user ON dealer_applications(user_id);
+
+-- ============================================
+-- ADMIN AUDIT LOG (Wave 4 — schema seeded now so we can hook into it later)
+-- ============================================
+CREATE TABLE IF NOT EXISTS admin_audit (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  admin_id UUID REFERENCES auth.users(id),
+  action TEXT NOT NULL,            -- 'listing.approve', 'user.suspend', etc.
+  target_type TEXT NOT NULL,       -- 'aircraft' | 'profile' | 'enquiry' | 'dealer_app' | ...
+  target_id UUID,
+  before JSONB,
+  after JSONB,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+CREATE INDEX IF NOT EXISTS idx_admin_audit_recent ON admin_audit(created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_admin_audit_admin ON admin_audit(admin_id, created_at DESC);
+
+-- ============================================
+-- RPC: admin_users_with_listings_count
+-- Server-side aggregation replaces the client-side N+1 in useAdminUsers.
+-- ============================================
+CREATE OR REPLACE FUNCTION admin_users_with_listings_count()
+RETURNS TABLE (
+  id UUID,
+  email TEXT,
+  full_name TEXT,
+  role TEXT,
+  is_dealer BOOLEAN,
+  suspended_at TIMESTAMP WITH TIME ZONE,
+  listings_count BIGINT,
+  created_at TIMESTAMP WITH TIME ZONE
+)
+LANGUAGE SQL
+SECURITY DEFINER
+AS $$
+  SELECT
+    p.id, p.email, p.full_name, p.role, p.is_dealer, p.suspended_at,
+    COALESCE(c.cnt, 0) AS listings_count,
+    p.created_at
+  FROM profiles p
+  LEFT JOIN (
+    SELECT user_id, COUNT(*) AS cnt
+    FROM aircraft
+    WHERE user_id IS NOT NULL
+    GROUP BY user_id
+  ) c ON c.user_id = p.id
+  ORDER BY p.created_at DESC;
+$$;
+
 
 -- ============================================
 -- SAVED/WATCHLIST TABLE
