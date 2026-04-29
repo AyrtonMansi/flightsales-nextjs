@@ -114,10 +114,22 @@ const BuyPage = ({ setSelectedListing, savedIds, onSave, initialFilters: initial
             {/* AI search bar */}
             <div className="fs-buy-main-search">
               <div className="fs-buy-search-input-wrap">
-                <span className="fs-buy-search-icon">{Icons.search}</span>
+                <span className="fs-buy-search-icon" aria-hidden="true">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M15 4V2" />
+                    <path d="M15 16v-2" />
+                    <path d="M8 9h2" />
+                    <path d="M20 9h2" />
+                    <path d="M17.8 11.8 19 13" />
+                    <path d="M15 9h.01" />
+                    <path d="M17.8 6.2 19 5" />
+                    <path d="M3 21l9-9" />
+                    <path d="M12.2 6.2 11 5" />
+                  </svg>
+                </span>
                 <input
                   className="fs-search-inline-input"
-                  placeholder={rotatingPlaceholder}
+                  placeholder={rotatingPlaceholder || 'AI quick search'}
                   value={state.search}
                   onChange={e => dispatch({ type: 'SET', field: 'search', value: e.target.value })}
                   onKeyDown={e => { if (e.key === 'Enter' && e.target.value) handleAiSearch(e.target.value); }}

@@ -238,14 +238,13 @@ const SellPage = ({ user, setPage }) => {
                     }}
                     maxLength={6}
                   />
-                  <button 
+                  <button
                     type="button"
                     onClick={lookupCASA}
                     disabled={isLookingUp || formData.rego.length < 6}
-                    className="fs-nav-btn-primary"
-                    style={{ whiteSpace: 'nowrap' }}
+                    className="fs-rego-lookup-btn"
                   >
-                    {isLookingUp ? '...' : 'Lookup'}
+                    {isLookingUp ? 'Looking up…' : 'Lookup'}
                   </button>
                 </div>
                 

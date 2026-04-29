@@ -303,6 +303,35 @@ a { color: inherit; text-decoration: none; }
   background: var(--fs-ink); color: white;
 }
 .fs-nav-btn-primary:hover { background: var(--fs-ink-2); }
+
+/* Rego lookup button — sits next to the rego input on /sell. The previous
+   build used .fs-nav-btn-primary which only set background/color; no
+   padding meant the "Lookup" label got squeezed into a black square on
+   mobile when flex:1 took most of the row. Explicit sizing here. */
+.fs-rego-lookup-btn {
+  flex-shrink: 0;
+  min-width: 96px;
+  padding: 0 18px;
+  background: var(--fs-ink);
+  color: var(--fs-white);
+  border: none;
+  border-radius: var(--fs-radius-sm);
+  font-family: var(--fs-font);
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: -0.005em;
+  cursor: pointer;
+  white-space: nowrap;
+  /* Match the input field height the form uses (~44px). The input has
+     padding from .fs-form-input; we hard-code the height so the two
+     elements align on the same row regardless of viewport. */
+  height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.fs-rego-lookup-btn:hover:not(:disabled) { background: var(--fs-ink-2); }
+.fs-rego-lookup-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 .fs-nav-mobile-toggle {
   display: none; background: none; border: none; color: var(--fs-ink); cursor: pointer;
   padding: 8px; border-radius: var(--fs-radius-sm);
@@ -379,6 +408,16 @@ a { color: inherit; text-decoration: none; }
   color: white; display: flex; align-items: center; justify-content: center; flex-shrink: 0;
   font-size: 11px; font-weight: 700; letter-spacing: 0.02em;
 }
+/* Inline magic-wand glyph that lives flush with the search text rather
+   than in a separate badge — uses currentColor so it inherits the
+   placeholder/text color of the input. Replaces the previous black
+   "AI" pill on the left of the hero search. */
+.fs-search-ai-wand {
+  display: inline-flex; align-items: center; justify-content: center;
+  flex-shrink: 0; color: var(--fs-ink-3);
+  width: 24px; height: 24px;
+}
+.fs-search-ai-wand svg { display: block; }
 .fs-search-ai-input {
   flex: 1; border: none; outline: none; font-size: 15px; font-weight: 500;
   color: var(--fs-ink); background: transparent; font-family: var(--fs-font);
