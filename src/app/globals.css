@@ -377,6 +377,7 @@ a { color: inherit; text-decoration: none; }
   width: 28px; height: 28px; border-radius: 50%;
   background: var(--fs-ink);
   color: white; display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  font-size: 11px; font-weight: 700; letter-spacing: 0.02em;
 }
 .fs-search-ai-input {
   flex: 1; border: none; outline: none; font-size: 15px; font-weight: 500;
@@ -406,6 +407,7 @@ a { color: inherit; text-decoration: none; }
   color: var(--fs-ink); background: transparent;
   font-family: var(--fs-font); width: 100%; cursor: pointer;
   letter-spacing: -0.01em; padding: 0;
+  text-overflow: ellipsis; white-space: nowrap; overflow: hidden;
 }
 .fs-search-select { appearance: none; padding-right: 14px; }
 .fs-search-btn {
@@ -439,7 +441,11 @@ a { color: inherit; text-decoration: none; }
   color: var(--fs-ink-3); font-size: 13px; font-weight: 500;
   margin-top: 8px; letter-spacing: -0.005em;
 }
-@media (max-width: 480px) { .fs-stats { gap: 32px; margin-top: 40px; } .fs-stat-num { font-size: 28px; } }
+@media (max-width: 480px) {
+  .fs-stats { gap: 24px; margin-top: 40px; }
+  .fs-stat-num { font-size: 28px; }
+  .fs-stat-label { font-size: 12px; white-space: nowrap; }
+}
 
 /* SECTION — Uber rhythm */
 .fs-section { padding: var(--fs-section-y) 0; }
@@ -602,6 +608,16 @@ a { color: inherit; text-decoration: none; }
   margin-top: 32px;
   max-width: 100%;
   justify-content: center;
+}
+@media (max-width: 480px) {
+  .fs-categories {
+    flex-wrap: nowrap; overflow-x: auto;
+    justify-content: flex-start;
+    padding-bottom: 4px;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .fs-categories::-webkit-scrollbar { display: none; }
 }
 .fs-cat-pill {
   background: var(--fs-bg-2); border: none;

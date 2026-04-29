@@ -172,15 +172,14 @@ const HomePage = ({ setPage, setSelectedListing, savedIds, onSave, setSearchFilt
 
           <div className="fs-search-bar">
             <div className="fs-search-ai">
-              <div className="fs-search-ai-icon">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M15 4V2"/><path d="M15 16a5 5 0 1 1-4.995-5.217L9.6 7.6l-2.3.77a1 1 0 0 1-1.264-1.264l.77-2.3L7.6 3.4a5 5 0 0 1 9.9 1.005L18 4v2h2l1.005.005a5 5 0 1 1-9.9 0L12 6h-2l-1.005-.005a5 5 0 0 1 1.005-9.9L10 2v2"/><path d="m9 15 3 3"/><path d="m12 18 3-3"/></svg>
-              </div>
+              <div className="fs-search-ai-icon" aria-hidden="true">AI</div>
               <input
                 className="fs-search-ai-input"
                 placeholder={rotatingPlaceholder}
                 value={aiQuery}
                 onChange={e => setAiQuery(e.target.value)}
                 onKeyDown={e => { if (e.key === "Enter") handleAiSearch(e.target.value); }}
+                aria-label="AI search — describe the aircraft you're looking for"
               />
             </div>
             {/* Row 1: Simple filters */}
@@ -202,7 +201,7 @@ const HomePage = ({ setPage, setSelectedListing, savedIds, onSave, setSearchFilt
               <div className="fs-search-field">
                 <span className="fs-search-label">Location</span>
                 <select className="fs-search-select" value={searchState} onChange={e => setSearchState(e.target.value)}>
-                  <option value="">All Australia</option>
+                  <option value="">Australia</option>
                   {STATES.map(s => <option key={s} value={s}>{s}</option>)}
                 </select>
               </div>
@@ -223,7 +222,7 @@ const HomePage = ({ setPage, setSelectedListing, savedIds, onSave, setSearchFilt
                       <option key={y} value={y}>{y}</option>
                     ))}
                   </select>
-                  <span style={{ color: "var(--fs-ink-4)", fontSize: 12 }}>→</span>
+                  <span style={{ color: "var(--fs-ink-4)", fontSize: 12 }}>—</span>
                   <select
                     className="fs-search-select"
                     value={yearTo}
@@ -256,7 +255,7 @@ const HomePage = ({ setPage, setSelectedListing, savedIds, onSave, setSearchFilt
                     <option value="2000000">$2M</option>
                     <option value="5000000">$5M</option>
                   </select>
-                  <span style={{ color: "var(--fs-ink-4)", fontSize: 12 }}>→</span>
+                  <span style={{ color: "var(--fs-ink-4)", fontSize: 12 }}>—</span>
                   <select
                     className="fs-search-select"
                     value={priceTo}
@@ -297,11 +296,13 @@ const HomePage = ({ setPage, setSelectedListing, savedIds, onSave, setSearchFilt
             ))}
           </div>
 
-          <div className="fs-stats">
-            <div className="fs-stat"><div className="fs-stat-num">{totalListings.toLocaleString()}</div><div className="fs-stat-label">Aircraft Listed</div></div>
-            <div className="fs-stat"><div className="fs-stat-num">{displayDealers.length}</div><div className="fs-stat-label">Verified Dealers</div></div>
-            <div className="fs-stat"><div className="fs-stat-num">{new Set(displayDealers.map(d => (d.location || '').split(',').pop().trim())).size}</div><div className="fs-stat-label">States Covered</div></div>
-          </div>
+          {totalListings > 0 && (
+            <div className="fs-stats">
+              <div className="fs-stat"><div className="fs-stat-num">{totalListings.toLocaleString()}</div><div className="fs-stat-label">Listings</div></div>
+              <div className="fs-stat"><div className="fs-stat-num">{displayDealers.length}</div><div className="fs-stat-label">Dealers</div></div>
+              <div className="fs-stat"><div className="fs-stat-num">{new Set(displayDealers.map(d => (d.location || '').split(',').pop().trim())).size}</div><div className="fs-stat-label">States</div></div>
+            </div>
+          )}
         </div>
       </section>
 
