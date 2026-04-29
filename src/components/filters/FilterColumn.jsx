@@ -7,6 +7,53 @@ import RangeSlider from './RangeSlider';
 import { CATEGORIES, MANUFACTURERS, STATES, CONDITIONS } from '../../lib/constants';
 import { SECTION_FIELDS, countActiveInSection, countActiveTotal, initialFilters } from '../../lib/filterReducer';
 
+// Curated option lists for the advanced filter checkbox sections. Kept here
+// (not in /lib/constants) because they're tightly coupled to the column's
+// presentation — what shows up in which section.
+const ENGINE_COUNTS = [
+  { value: '1', label: 'Single' },
+  { value: '2', label: 'Twin' },
+  { value: '4', label: 'Quad' },
+];
+
+const ENGINE_TYPES = [
+  { value: 'piston', label: 'Piston' },
+  { value: 'turboprop', label: 'Turboprop' },
+  { value: 'turbofan', label: 'Turbofan' },
+  { value: 'electric', label: 'Electric' },
+];
+
+const ENGINE_MAKES = [
+  'Continental', 'Lycoming', 'Pratt & Whitney', 'Williams', 'Rolls-Royce',
+  'Rotax', 'Jabiru', 'Honeywell', 'GE Aviation', 'Pipistrel',
+];
+
+const AVIONICS_SUITES = [
+  'Garmin G1000/NXi',
+  'Garmin G3X',
+  'Garmin G500/600',
+  'Avidyne',
+  'Dynon',
+  'Aspen',
+  'Steam gauges',
+];
+
+const AUTOPILOTS = [
+  'GFC700', 'KAP140', 'S-TEC', 'TruTrak', 'None',
+];
+
+const DAMAGE_HISTORY = [
+  { value: 'none', label: 'No damage' },
+  { value: 'minor', label: 'Minor disclosed' },
+  { value: 'major', label: 'Major disclosed' },
+];
+
+const OWNER_COUNTS = [
+  { value: '1', label: 'Single owner' },
+  { value: '2', label: '2 or fewer owners' },
+  { value: '3', label: '3 or fewer owners' },
+];
+
 // The whole left-side column on /buy. Basic filters always visible at top;
 // advanced sections collapsed below a divider; everything sits in the same
 // scrollable column. Auth-gated: signed-out users see a single sign-in
@@ -25,6 +72,19 @@ export default function FilterColumn({ state, dispatch, total, user }) {
   const perfActive = countActiveInSection(state, SECTION_FIELDS.performance);
   const engActive = countActiveInSection(state, SECTION_FIELDS.engine);
   const equipActive = countActiveInSection(state, SECTION_FIELDS.equipment);
+  const histActive = countActiveInSection(state, SECTION_FIELDS.history);
+
+  // Helper: simple boolean checkbox row, used a lot in the equipment section.
+  const Bool = ({ field, label }) => (
+    <label className={`fs-fc-checkrow${state[field] ? ' on' : ''}`}>
+      <input
+        type="checkbox"
+        checked={!!state[field]}
+        onChange={e => setField(field, e.target.checked)}
+      />
+      <span className="fs-fc-checkrow-label">{label}</span>
+    </label>
+  );
 
   const resetSection = (fields) => dispatch({
     type: 'RESET_SECTION',
@@ -207,9 +267,26 @@ export default function FilterColumn({ state, dispatch, total, user }) {
                 onChange={v => setField('usefulLoadMin', v)} />
             </div>
             <div className="fs-fc-row">
+              <span className="fs-fc-sublabel">MTOW</span>
+              <RangeSlider
+                min={0} max={10_000} step={100}
+                minValue={state.mtowMin} maxValue={state.mtowMax}
+                onChange={({ min, max }) => {
+                  setField('mtowMin', min === '0' ? '' : min);
+                  setField('mtowMax', max === '10000' ? '' : max);
+                }}
+                format={n => `${Number(n).toLocaleString()} kg`}
+              />
+            </div>
+            <div className="fs-fc-row">
               <span className="fs-fc-sublabel">Fuel burn</span>
               <NumberField prefix="Max" unit="L/hr" value={state.fuelBurnMax}
                 onChange={v => setField('fuelBurnMax', v)} />
+            </div>
+            <div className="fs-fc-row">
+              <span className="fs-fc-sublabel">Service ceiling</span>
+              <NumberField prefix="Min" unit="ft" value={state.ceilingMin}
+                onChange={v => setField('ceilingMin', v)} step={500} />
             </div>
           </FilterSection>
 
@@ -218,6 +295,35 @@ export default function FilterColumn({ state, dispatch, total, user }) {
             activeCount={engActive}
             onReset={() => resetSection(SECTION_FIELDS.engine)}
           >
+            <div className="fs-fc-row">
+              <span className="fs-fc-sublabel">Engine count</span>
+              <CheckboxList
+                options={ENGINE_COUNTS}
+                selected={state.engineCounts}
+                onToggle={v => toggle('engineCounts', v)}
+                maxVisible={3}
+              />
+            </div>
+            <div className="fs-fc-row">
+              <span className="fs-fc-sublabel">Engine type</span>
+              <CheckboxList
+                options={ENGINE_TYPES}
+                selected={state.engineTypes}
+                onToggle={v => toggle('engineTypes', v)}
+                maxVisible={4}
+              />
+            </div>
+            <div className="fs-fc-row">
+              <span className="fs-fc-sublabel">Engine make</span>
+              <CheckboxList
+                options={ENGINE_MAKES.map(m => ({ value: m, label: m }))}
+                selected={state.engineMakes}
+                onToggle={v => toggle('engineMakes', v)}
+                maxVisible={5}
+                searchable
+                searchKey="Filter makes"
+              />
+            </div>
             <div className="fs-fc-row">
               <span className="fs-fc-sublabel">Hours since major overhaul</span>
               <NumberField prefix="Max" unit="hrs" value={state.smohMax}
@@ -235,26 +341,68 @@ export default function FilterColumn({ state, dispatch, total, user }) {
             activeCount={equipActive}
             onReset={() => resetSection(SECTION_FIELDS.equipment)}
           >
-            <label className={`fs-fc-checkrow${state.ifrOnly ? ' on' : ''}`}>
-              <input type="checkbox" checked={state.ifrOnly}
-                onChange={e => setField('ifrOnly', e.target.checked)} />
-              <span className="fs-fc-checkrow-label">IFR equipped</span>
-            </label>
-            <label className={`fs-fc-checkrow${state.glassOnly ? ' on' : ''}`}>
-              <input type="checkbox" checked={state.glassOnly}
-                onChange={e => setField('glassOnly', e.target.checked)} />
-              <span className="fs-fc-checkrow-label">Glass cockpit</span>
-            </label>
-            <label className={`fs-fc-checkrow${state.retractable ? ' on' : ''}`}>
-              <input type="checkbox" checked={state.retractable}
-                onChange={e => setField('retractable', e.target.checked)} />
-              <span className="fs-fc-checkrow-label">Retractable gear</span>
-            </label>
-            <label className={`fs-fc-checkrow${state.pressurised ? ' on' : ''}`}>
-              <input type="checkbox" checked={state.pressurised}
-                onChange={e => setField('pressurised', e.target.checked)} />
-              <span className="fs-fc-checkrow-label">Pressurized</span>
-            </label>
+            <div className="fs-fc-row">
+              <span className="fs-fc-sublabel">Avionics suite</span>
+              <CheckboxList
+                options={AVIONICS_SUITES.map(s => ({ value: s, label: s }))}
+                selected={state.avionicsSuites}
+                onToggle={v => toggle('avionicsSuites', v)}
+                maxVisible={5}
+              />
+            </div>
+            <div className="fs-fc-row">
+              <span className="fs-fc-sublabel">Autopilot</span>
+              <CheckboxList
+                options={AUTOPILOTS.map(a => ({ value: a, label: a }))}
+                selected={state.autopilots}
+                onToggle={v => toggle('autopilots', v)}
+                maxVisible={5}
+              />
+            </div>
+            <div className="fs-fc-row">
+              <span className="fs-fc-sublabel">Equipment</span>
+              <Bool field="ifrOnly" label="IFR equipped" />
+              <Bool field="glassOnly" label="Glass cockpit" />
+              <Bool field="adsbIn" label="ADS-B In" />
+              <Bool field="adsbOut" label="ADS-B Out" />
+              <Bool field="synVis" label="Synthetic vision" />
+              <Bool field="deIce" label="TKS / FIKI de-ice" />
+              <Bool field="airCon" label="Air conditioning" />
+              <Bool field="pressurised" label="Pressurized" />
+              <Bool field="retractable" label="Retractable gear" />
+              <Bool field="cargoDoor" label="Cargo door / pod" />
+              <Bool field="parachute" label="BRS parachute (CAPS)" />
+            </div>
+          </FilterSection>
+
+          <FilterSection
+            title="History & condition"
+            activeCount={histActive}
+            onReset={() => resetSection(SECTION_FIELDS.history)}
+          >
+            <div className="fs-fc-row">
+              <span className="fs-fc-sublabel">Damage history</span>
+              <CheckboxList
+                options={DAMAGE_HISTORY}
+                selected={state.damageHistory}
+                onToggle={v => toggle('damageHistory', v)}
+                maxVisible={3}
+              />
+            </div>
+            <div className="fs-fc-row">
+              <span className="fs-fc-sublabel">Storage</span>
+              <Bool field="hangared" label="Hangared" />
+              <Bool field="logbooksComplete" label="Complete logbooks" />
+            </div>
+            <div className="fs-fc-row">
+              <span className="fs-fc-sublabel">Owner count</span>
+              <CheckboxList
+                options={OWNER_COUNTS}
+                selected={state.ownerMaxCount ? [state.ownerMaxCount] : []}
+                onToggle={v => setField('ownerMaxCount', state.ownerMaxCount === v ? '' : v)}
+                maxVisible={3}
+              />
+            </div>
           </FilterSection>
         </>
       )}

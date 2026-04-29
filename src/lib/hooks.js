@@ -27,11 +27,16 @@ export function useAircraft(filters = {}) {
     category, manufacturer, state, condition, dealerId,
     // new array-shaped multi-select fields used by BuyPage
     categories, manufacturers, states, conditions,
+    engineCounts, engineTypes, engineMakes,
+    avionicsSuites, autopilots, damageHistory,
     minPrice, maxPrice, maxHours, ifrOnly, glassOnly,
     yearFrom, yearTo,
     cruiseMin, rangeMin, usefulLoadMin, fuelBurnMax,
+    mtowMin, mtowMax, ceilingMin,
     smohMax, tboPctMin,
-    retractable, pressurised,
+    adsbIn, adsbOut, synVis, deIce, airCon,
+    retractable, pressurised, cargoDoor, parachute,
+    logbooksComplete, hangared, ownerMaxCount,
     dealerOnly, privateOnly, featuredOnly,
     search, sortBy, page, pageSize,
   } = filters;
@@ -40,6 +45,12 @@ export function useAircraft(filters = {}) {
   const makeKey = (manufacturers || []).join('|');
   const stateKey = (states || []).join('|');
   const condKey = (conditions || []).join('|');
+  const engCountKey = (engineCounts || []).join('|');
+  const engTypeKey = (engineTypes || []).join('|');
+  const engMakeKey = (engineMakes || []).join('|');
+  const avSuiteKey = (avionicsSuites || []).join('|');
+  const apKey = (autopilots || []).join('|');
+  const damageKey = (damageHistory || []).join('|');
 
   const fetchAircraft = useCallback(async () => {
     setLoading(true);
@@ -83,20 +94,41 @@ export function useAircraft(filters = {}) {
       if (rangeMin) query = query.gte('range_nm', Number(rangeMin));
       if (usefulLoadMin) query = query.gte('useful_load', Number(usefulLoadMin));
       if (fuelBurnMax) query = query.lte('fuel_burn', Number(fuelBurnMax));
+      if (mtowMin) query = query.gte('mtow', Number(mtowMin));
+      if (mtowMax) query = query.lte('mtow', Number(mtowMax));
+      if (ceilingMin) query = query.gte('service_ceiling', Number(ceilingMin));
 
-      // Engine specs
+      // Engine
+      if (engineCounts && engineCounts.length) query = query.in('engine_count', engineCounts.map(Number));
+      if (engineTypes && engineTypes.length) query = query.in('engine_type', engineTypes);
+      if (engineMakes && engineMakes.length) query = query.in('engine_make', engineMakes);
       if (smohMax) query = query.lte('eng_hours', Number(smohMax));
       if (tboPctMin) {
-        // TBO remaining % is computed (eng_tbo - eng_hours) / eng_tbo. Pushing
-        // this filter to a dedicated DB-side computed column or RPC would be
-        // cleaner; for now we apply it client-side after fetch.
+        // TBO remaining % is (eng_tbo - eng_hours) / eng_tbo * 100. Computed
+        // client-side after fetch — Supabase doesn't have computed-column
+        // .filter without an RPC and we'd rather keep the query path simple.
       }
 
-      // Boolean equipment
+      // Avionics & equipment
+      if (avionicsSuites && avionicsSuites.length) query = query.in('avionics_suite', avionicsSuites);
+      if (autopilots && autopilots.length) query = query.in('autopilot', autopilots);
       if (ifrOnly) query = query.eq('ifr', true);
       if (glassOnly) query = query.eq('glass_cockpit', true);
       if (retractable) query = query.eq('retractable', true);
       if (pressurised) query = query.eq('pressurised', true);
+      if (adsbIn) query = query.eq('adsb_in', true);
+      if (adsbOut) query = query.eq('adsb_out', true);
+      if (synVis) query = query.eq('syn_vis', true);
+      if (deIce) query = query.eq('de_ice', true);
+      if (airCon) query = query.eq('air_con', true);
+      if (cargoDoor) query = query.eq('cargo_door', true);
+      if (parachute) query = query.eq('parachute', true);
+
+      // History & condition
+      if (damageHistory && damageHistory.length) query = query.in('damage_history', damageHistory);
+      if (logbooksComplete) query = query.eq('logbooks_complete', true);
+      if (hangared) query = query.eq('hangared', true);
+      if (ownerMaxCount) query = query.lte('owner_count', Number(ownerMaxCount));
 
       // Seller filters
       if (dealerOnly && !privateOnly) query = query.not('dealer_id', 'is', null);
@@ -145,15 +177,22 @@ export function useAircraft(filters = {}) {
   }, [
     category, manufacturer, state, condition, dealerId,
     catKey, makeKey, stateKey, condKey,
+    engCountKey, engTypeKey, engMakeKey,
+    avSuiteKey, apKey, damageKey,
     minPrice, maxPrice, maxHours, ifrOnly, glassOnly,
     yearFrom, yearTo,
     cruiseMin, rangeMin, usefulLoadMin, fuelBurnMax,
+    mtowMin, mtowMax, ceilingMin,
     smohMax, tboPctMin,
-    retractable, pressurised,
+    adsbIn, adsbOut, synVis, deIce, airCon,
+    retractable, pressurised, cargoDoor, parachute,
+    logbooksComplete, hangared, ownerMaxCount,
     dealerOnly, privateOnly, featuredOnly,
     search, sortBy, page, pageSize,
-    // categories/manufacturers/states/conditions referenced indirectly via *Key
+    // arrays referenced indirectly via *Key keys above
     categories, manufacturers, states, conditions,
+    engineCounts, engineTypes, engineMakes,
+    avionicsSuites, autopilots, damageHistory,
   ]);
 
   useEffect(() => { fetchAircraft(); }, [fetchAircraft]);

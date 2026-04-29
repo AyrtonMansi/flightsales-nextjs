@@ -118,6 +118,40 @@ ALTER TABLE profiles ADD COLUMN IF NOT EXISTS role TEXT DEFAULT 'private'
   CHECK (role IN ('private', 'dealer', 'admin'));
 
 -- ============================================
+-- AIRCRAFT — advanced filter columns (additive)
+-- ============================================
+-- Added to support the structured advanced filter set on /buy. All NULL-able
+-- (or false-defaulting) so existing rows aren't rejected — sellers populate
+-- via the SellPage form as listings come on board.
+
+-- Performance
+ALTER TABLE aircraft ADD COLUMN IF NOT EXISTS mtow INTEGER;             -- max takeoff weight, kg
+ALTER TABLE aircraft ADD COLUMN IF NOT EXISTS service_ceiling INTEGER;  -- ft
+
+-- Engine
+ALTER TABLE aircraft ADD COLUMN IF NOT EXISTS engine_count INTEGER;     -- 1, 2, 4
+ALTER TABLE aircraft ADD COLUMN IF NOT EXISTS engine_type TEXT;         -- 'piston'|'turboprop'|'turbofan'|'electric'
+ALTER TABLE aircraft ADD COLUMN IF NOT EXISTS engine_make TEXT;         -- 'Continental'|'Lycoming'|'Pratt & Whitney'|'Williams'|'Rotax'|...
+
+-- Avionics & equipment (categorical + booleans)
+ALTER TABLE aircraft ADD COLUMN IF NOT EXISTS avionics_suite TEXT;      -- 'Garmin G1000/NXi'|'Garmin G3X'|'Garmin G500/600'|'Avidyne'|'Dynon'|'Aspen'|'Steam'
+ALTER TABLE aircraft ADD COLUMN IF NOT EXISTS autopilot TEXT;           -- 'GFC700'|'KAP140'|'S-TEC'|'None'
+ALTER TABLE aircraft ADD COLUMN IF NOT EXISTS adsb_in BOOLEAN DEFAULT false;
+ALTER TABLE aircraft ADD COLUMN IF NOT EXISTS adsb_out BOOLEAN DEFAULT false;
+ALTER TABLE aircraft ADD COLUMN IF NOT EXISTS syn_vis BOOLEAN DEFAULT false;
+ALTER TABLE aircraft ADD COLUMN IF NOT EXISTS de_ice BOOLEAN DEFAULT false;
+ALTER TABLE aircraft ADD COLUMN IF NOT EXISTS air_con BOOLEAN DEFAULT false;
+ALTER TABLE aircraft ADD COLUMN IF NOT EXISTS cargo_door BOOLEAN DEFAULT false;
+ALTER TABLE aircraft ADD COLUMN IF NOT EXISTS parachute BOOLEAN DEFAULT false;
+
+-- History & condition
+ALTER TABLE aircraft ADD COLUMN IF NOT EXISTS damage_history TEXT;      -- 'none'|'minor'|'major'
+ALTER TABLE aircraft ADD COLUMN IF NOT EXISTS logbooks_complete BOOLEAN DEFAULT false;
+ALTER TABLE aircraft ADD COLUMN IF NOT EXISTS hangared BOOLEAN DEFAULT false;
+ALTER TABLE aircraft ADD COLUMN IF NOT EXISTS owner_count INTEGER;
+
+
+-- ============================================
 -- SAVED/WATCHLIST TABLE
 -- ============================================
 CREATE TABLE IF NOT EXISTS saved_aircraft (

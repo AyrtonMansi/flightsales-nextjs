@@ -27,14 +27,34 @@ export const initialFilters = {
   rangeMin: '',
   usefulLoadMin: '',
   fuelBurnMax: '',
+  mtowMin: '',
+  mtowMax: '',
+  ceilingMin: '',
   // engine (advanced)
+  engineCounts: [],   // [1, 2, 4]
+  engineTypes: [],    // ['piston', 'turboprop', 'turbofan', 'electric']
+  engineMakes: [],    // ['Continental', 'Lycoming', ...]
   smohMax: '',
   tboPctMin: '',
   // avionics & equipment (advanced)
+  avionicsSuites: [], // ['Garmin G1000/NXi', 'Garmin G3X', ...]
+  autopilots: [],     // ['GFC700', 'KAP140', 'S-TEC', 'None']
   ifrOnly: false,
   glassOnly: false,
-  retractable: false,
+  adsbIn: false,
+  adsbOut: false,
+  synVis: false,
+  deIce: false,
+  airCon: false,
   pressurised: false,
+  retractable: false,
+  cargoDoor: false,
+  parachute: false,
+  // history & condition (advanced)
+  damageHistory: [],     // ['none', 'minor', 'major']
+  logbooksComplete: false,
+  hangared: false,
+  ownerMaxCount: '',
   // ui-only
   sortBy: 'newest',
 };
@@ -65,9 +85,14 @@ export function filterReducer(state, action) {
 // Section group definitions — used to decide what "Reset section" wipes
 // and what counts as an active filter in that section's header dot.
 export const SECTION_FIELDS = {
-  performance: ['cruiseMin', 'rangeMin', 'usefulLoadMin', 'fuelBurnMax'],
-  engine: ['smohMax', 'tboPctMin'],
-  equipment: ['ifrOnly', 'glassOnly', 'retractable', 'pressurised'],
+  performance: ['cruiseMin', 'rangeMin', 'usefulLoadMin', 'fuelBurnMax', 'mtowMin', 'mtowMax', 'ceilingMin'],
+  engine: ['engineCounts', 'engineTypes', 'engineMakes', 'smohMax', 'tboPctMin'],
+  equipment: [
+    'avionicsSuites', 'autopilots',
+    'ifrOnly', 'glassOnly', 'adsbIn', 'adsbOut', 'synVis',
+    'deIce', 'airCon', 'pressurised', 'retractable', 'cargoDoor', 'parachute',
+  ],
+  history: ['damageHistory', 'logbooksComplete', 'hangared', 'ownerMaxCount'],
 };
 
 // Count active filters in a section. Strings are "active" iff non-empty;
@@ -98,6 +123,7 @@ export function countActiveTotal(state) {
   n += countActiveInSection(state, SECTION_FIELDS.performance);
   n += countActiveInSection(state, SECTION_FIELDS.engine);
   n += countActiveInSection(state, SECTION_FIELDS.equipment);
+  n += countActiveInSection(state, SECTION_FIELDS.history);
   return n;
 }
 
@@ -105,6 +131,7 @@ export function countActiveTotal(state) {
 // query language and the UI shape stay aligned in one place.
 export function toQueryFilters(state) {
   return {
+    // basic
     categories: state.categories,
     manufacturers: state.manufacturers,
     states: state.states,
@@ -113,19 +140,44 @@ export function toQueryFilters(state) {
     maxPrice: state.maxPrice || undefined,
     yearFrom: state.yearFrom || undefined,
     yearTo: state.yearTo || undefined,
+    // performance
     cruiseMin: state.cruiseMin || undefined,
     rangeMin: state.rangeMin || undefined,
     usefulLoadMin: state.usefulLoadMin || undefined,
     fuelBurnMax: state.fuelBurnMax || undefined,
+    mtowMin: state.mtowMin || undefined,
+    mtowMax: state.mtowMax || undefined,
+    ceilingMin: state.ceilingMin || undefined,
+    // engine
+    engineCounts: state.engineCounts,
+    engineTypes: state.engineTypes,
+    engineMakes: state.engineMakes,
     smohMax: state.smohMax || undefined,
     tboPctMin: state.tboPctMin || undefined,
+    // avionics & equipment
+    avionicsSuites: state.avionicsSuites,
+    autopilots: state.autopilots,
     ifrOnly: state.ifrOnly || undefined,
     glassOnly: state.glassOnly || undefined,
-    retractable: state.retractable || undefined,
+    adsbIn: state.adsbIn || undefined,
+    adsbOut: state.adsbOut || undefined,
+    synVis: state.synVis || undefined,
+    deIce: state.deIce || undefined,
+    airCon: state.airCon || undefined,
     pressurised: state.pressurised || undefined,
+    retractable: state.retractable || undefined,
+    cargoDoor: state.cargoDoor || undefined,
+    parachute: state.parachute || undefined,
+    // history & condition
+    damageHistory: state.damageHistory,
+    logbooksComplete: state.logbooksComplete || undefined,
+    hangared: state.hangared || undefined,
+    ownerMaxCount: state.ownerMaxCount || undefined,
+    // seller
     dealerOnly: state.dealerOnly || undefined,
     privateOnly: state.privateOnly || undefined,
     featuredOnly: state.featuredOnly || undefined,
+    // search/sort
     search: state.search || undefined,
     sortBy: state.sortBy,
   };
