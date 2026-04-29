@@ -1,4 +1,5 @@
 'use client';
+import { Icons } from './Icons';
 
 const MobileFilterSheet = ({ isOpen, onClose, children, filteredCount, onClear }) => {
   if (!isOpen) return null;

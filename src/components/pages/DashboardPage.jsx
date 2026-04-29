@@ -207,10 +207,10 @@ const DashboardPage = ({ user, setPage, signOut, savedIds, savedListings, onSave
   return (
     <>
       {/* Header */}
-      <div className="fs-about-hero" style={{ padding: "40px 0" }}>
+      <div className="fs-dash-hero">
         <div className="fs-container">
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-            <div style={{ display: "flex", alignItems: "center", gap: 20 }}>
+          <div className="fs-dash-hero-row">
+            <div className="fs-dash-hero-id">
               <div style={{ position: 'relative' }}>
                 <img
                   src={user.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.full_name || user.email || 'User')}&background=0a0a0a&color=fff`}
@@ -240,25 +240,16 @@ const DashboardPage = ({ user, setPage, signOut, savedIds, savedListings, onSave
                 </p>
               </div>
             </div>
-            <div style={{ display: "flex", gap: 12 }}>
-              <button 
-                className="fs-nav-btn-primary"
+            <div className="fs-dash-hero-actions">
+              <button
+                className="fs-dash-hero-btn primary"
                 onClick={() => setPage('sell')}
-                style={{ background: 'white', color: 'var(--fs-gray-900)' }}
               >
                 + List Aircraft
               </button>
-              <button 
+              <button
+                className="fs-dash-hero-btn ghost"
                 onClick={handleLogout}
-                style={{ 
-                  padding: "12px 20px", 
-                  background: "rgba(255,255,255,0.1)", 
-                  border: "1px solid rgba(255,255,255,0.2)",
-                  borderRadius: "var(--fs-radius-sm)",
-                  color: "white",
-                  cursor: "pointer",
-                  fontSize: 14
-                }}
               >
                 Logout
               </button>
@@ -269,9 +260,9 @@ const DashboardPage = ({ user, setPage, signOut, savedIds, savedListings, onSave
 
       <section className="fs-section" style={{ padding: "32px 0" }}>
         <div className="fs-container">
-          <div style={{ display: "grid", gridTemplateColumns: "260px 1fr", gap: 32 }}>
-            {/* Sidebar */}
-            <div>
+          <div className="fs-dash-shell">
+            {/* Sidebar — collapses to a horizontal scrolling tab strip on mobile */}
+            <div className="fs-dash-sidebar">
               <div className="fs-detail-specs" style={{ padding: 0, overflow: "hidden", borderRadius: 12 }}>
                 <div style={{ padding: "20px", borderBottom: "1px solid var(--fs-gray-100)" }}>
                   <p style={{ fontSize: 12, color: "var(--fs-gray-500)", marginBottom: 4, textTransform: 'uppercase', letterSpacing: 0.5 }}>Account Type</p>

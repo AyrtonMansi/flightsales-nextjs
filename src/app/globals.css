@@ -1829,3 +1829,157 @@ a { color: inherit; text-decoration: none; }
 .fs-dealer-apply.done h3 { color: #166534; margin-bottom: 6px; }
 .fs-dealer-apply.done p { font-size: 13px; color: #065f46; margin: 0; line-height: 1.5; }
 
+/* ─────────────────────────────────────────────────────────────────────
+   LOGIN LAYOUT — split-screen (brand left, form right) on desktop;
+   form-only on mobile. Adds the .fs-login-* classes the JSX has been
+   referencing without any CSS backing — pre-existing bug that left the
+   page rendering as orphan text on mobile (and bare on desktop).
+   ───────────────────────────────────────────────────────────────────── */
+
+.fs-login-shell {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  min-height: calc(100vh - 64px);
+  background: var(--fs-bg);
+}
+.fs-login-brand {
+  background: var(--fs-ink);
+  color: var(--fs-white);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 56px 48px;
+}
+.fs-login-brand-inner { max-width: 360px; }
+.fs-login-brand-wordmark {
+  font-size: 32px; font-weight: 800;
+  letter-spacing: -0.03em;
+  margin-bottom: 14px;
+  color: var(--fs-white);
+}
+.fs-login-brand-tagline {
+  font-size: 16px;
+  color: rgba(255, 255, 255, 0.72);
+  line-height: 1.45;
+  letter-spacing: -0.01em;
+  margin: 0;
+}
+.fs-login-form-col {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 48px 32px;
+}
+.fs-login-form-inner {
+  width: 100%;
+  max-width: 440px;
+}
+
+/* Mobile: brand panel hides; form takes full width. The visual hero on
+   mobile is the page nav + the "Welcome back" h1 already inside the form
+   panel — the brand panel's "FlightSales / Australia's marketplace" line
+   is decorative redundancy on a small screen. */
+@media (max-width: 768px) {
+  .fs-login-shell { grid-template-columns: 1fr; min-height: auto; }
+  .fs-login-brand { display: none; }
+  .fs-login-form-col { padding: 24px 20px 48px; }
+}
+
+/* ─────────────────────────────────────────────────────────────────────
+   DASHBOARD HERO + SHELL
+   The hero used to inherit .fs-about-hero (light bg) while its inline
+   styles assumed a dark bg — so "Member since 2026" and the Logout
+   button rendered as white-on-light. New rules paint the hero ink-dark
+   and stack hero + actions on mobile so the two CTAs don't collide.
+   The desktop sidebar collapses to a horizontal tab strip below 768px
+   so the main column doesn't get squashed off-screen.
+   ───────────────────────────────────────────────────────────────────── */
+
+.fs-dash-hero {
+  background: var(--fs-ink);
+  color: var(--fs-white);
+  padding: 40px 0;
+}
+.fs-dash-hero h1 { color: var(--fs-white); margin-bottom: 6px; font-size: 28px; letter-spacing: -0.02em; }
+.fs-dash-hero p { color: rgba(255,255,255,0.72); font-size: 15px; margin: 0; line-height: 1.4; }
+.fs-dash-hero-row {
+  display: flex; align-items: center; justify-content: space-between; gap: 24px;
+}
+.fs-dash-hero-id { display: flex; align-items: center; gap: 20px; min-width: 0; }
+.fs-dash-hero-id img { width: 72px; height: 72px; border-radius: 50%; border: 3px solid var(--fs-white); flex-shrink: 0; }
+.fs-dash-hero-actions { display: flex; gap: 12px; flex-shrink: 0; }
+.fs-dash-hero-btn {
+  padding: 12px 20px; border-radius: var(--fs-radius-sm);
+  font-size: 14px; font-weight: 600; cursor: pointer;
+  font-family: var(--fs-font); border: 1px solid transparent;
+  white-space: nowrap;
+}
+.fs-dash-hero-btn.primary { background: var(--fs-white); color: var(--fs-ink); }
+.fs-dash-hero-btn.primary:hover { background: var(--fs-bg-2); }
+.fs-dash-hero-btn.ghost {
+  background: rgba(255,255,255,0.08);
+  border-color: rgba(255,255,255,0.2);
+  color: var(--fs-white);
+}
+.fs-dash-hero-btn.ghost:hover { background: rgba(255,255,255,0.16); }
+
+@media (max-width: 768px) {
+  .fs-dash-hero { padding: 24px 0; }
+  .fs-dash-hero-row { flex-direction: column; align-items: stretch; gap: 16px; }
+  .fs-dash-hero-id img { width: 56px; height: 56px; }
+  .fs-dash-hero h1 { font-size: 22px; }
+  .fs-dash-hero-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .fs-dash-hero-btn { padding: 10px 14px; text-align: center; justify-content: center; display: flex; align-items: center; }
+}
+
+/* Shell — sidebar + main content. */
+.fs-dash-shell {
+  display: grid;
+  grid-template-columns: 260px minmax(0, 1fr);
+  gap: 32px;
+  align-items: start;
+}
+
+/* Mobile: sidebar becomes a horizontal scrolling tab strip; main below. */
+@media (max-width: 768px) {
+  .fs-dash-shell { grid-template-columns: 1fr; gap: 16px; }
+  .fs-dash-sidebar { position: relative; }
+  .fs-dash-sidebar > .fs-detail-specs { padding: 0 !important; }
+  /* Hide the "Account Type" header card on mobile — info is duplicated in
+     the hero below the welcome line, and the sidebar is a tab strip now. */
+  .fs-dash-sidebar > .fs-detail-specs > div:first-child { display: none; }
+  /* Nav becomes a horizontal scrolling row */
+  .fs-dash-sidebar nav {
+    display: flex;
+    flex-direction: row;
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    padding: 8px 4px;
+    gap: 4px;
+    border-bottom: 1px solid var(--fs-line);
+  }
+  .fs-dash-sidebar nav::-webkit-scrollbar { display: none; }
+  /* Each section group sits inline */
+  .fs-dash-sidebar nav > div { display: flex; flex-direction: row; gap: 4px; flex-shrink: 0; }
+  /* Section headers ("MY SELLING", "MY BUYING") are hidden on mobile —
+     the tab labels alone are enough at this breakpoint. */
+  .fs-dash-sidebar nav > div > p { display: none; }
+  /* Item buttons become horizontal tab pills */
+  .fs-dash-sidebar nav button {
+    flex-shrink: 0;
+    white-space: nowrap;
+    border-left: none !important;
+    border-radius: var(--fs-radius-pill) !important;
+    padding: 8px 14px !important;
+    background: var(--fs-bg-2) !important;
+    border: 1px solid transparent !important;
+  }
+  .fs-dash-sidebar nav button[style*="3px solid"] {
+    background: var(--fs-ink) !important;
+    color: var(--fs-white) !important;
+  }
+  .fs-dash-sidebar nav button[style*="3px solid"] span { color: var(--fs-white) !important; }
+}
+

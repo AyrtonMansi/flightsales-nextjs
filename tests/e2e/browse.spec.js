@@ -37,4 +37,18 @@ test.describe('Anonymous browse', () => {
     expect(response?.status()).toBeLessThan(500);
     await expect(page.getByText(ERROR_BOUNDARY_TEXT)).toHaveCount(0);
   });
+
+  test('mobile filter sheet opens without tripping ErrorBoundary', async ({ page }) => {
+    // Regression guard for MobileFilterSheet referencing `Icons` without an
+    // import — fired on mobile only because the desktop sidebar bypasses the
+    // sheet entirely. Force the mobile breakpoint so the "Filters" button
+    // is the only path to the filter UI.
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto('/buy');
+    await expect(page.getByText(ERROR_BOUNDARY_TEXT)).toHaveCount(0);
+    // The mobile filter button is rendered with text "Filters …" inside it.
+    await page.getByRole('button', { name: /^Filters/i }).first().click();
+    // Sheet header reads "Filters" — confirm it mounted without crashing.
+    await expect(page.getByText(ERROR_BOUNDARY_TEXT)).toHaveCount(0);
+  });
 });
