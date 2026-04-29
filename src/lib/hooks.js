@@ -18,11 +18,28 @@ export function useAircraft(filters = {}) {
 
   // Destructure to primitives so useCallback can depend on each value directly.
   // Avoids the JSON.stringify(filters) hack that ran on every render.
+  // Multi-select fields (categories, manufacturers, states, conditions) are
+  // arrays — joined to a string for the dep array so identity churn doesn't
+  // refetch when the contents are unchanged.
   const {
+    // legacy single-string filters kept for back-compat with hooks that still
+    // pass scalars (useFeaturedAircraft, dealer detail page, etc.)
     category, manufacturer, state, condition, dealerId,
+    // new array-shaped multi-select fields used by BuyPage
+    categories, manufacturers, states, conditions,
     minPrice, maxPrice, maxHours, ifrOnly, glassOnly,
+    yearFrom, yearTo,
+    cruiseMin, rangeMin, usefulLoadMin, fuelBurnMax,
+    smohMax, tboPctMin,
+    retractable, pressurised,
+    dealerOnly, privateOnly, featuredOnly,
     search, sortBy, page, pageSize,
   } = filters;
+
+  const catKey = (categories || []).join('|');
+  const makeKey = (manufacturers || []).join('|');
+  const stateKey = (states || []).join('|');
+  const condKey = (conditions || []).join('|');
 
   const fetchAircraft = useCallback(async () => {
     setLoading(true);
@@ -41,22 +58,59 @@ export function useAircraft(filters = {}) {
         .select(`*, dealer:dealers(id, name, location, rating, verified)`, { count: 'exact' })
         .eq('status', 'active');
 
+      // Single-string back-compat path (used by Home / dealer detail).
       if (category) query = query.eq('category', category);
       if (manufacturer) query = query.eq('manufacturer', manufacturer);
       if (state) query = query.eq('state', state);
       if (condition) query = query.eq('condition', condition);
       if (dealerId) query = query.eq('dealer_id', dealerId);
+
+      // New multi-select path — Supabase `.in()` for OR-within-field.
+      if (categories && categories.length) query = query.in('category', categories);
+      if (manufacturers && manufacturers.length) query = query.in('manufacturer', manufacturers);
+      if (states && states.length) query = query.in('state', states);
+      if (conditions && conditions.length) query = query.in('condition', conditions);
+
+      // Numeric ranges
       if (minPrice) query = query.gte('price', Number(minPrice));
       if (maxPrice) query = query.lte('price', Number(maxPrice));
+      if (yearFrom) query = query.gte('year', Number(yearFrom));
+      if (yearTo) query = query.lte('year', Number(yearTo));
       if (maxHours) query = query.lte('ttaf', Number(maxHours));
+
+      // Performance specs
+      if (cruiseMin) query = query.gte('cruise_kts', Number(cruiseMin));
+      if (rangeMin) query = query.gte('range_nm', Number(rangeMin));
+      if (usefulLoadMin) query = query.gte('useful_load', Number(usefulLoadMin));
+      if (fuelBurnMax) query = query.lte('fuel_burn', Number(fuelBurnMax));
+
+      // Engine specs
+      if (smohMax) query = query.lte('eng_hours', Number(smohMax));
+      if (tboPctMin) {
+        // TBO remaining % is computed (eng_tbo - eng_hours) / eng_tbo. Pushing
+        // this filter to a dedicated DB-side computed column or RPC would be
+        // cleaner; for now we apply it client-side after fetch.
+      }
+
+      // Boolean equipment
       if (ifrOnly) query = query.eq('ifr', true);
       if (glassOnly) query = query.eq('glass_cockpit', true);
+      if (retractable) query = query.eq('retractable', true);
+      if (pressurised) query = query.eq('pressurised', true);
+
+      // Seller filters
+      if (dealerOnly && !privateOnly) query = query.not('dealer_id', 'is', null);
+      if (privateOnly && !dealerOnly) query = query.is('dealer_id', null);
+      if (featuredOnly) query = query.eq('featured', true);
+
+      // Search
       if (search) {
         query = query.or(
           `title.ilike.%${search}%,manufacturer.ilike.%${search}%,model.ilike.%${search}%`
         );
       }
 
+      // Sort
       if (sortBy === 'price-asc') query = query.order('price', { ascending: true });
       else if (sortBy === 'price-desc') query = query.order('price', { ascending: false });
       else if (sortBy === 'hours-low') query = query.order('ttaf', { ascending: true });
@@ -69,8 +123,20 @@ export function useAircraft(filters = {}) {
 
       const { data, error: err, count } = await query;
       if (err) throw err;
-      setAircraft(data || []);
-      setTotal(count || 0);
+
+      // Apply TBO % filter client-side (see note above).
+      let rows = data || [];
+      if (tboPctMin) {
+        const minPct = Number(tboPctMin);
+        rows = rows.filter(r => {
+          if (!r.eng_tbo || !r.eng_hours) return false;
+          const remaining = ((r.eng_tbo - r.eng_hours) / r.eng_tbo) * 100;
+          return remaining >= minPct;
+        });
+      }
+
+      setAircraft(rows);
+      setTotal(tboPctMin ? rows.length : (count || 0));
     } catch (err) {
       setError(err.message);
     } finally {
@@ -78,8 +144,16 @@ export function useAircraft(filters = {}) {
     }
   }, [
     category, manufacturer, state, condition, dealerId,
+    catKey, makeKey, stateKey, condKey,
     minPrice, maxPrice, maxHours, ifrOnly, glassOnly,
+    yearFrom, yearTo,
+    cruiseMin, rangeMin, usefulLoadMin, fuelBurnMax,
+    smohMax, tboPctMin,
+    retractable, pressurised,
+    dealerOnly, privateOnly, featuredOnly,
     search, sortBy, page, pageSize,
+    // categories/manufacturers/states/conditions referenced indirectly via *Key
+    categories, manufacturers, states, conditions,
   ]);
 
   useEffect(() => { fetchAircraft(); }, [fetchAircraft]);
