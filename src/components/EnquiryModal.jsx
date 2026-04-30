@@ -56,7 +56,7 @@ const EnquiryModal = ({ listing, onClose, user }) => {
                   onChange={e => setFormData({...formData, name: e.target.value})}
                 />
               </div>
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+              <div className="fs-grid-2">
                 <div className="fs-form-group">
                   <label className="fs-form-label">Email *</label>
                   <input 

@@ -207,7 +207,7 @@ const LoginPage = ({ setPage, signIn, signUp, signInWithGoogle, resetPassword, l
               <>
                 <div className="fs-form-group">
                   <label className="fs-form-label">Account Type *</label>
-                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+                  <div className="fs-grid-2">
                     <div
                       onClick={() => setAccountType('private')}
                       style={{ 

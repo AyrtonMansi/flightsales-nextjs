@@ -2343,6 +2343,29 @@ html, body { overflow-x: hidden; max-width: 100%; }
   .fs-dash-overview-stats { grid-template-columns: minmax(0, 1fr); }
 }
 
+/* Generic responsive grid utilities — for the dozens of "1fr 1fr form
+   pair" and "main + sidebar" layouts scattered across DashboardPage /
+   SellPage / LoginPage / EnquiryModal / QuickLookModal. All collapse to
+   a single column at <768px. minmax(0, …) and min-width: 0 on children
+   prevent content from pushing columns past their share. */
+.fs-grid-2 {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 12px;
+}
+.fs-grid-2 > * { min-width: 0; }
+.fs-grid-aside {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 320px;
+  gap: 24px;
+  align-items: start;
+}
+.fs-grid-aside > * { min-width: 0; }
+@media (max-width: 768px) {
+  .fs-grid-2 { grid-template-columns: minmax(0, 1fr); }
+  .fs-grid-aside { grid-template-columns: minmax(0, 1fr); gap: 16px; }
+}
+
 /* Mobile: sidebar becomes a horizontal scrolling tab strip; main below. */
 @media (max-width: 768px) {
   .fs-dash-shell { grid-template-columns: 1fr; gap: 16px; }

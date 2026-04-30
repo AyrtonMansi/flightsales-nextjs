@@ -325,7 +325,7 @@ const SellPage = ({ user, setPage }) => {
                     )}
                   </div>
                   
-                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
+                  <div className="fs-grid-2">
                     <div className="fs-form-group">
                       <label className="fs-form-label">Manufacturer *</label>
                   <select 
@@ -427,7 +427,7 @@ const SellPage = ({ user, setPage }) => {
                   </ul>
                 </div>
               )}
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
+              <div className="fs-grid-2" style={{ gap: 16 }}>
                 <div className="fs-form-group">
                   <label className="fs-form-label">Total Time Airframe *</label>
                   <input 

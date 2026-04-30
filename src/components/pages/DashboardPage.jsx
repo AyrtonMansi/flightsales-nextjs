@@ -773,7 +773,7 @@ const DashboardPage = ({ user, setPage, signOut, savedIds, savedListings, onSave
                         ← Back to enquiries
                       </button>
 
-                      <div style={{ display: "grid", gridTemplateColumns: "1fr 320px", gap: 24 }}>
+                      <div className="fs-grid-aside">
                         {/* Message Thread */}
                         <div className="fs-detail-specs" style={{ padding: 0, borderRadius: "var(--fs-radius-lg)", overflow: 'hidden' }}>
                           <div style={{ padding: "20px", borderBottom: "1px solid var(--fs-gray-100)" }}>
@@ -1285,7 +1285,7 @@ const DashboardPage = ({ user, setPage, signOut, savedIds, savedListings, onSave
                       </p>
                     </div>
                   ) : (
-                    <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 16 }}>
+                    <div className="fs-grid-2">
                       {discounts.map(discount => (
                         <div key={discount.id} className="fs-detail-specs" style={{ padding: "24px", borderRadius: "var(--fs-radius-lg)", position: 'relative', opacity: discount.used ? 0.6 : 1 }}>
                           {discount.used && (

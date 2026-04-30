@@ -21,7 +21,7 @@ const QuickLookModal = ({ listing, onClose, onViewFull, onSave, saved, onEnquire
         onClick={e => e.stopPropagation()}
         style={{ maxWidth: 880, padding: 0, overflow: "hidden" }}
       >
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 360px", minHeight: 480 }}>
+        <div className="fs-grid-aside" style={{ minHeight: 480, gap: 0 }}>
           <div style={{ position: "relative", background: "#000" }}>
             <AircraftImage listing={listing} size="full" showGallery={true} style={{ height: "100%" }} />
             <button
@@ -43,7 +43,7 @@ const QuickLookModal = ({ listing, onClose, onViewFull, onSave, saved, onEnquire
                 {Icons.location}{location}
               </div>
             )}
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px 16px", padding: "12px 0", borderTop: "1px solid var(--fs-line)", borderBottom: "1px solid var(--fs-line)" }}>
+            <div className="fs-grid-2" style={{ gap: "10px 16px", padding: "12px 0", borderTop: "1px solid var(--fs-line)", borderBottom: "1px solid var(--fs-line)" }}>
               {listing.ttaf > 0 && <div><div style={{ fontSize: 11, color: "var(--fs-ink-4)", fontWeight: 600 }}>TOTAL TIME</div><div style={{ fontSize: 14, fontWeight: 600 }}>{formatHours(listing.ttaf)}</div></div>}
               {listing.eng_hours > 0 && <div><div style={{ fontSize: 11, color: "var(--fs-ink-4)", fontWeight: 600 }}>ENGINE SMOH</div><div style={{ fontSize: 14, fontWeight: 600 }}>{formatHours(listing.eng_hours)}</div></div>}
               {listing.year && <div><div style={{ fontSize: 11, color: "var(--fs-ink-4)", fontWeight: 600 }}>YEAR</div><div style={{ fontSize: 14, fontWeight: 600 }}>{listing.year}</div></div>}
