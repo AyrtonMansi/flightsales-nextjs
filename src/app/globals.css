@@ -332,6 +332,52 @@ a { color: inherit; text-decoration: none; }
 }
 .fs-rego-lookup-btn:hover:not(:disabled) { background: var(--fs-ink-2); }
 .fs-rego-lookup-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+/* Sell hero — same .fs-about-hero base, but trimmed on mobile so the
+   form shows above the fold. The hero is informational; no need to
+   eat 50% of a phone viewport. */
+@media (max-width: 768px) {
+  .fs-sell-hero { padding: 28px 0; }
+  .fs-sell-hero h1 { font-size: 28px; }
+  .fs-sell-hero p { font-size: 14px; margin-top: 6px; }
+}
+
+/* Sell page progress — segments + step labels. Replaces the 3 unlabeled
+   grey bars with a labeled "1. Details / 2. Specs / 3. Photos" sequence
+   so users see the journey ahead of them. */
+.fs-sell-progress {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-bottom: 32px;
+}
+.fs-sell-progress-step { display: flex; flex-direction: column; gap: 8px; }
+.fs-sell-progress-bar {
+  height: 4px; border-radius: 2px;
+  background: var(--fs-gray-200);
+  transition: background 0.25s var(--fs-ease-out);
+}
+.fs-sell-progress-step.done .fs-sell-progress-bar,
+.fs-sell-progress-step.active .fs-sell-progress-bar {
+  background: var(--fs-ink);
+}
+.fs-sell-progress-label {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--fs-ink-3);
+  letter-spacing: -0.005em;
+}
+.fs-sell-progress-step.active .fs-sell-progress-label,
+.fs-sell-progress-step.done .fs-sell-progress-label {
+  color: var(--fs-ink);
+  font-weight: 600;
+}
+.fs-sell-progress-num { color: var(--fs-ink-4); font-weight: 600; margin-right: 2px; }
+.fs-sell-progress-step.active .fs-sell-progress-num,
+.fs-sell-progress-step.done .fs-sell-progress-num { color: var(--fs-ink); }
+@media (max-width: 480px) {
+  .fs-sell-progress-label { font-size: 11px; }
+}
 .fs-nav-mobile-toggle {
   display: none; background: none; border: none; color: var(--fs-ink); cursor: pointer;
   padding: 8px; border-radius: var(--fs-radius-sm);

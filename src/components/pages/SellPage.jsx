@@ -192,7 +192,7 @@ const SellPage = ({ user, setPage }) => {
 
   return (
     <>
-      <div className="fs-about-hero">
+      <div className="fs-about-hero fs-sell-hero">
         <div className="fs-container">
           <h1 style={{ fontFamily: "var(--fs-font)", fontSize: 40, fontWeight: 700, letterSpacing: "-0.03em" }}>Sell Your Aircraft</h1>
           <p style={{ color: "var(--fs-ink-3)", marginTop: 8, fontSize: 16 }}>Reach thousands of qualified buyers across Australia</p>
@@ -200,11 +200,24 @@ const SellPage = ({ user, setPage }) => {
       </div>
       <section className="fs-section">
         <div className="fs-container" style={{ maxWidth: 700, margin: "0 auto" }}>
-          {/* Progress */}
-          <div style={{ display: "flex", gap: 4, marginBottom: 32 }}>
-            {[1,2,3].map(s => (
-              <div key={s} style={{ flex: 1, height: 4, borderRadius: 2, background: s <= step ? "var(--fs-ink)" : "var(--fs-gray-200)", transition: "background 0.3s" }} />
-            ))}
+          {/* Progress — segments + step labels so users see the journey */}
+          <div className="fs-sell-progress">
+            {[
+              { num: 1, label: 'Details' },
+              { num: 2, label: 'Specs' },
+              { num: 3, label: 'Photos' },
+            ].map(s => {
+              const done = s.num < step;
+              const active = s.num === step;
+              return (
+                <div key={s.num} className={`fs-sell-progress-step${done ? ' done' : ''}${active ? ' active' : ''}`}>
+                  <div className="fs-sell-progress-bar" />
+                  <div className="fs-sell-progress-label">
+                    <span className="fs-sell-progress-num">{s.num}.</span> {s.label}
+                  </div>
+                </div>
+              );
+            })}
           </div>
           
           {step === 1 && (
@@ -222,21 +235,27 @@ const SellPage = ({ user, setPage }) => {
               
               {/* CASA Rego Lookup - SLIMLINE */}
               <div style={{ marginBottom: 24 }}>
-                <label className="fs-form-label">Aircraft Registration</label>
+                <label className="fs-form-label" htmlFor="sell-rego">Aircraft Registration</label>
+                <p style={{ fontSize: 12, color: 'var(--fs-ink-3)', margin: '4px 0 8px' }}>
+                  Three letters after VH- (e.g. VH-DMK). We pull year, make, model, and MTOW from the CASA register.
+                </p>
                 <div style={{ display: "flex", gap: 8, marginTop: 8 }}>
-                  <input 
-                    className="fs-form-input" 
+                  <input
+                    id="sell-rego"
+                    className="fs-form-input"
                     placeholder="VH-ABC"
                     value={formData.rego}
                     onChange={e => handleInputChange('rego', e.target.value.toUpperCase())}
                     onKeyPress={handleKeyPress}
-                    style={{ 
-                      textTransform: 'uppercase', 
+                    style={{
+                      textTransform: 'uppercase',
                       fontWeight: 600,
                       letterSpacing: '0.05em',
                       flex: 1
                     }}
                     maxLength={6}
+                    autoComplete="off"
+                    spellCheck={false}
                   />
                   <button
                     type="button"
@@ -250,7 +269,7 @@ const SellPage = ({ user, setPage }) => {
                 
                 {lookupError && (
                   <p style={{ fontSize: 12, color: 'var(--fs-red)', marginTop: 8 }}>
-                    {lookupError} — <button onClick={() => setShowManualForm(true)} style={{ textDecoration: 'underline', background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}>enter manually</button>
+                    {lookupError} — <button type="button" onClick={() => setShowManualForm(true)} style={{ textDecoration: 'underline', textUnderlineOffset: 2, background: 'none', border: 'none', padding: 0, cursor: 'pointer', color: 'var(--fs-red)', font: 'inherit' }}>enter manually</button>
                   </p>
                 )}
                 
@@ -261,8 +280,21 @@ const SellPage = ({ user, setPage }) => {
                 )}
                 
                 {!showManualForm && !lookupError && !autoFilled && (
-                  <p style={{ fontSize: 12, color: 'var(--fs-gray-400)', marginTop: 8 }}>
-                    Or <button onClick={() => setShowManualForm(true)} style={{ textDecoration: 'underline', background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}>skip and enter manually</button>
+                  <p style={{ fontSize: 12, color: 'var(--fs-ink-3)', marginTop: 8 }}>
+                    Or <button
+                      type="button"
+                      onClick={() => setShowManualForm(true)}
+                      style={{
+                        textDecoration: 'underline',
+                        textUnderlineOffset: 2,
+                        background: 'none',
+                        border: 'none',
+                        padding: 0,
+                        cursor: 'pointer',
+                        color: 'var(--fs-ink)',
+                        font: 'inherit',
+                      }}
+                    >skip and enter manually</button>
                   </p>
                 )}
               </div>
