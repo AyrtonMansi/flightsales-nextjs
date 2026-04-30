@@ -13,6 +13,18 @@ export const metadata = {
   },
 };
 
+// Without this, mobile browsers default to rendering at a 980px virtual
+// viewport and scale to fit — which is why every responsive @media rule
+// in globals.css was silently inert on phones (the page reported itself
+// as 980px wide regardless of actual screen size). The Next.js 14 App
+// Router preferred pattern is `export const viewport`. Setting both
+// width and initialScale ensures the page lays out at the real device
+// width and that pinch-zoom resets to 1× on first paint.
+export const viewport = {
+  width: 'device-width',
+  initialScale: 1,
+};
+
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
