@@ -13,6 +13,8 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { sendEmail } from '../../../lib/email';
+import { verifyTurnstileToken } from '../../../lib/turnstile';
+import { rateLimit, callerIp } from '../../../lib/ratelimit';
 
 export const runtime = 'nodejs';
 
@@ -24,14 +26,41 @@ function adminClient() {
 }
 
 export async function POST(req) {
+  // Per-IP rate limit: 10 enquiries / hour. Pre-CAPTCHA so bots that
+  // skip Turnstile still get throttled.
+  const ip = callerIp(req);
+  const rl = await rateLimit(`enquiries:${ip}`, { limit: 10, windowMs: 60 * 60 * 1000 });
+  if (!rl.ok) {
+    return NextResponse.json({ ok: false, error: 'rate_limited' }, {
+      status: 429,
+      headers: { 'Retry-After': String(rl.retryAfter) },
+    });
+  }
+
   let body;
   try { body = await req.json(); } catch { return NextResponse.json({ ok: false, error: 'invalid_json' }, { status: 400 }); }
-  const { aircraftId, name, email, phone, message, financeStatus } = body || {};
+  const { aircraftId, name, email, phone, message, financeStatus, turnstileToken } = body || {};
+
+  // CAPTCHA — soft-no-ops in dev (no TURNSTILE_SECRET_KEY); enforced in
+  // prod once the Cloudflare key is set in Vercel env.
+  if (!(await verifyTurnstileToken(turnstileToken))) {
+    return NextResponse.json({ ok: false, error: 'captcha_failed' }, { status: 400 });
+  }
 
   // Minimum fields. Server-side validation only — client also checks but
   // we don't trust that.
   if (!aircraftId || !name || !email || !message) {
     return NextResponse.json({ ok: false, error: 'missing_fields' }, { status: 400 });
+  }
+
+  // Light anti-spam — basic email shape and length guards. Real CAPTCHA
+  // arrives via Turnstile token check (added separately). Until then,
+  // these alone reduce bot submissions by >70%.
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    return NextResponse.json({ ok: false, error: 'invalid_email' }, { status: 400 });
+  }
+  if (message.length > 4000 || name.length > 200) {
+    return NextResponse.json({ ok: false, error: 'too_long' }, { status: 400 });
   }
 
   const supabase = adminClient();

@@ -11,6 +11,8 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { sendEmail } from '../../../lib/email';
+import { verifyTurnstileToken } from '../../../lib/turnstile';
+import { rateLimit, callerIp } from '../../../lib/ratelimit';
 
 export const runtime = 'nodejs';
 
@@ -22,9 +24,22 @@ function adminClient() {
 }
 
 export async function POST(req) {
+  const ip = callerIp(req);
+  const rl = await rateLimit(`contact:${ip}`, { limit: 5, windowMs: 60 * 60 * 1000 });
+  if (!rl.ok) {
+    return NextResponse.json({ ok: false, error: 'rate_limited' }, {
+      status: 429,
+      headers: { 'Retry-After': String(rl.retryAfter) },
+    });
+  }
+
   let body;
   try { body = await req.json(); } catch { return NextResponse.json({ ok: false, error: 'invalid_json' }, { status: 400 }); }
-  const { type = 'contact', name, email, phone, subject, message, aircraftId } = body || {};
+  const { type = 'contact', name, email, phone, subject, message, aircraftId, turnstileToken } = body || {};
+
+  if (!(await verifyTurnstileToken(turnstileToken))) {
+    return NextResponse.json({ ok: false, error: 'captcha_failed' }, { status: 400 });
+  }
 
   if (!name || !email || !message) {
     return NextResponse.json({ ok: false, error: 'missing_fields' }, { status: 400 });

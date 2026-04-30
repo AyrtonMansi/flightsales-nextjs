@@ -1,17 +1,32 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Icons } from '../Icons';
 import AircraftImage from '../AircraftImage';
 import ListingCard from '../ListingCard';
 import EnquiryModal from '../EnquiryModal';
+import ReportListingModal from '../ReportListingModal';
 import { useAircraft } from '../../lib/hooks';
 import { formatPriceFull, formatHours, timeAgo, isJustListed } from '../../lib/format';
 import { DEALERS } from '../../lib/constants';
 
 const ListingDetail = ({ listing, onBack, savedIds, onSave, user, onSelectDealer }) => {
   const [showEnquiry, setShowEnquiry] = useState(false);
+  const [showReport, setShowReport] = useState(false);
   const [showDetailedSpecs, setShowDetailedSpecs] = useState(false);
   const { aircraft: similar } = useAircraft({ category: listing?.category, sortBy: 'newest' });
+
+  // Fire view tracking once per mount. /api/views handles cookie-dedup
+  // so reloads within 24h don't inflate the count. Failures are silent
+  // — view counts are informational, not billable.
+  useEffect(() => {
+    if (!listing?.id) return;
+    fetch('/api/views', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ aircraftId: listing.id }),
+    }).catch(() => {});
+  }, [listing?.id]);
+
   if (!listing) return null;
   const l = listing;
   const rawDealer = l.dealer;
@@ -233,7 +248,24 @@ const ListingDetail = ({ listing, onBack, savedIds, onSave, user, onSelectDealer
         </div>
       </div>
 
+      {/* Subtle report-listing link at the bottom of the page — easy to
+          reach from a buyer who senses something off, but not loud
+          enough to imply distrust to honest sellers. */}
+      <div style={{ textAlign: 'center', padding: '24px 16px 48px', fontSize: 12, color: 'var(--fs-ink-3)' }}>
+        Something off about this listing?{' '}
+        <button
+          type="button"
+          onClick={() => setShowReport(true)}
+          style={{
+            background: 'none', border: 'none', padding: 0, font: 'inherit',
+            color: 'var(--fs-ink)', textDecoration: 'underline',
+            textUnderlineOffset: 2, cursor: 'pointer',
+          }}
+        >Report it</button>.
+      </div>
+
       {showEnquiry && <EnquiryModal listing={l} onClose={() => setShowEnquiry(false)} user={user} />}
+      {showReport && <ReportListingModal aircraftId={l.id} user={user} onClose={() => setShowReport(false)} />}
     </>
   );
 };

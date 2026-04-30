@@ -47,7 +47,12 @@ const Footer = () => (
         </div>
       </div>
       <div className="fs-footer-bottom">
-        <span>&copy; 2026 Flightsales Pty Ltd. All rights reserved.</span>
+        <span>
+          &copy; 2026 Flightsales Pty Ltd. All rights reserved.
+          {process.env.NEXT_PUBLIC_FS_ABN ? (
+            <> · ABN {process.env.NEXT_PUBLIC_FS_ABN}</>
+          ) : null}
+        </span>
       </div>
     </div>
   </footer>

@@ -83,5 +83,23 @@ export async function POST(req) {
     });
   }
 
+  // Audit log — every admin action writes a row so we have a who/what/when
+  // trail. The admin_audit table is RLS-locked to admin reads. Failures
+  // here are silent — auditing is observability, not a hard dependency
+  // on the user-facing flow.
+  try {
+    const adminId = vars?.adminId || null;
+    await supabase.from('admin_audit').insert({
+      admin_id: adminId,
+      action: event,
+      target_type: event.startsWith('listing.') ? 'aircraft'
+                 : event.startsWith('dealer_app.') ? 'dealer_app'
+                 : event.startsWith('user.') ? 'profile'
+                 : 'unknown',
+      target_id: vars?.targetId || vars?.aircraftId || null,
+      after: vars || null,
+    });
+  } catch {}
+
   return NextResponse.json({ ok: true });
 }

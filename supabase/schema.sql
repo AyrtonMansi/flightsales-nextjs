@@ -481,3 +481,50 @@ INSERT INTO news_articles (title, excerpt, category, date, read_time, slug, publ
   ('Sling Aircraft Delivers 100th Australian-Assembled TSi', 'Sling Australia''s Tyabb facility has reached a major milestone with the delivery of its 100th locally assembled TSi, cementing the type''s popularity in the Australian market.', 'Industry', '2026-03-15', 3, 'sling-100th-tsi', true),
   ('New Bankstown Airport Hangar Complex Opens with 40 Additional Bays', 'A $28M hangar development at Bankstown Airport has been completed, adding 40 new bays to address Sydney''s chronic aircraft storage shortage.', 'Infrastructure', '2026-03-12', 4, 'bankstown-hangars', true)
 ON CONFLICT (slug) DO NOTHING;
+
+-- ============================================
+-- LAUNCH WAVE: view tracking, listing expiry, reports, 2FA flag
+-- All additive. Existing rows get sane defaults.
+-- ============================================
+
+-- Per-listing view counter (debounced + cookie'd in /api/views)
+ALTER TABLE aircraft ADD COLUMN IF NOT EXISTS view_count INTEGER DEFAULT 0;
+
+-- Listing expiry — auto-archived 60 days after creation; renewal email
+-- 7 days before. Vercel cron at /api/cron/expire-listings handles both.
+ALTER TABLE aircraft ADD COLUMN IF NOT EXISTS expires_at TIMESTAMP WITH TIME ZONE
+  DEFAULT (NOW() + INTERVAL '60 days');
+ALTER TABLE aircraft ADD COLUMN IF NOT EXISTS renewal_reminder_sent_at TIMESTAMP WITH TIME ZONE;
+
+-- Admin flag — has the user enrolled an MFA factor with Supabase yet?
+-- The check still runs against auth.mfa_factors at request time but this
+-- column lets us surface "Enroll 2FA" prompts in the admin UI.
+ALTER TABLE profiles ADD COLUMN IF NOT EXISTS mfa_enrolled BOOLEAN DEFAULT false;
+
+-- ============================================
+-- REPORTED LISTINGS
+-- Anyone can flag a listing as suspicious; admin reviews in the
+-- "Reports" tab (hooked into existing AdminPage).
+-- ============================================
+CREATE TABLE IF NOT EXISTS listing_reports (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  aircraft_id UUID NOT NULL REFERENCES aircraft(id) ON DELETE CASCADE,
+  reporter_user_id UUID REFERENCES auth.users(id),
+  reporter_email TEXT,             -- if reporter wasn't logged in
+  reason TEXT NOT NULL,
+  details TEXT,
+  status TEXT NOT NULL DEFAULT 'open'
+    CHECK (status IN ('open', 'dismissed', 'actioned')),
+  reviewed_by UUID REFERENCES auth.users(id),
+  reviewed_at TIMESTAMP WITH TIME ZONE,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+CREATE INDEX IF NOT EXISTS idx_reports_status ON listing_reports(status, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_reports_aircraft ON listing_reports(aircraft_id);
+
+-- Expand the aircraft.status check to include 'rejected' (admin reject
+-- with reason) and 'archived' (auto-set on expiry). Existing rows stay
+-- valid — both new values are additive.
+ALTER TABLE aircraft DROP CONSTRAINT IF EXISTS aircraft_status_check;
+ALTER TABLE aircraft ADD CONSTRAINT aircraft_status_check
+  CHECK (status IN ('pending', 'active', 'sold', 'rejected', 'archived'));

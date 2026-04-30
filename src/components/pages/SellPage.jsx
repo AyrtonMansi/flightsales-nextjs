@@ -3,6 +3,7 @@ import { useState, useRef } from 'react';
 import { Icons } from '../Icons';
 import { createListing, uploadImage } from '../../lib/hooks';
 import { MANUFACTURERS, CATEGORIES, STATES, CONDITIONS } from '../../lib/constants';
+import EmailVerifyGate, { isVerified } from '../EmailVerifyGate';
 
 const SellPage = ({ user, setPage }) => {
   // Hooks first — must run on every render in the same order regardless of
@@ -595,6 +596,13 @@ const SellPage = ({ user, setPage }) => {
                           style={{ flex: 2, marginTop: 0, opacity: submitting ? 0.7 : 1, cursor: submitting ? "not-allowed" : "pointer" }}
                           disabled={submitting}
                           onClick={async () => {
+                            // P0 — block listing creation until the user
+                            // has confirmed their email. Stops spam +
+                            // unverified-account scams.
+                            if (!isVerified(user)) {
+                              setSubmitError('Please verify your email before listing. Check your inbox for the confirmation link.');
+                              return;
+                            }
                             setSubmitting(true);
                             setSubmitError(null);
                             try {

@@ -678,6 +678,41 @@ export async function createListing(listingData, userId) {
   return data;
 }
 
+// P0.1 — sellers need to be able to edit a listing after creation. Status
+// changes don't count; this updates content (title, price, description,
+// photos, specs). Caller's user_id MUST match the row's user_id (or be
+// admin) — RLS enforces. We don't trust the client to pass user_id; the
+// RLS policy filters on auth.uid() server-side.
+export async function updateListing(id, patch) {
+  const { data, error } = await supabase
+    .from('aircraft')
+    .update({ ...patch, updated_at: new Date().toISOString() })
+    .eq('id', id)
+    .select()
+    .single();
+  if (error) throw error;
+  return data;
+}
+
+// P1.8 — anyone can flag a listing as suspicious. Logged-in users get
+// their reporter_user_id stamped; anonymous reporters provide an email
+// for admin follow-up. Same listing can have multiple open reports.
+export async function reportListing({ aircraftId, reason, details, reporterUserId, reporterEmail }) {
+  const { data, error } = await supabase
+    .from('listing_reports')
+    .insert({
+      aircraft_id: aircraftId,
+      reason,
+      details: details || null,
+      reporter_user_id: reporterUserId || null,
+      reporter_email: reporterEmail || null,
+    })
+    .select()
+    .single();
+  if (error) throw error;
+  return data;
+}
+
 export async function uploadImage(file, listingId) {
   const ext = file.name.split('.').pop();
   const path = `${listingId}/${Date.now()}.${ext}`;
