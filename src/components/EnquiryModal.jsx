@@ -1,12 +1,14 @@
 'use client';
 import { useState } from 'react';
 import { Icons } from './Icons';
+import Turnstile from './Turnstile';
 import { formatPriceFull } from '../lib/format';
 
 const EnquiryModal = ({ listing, onClose, user }) => {
   const [sent, setSent] = useState(false);
   const [sending, setSending] = useState(false);
   const [sendError, setSendError] = useState(null);
+  const [turnstileToken, setTurnstileToken] = useState(null);
   const [formData, setFormData] = useState({
     name: user?.full_name || '',
     email: user?.email || '',
@@ -99,6 +101,9 @@ const EnquiryModal = ({ listing, onClose, user }) => {
                   rows={4}
                 />
               </div>
+              <div style={{ marginBottom: 12 }}>
+                <Turnstile onToken={setTurnstileToken} action="enquiry" />
+              </div>
               {sendError && (
                 <div style={{ padding: "10px 14px", background: "#fef2f2", border: "1px solid #fecaca", borderRadius: "var(--fs-radius-sm)", marginBottom: 12, fontSize: 13, color: "#dc2626" }}>
                   {sendError}
@@ -131,6 +136,7 @@ const EnquiryModal = ({ listing, onClose, user }) => {
                         phone: formData.phone,
                         message: formData.message,
                         financeStatus: formData.financeStatus,
+                        turnstileToken,
                       }),
                     });
                     const json = await res.json();

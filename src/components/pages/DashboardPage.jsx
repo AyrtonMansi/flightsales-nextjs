@@ -4,6 +4,7 @@ import { Icons } from '../Icons';
 import ListingCard from '../ListingCard';
 import { useMyListings, useMyEnquiries, useProfile } from '../../lib/hooks';
 import { showToast } from '../../lib/toast';
+import ListingEditModal from '../ListingEditModal';
 
 const DashboardPage = ({ user, setPage, signOut, savedIds, savedListings, onSave, onSelectListing }) => {
   // Note: caller (App) gates rendering so user is always defined and not an admin here.
@@ -13,6 +14,7 @@ const DashboardPage = ({ user, setPage, signOut, savedIds, savedListings, onSave
   const [activeTab, setActiveTab] = useState('overview');
   const [editProfile, setEditProfile] = useState(false);
   const [selectedEnquiry, setSelectedEnquiry] = useState(null);
+  const [editingListing, setEditingListing] = useState(null);
   const [replyText, setReplyText] = useState('');
   const [savingProfile, setSavingProfile] = useState(false);
   const [profileData, setProfileData] = useState({
@@ -22,7 +24,7 @@ const DashboardPage = ({ user, setPage, signOut, savedIds, savedListings, onSave
     location: user.location || ''
   });
 
-  const { listings: myListingsRaw, loading: listingsLoading, updateListingStatus, deleteListing } = useMyListings(user.id);
+  const { listings: myListingsRaw, loading: listingsLoading, updateListingStatus, deleteListing, refetch: refetchListings } = useMyListings(user.id);
   const { enquiries: myEnquiriesRaw, loading: enquiriesLoading, updateStatus: updateEnquiryStatus } = useMyEnquiries(user.id);
   const { updateProfile } = useProfile(user.id);
 
@@ -617,7 +619,10 @@ const DashboardPage = ({ user, setPage, signOut, savedIds, savedListings, onSave
                               </td>
                               <td style={{ padding: "16px", textAlign: "right" }}>
                                 <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
-                                  <button style={{ padding: "6px 12px", background: "var(--fs-gray-100)", border: "none", borderRadius: 6, fontSize: 12, cursor: "pointer" }}>Edit</button>
+                                  <button
+                                    onClick={() => setEditingListing(myListingsRaw.find(r => r.id === listing.id))}
+                                    style={{ padding: "6px 12px", background: "var(--fs-gray-100)", border: "none", borderRadius: 6, fontSize: 12, cursor: "pointer" }}
+                                  >Edit</button>
                                   <button style={{ padding: "6px 12px", background: "var(--fs-ink)", color: 'white', border: "none", borderRadius: 6, fontSize: 12, cursor: "pointer" }}>Boost</button>
                                 </div>
                               </td>
@@ -1399,6 +1404,14 @@ const DashboardPage = ({ user, setPage, signOut, savedIds, savedListings, onSave
           </div>
         </div>
       </section>
+
+      {editingListing && (
+        <ListingEditModal
+          listing={editingListing}
+          onClose={() => setEditingListing(null)}
+          onSaved={refetchListings}
+        />
+      )}
     </>
   );
 };

@@ -1,12 +1,14 @@
 'use client';
 import { useState } from 'react';
 import { Icons } from '../Icons';
+import Turnstile from '../Turnstile';
 
 const ContactPage = () => {
   const [form, setForm] = useState({ name: '', email: '', subject: 'General Enquiry', message: '' });
   const [sending, setSending] = useState(false);
   const [sent, setSent] = useState(false);
   const [error, setError] = useState(null);
+  const [turnstileToken, setTurnstileToken] = useState(null);
   const set = (k, v) => setForm(f => ({ ...f, [k]: v }));
 
   const handleSend = async () => {
@@ -19,7 +21,7 @@ const ContactPage = () => {
       const res = await fetch('/api/contact', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ type: 'contact', name: form.name, email: form.email, subject: form.subject, message: form.message }),
+        body: JSON.stringify({ type: 'contact', name: form.name, email: form.email, subject: form.subject, message: form.message, turnstileToken }),
       });
       const json = await res.json();
       if (!res.ok || !json.ok) throw new Error(json.error || 'Failed to send.');
@@ -88,6 +90,9 @@ const ContactPage = () => {
                   <div className="fs-form-group">
                     <label className="fs-form-label">Message *</label>
                     <textarea className="fs-form-textarea" placeholder="How can we help?" value={form.message} onChange={e => set('message', e.target.value)} />
+                  </div>
+                  <div style={{ marginBottom: 10 }}>
+                    <Turnstile onToken={setTurnstileToken} action="contact" />
                   </div>
                   <button className="fs-form-submit" onClick={handleSend} disabled={sending} style={{ opacity: sending ? 0.7 : 1 }}>
                     {sending ? 'Sending...' : 'Send Message'}

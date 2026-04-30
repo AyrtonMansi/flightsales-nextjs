@@ -8,6 +8,7 @@ import DealerAppsTab from '../admin/tabs/DealerAppsTab';
 import EnquiriesTab from '../admin/tabs/EnquiriesTab';
 import LeadsTab from '../admin/tabs/LeadsTab';
 import ContentTab from '../admin/tabs/ContentTab';
+import AdminTwoFactorPrompt from '../admin/AdminTwoFactorPrompt';
 
 // Thin tab-switching shell. All tab logic lives in src/components/admin/tabs/.
 // Each tab owns its own data hook, search, sort, pagination, and modals.
@@ -85,6 +86,10 @@ const AdminPage = ({ user, setPage, signOut }) => {
 
       <section className="fs-section" style={{ padding: '32px 0' }}>
         <div className="fs-container">
+          {/* 2FA enrolment prompt — shows only when the signed-in admin
+              hasn't enrolled a TOTP factor yet. Self-dismisses on
+              successful enrol. */}
+          <AdminTwoFactorPrompt />
           {/* Stats */}
           <div className="fs-admin-stats">
             {stats.map(stat => (

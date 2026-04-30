@@ -479,6 +479,57 @@ a { color: inherit; text-decoration: none; }
 .fs-bell-row-body { font-size: 12px; color: var(--fs-ink-3); margin: 0 0 4px; line-height: 1.4; }
 .fs-bell-row-time { font-size: 11px; color: var(--fs-ink-4); margin: 0; }
 
+/* Email verify gate — wraps a child surface (sell form, etc.) with a
+   "verify your email first" prompt when the signed-in user hasn't
+   confirmed their address yet. */
+.fs-verify-gate {
+  background: #fef3c7; border: 1px solid #fde68a;
+  border-radius: var(--fs-radius);
+  padding: 20px 24px;
+  color: #78350f;
+  margin: 24px auto;
+  max-width: 560px;
+}
+.fs-verify-gate h3 { font-size: 15px; font-weight: 700; margin: 0 0 6px; color: #92400e; }
+.fs-verify-gate p { font-size: 13px; margin: 0 0 6px; line-height: 1.5; }
+.fs-verify-gate-sub { font-size: 12px; color: #92400e; margin-top: 4px; }
+.fs-verify-gate-sub button {
+  background: none; border: none; padding: 0;
+  color: #92400e; text-decoration: underline; text-underline-offset: 2px;
+  font: inherit; cursor: pointer;
+}
+
+/* Cloudflare Turnstile — tiny wrapper to keep the widget's box from
+   stretching the form layout. The widget renders ~300x65px. */
+.fs-turnstile { margin: 4px 0 0; min-height: 65px; }
+
+/* Admin 2FA enrol prompt — sits above the stats row on the admin page
+   when the admin doesn't have a TOTP factor enrolled yet. */
+.fs-2fa-prompt {
+  margin-bottom: 20px;
+  background: #fef9c3;
+  border: 1px solid #fde047;
+  border-radius: var(--fs-radius);
+  padding: 14px 18px;
+  color: #713f12;
+}
+.fs-2fa-prompt-row {
+  display: flex; align-items: center; justify-content: space-between; gap: 16px;
+}
+.fs-2fa-prompt-row p { font-size: 12px; color: #854d0e; margin: 2px 0 0; }
+.fs-2fa-prompt-row button {
+  background: var(--fs-ink); color: white; border: none;
+  padding: 8px 16px; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer;
+  font-family: var(--fs-font); flex-shrink: 0;
+}
+.fs-2fa-prompt-enrol-grid {
+  display: grid; grid-template-columns: 160px 1fr; gap: 16px; align-items: start;
+}
+@media (max-width: 540px) {
+  .fs-2fa-prompt-row { flex-direction: column; align-items: flex-start; }
+  .fs-2fa-prompt-enrol-grid { grid-template-columns: 1fr; }
+}
+
 /* ─────────────────────────────────────────────────────────────────────
    MOBILE NAV DRAWER (.fs-mnav)
    Full-viewport panel + dimmed backdrop. Slides in from the right with
