@@ -1677,16 +1677,29 @@ a { color: inherit; text-decoration: none; }
   top: 0;
   z-index: 5;
   display: flex; align-items: baseline; justify-content: space-between;
-  /* Stretch the bg outside the column padding so checkbox content passing
-     beneath sticky is fully obscured (was bleeding through on mobile sheet) */
+  /* Extend bg horizontally past the column padding (mobile sheet has 20px
+     side padding on its scroll body) AND vertically with a top -1px so a
+     1px sub-pixel gap during scroll can't show content underneath. */
   padding: 14px 20px 12px;
-  margin: 0 -20px 4px;
+  margin: -1px -20px 4px;
   background: var(--fs-white);
   border-bottom: 1px solid var(--fs-line);
+  /* Pseudo-element to extend bg another 16px above the sticky head so
+     scrolled content slides cleanly behind it instead of peeking through
+     the gap above when the user flicks fast. */
+}
+.fs-fc-head::before {
+  content: '';
+  position: absolute;
+  left: 0; right: 0; bottom: 100%;
+  height: 16px;
+  background: var(--fs-white);
 }
 @media (min-width: 769px) {
-  /* Desktop sidebar has no inner padding, so reset the negative margins */
+  /* Desktop sidebar has no inner side padding, so reset the negative
+     margins. Page bg used here so the sticky blends with the column bg. */
   .fs-fc-head { padding: 14px 0 12px; margin: 0 0 4px; background: var(--fs-bg); }
+  .fs-fc-head::before { background: var(--fs-bg); }
 }
 .fs-fc-count { display: flex; align-items: baseline; gap: 6px; }
 .fs-fc-count-num {

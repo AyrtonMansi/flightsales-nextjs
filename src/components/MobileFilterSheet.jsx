@@ -54,8 +54,10 @@ const MobileFilterSheet = ({ isOpen, onClose, children, filteredCount, onClear }
           </button>
         </div>
 
-        {/* Scrollable filter body */}
-        <div style={{ flex: 1, overflowY: 'auto', padding: '16px 20px 20px' }}>
+        {/* Scrollable filter body — NO top padding on the scroll container
+            so the sticky "0 aircraft" header inside the FilterColumn can
+            actually stick flush to the top. Side/bottom padding only. */}
+        <div style={{ flex: 1, overflowY: 'auto', padding: '0 20px 20px' }}>
           {children}
         </div>
 
