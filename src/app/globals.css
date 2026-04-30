@@ -2317,13 +2317,17 @@ html, body { overflow-x: hidden; max-width: 100%; }
   .fs-dash-hero-btn { padding: 10px 14px; text-align: center; justify-content: center; display: flex; align-items: center; }
 }
 
-/* Shell — sidebar + main content. */
+/* Shell — sidebar + main content. minmax(0, 1fr) on the main cell so
+   long content (tables, etc.) can't push the column wider than its
+   slice; > * { min-width: 0 } enforces the same on whatever wrapper
+   the JSX puts in the cell. */
 .fs-dash-shell {
   display: grid;
   grid-template-columns: 260px minmax(0, 1fr);
   gap: 32px;
   align-items: start;
 }
+.fs-dash-shell > * { min-width: 0; }
 
 /* Overview tab grids — minmax(0, …) so any long-text card content can't
    blow the column wider than its share of the parent. Without it, a
@@ -2375,7 +2379,7 @@ html, body { overflow-x: hidden; max-width: 100%; }
 
 /* Mobile: sidebar becomes a horizontal scrolling tab strip; main below. */
 @media (max-width: 768px) {
-  .fs-dash-shell { grid-template-columns: 1fr; gap: 16px; }
+  .fs-dash-shell { grid-template-columns: minmax(0, 1fr); gap: 16px; }
   .fs-dash-sidebar { position: relative; }
   .fs-dash-sidebar > .fs-detail-specs { padding: 0 !important; }
   /* Hide the "Account Type" header card on mobile — info is duplicated in
