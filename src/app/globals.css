@@ -972,6 +972,13 @@ a { color: inherit; text-decoration: none; }
   border: 1px solid var(--fs-line); border-radius: 4px;
   background: var(--fs-bg-2); pointer-events: none;
 }
+/* On phones, the "↵ Search" hint takes ~80px the placeholder needs to
+   render its rotating example. Hide the hint and reclaim that room so
+   "Low-hours Robinson R44" stops getting clipped to "Low-hours Robin…" */
+@media (max-width: 480px) {
+  .fs-buy-search-hint { display: none; }
+  .fs-buy-search-input-wrap .fs-search-inline-input { padding-right: 16px; }
+}
 .fs-buy-search-input-wrap .fs-search-inline-input {
   padding: 14px 80px 14px 44px;
   font-size: 15px; font-weight: 500;
@@ -1520,12 +1527,18 @@ a { color: inherit; text-decoration: none; }
 .fs-fc-head {
   position: sticky;
   top: 0;
-  z-index: 2;
+  z-index: 5;
   display: flex; align-items: baseline; justify-content: space-between;
-  padding: 14px 0 12px;
-  margin: 0 0 4px;
-  background: var(--fs-bg);
+  /* Stretch the bg outside the column padding so checkbox content passing
+     beneath sticky is fully obscured (was bleeding through on mobile sheet) */
+  padding: 14px 20px 12px;
+  margin: 0 -20px 4px;
+  background: var(--fs-white);
   border-bottom: 1px solid var(--fs-line);
+}
+@media (min-width: 769px) {
+  /* Desktop sidebar has no inner padding, so reset the negative margins */
+  .fs-fc-head { padding: 14px 0 12px; margin: 0 0 4px; background: var(--fs-bg); }
 }
 .fs-fc-count { display: flex; align-items: baseline; gap: 6px; }
 .fs-fc-count-num {
