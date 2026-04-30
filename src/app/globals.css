@@ -439,6 +439,14 @@ a { color: inherit; text-decoration: none; }
   .fs-mnav-backdrop, .fs-mnav { display: none; }
 }
 
+/* Without this, the drawer's translateX(100%) closed state pushes a
+   360px-wide off-canvas zone past the viewport's right edge, and the
+   user can horizontally scroll into it. Every page on mobile shows the
+   "right half cut off" symptom because of it. Locking horizontal scroll
+   at the document level keeps the off-canvas drawer truly off-canvas
+   without affecting vertical scrolling. */
+html, body { overflow-x: hidden; max-width: 100%; }
+
 .fs-mnav {
   position: fixed; top: 0; right: 0; bottom: 0;
   width: min(360px, 88vw);
