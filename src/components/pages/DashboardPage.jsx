@@ -188,8 +188,8 @@ const DashboardPage = ({ user, setPage, signOut, savedIds, savedListings, onSave
     { id: 'overview', label: 'Overview', icon: Icons.home },
     { section: 'My Selling', items: [
       { id: 'listings', label: 'My Aircraft', icon: Icons.plane, count: myListings.length },
-      { id: 'drafts', label: 'Manage Ad or Draft', icon: Icons.file, count: drafts.length },
-      { id: 'receivedOffers', label: 'Manage Your Offers', icon: Icons.tag, count: receivedOffers.length },
+      { id: 'drafts', label: 'Drafts', icon: Icons.file, count: drafts.length },
+      { id: 'receivedOffers', label: 'Offers', icon: Icons.tag, count: receivedOffers.length },
     ]},
     { section: 'My Buying', items: [
       { id: 'saved', label: 'Saved Aircraft', icon: Icons.heart, count: savedAircraft.length },
@@ -201,7 +201,7 @@ const DashboardPage = ({ user, setPage, signOut, savedIds, savedListings, onSave
     ]},
     { section: 'Account', items: [
       { id: 'profile', label: 'Profile', icon: Icons.user },
-      { id: 'notifications', label: 'Notification Preferences', icon: Icons.bell },
+      { id: 'notifications', label: 'Notifications', icon: Icons.bell },
       { id: 'discounts', label: 'Discounts', icon: Icons.gift, count: discounts.filter(d => !d.used).length },
     ]},
   ];
@@ -493,14 +493,14 @@ const DashboardPage = ({ user, setPage, signOut, savedIds, savedListings, onSave
                               textAlign: 'left'
                             }}
                           >
-                            {stats.newEnquiries > 0 ? `📬 ${stats.newEnquiries} New Enquiries` : '📬 View Enquiries'}
+                            {stats.newEnquiries > 0 ? `${stats.newEnquiries} New Enquiries` : 'View Enquiries'}
                           </button>
                         </div>
                       </div>
 
                       {/* Tips Card */}
                       <div className="fs-detail-specs" style={{ padding: "20px", borderRadius: "var(--fs-radius-lg)", background: 'linear-gradient(135deg, #eff6ff 0%, #ffffff 100%)' }}>
-                        <h3 style={{ fontSize: 14, fontWeight: 700, marginBottom: 8 }}>💡 Selling Tip</h3>
+                        <h3 style={{ fontSize: 14, fontWeight: 700, marginBottom: 8 }}>Selling Tip</h3>
                         <p style={{ fontSize: 13, color: 'var(--fs-gray-600)', lineHeight: 1.5 }}>
                           Aircraft with 10+ photos get 3x more enquiries. Add more photos to your listings to increase visibility.
                         </p>

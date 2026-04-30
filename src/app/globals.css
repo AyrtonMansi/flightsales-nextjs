@@ -2318,21 +2318,29 @@ html, body { overflow-x: hidden; max-width: 100%; }
   align-items: start;
 }
 
-/* Overview tab grids — replace inline desktop styles. The Stats row goes
-   from 4-up at desktop to 2-up at <768 to 1-up at <420. The Activity +
-   Quick-Actions grid goes 2:1 desktop → stacked mobile. */
+/* Overview tab grids — minmax(0, …) so any long-text card content can't
+   blow the column wider than its share of the parent. Without it, a
+   "1fr" column can still grow past its slice if a child has implicit
+   min-width: auto (default for grid items). The min-width: 0 on direct
+   children is the same defence one layer down. */
 .fs-dash-overview-stats {
-  display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px; margin-bottom: 24px;
 }
 .fs-dash-overview-grid {
-  display: grid; grid-template-columns: 2fr 1fr; gap: 24px;
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+  gap: 24px;
 }
+.fs-dash-overview-stats > *,
+.fs-dash-overview-grid > * { min-width: 0; }
 @media (max-width: 768px) {
-  .fs-dash-overview-stats { grid-template-columns: repeat(2, 1fr); gap: 12px; }
-  .fs-dash-overview-grid { grid-template-columns: 1fr; gap: 16px; }
+  .fs-dash-overview-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+  .fs-dash-overview-grid { grid-template-columns: minmax(0, 1fr); gap: 16px; }
 }
 @media (max-width: 420px) {
-  .fs-dash-overview-stats { grid-template-columns: 1fr; }
+  .fs-dash-overview-stats { grid-template-columns: minmax(0, 1fr); }
 }
 
 /* Mobile: sidebar becomes a horizontal scrolling tab strip; main below. */
