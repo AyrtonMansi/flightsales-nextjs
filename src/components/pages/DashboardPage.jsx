@@ -404,8 +404,9 @@ const DashboardPage = ({ user, setPage, signOut, savedIds, savedListings, onSave
               {/* OVERVIEW TAB */}
               {activeTab === 'overview' && (
                 <>
-                  {/* Stats Row */}
-                  <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 16, marginBottom: 24 }}>
+                  {/* Stats Row — uses class so mobile @media can collapse
+                      the 4-col grid to 2-col without inline-style fighting. */}
+                  <div className="fs-dash-overview-stats">
                     {[
                       { label: 'Total Views', value: stats.totalViews.toLocaleString(), change: stats.totalViews === 0 ? 'Tracking soon' : null, color: 'var(--fs-ink)' },
                       { label: 'Enquiries', value: stats.totalEnquiries, change: stats.newEnquiries > 0 ? `${stats.newEnquiries} new` : (stats.totalEnquiries > 0 ? 'All read' : null), color: 'var(--fs-green)' },
@@ -420,7 +421,9 @@ const DashboardPage = ({ user, setPage, signOut, savedIds, savedListings, onSave
                     ))}
                   </div>
 
-                  <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr", gap: 24 }}>
+                  {/* Activity + Quick Actions — class collapses 2:1 grid
+                      to single column on mobile. */}
+                  <div className="fs-dash-overview-grid">
                     {/* Recent Activity */}
                     <div className="fs-detail-specs" style={{ padding: 0, borderRadius: "var(--fs-radius-lg)", overflow: 'hidden' }}>
                       <div style={{ padding: "20px", borderBottom: "1px solid var(--fs-gray-100)", display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>

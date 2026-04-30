@@ -2267,6 +2267,23 @@ html, body { overflow-x: hidden; max-width: 100%; }
   align-items: start;
 }
 
+/* Overview tab grids — replace inline desktop styles. The Stats row goes
+   from 4-up at desktop to 2-up at <768 to 1-up at <420. The Activity +
+   Quick-Actions grid goes 2:1 desktop → stacked mobile. */
+.fs-dash-overview-stats {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px;
+}
+.fs-dash-overview-grid {
+  display: grid; grid-template-columns: 2fr 1fr; gap: 24px;
+}
+@media (max-width: 768px) {
+  .fs-dash-overview-stats { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+  .fs-dash-overview-grid { grid-template-columns: 1fr; gap: 16px; }
+}
+@media (max-width: 420px) {
+  .fs-dash-overview-stats { grid-template-columns: 1fr; }
+}
+
 /* Mobile: sidebar becomes a horizontal scrolling tab strip; main below. */
 @media (max-width: 768px) {
   .fs-dash-shell { grid-template-columns: 1fr; gap: 16px; }
