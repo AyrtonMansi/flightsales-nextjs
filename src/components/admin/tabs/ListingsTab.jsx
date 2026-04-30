@@ -72,10 +72,28 @@ export default function ListingsTab() {
     catch (err) { showToast(err?.message ? `Failed: ${err.message}` : 'Failed'); }
   };
 
-  const handleApprove = wrap(async (id) => updateStatus(id, 'active'), 'Listing approved');
+  // Fires email + in-app notification AFTER a status mutation succeeds.
+  // Listing object lookup is already in `listings` state — no refetch.
+  const notify = async (event, id, extras = {}) => {
+    const l = listings.find(x => x.id === id);
+    if (!l) return;
+    try {
+      await fetch('/api/admin/notify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          event,
+          targetUserId: l.user_id,
+          vars: { aircraftTitle: l.title || 'your listing', aircraftId: l.id, ...extras },
+        }),
+      });
+    } catch {}
+  };
+
+  const handleApprove = wrap(async (id) => { await updateStatus(id, 'active'); await notify('listing.approved', id); }, 'Listing approved');
   const handleUnpublish = wrap(async (id) => updateStatus(id, 'pending'), 'Listing unpublished');
   const handleMarkSold = wrap(async (id) => updateStatus(id, 'sold'), 'Marked sold');
-  const handleReject = wrap(async (id, reason) => rejectListing(id, reason), 'Listing rejected');
+  const handleReject = wrap(async (id, reason) => { await rejectListing(id, reason); await notify('listing.rejected', id, { reason }); }, 'Listing rejected');
   const handleToggleFeatured = wrap(async (id, featured) => setFeatured(id, featured), 'Featured updated');
 
   const handleBulk = async (newStatus) => {

@@ -196,6 +196,46 @@ CREATE INDEX IF NOT EXISTS idx_admin_audit_recent ON admin_audit(created_at DESC
 CREATE INDEX IF NOT EXISTS idx_admin_audit_admin ON admin_audit(admin_id, created_at DESC);
 
 -- ============================================
+-- IN-APP NOTIFICATIONS
+-- ============================================
+-- Per-user feed for events: enquiry received, listing approved/rejected,
+-- dealer app reviewed, message reply. Surfaces in the dashboard bell.
+-- Mirror of what gets emailed so users have an in-app inbox.
+CREATE TABLE IF NOT EXISTS notifications (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  type TEXT NOT NULL,            -- 'enquiry.received' | 'listing.approved' | 'listing.rejected' | 'dealer_app.approved' | 'dealer_app.rejected' | 'system'
+  title TEXT NOT NULL,
+  body TEXT,
+  link TEXT,                     -- in-app deep link (e.g. /dashboard?tab=enquiries)
+  read_at TIMESTAMP WITH TIME ZONE,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+CREATE INDEX IF NOT EXISTS idx_notifications_user ON notifications(user_id, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_notifications_unread ON notifications(user_id, read_at) WHERE read_at IS NULL;
+
+-- ============================================
+-- EMAIL LOG
+-- ============================================
+-- Every send goes through this for audit + idempotency. If a Resend API
+-- call fails, we keep the row with status='failed' for retry. If it
+-- succeeds we record the message id from Resend so we can reconcile
+-- bounces / complaints out of band.
+CREATE TABLE IF NOT EXISTS email_log (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  to_address TEXT NOT NULL,
+  template TEXT NOT NULL,       -- 'enquiry.seller', 'auth.welcome', etc.
+  subject TEXT NOT NULL,
+  status TEXT NOT NULL DEFAULT 'pending'   -- 'pending'|'sent'|'failed'
+    CHECK (status IN ('pending', 'sent', 'failed')),
+  provider_id TEXT,             -- Resend message id once sent
+  error TEXT,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+CREATE INDEX IF NOT EXISTS idx_email_log_recent ON email_log(created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_email_log_failed ON email_log(status, created_at DESC) WHERE status = 'failed';
+
+-- ============================================
 -- RPC: admin_users_with_listings_count
 -- Server-side aggregation replaces the client-side N+1 in useAdminUsers.
 -- ============================================

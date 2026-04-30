@@ -2,7 +2,6 @@
 import { useState } from 'react';
 import { Icons } from './Icons';
 import { formatPriceFull } from '../lib/format';
-import { submitEnquiry } from '../lib/hooks';
 
 const EnquiryModal = ({ listing, onClose, user }) => {
   const [sent, setSent] = useState(false);
@@ -117,7 +116,25 @@ const EnquiryModal = ({ listing, onClose, user }) => {
                   setSending(true);
                   setSendError(null);
                   try {
-                    await submitEnquiry(listing.id, formData);
+                    // POST to the server route — it persists the enquiry,
+                    // emails the seller and the buyer, and creates the
+                    // seller's in-app notification. Replaces the old
+                    // direct-to-Supabase write that left the seller in
+                    // the dark.
+                    const res = await fetch('/api/enquiries', {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({
+                        aircraftId: listing.id,
+                        name: formData.name,
+                        email: formData.email,
+                        phone: formData.phone,
+                        message: formData.message,
+                        financeStatus: formData.financeStatus,
+                      }),
+                    });
+                    const json = await res.json();
+                    if (!res.ok || !json.ok) throw new Error(json.error || 'Failed to send enquiry.');
                     setSent(true);
                   } catch (err) {
                     setSendError(err.message || "Failed to send enquiry. Please try again.");

@@ -589,6 +589,60 @@ export function useSavedAircraft(userId) {
   return { savedIds, savedListings, toggleSave };
 }
 
+// ─── Notifications ───────────────────────────────────────────────────────────
+
+// Per-user notification feed. Polls every 30s while the tab is visible
+// (light cost — single indexed query). Returns the list, an unread
+// count, and a markRead helper.
+export function useNotifications(userId) {
+  const [items, setItems] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  const fetchAll = useCallback(async () => {
+    if (!userId) { setItems([]); setLoading(false); return; }
+    try {
+      const { data } = await supabase
+        .from('notifications')
+        .select('*')
+        .eq('user_id', userId)
+        .order('created_at', { ascending: false })
+        .limit(50);
+      setItems(data || []);
+    } catch {
+      // Table may not exist yet on the target Supabase project. Render
+      // as empty so the bell doesn't crash the nav.
+      setItems([]);
+    } finally {
+      setLoading(false);
+    }
+  }, [userId]);
+
+  useEffect(() => { fetchAll(); }, [fetchAll]);
+
+  useEffect(() => {
+    if (!userId) return undefined;
+    const tick = () => { if (document.visibilityState === 'visible') fetchAll(); };
+    const id = setInterval(tick, 30000);
+    return () => clearInterval(id);
+  }, [userId, fetchAll]);
+
+  const unreadCount = items.filter(n => !n.read_at).length;
+
+  const markRead = async (id) => {
+    await supabase.from('notifications').update({ read_at: new Date().toISOString() }).eq('id', id);
+    setItems(prev => prev.map(n => n.id === id ? { ...n, read_at: new Date().toISOString() } : n));
+  };
+
+  const markAllRead = async () => {
+    const unreadIds = items.filter(n => !n.read_at).map(n => n.id);
+    if (!unreadIds.length) return;
+    await supabase.from('notifications').update({ read_at: new Date().toISOString() }).in('id', unreadIds);
+    setItems(prev => prev.map(n => n.read_at ? n : { ...n, read_at: new Date().toISOString() }));
+  };
+
+  return { items, loading, unreadCount, refetch: fetchAll, markRead, markAllRead };
+}
+
 // ─── Mutations ───────────────────────────────────────────────────────────────
 
 export async function submitEnquiry(aircraftId, enquiryData) {

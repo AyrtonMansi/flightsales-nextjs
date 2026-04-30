@@ -1,7 +1,6 @@
 'use client';
 import { useState } from 'react';
 import { Icons } from '../Icons';
-import { submitLead } from '../../lib/hooks';
 
 const ContactPage = () => {
   const [form, setForm] = useState({ name: '', email: '', subject: 'General Enquiry', message: '' });
@@ -14,7 +13,16 @@ const ContactPage = () => {
     if (!form.name || !form.email || !form.message) { setError('Please fill in your name, email, and message.'); return; }
     setSending(true); setError(null);
     try {
-      await submitLead('contact', { name: form.name, email: form.email, message: `[${form.subject}] ${form.message}` });
+      // POSTs to the server route which persists the lead AND fires
+      // email to admin (so nothing falls through cracks) AND auto-reply
+      // to the user. Replaces the silent direct-to-Supabase write.
+      const res = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ type: 'contact', name: form.name, email: form.email, subject: form.subject, message: form.message }),
+      });
+      const json = await res.json();
+      if (!res.ok || !json.ok) throw new Error(json.error || 'Failed to send.');
       setSent(true);
     } catch (err) {
       setError(err.message || 'Failed to send message. Please try again.');

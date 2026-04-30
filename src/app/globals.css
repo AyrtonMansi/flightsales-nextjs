@@ -419,6 +419,66 @@ a { color: inherit; text-decoration: none; }
 .fs-nav-dropdown button.danger { color: var(--fs-red); }
 .fs-nav-dropdown-sep { border-top: 1px solid var(--fs-line); margin: 4px 0; }
 
+/* Notification bell — sits left of the avatar. Red dot badge with the
+   unread count; click opens a dropdown with the latest 12. */
+.fs-bell {
+  position: relative;
+  width: 36px; height: 36px;
+  border: none; background: none; border-radius: 50%;
+  display: inline-flex; align-items: center; justify-content: center;
+  color: var(--fs-ink); cursor: pointer;
+}
+.fs-bell:hover { background: var(--fs-bg-2); }
+.fs-bell-dot {
+  position: absolute; top: 4px; right: 4px;
+  min-width: 16px; height: 16px; padding: 0 4px;
+  background: #dc2626; color: #fff;
+  border-radius: 8px;
+  font-size: 10px; font-weight: 700; line-height: 16px;
+  display: inline-flex; align-items: center; justify-content: center;
+}
+.fs-bell-panel {
+  position: absolute; top: 100%; right: 0; margin-top: 8px;
+  width: 360px; max-width: 90vw;
+  background: var(--fs-white);
+  border: 1px solid var(--fs-line); border-radius: var(--fs-radius);
+  box-shadow: 0 4px 18px rgba(0,0,0,0.08);
+  z-index: 100;
+  overflow: hidden;
+}
+.fs-bell-head {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 16px; border-bottom: 1px solid var(--fs-line);
+  font-size: 13px; font-weight: 600;
+}
+.fs-bell-head button {
+  background: none; border: none; padding: 0;
+  font-size: 12px; color: var(--fs-ink-3); cursor: pointer;
+  text-decoration: underline; text-underline-offset: 2px;
+  font-family: var(--fs-font);
+}
+.fs-bell-head button:hover { color: var(--fs-ink); }
+.fs-bell-empty { padding: 32px 16px; text-align: center; color: var(--fs-ink-3); font-size: 13px; }
+.fs-bell-list { max-height: 420px; overflow-y: auto; }
+.fs-bell-row {
+  display: block; width: 100%;
+  text-align: left; background: none; border: none;
+  padding: 12px 16px; cursor: pointer;
+  border-bottom: 1px solid var(--fs-bg-2);
+  font-family: var(--fs-font);
+}
+.fs-bell-row:last-child { border-bottom: none; }
+.fs-bell-row:hover { background: var(--fs-bg); }
+.fs-bell-row.unread { background: rgba(59,130,246,0.04); }
+.fs-bell-row.unread::before {
+  content: ''; display: inline-block;
+  width: 6px; height: 6px; border-radius: 50%;
+  background: #3b82f6; margin-right: 6px; vertical-align: middle;
+}
+.fs-bell-row-title { font-size: 13px; font-weight: 600; color: var(--fs-ink); margin: 0 0 2px; }
+.fs-bell-row-body { font-size: 12px; color: var(--fs-ink-3); margin: 0 0 4px; line-height: 1.4; }
+.fs-bell-row-time { font-size: 11px; color: var(--fs-ink-4); margin: 0; }
+
 /* ─────────────────────────────────────────────────────────────────────
    MOBILE NAV DRAWER (.fs-mnav)
    Full-viewport panel + dimmed backdrop. Slides in from the right with

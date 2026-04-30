@@ -1,6 +1,7 @@
 'use client';
 import { useEffect, useRef, useState } from 'react';
 import { Icons } from './Icons';
+import NotificationBell from './NotificationBell';
 
 // Top bar plus mobile drawer. Single source of truth for both layouts —
 // the desktop horizontal nav and the mobile slide-in menu render from the
@@ -82,6 +83,7 @@ const Nav = ({ page, setPage, setMobileOpen, mobileOpen, user, signOut }) => {
           <div className="fs-nav-actions">
             {user ? (
               <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                <NotificationBell user={user} setPage={setPage} />
                 <div ref={dropdownRef} style={{ position: 'relative' }}>
                   <button
                     className="fs-nav-avatar-btn"

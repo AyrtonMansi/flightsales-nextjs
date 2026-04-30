@@ -42,8 +42,29 @@ export default function DealerAppsTab({ adminId }) {
     catch (err) { showToast(err?.message ? `Failed: ${err.message}` : 'Failed'); }
   };
 
-  const handleApprove = wrap(async (app) => approveApp(app, adminId), 'Application approved');
-  const handleReject = wrap(async (id, reason) => rejectApp(id, reason, adminId), 'Application rejected');
+  // Notify the applicant by email + in-app once the DB mutation has
+  // succeeded. Failures here are silent so the admin's UX isn't held
+  // hostage to email deliverability.
+  const notify = async (event, app, extras = {}) => {
+    try {
+      await fetch('/api/admin/notify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          event,
+          targetUserId: app.user_id,
+          vars: { businessName: app.business_name, ...extras },
+        }),
+      });
+    } catch {}
+  };
+
+  const handleApprove = wrap(async (app) => { await approveApp(app, adminId); await notify('dealer_app.approved', app); }, 'Application approved');
+  const handleReject = wrap(async (id, reason) => {
+    const app = apps.find(a => a.id === id);
+    await rejectApp(id, reason, adminId);
+    if (app) await notify('dealer_app.rejected', app, { reason });
+  }, 'Application rejected');
 
   return (
     <>
