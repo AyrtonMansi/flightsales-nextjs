@@ -1110,6 +1110,13 @@ html, body { overflow-x: hidden; max-width: 100%; }
 .fs-detail-specs {
   background: var(--fs-white); border-radius: var(--fs-radius);
   padding: 24px; border: 1px solid var(--fs-line);
+  /* Hard guard: card can never exceed its container width on mobile
+     even if a child has long unbroken text. word-break: break-word
+     also forces wrapping on URLs / regos / spec strings. */
+  max-width: 100%;
+  min-width: 0;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 .fs-detail-specs h3 {
   font-size: 16px; font-weight: 700; margin-bottom: 16px;
