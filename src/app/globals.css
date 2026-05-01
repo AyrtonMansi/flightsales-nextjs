@@ -715,11 +715,11 @@ html, body { overflow-x: hidden; max-width: 100%; }
 @media (max-width: 768px) {
   .fs-hero {
     min-height: auto;
-    /* Push the search lower in the hero (more padding-top) and add
-       extra breathing room before the Featured section starts (more
-       padding-bottom). User-requested "move the hero search down to
-       push the feature listings lower". */
-    padding: 140px 0 240px;
+    /* User-tuned spacing: keep 140 padding-top so the search isn't
+       crammed against the breadcrumb, but pull padding-bottom back
+       so Featured aircraft lands at the top of the second scroll
+       instead of half a viewport below it. */
+    padding: 140px 0 80px;
     display: block;
   }
 }
