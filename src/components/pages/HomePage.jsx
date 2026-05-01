@@ -3,6 +3,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { Icons } from '../Icons';
 import ListingCard from '../ListingCard';
+import HomeTypeRow from '../HomeTypeRow';
 import { useAircraft, useFeaturedAircraft, useLatestAircraft, useDealers, useNews } from '../../lib/hooks';
 import { MANUFACTURERS, CATEGORIES, STATES, DEALERS, NEWS_ARTICLES } from '../../lib/constants';
 import { useRotatingPlaceholder, AI_SEARCH_EXAMPLES } from '../../lib/useRotatingPlaceholder';
@@ -195,6 +196,11 @@ const HomePage = ({ setPage, setSelectedListing, savedIds, onSave, setSearchFilt
               {Icons.search} Search Aircraft
             </button>
           </div>
+
+          {/* Type quick-pick — clicking an icon pre-fills the Type
+              dropdown above. Stays within the same hero so the user
+              sees their selection reflected immediately. */}
+          <HomeTypeRow activeType={searchCat} onPick={setSearchCat} />
 
           {totalListings > 0 && (
             <div className="fs-stats">

@@ -494,6 +494,70 @@ a { color: inherit; text-decoration: none; }
 .fs-bell-row-body { font-size: 12px; color: var(--fs-ink-3); margin: 0 0 4px; line-height: 1.4; }
 .fs-bell-row-time { font-size: 11px; color: var(--fs-ink-4); margin: 0; }
 
+/* Aircraft type icon row — horizontal scrollable strip under the hero
+   search. Each tile = ink-black silhouette + tiny label. Clicking
+   pre-fills the Type dropdown above. Centred when the row fits the
+   viewport, scrolls horizontally when it doesn't. Hidden scrollbar
+   on Webkit + Firefox. */
+.fs-type-row {
+  margin-top: 24px;
+  width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+  padding: 4px 0;
+}
+.fs-type-row::-webkit-scrollbar { display: none; }
+.fs-type-row-inner {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  width: max-content;
+  margin: 0 auto;
+  padding: 0 4px;
+}
+@media (max-width: 768px) {
+  /* Mobile: don't centre — let the row scroll horizontally so all
+     types are reachable even though they don't all fit. */
+  .fs-type-row-inner { justify-content: flex-start; padding: 0 16px; }
+}
+.fs-type-tile {
+  flex-shrink: 0;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center; gap: 6px;
+  width: 80px;
+  padding: 12px 8px;
+  background: var(--fs-white);
+  border: 1px solid var(--fs-line);
+  border-radius: var(--fs-radius);
+  cursor: pointer;
+  font-family: var(--fs-font);
+  color: var(--fs-ink);
+  transition: background 0.12s, border-color 0.12s, transform 0.12s;
+}
+.fs-type-tile:hover { background: var(--fs-bg); border-color: var(--fs-ink-4); }
+.fs-type-tile:active { transform: scale(0.97); }
+.fs-type-tile.on {
+  background: var(--fs-ink);
+  border-color: var(--fs-ink);
+  color: var(--fs-white);
+}
+.fs-type-tile-icon {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 40px; height: 24px;
+}
+.fs-type-tile-icon svg {
+  width: 100%; height: 100%;
+  display: block;
+}
+.fs-type-tile-label {
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: -0.005em;
+  white-space: nowrap;
+}
+
 /* Photo reorder grid — drag-to-rearrange tiles for the listing photos
    on Sell + Edit. HTML5 DnD; arrow buttons fall back for touch. */
 .fs-photo-reorder {
