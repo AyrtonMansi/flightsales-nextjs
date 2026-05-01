@@ -719,7 +719,7 @@ html, body { overflow-x: hidden; max-width: 100%; }
        extra breathing room before the Featured section starts (more
        padding-bottom). User-requested "move the hero search down to
        push the feature listings lower". */
-    padding: 96px 0 128px;
+    padding: 140px 0 240px;
     display: block;
   }
 }
