@@ -4,8 +4,12 @@ import Link from 'next/link';
 import { Icons } from '../Icons';
 import ListingCard from '../ListingCard';
 import HomeTypeRow from '../HomeTypeRow';
+import HeroSearchClassic from '../hero/HeroSearchClassic';
+import HeroSearchPro from '../hero/HeroSearchPro';
+import HeroVariantToggle from '../hero/HeroVariantToggle';
+import { useHeroVariant } from '../hero/useHeroVariant';
 import { useAircraft, useFeaturedAircraft, useLatestAircraft, useDealers, useNews } from '../../lib/hooks';
-import { MANUFACTURERS, CATEGORIES, STATES, DEALERS, NEWS_ARTICLES } from '../../lib/constants';
+import { DEALERS, NEWS_ARTICLES } from '../../lib/constants';
 import { useRotatingPlaceholder, AI_SEARCH_EXAMPLES } from '../../lib/useRotatingPlaceholder';
 import { parseAiQuery } from '../../lib/parseAiQuery';
 
@@ -19,6 +23,7 @@ const HomePage = ({ setPage, setSelectedListing, savedIds, onSave, setSearchFilt
   const [priceTo, setPriceTo] = useState("");
   const [aiQuery, setAiQuery] = useState("");
   const rotatingPlaceholder = useRotatingPlaceholder(AI_SEARCH_EXAMPLES);
+  const [heroVariant, setHeroVariant] = useHeroVariant();
 
   // Server-fetched home data when present (eliminates the skeleton flash on
   // first paint and makes the content crawlable without JS execution).
@@ -62,6 +67,21 @@ const HomePage = ({ setPage, setSelectedListing, savedIds, onSave, setSearchFilt
     setPage("buy");
   };
 
+  // Bundle every search-card input + handler into one model object so
+  // Classic and Pro can share an identical signature. Keeps the toggle
+  // swap a one-line change with no per-variant prop drilling.
+  const searchModel = {
+    searchCat, setSearchCat,
+    searchMake, setSearchMake,
+    searchState, setSearchState,
+    yearFrom, setYearFrom, yearTo, setYearTo,
+    priceFrom, setPriceFrom, priceTo, setPriceTo,
+    aiQuery, setAiQuery,
+    rotatingPlaceholder,
+    onAiSearch: handleAiSearch,
+    onManualSearch: handleManualSearch,
+  };
+
   return (
     <>
       {/* HERO */}
@@ -72,130 +92,14 @@ const HomePage = ({ setPage, setSelectedListing, savedIds, onSave, setSearchFilt
             Australia's marketplace for aircraft. Search thousands of listings from verified dealers and private sellers.
           </p>
 
-          <div className="fs-search-bar">
-            <div className="fs-search-ai">
-              <span className="fs-search-ai-wand" aria-hidden="true">
-                {/* Inline SVG wand — uses currentColor so it matches the
-                    placeholder/text color rather than living in a separate
-                    coloured badge. */}
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M15 4V2" />
-                  <path d="M15 16v-2" />
-                  <path d="M8 9h2" />
-                  <path d="M20 9h2" />
-                  <path d="M17.8 11.8 19 13" />
-                  <path d="M15 9h.01" />
-                  <path d="M17.8 6.2 19 5" />
-                  <path d="M3 21l9-9" />
-                  <path d="M12.2 6.2 11 5" />
-                </svg>
-              </span>
-              <input
-                className="fs-search-ai-input"
-                placeholder={rotatingPlaceholder || 'AI quick search'}
-                value={aiQuery}
-                onChange={e => setAiQuery(e.target.value)}
-                onKeyDown={e => { if (e.key === "Enter") handleAiSearch(e.target.value); }}
-                aria-label="AI search — describe the aircraft you're looking for"
-              />
-            </div>
-            {/* Row 1: Simple filters */}
-            <div className="fs-search-fields-row" style={{ gridTemplateColumns: "repeat(3, 1fr)" }}>
-              <div className="fs-search-field">
-                <span className="fs-search-label">Type</span>
-                <select className="fs-search-select" value={searchCat} onChange={e => setSearchCat(e.target.value)}>
-                  <option value="">All types</option>
-                  {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
-                </select>
-              </div>
-              <div className="fs-search-field">
-                <span className="fs-search-label">Make</span>
-                <select className="fs-search-select" value={searchMake} onChange={e => setSearchMake(e.target.value)}>
-                  <option value="">All makes</option>
-                  {MANUFACTURERS.map(m => <option key={m} value={m}>{m}</option>)}
-                </select>
-              </div>
-              <div className="fs-search-field">
-                <span className="fs-search-label">Location</span>
-                <select className="fs-search-select" value={searchState} onChange={e => setSearchState(e.target.value)}>
-                  <option value="">Australia</option>
-                  {STATES.map(s => <option key={s} value={s}>{s}</option>)}
-                </select>
-              </div>
-            </div>
-
-            <div className="fs-search-fields-row" style={{ gridTemplateColumns: "1fr 1fr" }}>
-              <div className="fs-search-field">
-                <span className="fs-search-label" style={{ textAlign: 'center' }}>Year</span>
-                <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 6 }}>
-                  <select
-                    className="fs-search-select"
-                    value={yearFrom}
-                    onChange={e => setYearFrom(e.target.value)}
-                    style={{ flex: 1, textAlign: 'center', textAlignLast: 'center' }}
-                  >
-                    <option value="">From</option>
-                    {Array.from({ length: 50 }, (_, i) => 2026 - i).map(y => (
-                      <option key={y} value={y}>{y}</option>
-                    ))}
-                  </select>
-                  <span style={{ color: "var(--fs-ink-4)", fontSize: 12 }}>—</span>
-                  <select
-                    className="fs-search-select"
-                    value={yearTo}
-                    onChange={e => setYearTo(e.target.value)}
-                    style={{ flex: 1, textAlign: 'center', textAlignLast: 'center' }}
-                  >
-                    <option value="">To</option>
-                    {Array.from({ length: 50 }, (_, i) => 2026 - i).map(y => (
-                      <option key={y} value={y}>{y}</option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-              <div className="fs-search-field">
-                <span className="fs-search-label" style={{ textAlign: 'center' }}>Price</span>
-                <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 6 }}>
-                  <select
-                    className="fs-search-select"
-                    value={priceFrom}
-                    onChange={e => setPriceFrom(e.target.value)}
-                    style={{ flex: 1, textAlign: 'center', textAlignLast: 'center' }}
-                  >
-                    <option value="">Min</option>
-                    <option value="50000">$50k</option>
-                    <option value="100000">$100k</option>
-                    <option value="200000">$200k</option>
-                    <option value="300000">$300k</option>
-                    <option value="500000">$500k</option>
-                    <option value="1000000">$1M</option>
-                    <option value="2000000">$2M</option>
-                    <option value="5000000">$5M</option>
-                  </select>
-                  <span style={{ color: "var(--fs-ink-4)", fontSize: 12 }}>—</span>
-                  <select
-                    className="fs-search-select"
-                    value={priceTo}
-                    onChange={e => setPriceTo(e.target.value)}
-                    style={{ flex: 1, textAlign: 'center', textAlignLast: 'center' }}
-                  >
-                    <option value="">Max</option>
-                    <option value="100000">$100k</option>
-                    <option value="200000">$200k</option>
-                    <option value="300000">$300k</option>
-                    <option value="500000">$500k</option>
-                    <option value="1000000">$1M</option>
-                    <option value="2000000">$2M</option>
-                    <option value="5000000">$5M</option>
-                    <option value="10000000">$10M+</option>
-                  </select>
-                </div>
-              </div>
-            </div>
-            <button className="fs-search-btn" onClick={handleManualSearch}>
-              {Icons.search} Search Aircraft
-            </button>
-          </div>
+          {/* Hero search card — two designs run side-by-side via the toggle
+              pill below. Classic = original. Pro = 2026 redraw. */}
+          <HeroVariantToggle variant={heroVariant} setVariant={setHeroVariant} />
+          {heroVariant === 'pro' ? (
+            <HeroSearchPro model={searchModel} count={totalListings} />
+          ) : (
+            <HeroSearchClassic model={searchModel} />
+          )}
 
           {/* Type quick-pick — clicking an icon pre-fills the Type
               dropdown above. Stays within the same hero so the user

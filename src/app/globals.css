@@ -2629,3 +2629,284 @@ html, body { overflow-x: hidden; max-width: 100%; }
   .fs-dash-sidebar nav button[style*="3px solid"] span { color: var(--fs-white) !important; }
 }
 
+/* ============================================================
+   HERO SEARCH — PRO VARIANT (the 2026 redraw)
+   Sits side-by-side with the Classic card; HeroVariantToggle
+   flips between them via localStorage. Self-contained block —
+   nothing here leaks into Classic styles.
+   ============================================================ */
+
+/* Toggle pill above the card */
+.fs-hero-variant {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 3px;
+  margin: 0 auto 12px;
+  background: rgba(10, 10, 10, 0.04);
+  border: 1px solid rgba(10, 10, 10, 0.06);
+  border-radius: 999px;
+  font: 500 12px/1 -apple-system, system-ui, sans-serif;
+}
+.fs-hero-variant-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border: 0;
+  background: transparent;
+  color: var(--fs-ink-3, #6b7280);
+  border-radius: 999px;
+  cursor: pointer;
+  transition: color 120ms ease, background 120ms ease;
+}
+.fs-hero-variant-btn:hover { color: var(--fs-ink, #0a0a0a); }
+.fs-hero-variant-btn.on {
+  background: #fff;
+  color: var(--fs-ink, #0a0a0a);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.6) inset,
+    0 1px 2px rgba(10, 10, 10, 0.08);
+}
+.fs-hero-variant-badge {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  padding: 1px 5px;
+  border-radius: 4px;
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.14), rgba(168, 85, 247, 0.14));
+  color: #6366f1;
+}
+
+/* The fused glass card */
+.fs-h-card {
+  width: 100%;
+  max-width: 720px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 8px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.78);
+  backdrop-filter: blur(24px) saturate(140%);
+  -webkit-backdrop-filter: blur(24px) saturate(140%);
+  border: 1px solid rgba(10, 10, 10, 0.06);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.6),
+    0 1px 2px rgba(10, 10, 10, 0.04),
+    0 12px 40px -16px rgba(10, 10, 10, 0.12);
+  text-align: left;
+}
+
+/* AI input — violet wash + sparkle + ⌘K hint */
+.fs-h-ai {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  border-radius: 14px;
+  background:
+    linear-gradient(90deg,
+      rgba(99, 102, 241, 0.06) 0%,
+      rgba(168, 85, 247, 0.04) 40%,
+      rgba(255, 255, 255, 0) 80%);
+  border: 1px solid rgba(99, 102, 241, 0.14);
+  transition: border-color 160ms ease, box-shadow 160ms ease;
+  cursor: text;
+}
+.fs-h-ai:focus-within {
+  border-color: rgba(99, 102, 241, 0.4);
+  box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.08);
+}
+.fs-h-ai-spark {
+  width: 20px;
+  height: 20px;
+  color: #6366f1;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+.fs-h-ai-input {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  background: transparent;
+  font: 500 15px/1.2 inherit;
+  color: var(--fs-ink, #0a0a0a);
+  outline: none;
+}
+.fs-h-ai-input::placeholder {
+  color: #6b7280;
+  font-weight: 400;
+}
+.fs-h-kbd {
+  font: 500 11px/1 ui-monospace, SFMono-Regular, monospace;
+  color: #6b7280;
+  background: rgba(10, 10, 10, 0.04);
+  border: 1px solid rgba(10, 10, 10, 0.08);
+  border-radius: 6px;
+  padding: 3px 6px;
+  flex-shrink: 0;
+}
+
+/* Field rows — one surface, hairline dividers */
+.fs-h-row {
+  display: grid;
+  background: #fff;
+  border: 1px solid rgba(10, 10, 10, 0.06);
+  border-radius: 14px;
+  overflow: hidden;
+}
+.fs-h-row-3 { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr); }
+.fs-h-row-2 { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+.fs-h-row > * + * {
+  border-left: 1px solid rgba(10, 10, 10, 0.06);
+}
+
+.fs-h-field {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 12px 16px;
+  background: transparent;
+  border: 0;
+  text-align: left;
+  cursor: pointer;
+  min-width: 0;
+  transition: background 120ms ease;
+}
+.fs-h-field:hover { background: rgba(10, 10, 10, 0.025); }
+.fs-h-field:focus-within { background: rgba(10, 10, 10, 0.035); }
+
+.fs-h-field-label {
+  font: 600 10px/1 -apple-system, system-ui, sans-serif;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #6b7280;
+}
+.fs-h-field-value {
+  font: 600 15px/1.2 -apple-system, system-ui, sans-serif;
+  color: var(--fs-ink, #0a0a0a);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.fs-h-field-value.muted {
+  color: #9ca3af;
+  font-weight: 500;
+}
+.fs-h-field-icon {
+  width: 14px;
+  height: 14px;
+  color: #6b7280;
+  flex-shrink: 0;
+  display: inline-flex;
+}
+
+/* Native select sits transparent over the rendered label/value so
+   the platform picker still drives the field. */
+.fs-h-field-native {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  border: 0;
+  background: transparent;
+}
+
+/* Range field — From — To inputs */
+.fs-h-field-range { cursor: text; }
+.fs-h-range {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: center;
+  gap: 6px;
+}
+.fs-h-range-input {
+  width: 100%;
+  min-width: 0;
+  border: 0;
+  background: transparent;
+  font: 600 15px/1.2 -apple-system, system-ui, sans-serif;
+  color: var(--fs-ink, #0a0a0a);
+  font-variant-numeric: tabular-nums;
+  outline: 0;
+  padding: 0;
+}
+.fs-h-range-input::placeholder {
+  color: #9ca3af;
+  font-weight: 500;
+}
+.fs-h-range-sep {
+  color: #d1d5db;
+  font-weight: 500;
+  font-size: 13px;
+}
+
+/* CTA — gradient ink, live count, lift on hover */
+.fs-h-cta {
+  margin-top: 4px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  border: 0;
+  border-radius: 14px;
+  background: linear-gradient(180deg, #1a1a1a 0%, #0a0a0a 100%);
+  color: #fff;
+  font: 600 15px/1 -apple-system, system-ui, sans-serif;
+  letter-spacing: -0.005em;
+  cursor: pointer;
+  transition: transform 120ms ease, box-shadow 200ms ease;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    0 6px 16px -8px rgba(10, 10, 10, 0.32);
+}
+.fs-h-cta:hover {
+  transform: translateY(-1px);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.12),
+    0 12px 28px -10px rgba(10, 10, 10, 0.42);
+}
+.fs-h-cta:active { transform: translateY(0); }
+.fs-h-cta-icon {
+  display: inline-flex;
+  width: 16px;
+  height: 16px;
+}
+.fs-h-cta-text { display: inline-flex; gap: 6px; align-items: center; }
+.fs-h-cta-count {
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+.fs-h-cta-arrow {
+  font-size: 17px;
+  line-height: 1;
+  transition: transform 200ms ease;
+}
+.fs-h-cta:hover .fs-h-cta-arrow { transform: translateX(2px); }
+
+/* Mobile — stack the 3-up row, keep 2-up for ranges, smaller padding */
+@media (max-width: 640px) {
+  .fs-h-card { padding: 6px; gap: 6px; border-radius: 18px; }
+  .fs-h-ai { padding: 13px 14px; }
+  .fs-h-row-3 { grid-template-columns: minmax(0, 1fr); }
+  .fs-h-row-3 > * + * {
+    border-left: 0;
+    border-top: 1px solid rgba(10, 10, 10, 0.06);
+  }
+  .fs-h-field { padding: 11px 14px; }
+  .fs-h-kbd { display: none; }
+}
+
