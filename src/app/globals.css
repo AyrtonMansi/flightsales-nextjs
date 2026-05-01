@@ -270,8 +270,12 @@ a { color: inherit; text-decoration: none; }
   height: 72px; gap: 32px;
 }
 .fs-nav-logo {
-  display: flex; align-items: center; gap: 10px;
+  display: flex; align-items: center; gap: 8px;
   cursor: pointer; flex-shrink: 0;
+}
+.fs-nav-logo-mark {
+  color: var(--fs-ink);
+  flex-shrink: 0;
 }
 .fs-nav-logo-text {
   font-family: var(--fs-font);
@@ -499,6 +503,39 @@ a { color: inherit; text-decoration: none; }
   font: inherit; cursor: pointer;
 }
 
+/* Enquiries tab header — h2 + subtitle on the left, filter pills on
+   the right. Stacks vertically on mobile so the subtitle doesn't get
+   squashed into 14-character lines and the pills don't overflow off
+   the right edge. */
+.fs-enq-head {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 16px; margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+.fs-enq-filters {
+  display: flex; gap: 8px;
+  flex-wrap: wrap;
+}
+.fs-enq-filter {
+  padding: 8px 16px;
+  background: var(--fs-bg-2);
+  color: var(--fs-ink);             /* explicit — kills iOS Safari default-blue */
+  border: 1px solid transparent;
+  border-radius: 6px;
+  font-size: 13px; font-weight: 500;
+  font-family: var(--fs-font);
+  cursor: pointer;
+  text-transform: capitalize;
+}
+.fs-enq-filter:hover { background: var(--fs-line); }
+.fs-enq-filter.on {
+  background: var(--fs-ink);
+  color: var(--fs-white);
+}
+@media (max-width: 640px) {
+  .fs-enq-head { flex-direction: column; align-items: stretch; }
+}
+
 /* Cloudflare Turnstile — tiny wrapper to keep the widget's box from
    stretching the form layout. The widget renders ~300x65px. */
 .fs-turnstile { margin: 4px 0 0; min-height: 65px; }
@@ -666,9 +703,19 @@ html, body { overflow-x: hidden; max-width: 100%; }
 /* HERO — centered, refined */
 .fs-hero {
   background: var(--fs-white);
-  padding: 80px 0 56px; position: relative; text-align: center;
+  /* Vertical-centered look: tall enough that h1+search sit comfortably
+     in the middle, with extra padding-bottom so the next section
+     ("Featured aircraft") gets visible breathing room instead of butting
+     up against the hero. */
+  min-height: min(72vh, 680px);
+  padding: 96px 0 96px;
+  position: relative; text-align: center;
+  display: flex; align-items: center;
 }
-.fs-hero-content { position: relative; z-index: 1; max-width: 768px; margin: 0 auto; }
+@media (max-width: 768px) {
+  .fs-hero { min-height: auto; padding: 56px 0 64px; display: block; }
+}
+.fs-hero-content { position: relative; z-index: 1; max-width: 768px; margin: 0 auto; width: 100%; }
 .fs-hero-eyebrow {
   display: inline-flex; align-items: center; gap: 8px;
   background: var(--fs-bg-2);

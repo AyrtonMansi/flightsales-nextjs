@@ -14,6 +14,7 @@ const DashboardPage = ({ user, setPage, signOut, savedIds, savedListings, onSave
   const [activeTab, setActiveTab] = useState('overview');
   const [editProfile, setEditProfile] = useState(false);
   const [selectedEnquiry, setSelectedEnquiry] = useState(null);
+  const [enquiryFilter, setEnquiryFilter] = useState('all');
   const [editingListing, setEditingListing] = useState(null);
   const [replyText, setReplyText] = useState('');
   const [savingProfile, setSavingProfile] = useState(false);
@@ -668,24 +669,18 @@ const DashboardPage = ({ user, setPage, signOut, savedIds, savedListings, onSave
                 <>
                   {!selectedEnquiry ? (
                     <>
-                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
+                      <div className="fs-enq-head">
                         <div>
                           <h3 style={{ fontSize: 20, fontWeight: 700, marginBottom: 4 }}>Enquiries</h3>
                           <p style={{ fontSize: 14, color: 'var(--fs-gray-500)' }}>Manage leads and respond to buyer questions</p>
                         </div>
-                        <div style={{ display: 'flex', gap: 8 }}>
+                        <div className="fs-enq-filters">
                           {['all', 'new', 'contacted', 'negotiating'].map(filter => (
-                            <button 
+                            <button
                               key={filter}
-                              style={{ 
-                                padding: "8px 16px", 
-                                background: "var(--fs-gray-100)", 
-                                border: "none",
-                                borderRadius: 6,
-                                fontSize: 13,
-                                cursor: "pointer",
-                                textTransform: 'capitalize'
-                              }}
+                              type="button"
+                              className={`fs-enq-filter${enquiryFilter === filter ? ' on' : ''}`}
+                              onClick={() => setEnquiryFilter(filter)}
                             >
                               {filter}
                             </button>
@@ -693,7 +688,11 @@ const DashboardPage = ({ user, setPage, signOut, savedIds, savedListings, onSave
                         </div>
                       </div>
 
-                      {myEnquiries.filter(e => e.status !== 'spam').length === 0 ? (
+                      {(() => {
+                        const visibleEnquiries = myEnquiries
+                          .filter(e => e.status !== 'spam')
+                          .filter(e => enquiryFilter === 'all' || (e.status || 'new') === enquiryFilter);
+                        return visibleEnquiries.length === 0 ? (
                         <div className="fs-detail-specs" style={{ padding: "64px", textAlign: "center", borderRadius: 12 }}>
                           <div style={{ fontSize: 56, marginBottom: 20, opacity: 0.5 }}>{Icons.mail}</div>
                           <h3 style={{ fontSize: 20, fontWeight: 700, marginBottom: 8 }}>No enquiries yet</h3>
@@ -703,7 +702,7 @@ const DashboardPage = ({ user, setPage, signOut, savedIds, savedListings, onSave
                         </div>
                       ) : (
                         <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-                          {myEnquiries.filter(e => e.status !== 'spam').map(enquiry => (
+                          {visibleEnquiries.map(enquiry => (
                             <div 
                               key={enquiry.id} 
                               className="fs-detail-specs" 
@@ -751,7 +750,8 @@ const DashboardPage = ({ user, setPage, signOut, savedIds, savedListings, onSave
                             </div>
                           ))}
                         </div>
-                      )}
+                        );
+                      })()}
                     </>
                   ) : (
                     /* Enquiry Detail View */

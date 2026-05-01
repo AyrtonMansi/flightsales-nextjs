@@ -125,13 +125,13 @@ const HomePage = ({ setPage, setSelectedListing, savedIds, onSave, setSearchFilt
 
             <div className="fs-search-fields-row" style={{ gridTemplateColumns: "1fr 1fr" }}>
               <div className="fs-search-field">
-                <span className="fs-search-label">Year</span>
+                <span className="fs-search-label" style={{ textAlign: 'center' }}>Year</span>
                 <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 6 }}>
                   <select
                     className="fs-search-select"
                     value={yearFrom}
                     onChange={e => setYearFrom(e.target.value)}
-                    style={{ flex: 1 }}
+                    style={{ flex: 1, textAlign: 'center', textAlignLast: 'center' }}
                   >
                     <option value="">From</option>
                     {Array.from({ length: 50 }, (_, i) => 2026 - i).map(y => (
@@ -143,7 +143,7 @@ const HomePage = ({ setPage, setSelectedListing, savedIds, onSave, setSearchFilt
                     className="fs-search-select"
                     value={yearTo}
                     onChange={e => setYearTo(e.target.value)}
-                    style={{ flex: 1 }}
+                    style={{ flex: 1, textAlign: 'center', textAlignLast: 'center' }}
                   >
                     <option value="">To</option>
                     {Array.from({ length: 50 }, (_, i) => 2026 - i).map(y => (
@@ -153,13 +153,13 @@ const HomePage = ({ setPage, setSelectedListing, savedIds, onSave, setSearchFilt
                 </div>
               </div>
               <div className="fs-search-field">
-                <span className="fs-search-label">Price</span>
+                <span className="fs-search-label" style={{ textAlign: 'center' }}>Price</span>
                 <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 6 }}>
                   <select
                     className="fs-search-select"
                     value={priceFrom}
                     onChange={e => setPriceFrom(e.target.value)}
-                    style={{ flex: 1 }}
+                    style={{ flex: 1, textAlign: 'center', textAlignLast: 'center' }}
                   >
                     <option value="">Min</option>
                     <option value="50000">$50k</option>
@@ -176,7 +176,7 @@ const HomePage = ({ setPage, setSelectedListing, savedIds, onSave, setSearchFilt
                     className="fs-search-select"
                     value={priceTo}
                     onChange={e => setPriceTo(e.target.value)}
-                    style={{ flex: 1 }}
+                    style={{ flex: 1, textAlign: 'center', textAlignLast: 'center' }}
                   >
                     <option value="">Max</option>
                     <option value="100000">$100k</option>
@@ -194,22 +194,6 @@ const HomePage = ({ setPage, setSelectedListing, savedIds, onSave, setSearchFilt
             <button className="fs-search-btn" onClick={handleManualSearch}>
               {Icons.search} Search Aircraft
             </button>
-          </div>
-
-          <div className="fs-categories">
-            {["Piston", "Turboprop", "Jet", "Helicopter", "LSA"].map(c => (
-              <button key={c} className="fs-cat-pill" onClick={() => {
-                const catMap = {
-                  "Piston": "Single Engine Piston",
-                  "Turboprop": "Turboprop",
-                  "Jet": "Light Jet",
-                  "Helicopter": "Helicopter",
-                  "LSA": "LSA"
-                };
-                if (setSearchFilters) setSearchFilters({ cat: catMap[c] });
-                setPage("buy");
-              }}>{c}</button>
-            ))}
           </div>
 
           {totalListings > 0 && (
