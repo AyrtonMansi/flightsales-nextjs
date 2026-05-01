@@ -713,7 +713,15 @@ html, body { overflow-x: hidden; max-width: 100%; }
   display: flex; align-items: center;
 }
 @media (max-width: 768px) {
-  .fs-hero { min-height: auto; padding: 56px 0 64px; display: block; }
+  .fs-hero {
+    min-height: auto;
+    /* Push the search lower in the hero (more padding-top) and add
+       extra breathing room before the Featured section starts (more
+       padding-bottom). User-requested "move the hero search down to
+       push the feature listings lower". */
+    padding: 96px 0 128px;
+    display: block;
+  }
 }
 .fs-hero-content { position: relative; z-index: 1; max-width: 768px; margin: 0 auto; width: 100%; }
 .fs-hero-eyebrow {
