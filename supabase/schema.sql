@@ -528,3 +528,33 @@ CREATE INDEX IF NOT EXISTS idx_reports_aircraft ON listing_reports(aircraft_id);
 ALTER TABLE aircraft DROP CONSTRAINT IF EXISTS aircraft_status_check;
 ALTER TABLE aircraft ADD CONSTRAINT aircraft_status_check
   CHECK (status IN ('pending', 'active', 'sold', 'rejected', 'archived'));
+
+-- ============================================
+-- SAVED SEARCHES + DIGEST
+-- ============================================
+-- Logged-in users can save filter sets and receive a daily/weekly
+-- email digest of new matching listings. The Vercel cron at
+-- /api/cron/saved-search-digest walks open searches, queries for
+-- matches since last_sent_at, and emails when there's anything new.
+CREATE TABLE IF NOT EXISTS saved_searches (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  name TEXT NOT NULL,
+  -- Encoded filter state (same shape as filterReducer's toQueryFilters
+  -- output). JSONB so we can grow the schema without re-migrating.
+  filters JSONB NOT NULL DEFAULT '{}',
+  -- Frequency: 'daily' | 'weekly' | 'instant' (instant = realtime alert
+  -- via notifications table; daily/weekly = email digest)
+  frequency TEXT NOT NULL DEFAULT 'daily'
+    CHECK (frequency IN ('daily', 'weekly', 'instant', 'off')),
+  last_sent_at TIMESTAMP WITH TIME ZONE,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+CREATE INDEX IF NOT EXISTS idx_saved_searches_user ON saved_searches(user_id, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_saved_searches_due ON saved_searches(frequency, last_sent_at NULLS FIRST)
+  WHERE frequency IN ('daily', 'weekly');
+
+-- Onboarding drip dedup column. Tracks the last drip step we sent to
+-- this user ('day2' | 'day7'). Cheap dedup — no separate event row
+-- needed at this volume.
+ALTER TABLE profiles ADD COLUMN IF NOT EXISTS onboarding_step_sent TEXT;

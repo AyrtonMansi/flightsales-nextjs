@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import { useAuth, useProfile, useSavedAircraft } from "../lib/hooks";
 import { onToast } from "../lib/toast";
+import { installErrorLogger } from "../lib/errorLogger";
 import { supabase } from "../lib/supabase";
 import { Icons } from "./Icons";
 import Nav from "./Nav";
@@ -13,6 +14,7 @@ import SellPage from "./pages/SellPage";
 import LoginPage from "./pages/LoginPage";
 import DashboardPage from "./pages/DashboardPage";
 import AdminPage from "./pages/AdminPage";
+import RefundsPage from "./pages/RefundsPage";
 import AboutPage from "./pages/AboutPage";
 import NewsPage from "./pages/NewsPage";
 import ContactPage from "./pages/ContactPage";
@@ -272,6 +274,10 @@ export default function FlightSalesApp({
   // user-facing messages without prop-drilling.
   useEffect(() => onToast(setToast), []);
 
+  // Install global error logger once on mount. No-op without
+  // NEXT_PUBLIC_SENTRY_DSN — falls back to console warnings in dev.
+  useEffect(() => { installErrorLogger(); }, []);
+
   const getBreadcrumbs = () => {
     const crumbs = { home: [], buy: [['home', 'Home'], ['buy', 'Buy Aircraft']], detail: [['home', 'Home'], ['buy', 'Buy Aircraft'], ['detail', 'Aircraft Details']], sell: [['home', 'Home'], ['sell', 'Sell Aircraft']], dealers: [['home', 'Home'], ['dealers', 'Dealers']], news: [['home', 'Home'], ['news', 'News']], about: [['home', 'Home'], ['about', 'About Us']], contact: [['home', 'Home'], ['contact', 'Contact']], login: [['home', 'Home'], ['login', 'Sign In']], dashboard: [['home', 'Home'], ['dashboard', 'Dashboard']], admin: [['home', 'Home'], ['admin', 'Admin']] };
     return crumbs[page] || [];
@@ -308,6 +314,7 @@ export default function FlightSalesApp({
       {page === "news" && <NewsPage />}
       {page === "about" && <AboutPage />}
       {page === "contact" && <ContactPage />}
+      {page === "refunds" && <RefundsPage />}
       {page === "login" && <LoginPage setPage={setPageWrap} signIn={signIn} signUp={signUp} signInWithGoogle={signInWithGoogle} resetPassword={resetPassword} loginDemo={loginDemo} />}
       {page === "dashboard" && effectiveUser && effectiveUser.role !== 'admin' && <DashboardPage user={effectiveUser} setPage={setPageWrap} signOut={signOut} savedIds={savedIds} savedListings={savedListings} onSave={onSave} onSelectListing={setSelectedListing} />}
       {page === "admin" && effectiveUser?.role === 'admin' && <AdminPage user={effectiveUser} setPage={setPageWrap} signOut={signOut} />}

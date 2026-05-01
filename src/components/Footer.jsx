@@ -44,6 +44,7 @@ const Footer = () => (
           <Link href="/news" className="fs-footer-link">News</Link>
           <Link href="/terms" className="fs-footer-link">Terms of Service</Link>
           <Link href="/privacy" className="fs-footer-link">Privacy Policy</Link>
+          <Link href="/refunds" className="fs-footer-link">Refunds & Cancellations</Link>
         </div>
       </div>
       <div className="fs-footer-bottom">

@@ -589,6 +589,34 @@ export function useSavedAircraft(userId) {
   return { savedIds, savedListings, toggleSave };
 }
 
+// ─── Admin audit log (read-only) ─────────────────────────────────────────────
+
+export function useAdminAudit({ limit = 200 } = {}) {
+  const [rows, setRows] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  const fetchAll = useCallback(async () => {
+    setLoading(true);
+    try {
+      const { data } = await supabase
+        .from('admin_audit')
+        .select('*')
+        .order('created_at', { ascending: false })
+        .limit(limit);
+      setRows(data || []);
+    } catch {
+      // table may not exist on the target Supabase project until the
+      // user runs the schema migration — render as empty.
+      setRows([]);
+    } finally {
+      setLoading(false);
+    }
+  }, [limit]);
+
+  useEffect(() => { fetchAll(); }, [fetchAll]);
+  return { rows, loading, refetch: fetchAll };
+}
+
 // ─── Notifications ───────────────────────────────────────────────────────────
 
 // Per-user notification feed. Polls every 30s while the tab is visible
@@ -619,10 +647,39 @@ export function useNotifications(userId) {
 
   useEffect(() => { fetchAll(); }, [fetchAll]);
 
+  // Realtime subscription — push insert/update events into local state
+  // so the bell updates the moment a notification lands instead of
+  // waiting up to 30s for the polling refetch. Falls back to the
+  // 30s poll if Realtime isn't enabled on the Supabase project.
+  useEffect(() => {
+    if (!userId) return undefined;
+    let channel;
+    try {
+      channel = supabase
+        .channel(`notifications:${userId}`)
+        .on(
+          'postgres_changes',
+          { event: 'INSERT', schema: 'public', table: 'notifications', filter: `user_id=eq.${userId}` },
+          (payload) => { setItems(prev => [payload.new, ...prev].slice(0, 50)); },
+        )
+        .on(
+          'postgres_changes',
+          { event: 'UPDATE', schema: 'public', table: 'notifications', filter: `user_id=eq.${userId}` },
+          (payload) => { setItems(prev => prev.map(n => n.id === payload.new.id ? payload.new : n)); },
+        )
+        .subscribe();
+    } catch {
+      // Realtime not available — fall through to polling below.
+    }
+    return () => { if (channel) supabase.removeChannel(channel); };
+  }, [userId]);
+
+  // Polling fallback — kept on a longer interval (60s) when Realtime
+  // is connected. Catches the rare case of a missed Realtime event.
   useEffect(() => {
     if (!userId) return undefined;
     const tick = () => { if (document.visibilityState === 'visible') fetchAll(); };
-    const id = setInterval(tick, 30000);
+    const id = setInterval(tick, 60000);
     return () => clearInterval(id);
   }, [userId, fetchAll]);
 

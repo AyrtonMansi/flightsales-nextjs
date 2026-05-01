@@ -4,6 +4,7 @@ import { Icons } from '../Icons';
 import { createListing, uploadImage } from '../../lib/hooks';
 import { MANUFACTURERS, CATEGORIES, STATES, CONDITIONS } from '../../lib/constants';
 import EmailVerifyGate, { isVerified } from '../EmailVerifyGate';
+import PhotoReorder from '../PhotoReorder';
 
 const SellPage = ({ user, setPage }) => {
   // Hooks first — must run on every render in the same order regardless of
@@ -567,14 +568,15 @@ const SellPage = ({ user, setPage }) => {
                         <p style={{ fontWeight: 600, fontSize: 14, marginBottom: 4 }}>Upload Photos</p>
                         <p style={{ fontSize: 12, color: "var(--fs-gray-400)" }}>Minimum 4 photos recommended. Include exterior, cockpit, panel, and engine bay.</p>
                         {uploadedImages.length > 0 && (
-                          <div style={{ display: "flex", flexWrap: "wrap", gap: 8, justifyContent: "center", margin: "12px 0" }}>
-                            {uploadedImages.map((url, i) => (
-                              <div key={i} style={{ position: "relative" }}>
-                                <img src={url} alt="" style={{ width: 72, height: 72, objectFit: "cover", borderRadius: "var(--fs-radius)", border: "2px solid var(--fs-green)" }} />
-                                <button onClick={() => setUploadedImages(prev => prev.filter((_, j) => j !== i))}
-                                  style={{ position: "absolute", top: -6, right: -6, width: 18, height: 18, borderRadius: "50%", background: "#ef4444", color: "white", border: "none", cursor: "pointer", fontSize: 10, display: "flex", alignItems: "center", justifyContent: "center" }}>✕</button>
-                              </div>
-                            ))}
+                          <div style={{ margin: "12px 0" }}>
+                            <PhotoReorder
+                              urls={uploadedImages}
+                              onChange={setUploadedImages}
+                              onRemove={(url) => setUploadedImages(prev => prev.filter(u => u !== url))}
+                            />
+                            <p style={{ fontSize: 11, color: 'var(--fs-ink-3)', marginTop: 8, textAlign: 'center' }}>
+                              First photo is your hero — drag to reorder.
+                            </p>
                           </div>
                         )}
                         <button className="fs-detail-cta fs-detail-cta-secondary" style={{ maxWidth: 200, margin: "16px auto 0" }} onClick={() => fileInputRef.current?.click()} disabled={uploadingImages}>

@@ -35,6 +35,17 @@ export default function RootLayout({ children }) {
           rel="stylesheet"
           href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"
         />
+        {/* Plausible analytics — privacy-friendly, GDPR-compliant, no
+            cookies, free for low volume. Soft-disabled when the env
+            var is unset (development). Set NEXT_PUBLIC_PLAUSIBLE_DOMAIN
+            in Vercel to enable. */}
+        {process.env.NEXT_PUBLIC_PLAUSIBLE_DOMAIN && (
+          <script
+            defer
+            data-domain={process.env.NEXT_PUBLIC_PLAUSIBLE_DOMAIN}
+            src="https://plausible.io/js/script.js"
+          />
+        )}
       </head>
       <body>{children}</body>
     </html>
