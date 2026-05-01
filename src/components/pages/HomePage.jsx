@@ -4,13 +4,9 @@ import Link from 'next/link';
 import { Icons } from '../Icons';
 import ListingCard from '../ListingCard';
 import HomeTypeRow from '../HomeTypeRow';
-import HeroSearchClassic from '../hero/HeroSearchClassic';
 import HeroSearchPro from '../hero/HeroSearchPro';
-import HeroVariantToggle from '../hero/HeroVariantToggle';
-import { useHeroVariant } from '../hero/useHeroVariant';
 import { useAircraft, useFeaturedAircraft, useLatestAircraft, useDealers, useNews } from '../../lib/hooks';
 import { DEALERS, NEWS_ARTICLES } from '../../lib/constants';
-import { useRotatingPlaceholder, AI_SEARCH_EXAMPLES } from '../../lib/useRotatingPlaceholder';
 import { parseAiQuery } from '../../lib/parseAiQuery';
 
 const HomePage = ({ setPage, setSelectedListing, savedIds, onSave, setSearchFilters, initialHomeData }) => {
@@ -22,8 +18,6 @@ const HomePage = ({ setPage, setSelectedListing, savedIds, onSave, setSearchFilt
   const [priceFrom, setPriceFrom] = useState("");
   const [priceTo, setPriceTo] = useState("");
   const [aiQuery, setAiQuery] = useState("");
-  const rotatingPlaceholder = useRotatingPlaceholder(AI_SEARCH_EXAMPLES);
-  const [heroVariant, setHeroVariant] = useHeroVariant();
 
   // Server-fetched home data when present (eliminates the skeleton flash on
   // first paint and makes the content crawlable without JS execution).
@@ -68,8 +62,7 @@ const HomePage = ({ setPage, setSelectedListing, savedIds, onSave, setSearchFilt
   };
 
   // Bundle every search-card input + handler into one model object so
-  // Classic and Pro can share an identical signature. Keeps the toggle
-  // swap a one-line change with no per-variant prop drilling.
+  // HeroSearchPro stays a thin presentation layer over real handlers.
   const searchModel = {
     searchCat, setSearchCat,
     searchMake, setSearchMake,
@@ -77,7 +70,6 @@ const HomePage = ({ setPage, setSelectedListing, savedIds, onSave, setSearchFilt
     yearFrom, setYearFrom, yearTo, setYearTo,
     priceFrom, setPriceFrom, priceTo, setPriceTo,
     aiQuery, setAiQuery,
-    rotatingPlaceholder,
     onAiSearch: handleAiSearch,
     onManualSearch: handleManualSearch,
   };
@@ -92,14 +84,7 @@ const HomePage = ({ setPage, setSelectedListing, savedIds, onSave, setSearchFilt
             Australia's marketplace for aircraft. Search thousands of listings from verified dealers and private sellers.
           </p>
 
-          {/* Hero search card — two designs run side-by-side via the toggle
-              pill below. Classic = original. Pro = 2026 redraw. */}
-          <HeroVariantToggle variant={heroVariant} setVariant={setHeroVariant} />
-          {heroVariant === 'pro' ? (
-            <HeroSearchPro model={searchModel} count={totalListings} />
-          ) : (
-            <HeroSearchClassic model={searchModel} />
-          )}
+          <HeroSearchPro model={searchModel} count={totalListings} />
 
           {/* Type quick-pick — clicking an icon pre-fills the Type
               dropdown above. Stays within the same hero so the user

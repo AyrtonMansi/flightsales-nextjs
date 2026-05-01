@@ -4,20 +4,47 @@ import { CATEGORIES, MANUFACTURERS, STATES } from '../../lib/constants';
 
 // HeroSearchPro — 2026 redraw of the hero search card.
 //
-// Visual moves vs Classic:
+// Visual moves vs the original:
 //   - One fused glass surface instead of seven floating cards.
 //   - Hairline dividers (1px @ 6% black) between fields, no gaps.
 //   - Stripe/Linear/Apple-Wallet typography: 10px uppercase letter-spaced
 //     labels, 15px semibold values, tabular numerals on prices/years.
 //   - AI input gets a faint violet→indigo wash + ⌘K kbd hint, signalling
 //     "smart" without being loud.
-//   - CTA reports a live count: "Search 1,247 aircraft →" instead of the
-//     mute "Search Aircraft". Count updates as filters change.
-//   - Year and Price become free-typed numeric inputs (faster than a
-//     two-deep dropdown on mobile, no preset bands).
-//
-// Behaviour matches Classic exactly — same model prop, same handlers, so
-// the toggle in HeroVariantToggle.jsx flips them with no other changes.
+//   - CTA reports a live count: "Search 1,247 aircraft →".
+//   - Year and Price are native dropdowns (selects) sitting transparent
+//     over the rendered value — keyboard / iOS picker behave normally,
+//     visual chrome stays consistent with the other fields.
+
+const YEAR_OPTIONS = Array.from({ length: 50 }, (_, i) => {
+  const y = String(2026 - i);
+  return { value: y, label: y };
+});
+
+const PRICE_FROM_OPTIONS = [
+  { value: '50000',   label: '$50k' },
+  { value: '100000',  label: '$100k' },
+  { value: '200000',  label: '$200k' },
+  { value: '300000',  label: '$300k' },
+  { value: '500000',  label: '$500k' },
+  { value: '1000000', label: '$1M' },
+  { value: '2000000', label: '$2M' },
+  { value: '5000000', label: '$5M' },
+];
+
+const PRICE_TO_OPTIONS = [
+  { value: '100000',   label: '$100k' },
+  { value: '200000',   label: '$200k' },
+  { value: '300000',   label: '$300k' },
+  { value: '500000',   label: '$500k' },
+  { value: '1000000',  label: '$1M' },
+  { value: '2000000',  label: '$2M' },
+  { value: '5000000',  label: '$5M' },
+  { value: '10000000', label: '$10M+' },
+];
+
+const labelFor = (opts, value, fallback) =>
+  opts.find((o) => o.value === value)?.label ?? fallback;
 
 export default function HeroSearchPro({ model, count }) {
   const {
@@ -27,7 +54,6 @@ export default function HeroSearchPro({ model, count }) {
     yearFrom, setYearFrom, yearTo, setYearTo,
     priceFrom, setPriceFrom, priceTo, setPriceTo,
     aiQuery, setAiQuery,
-    rotatingPlaceholder,
     onAiSearch,
     onManualSearch,
   } = model;
@@ -58,7 +84,7 @@ export default function HeroSearchPro({ model, count }) {
         </span>
         <input
           className="fs-h-ai-input"
-          placeholder={rotatingPlaceholder || 'Try: Cessna 172 IFR under 200k near Sydney'}
+          placeholder="Try our AI Quick Search"
           value={aiQuery}
           onChange={(e) => setAiQuery(e.target.value)}
           onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); onAiSearch(e.target.value); } }}
@@ -74,46 +100,48 @@ export default function HeroSearchPro({ model, count }) {
           value={searchCat}
           onChange={setSearchCat}
           placeholder="All types"
-          options={CATEGORIES}
+          options={CATEGORIES.map((c) => ({ value: c, label: c }))}
         />
         <SelectField
           label="Make"
           value={searchMake}
           onChange={setSearchMake}
           placeholder="All makes"
-          options={MANUFACTURERS}
+          options={MANUFACTURERS.map((m) => ({ value: m, label: m }))}
         />
         <SelectField
           label="Location"
           value={searchState}
           onChange={setSearchState}
           placeholder="Anywhere in Australia"
-          options={STATES}
+          options={STATES.map((s) => ({ value: s, label: s }))}
           icon={Icons.location}
         />
       </div>
 
-      {/* Bottom row: Year range · Price range */}
+      {/* Bottom row: Year range · Price range — both as native selects */}
       <div className="fs-h-row fs-h-row-2">
-        <RangeField
+        <SelectRangeField
           label="Year"
-          minPlaceholder="From"
-          maxPlaceholder="To"
           minValue={yearFrom}
           maxValue={yearTo}
           onMinChange={setYearFrom}
           onMaxChange={setYearTo}
-          minLen={4}
+          minPlaceholder="From"
+          maxPlaceholder="To"
+          minOptions={YEAR_OPTIONS}
+          maxOptions={YEAR_OPTIONS}
         />
-        <RangeField
+        <SelectRangeField
           label="Price"
-          prefix="$"
-          minPlaceholder="Min"
-          maxPlaceholder="Max"
           minValue={priceFrom}
           maxValue={priceTo}
           onMinChange={setPriceFrom}
           onMaxChange={setPriceTo}
+          minPlaceholder="Min"
+          maxPlaceholder="Max"
+          minOptions={PRICE_FROM_OPTIONS}
+          maxOptions={PRICE_TO_OPTIONS}
         />
       </div>
 
@@ -131,9 +159,10 @@ export default function HeroSearchPro({ model, count }) {
   );
 }
 
-// Field with a borderless native <select> styled to match the card. The
-// select sits transparent over the rendered label/value so the keyboard,
-// screen-reader, and mobile picker behaviour is the platform default.
+// Field wraps a borderless native <select>. The select sits transparent
+// over the rendered label/value so the keyboard, screen-reader, and
+// mobile picker behaviour is the platform default while the visual
+// chrome stays consistent with the rest of the card.
 function SelectField({ label, value, onChange, placeholder, options, icon }) {
   const isEmpty = !value;
   return (
@@ -151,45 +180,60 @@ function SelectField({ label, value, onChange, placeholder, options, icon }) {
       >
         <option value="">{placeholder}</option>
         {options.map((opt) => (
-          <option key={opt} value={opt}>{opt}</option>
+          <option key={opt.value} value={opt.value}>{opt.label}</option>
         ))}
       </select>
     </label>
   );
 }
 
-function RangeField({
-  label, prefix = '',
-  minPlaceholder, maxPlaceholder,
+// Range field with two native selects side-by-side under one label.
+// Each cell is positioned so the transparent <select> only covers its own
+// half — tapping the From cell opens the From picker, tapping To opens To.
+function SelectRangeField({
+  label,
   minValue, maxValue,
   onMinChange, onMaxChange,
-  minLen,
+  minPlaceholder, maxPlaceholder,
+  minOptions, maxOptions,
 }) {
-  const sanitize = (v) => {
-    const stripped = v.replace(/[^0-9]/g, '');
-    return minLen ? stripped.slice(0, minLen) : stripped;
-  };
   return (
     <div className="fs-h-field fs-h-field-range">
       <span className="fs-h-field-label">{label}</span>
       <div className="fs-h-range">
-        <input
-          className="fs-h-range-input"
-          inputMode="numeric"
-          placeholder={prefix + minPlaceholder}
-          value={minValue}
-          onChange={(e) => onMinChange(sanitize(e.target.value))}
-          aria-label={`${label} from`}
-        />
+        <span className="fs-h-range-cell">
+          <span className={`fs-h-range-text${minValue ? '' : ' muted'}`}>
+            {labelFor(minOptions, minValue, minPlaceholder)}
+          </span>
+          <select
+            className="fs-h-field-native"
+            value={minValue}
+            onChange={(e) => onMinChange(e.target.value)}
+            aria-label={`${label} from`}
+          >
+            <option value="">{minPlaceholder}</option>
+            {minOptions.map((o) => (
+              <option key={o.value} value={o.value}>{o.label}</option>
+            ))}
+          </select>
+        </span>
         <span className="fs-h-range-sep" aria-hidden="true">—</span>
-        <input
-          className="fs-h-range-input"
-          inputMode="numeric"
-          placeholder={prefix + maxPlaceholder}
-          value={maxValue}
-          onChange={(e) => onMaxChange(sanitize(e.target.value))}
-          aria-label={`${label} to`}
-        />
+        <span className="fs-h-range-cell">
+          <span className={`fs-h-range-text${maxValue ? '' : ' muted'}`}>
+            {labelFor(maxOptions, maxValue, maxPlaceholder)}
+          </span>
+          <select
+            className="fs-h-field-native"
+            value={maxValue}
+            onChange={(e) => onMaxChange(e.target.value)}
+            aria-label={`${label} to`}
+          >
+            <option value="">{maxPlaceholder}</option>
+            {maxOptions.map((o) => (
+              <option key={o.value} value={o.value}>{o.label}</option>
+            ))}
+          </select>
+        </span>
       </div>
     </div>
   );

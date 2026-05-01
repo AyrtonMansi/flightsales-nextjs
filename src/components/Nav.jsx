@@ -73,12 +73,13 @@ const Nav = ({ page, setPage, setMobileOpen, mobileOpen, user, signOut, setDashb
       <nav className="fs-nav">
         <div className="fs-container fs-nav-inner">
           <div className="fs-nav-logo" onClick={go('home')}>
-            {/* Horizontal jet silhouette — paper-airplane chevron
-                pointing right. Single solid-black path, currentColor
-                so it inherits the wordmark's ink. Reads instantly as
-                "flight / aircraft" without literal aircraft detail. */}
-            <svg className="fs-nav-logo-mark" width="24" height="16" viewBox="0 0 24 16" fill="currentColor" aria-hidden="true">
-              <path d="M22.6 8 1.6 .8a.6.6 0 0 0-.78.74L2.9 7.4a.6.6 0 0 1 0 .4 .6.6 0 0 0 0 .4L.82 14.46a.6.6 0 0 0 .78.74L22.6 8a.6.6 0 0 0 0-1.16Z" />
+            {/* Side-view business-jet silhouette — pointed nose right,
+                long fuselage, swept wing dropping below mid-body, T-tail
+                + rear engine pod at the back. Single solid path, fills
+                with currentColor so it inherits the wordmark's ink.
+                Reads as "business jet" without literal photo detail. */}
+            <svg className="fs-nav-logo-mark" width="30" height="14" viewBox="0 0 32 14" fill="currentColor" aria-hidden="true">
+              <path d="M31.4 6.6c-.3-.5-1.1-.8-2.4-.9l-9.7-.4-5.7-3.5h-1.7l1.6 3.4-4.6-.1-3-2.2H4.4l1.6 2.4-4.4.6c-.5.1-.9.4-.9.8v.6c0 .4.4.7.9.8l4.4.6-1.6 2.4h1.5l3-2.2 4.6-.1-1.6 3.4h1.7l5.7-3.5 9.7-.4c1.3-.1 2.1-.4 2.4-.9z" />
             </svg>
             <span className="fs-nav-logo-text">
               FlightSales<span className="fs-nav-logo-tld">.com.au</span>
