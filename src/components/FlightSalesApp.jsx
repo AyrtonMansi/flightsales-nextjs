@@ -101,6 +101,11 @@ export default function FlightSalesApp({
   initialHomeData = null,
 } = {}) {
   const [page, setPage] = useState(initialPage);
+  // Which dashboard tab to land on. Lifted up from DashboardPage so the
+  // Nav dropdown / mobile drawer can deep-link to a specific tab
+  // (Saved → 'saved', My listings → 'listings') rather than always
+  // dumping the user on Overview.
+  const [dashboardTab, setDashboardTab] = useState('overview');
   // Seed selected entities from server-side props when the route provides them
   // (e.g. /listings/[id] passes the full listing). Falls back to a client fetch
   // when only an id was given.
@@ -303,7 +308,7 @@ export default function FlightSalesApp({
 
   return (
     <>
-      <Nav page={page} setPage={setPageWrap} setMobileOpen={setMobileOpen} mobileOpen={mobileOpen} user={user} signOut={signOut} />
+      <Nav page={page} setPage={setPageWrap} setMobileOpen={setMobileOpen} mobileOpen={mobileOpen} user={user} signOut={signOut} setDashboardTab={setDashboardTab} />
       <MobileSubBar setPage={setPageWrap} />
       {page !== 'home' && page !== 'detail' && <Breadcrumbs />}
 
@@ -318,7 +323,7 @@ export default function FlightSalesApp({
       {page === "contact" && <ContactPage />}
       {page === "refunds" && <RefundsPage />}
       {page === "login" && <LoginPage setPage={setPageWrap} signIn={signIn} signUp={signUp} signInWithGoogle={signInWithGoogle} resetPassword={resetPassword} loginDemo={loginDemo} />}
-      {page === "dashboard" && effectiveUser && effectiveUser.role !== 'admin' && <DashboardPage user={effectiveUser} setPage={setPageWrap} signOut={signOut} savedIds={savedIds} savedListings={savedListings} onSave={onSave} onSelectListing={setSelectedListing} />}
+      {page === "dashboard" && effectiveUser && effectiveUser.role !== 'admin' && <DashboardPage user={effectiveUser} setPage={setPageWrap} signOut={signOut} savedIds={savedIds} savedListings={savedListings} onSave={onSave} onSelectListing={setSelectedListing} activeTab={dashboardTab} setActiveTab={setDashboardTab} />}
       {page === "admin" && effectiveUser?.role === 'admin' && <AdminPage user={effectiveUser} setPage={setPageWrap} signOut={signOut} />}
 
       <Footer />

@@ -6,12 +6,17 @@ import { useMyListings, useMyEnquiries, useProfile } from '../../lib/hooks';
 import { showToast } from '../../lib/toast';
 import ListingEditModal from '../ListingEditModal';
 
-const DashboardPage = ({ user, setPage, signOut, savedIds, savedListings, onSave, onSelectListing }) => {
+const DashboardPage = ({ user, setPage, signOut, savedIds, savedListings, onSave, onSelectListing, activeTab: activeTabProp, setActiveTab: setActiveTabProp }) => {
   // Note: caller (App) gates rendering so user is always defined and not an admin here.
   const isDealer = user?.role === 'dealer';
   const isAdmin = user?.role === 'admin';
 
-  const [activeTab, setActiveTab] = useState('overview');
+  // Tab state is owned by FlightSalesApp when the parent passes it down so
+  // Nav can deep-link to a specific tab (Saved / My listings / etc.). Falls
+  // back to internal state if mounted standalone (tests, future routes).
+  const [internalTab, setInternalTab] = useState('overview');
+  const activeTab = activeTabProp ?? internalTab;
+  const setActiveTab = setActiveTabProp ?? setInternalTab;
   const [editProfile, setEditProfile] = useState(false);
   const [selectedEnquiry, setSelectedEnquiry] = useState(null);
   const [enquiryFilter, setEnquiryFilter] = useState('all');

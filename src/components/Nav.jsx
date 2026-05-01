@@ -16,9 +16,19 @@ import NotificationBell from './NotificationBell';
 //   - Browse / Account section dividers
 //   - Sign-out, Dashboard, Saved, My Listings reachable from the drawer
 //     (used to be desktop-dropdown only — invisible on mobile)
-const Nav = ({ page, setPage, setMobileOpen, mobileOpen, user, signOut }) => {
+const Nav = ({ page, setPage, setMobileOpen, mobileOpen, user, signOut, setDashboardTab }) => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
+
+  // Jump to /dashboard but pre-select a specific tab so Saved / My listings /
+  // Dashboard each land where the user expects rather than always dumping
+  // them on Overview.
+  const goDashboard = (tab) => () => {
+    if (setDashboardTab) setDashboardTab(tab);
+    setPage('dashboard');
+    setDropdownOpen(false);
+    setMobileOpen(false);
+  };
 
   // Desktop avatar dropdown — close on click-outside.
   useEffect(() => {
@@ -106,9 +116,9 @@ const Nav = ({ page, setPage, setMobileOpen, mobileOpen, user, signOut }) => {
                   </button>
                   {dropdownOpen && (
                     <div className="fs-nav-dropdown">
-                      <button onClick={() => { setPage('dashboard'); setDropdownOpen(false); }}>Dashboard</button>
-                      <button onClick={() => { setPage('dashboard'); setDropdownOpen(false); }}>Saved aircraft</button>
-                      <button onClick={() => { setPage('dashboard'); setDropdownOpen(false); }}>My listings</button>
+                      <button onClick={goDashboard('overview')}>Dashboard</button>
+                      <button onClick={goDashboard('saved')}>Saved aircraft</button>
+                      <button onClick={goDashboard('listings')}>My listings</button>
                       <div className="fs-nav-dropdown-sep" />
                       <button className="danger" onClick={handleSignOut}>Sign out</button>
                     </div>
@@ -195,15 +205,15 @@ const Nav = ({ page, setPage, setMobileOpen, mobileOpen, user, signOut }) => {
         {user && (
           <div className="fs-mnav-section">
             <p className="fs-mnav-section-label">Account</p>
-            <button className="fs-mnav-item" onClick={go('dashboard')}>
+            <button className="fs-mnav-item" onClick={goDashboard('overview')}>
               <span className="fs-mnav-item-icon" aria-hidden="true">{Icons.home}</span>
               <span className="fs-mnav-item-label">Dashboard</span>
             </button>
-            <button className="fs-mnav-item" onClick={go('dashboard')}>
+            <button className="fs-mnav-item" onClick={goDashboard('saved')}>
               <span className="fs-mnav-item-icon" aria-hidden="true">{Icons.heart}</span>
               <span className="fs-mnav-item-label">Saved aircraft</span>
             </button>
-            <button className="fs-mnav-item" onClick={go('dashboard')}>
+            <button className="fs-mnav-item" onClick={goDashboard('listings')}>
               <span className="fs-mnav-item-icon" aria-hidden="true">{Icons.plane}</span>
               <span className="fs-mnav-item-label">My listings</span>
             </button>
