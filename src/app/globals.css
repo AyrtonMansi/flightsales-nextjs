@@ -859,11 +859,11 @@ html, body { overflow-x: hidden; max-width: 100%; }
 @media (max-width: 768px) {
   .fs-hero {
     min-height: auto;
-    /* User-tuned spacing: keep 140 padding-top so the search isn't
-       crammed against the breadcrumb, but pull padding-bottom back
-       so Featured aircraft lands at the top of the second scroll
-       instead of half a viewport below it. */
-    padding: 140px 0 80px;
+    /* Pulled the top padding down so the h1 + search card sit higher in
+       the viewport — search now lands near the upper third instead of
+       half-screen down. Bottom padding kept at 80 so Featured aircraft
+       still gets breathing room before it. */
+    padding: 88px 0 80px;
     display: block;
   }
 }
