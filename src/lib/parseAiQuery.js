@@ -35,7 +35,7 @@ const MAKE_PATTERNS = [
 
 // Word matches an explicit category keyword (vs. an inferred one from a model
 // name). Used to decide whether to fall back to model-based inference.
-const EXPLICIT_CATEGORY = /\b(single.engine|singleengine|single-engine|sep|multi.engine|multiengine|multi-engine|twin.engine|twin-engine|twin|turboprop|light.jet|midsize.jet|heavy.jet|business.jet|jet|helicopter|heli|chopper|rotor|lsa|light.sport|sport.aircraft|ultralight|trainer|glider|sailplane|gyrocopter|gyro|autogyro)\b/;
+const EXPLICIT_CATEGORY = /\b(single.engine|singleengine|single-engine|sep|multi.engine|multiengine|multi-engine|twin.engine|twin-engine|twin|turboprop|light.jet|midsize.jet|heavy.jet|business.jet|jet|helicopter|heli|chopper|rotor|lsa|light.sport|sport.aircraft|ultralight|trainer|glider|sailplane|gyrocopter|gyro|autogyro|drone|drones|quadcopter|uav|evtol|e-vtol|air.taxi|air-taxi)\b/;
 
 const MODEL_TO_CATEGORY = [
   [/\b(172|152|182|206|cherokee|warrior|archer|sr20|sr22|da40|bonanza|mooney|tsi|sling|jabiru|cirrus)\b/, 'Single Engine Piston'],
@@ -59,6 +59,7 @@ function detectCategory(q) {
   if (/\b(lsa|light.sport|sport.aircraft|ultralight|trainer)\b/.test(q)) return 'LSA';
   if (/\b(glider|sailplane)\b/.test(q)) return 'Glider';
   if (/\b(gyrocopter|gyro|autogyro)\b/.test(q)) return 'Gyrocopter';
+  if (/\b(drone|drones|quadcopter|uav|evtol|e-vtol|air.taxi|air-taxi)\b/.test(q)) return 'Drone & eVTOL';
   // No explicit category keyword — infer from model name. "Cessna 172" → SEP.
   if (!EXPLICIT_CATEGORY.test(q)) {
     for (const [pattern, value] of MODEL_TO_CATEGORY) {

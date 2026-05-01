@@ -39,6 +39,13 @@ test.describe('parseAiQuery', () => {
     expect(parseAiQuery('LSA').cat).toBe('LSA');
   });
 
+  test('detects drone / eVTOL / air-taxi terms', () => {
+    expect(parseAiQuery('drone').cat).toBe('Drone & eVTOL');
+    expect(parseAiQuery('quadcopter for survey').cat).toBe('Drone & eVTOL');
+    expect(parseAiQuery('eVTOL with range over 100nm').cat).toBe('Drone & eVTOL');
+    expect(parseAiQuery('air taxi').cat).toBe('Drone & eVTOL');
+  });
+
   test('infers category from model when no explicit keyword', () => {
     // "Cessna 172" alone → SEP. No explicit category word in the query.
     expect(parseAiQuery('cessna 172').cat).toBe('Single Engine Piston');

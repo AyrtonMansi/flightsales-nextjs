@@ -98,6 +98,27 @@ const TYPES = [
       </svg>
     ),
   },
+  {
+    // Quadcopter from above — most recognisable drone silhouette.
+    // Covers commercial drones AND the manned-drone / eVTOL / air-taxi
+    // category (Joby, Lilium, Wisk). One umbrella for now.
+    value: 'Drone & eVTOL',
+    label: 'Drone',
+    icon: (
+      <svg viewBox="0 0 40 24" fill="currentColor" aria-hidden="true">
+        {/* arms (+ shape) */}
+        <rect x="6" y="11" width="28" height="2" rx="1" />
+        <rect x="19" y="3" width="2" height="18" rx="1" />
+        {/* center body */}
+        <rect x="15" y="9" width="10" height="6" rx="1.5" />
+        {/* 4 rotors */}
+        <circle cx="6" cy="12" r="3" />
+        <circle cx="34" cy="12" r="3" />
+        <circle cx="20" cy="3" r="2.5" />
+        <circle cx="20" cy="21" r="2.5" />
+      </svg>
+    ),
+  },
 ];
 
 export default function HomeTypeRow({ activeType, onPick }) {
