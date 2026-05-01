@@ -281,6 +281,17 @@ a { color: inherit; text-decoration: none; }
   font-family: var(--fs-font);
   font-size: 20px; color: var(--fs-ink); letter-spacing: -0.04em; font-weight: 700;
 }
+/* .com.au sits inside the wordmark at lighter weight + subdued ink so
+   the eye reads "FlightSales" first and ".com.au" as the localised
+   TLD. Same approach Stripe / Plaid / Linear use for their domain
+   appendages. The .com version (different domain TBD) just swaps
+   the suffix string in JSX. */
+.fs-nav-logo-tld {
+  font-weight: 500;
+  color: var(--fs-ink-3);
+  letter-spacing: -0.02em;
+  margin-left: 1px;
+}
 .fs-nav-links { display: flex; gap: 4px; align-items: center; }
 .fs-nav-link {
   color: var(--fs-ink); font-size: 15px; font-weight: 500;

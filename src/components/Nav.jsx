@@ -63,15 +63,16 @@ const Nav = ({ page, setPage, setMobileOpen, mobileOpen, user, signOut }) => {
       <nav className="fs-nav">
         <div className="fs-container fs-nav-inner">
           <div className="fs-nav-logo" onClick={go('home')}>
-            {/* Inline jet glyph — 16px, currentColor so it stays in
-                visual sync with the wordmark. Minimal silhouette: nose,
-                wings, tail. Not the iconography library's plane (that
-                one's a 3/4 view) — this is the simpler side-view that
-                pairs cleanly with type. */}
-            <svg className="fs-nav-logo-mark" width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-              <path d="M21 16v-2l-8-5V3.5C13 2.7 12.3 2 11.5 2S10 2.7 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1L15 22v-1.5L13 19v-5.5l8 2.5z" />
+            {/* Horizontal jet silhouette — paper-airplane chevron
+                pointing right. Single solid-black path, currentColor
+                so it inherits the wordmark's ink. Reads instantly as
+                "flight / aircraft" without literal aircraft detail. */}
+            <svg className="fs-nav-logo-mark" width="24" height="16" viewBox="0 0 24 16" fill="currentColor" aria-hidden="true">
+              <path d="M22.6 8 1.6 .8a.6.6 0 0 0-.78.74L2.9 7.4a.6.6 0 0 1 0 .4 .6.6 0 0 0 0 .4L.82 14.46a.6.6 0 0 0 .78.74L22.6 8a.6.6 0 0 0 0-1.16Z" />
             </svg>
-            <span className="fs-nav-logo-text">FlightSales</span>
+            <span className="fs-nav-logo-text">
+              FlightSales<span className="fs-nav-logo-tld">.com.au</span>
+            </span>
           </div>
 
           {/* Desktop nav links — hidden under 768px via CSS */}
