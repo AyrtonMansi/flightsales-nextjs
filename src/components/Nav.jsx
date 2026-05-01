@@ -124,20 +124,6 @@ const Nav = ({ page, setPage, setMobileOpen, mobileOpen, user, signOut }) => {
             )}
           </div>
 
-          {/* Mobile-only "Sell aircraft" text button. Mirrors the
-              desktop "List Aircraft" CTA but as a minimal text link
-              for the mobile bar — keeps the primary marketplace
-              action visible without forcing the user into the burger
-              menu first. Hidden on desktop (CSS) since the desktop
-              actions area already shows the same button. */}
-          <button
-            type="button"
-            className="fs-nav-mobile-sell"
-            onClick={go('sell')}
-          >
-            Sell aircraft
-          </button>
-
           <button
             className="fs-nav-mobile-toggle"
             onClick={() => setMobileOpen(!mobileOpen)}

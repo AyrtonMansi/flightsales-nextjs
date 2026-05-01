@@ -13,38 +13,84 @@
 
 const TYPES = [
   {
+    // Top-down view: spinner + propeller on the nose, fuselage,
+    // 2 wings extending up + down, small tail wings + vertical fin.
+    // Single propeller on nose = single engine piston.
     value: 'Single Engine Piston',
     label: 'Single piston',
     icon: (
       <svg viewBox="0 0 40 24" fill="currentColor" aria-hidden="true">
-        <path d="M37 12 28 9 26 4l-2 0 1 5-12 0-3-3-2 0 1.5 3-7 1-1 2 1 2 7 1-1.5 3 2 0 3-3 12 0-1 5 2 0 2-5 9-3z" />
+        <rect x="0" y="6" width="1" height="12" rx="0.5" />
+        <circle cx="2.5" cy="12" r="1.6" />
+        <rect x="4" y="10.5" width="26" height="3" rx="1.5" />
+        <path d="M14 11 L22 11 L26 4 L20 4 Z" />
+        <path d="M14 13 L22 13 L26 20 L20 20 Z" />
+        <path d="M28 11 L33 11 L36 7 L32 7 Z" />
+        <path d="M28 13 L33 13 L36 17 L32 17 Z" />
+        <path d="M33 11.5 L38 12 L33 12.5 Z" />
       </svg>
     ),
   },
   {
+    // Top-down view: same airframe as single, but no nose prop and
+    // TWO engine nacelles + propellers on the wings = twin piston.
     value: 'Multi Engine Piston',
     label: 'Twin piston',
     icon: (
       <svg viewBox="0 0 40 24" fill="currentColor" aria-hidden="true">
-        <path d="M38 12 30 10 28 6l-1.5 0 .5 4-7-1V5l-2 0v4l-7 1 .5-4-1.5 0-2 4-8 2v0l8 2 2 4 1.5 0-.5-4 7-1v4l2 0v-4l7 1-.5 4 1.5 0 2-4 8-2z" />
+        <circle cx="2.5" cy="12" r="1.6" />
+        <rect x="4" y="10.5" width="26" height="3" rx="1.5" />
+        <path d="M14 11 L22 11 L26 4 L20 4 Z" />
+        <path d="M14 13 L22 13 L26 20 L20 20 Z" />
+        <rect x="13" y="6" width="6" height="2.4" rx="0.6" />
+        <rect x="11" y="6" width="1.2" height="2.4" rx="0.3" />
+        <rect x="13" y="15.6" width="6" height="2.4" rx="0.6" />
+        <rect x="11" y="15.6" width="1.2" height="2.4" rx="0.3" />
+        <path d="M28 11 L33 11 L36 7 L32 7 Z" />
+        <path d="M28 13 L33 13 L36 17 L32 17 Z" />
+        <path d="M33 11.5 L38 12 L33 12.5 Z" />
       </svg>
     ),
   },
   {
+    // Top-down view: bigger fuselage + chunkier engine nacelles +
+    // larger propeller blades than the twin piston. Reads as a
+    // King-Air-class turboprop.
     value: 'Turboprop',
     label: 'Turboprop',
     icon: (
       <svg viewBox="0 0 40 24" fill="currentColor" aria-hidden="true">
-        <path d="M38 12 32 9 27 4 24 4l3 6-12 0L11 6 9 6l1.5 4-7.5 1L1 12l2 1 7.5 1L9 18l2 0 4-4 12 0-3 6 3 0 5-5 6-3z" />
+        <ellipse cx="2.5" cy="12" rx="2" ry="2" />
+        <rect x="4" y="9.5" width="26" height="5" rx="2" />
+        <path d="M13 10 L23 10 L27 3 L20 3 Z" />
+        <path d="M13 14 L23 14 L27 21 L20 21 Z" />
+        <rect x="13" y="4.5" width="9" height="3.5" rx="1" />
+        <rect x="10" y="4.5" width="1.6" height="3.5" rx="0.3" />
+        <rect x="13" y="16" width="9" height="3.5" rx="1" />
+        <rect x="10" y="16" width="1.6" height="3.5" rx="0.3" />
+        <path d="M30 10.5 L34 10.5 L37 7 L33 7 Z" />
+        <path d="M30 13.5 L34 13.5 L37 17 L33 17 Z" />
+        <path d="M33 11 L38 12 L33 13 Z" />
       </svg>
     ),
   },
   {
+    // Top-down view: pointed nose (no spinner), aggressive swept wings,
+    // 2 rear-mounted engine pods alongside the fuselage, T-tail.
+    // Reads as a business jet (Citation / Cirrus Vision class).
     value: 'Light Jet',
     label: 'Jet',
     icon: (
       <svg viewBox="0 0 40 24" fill="currentColor" aria-hidden="true">
-        <path d="M38 12 4 4 8 12 4 20z M14 12 22 9 22 15z" />
+        <path d="M0 12 L5 10 L5 14 Z" />
+        <rect x="5" y="10" width="25" height="4" rx="2" />
+        <path d="M14 11 L24 11 L28 3 L18 3 Z" />
+        <path d="M14 13 L24 13 L28 21 L18 21 Z" />
+        <ellipse cx="28" cy="8.5" rx="2.4" ry="1.4" />
+        <ellipse cx="28" cy="15.5" rx="2.4" ry="1.4" />
+        <path d="M32 11 L38 12 L32 13 Z" />
+        <rect x="34" y="6" width="3.5" height="1.6" rx="0.5" />
+        <rect x="34" y="16.4" width="3.5" height="1.6" rx="0.5" />
       </svg>
     ),
   },

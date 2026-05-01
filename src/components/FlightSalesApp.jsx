@@ -6,6 +6,7 @@ import { installErrorLogger } from "../lib/errorLogger";
 import { supabase } from "../lib/supabase";
 import { Icons } from "./Icons";
 import Nav from "./Nav";
+import MobileSubBar from "./MobileSubBar";
 import Footer from "./Footer";
 import HomePage from "./pages/HomePage";
 import BuyPage from "./pages/BuyPage";
@@ -303,6 +304,7 @@ export default function FlightSalesApp({
   return (
     <>
       <Nav page={page} setPage={setPageWrap} setMobileOpen={setMobileOpen} mobileOpen={mobileOpen} user={user} signOut={signOut} />
+      <MobileSubBar setPage={setPageWrap} />
       {page !== 'home' && page !== 'detail' && <Breadcrumbs />}
 
       {page === "home" && <HomePage setPage={setPageWrap} setSelectedListing={setSelectedListing} savedIds={savedIds} onSave={onSave} setSearchFilters={setSearchFilters} initialHomeData={initialHomeData} />}

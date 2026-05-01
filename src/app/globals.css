@@ -397,25 +397,29 @@ a { color: inherit; text-decoration: none; }
   display: none; background: none; border: none; color: var(--fs-ink); cursor: pointer;
   padding: 8px; border-radius: var(--fs-radius-sm);
 }
-/* Mobile-only "Sell aircraft" text button. Sits left of the
-   hamburger so the primary action is one tap away without opening
-   the drawer. Hidden on desktop (the .fs-nav-actions area there
-   already shows the equivalent "List Aircraft" pill). */
-.fs-nav-mobile-sell {
+/* Mobile sub-header bar — sits directly below the main Nav on
+   phones. Houses secondary quick actions (Sell aircraft today;
+   Saved / Compare can join later). Right-aligned so the action is
+   under the hamburger spatially. Hidden on desktop. */
+.fs-mobile-subbar {
   display: none;
+  border-bottom: 1px solid var(--fs-line);
+  padding: 8px 20px;
+  background: var(--fs-white);
+  text-align: right;
+}
+.fs-mobile-subbar-link {
   background: none; border: none;
   color: var(--fs-ink);
   font-family: var(--fs-font);
-  font-size: 14px; font-weight: 600;
-  letter-spacing: -0.01em;
-  cursor: pointer; padding: 8px 12px;
-  margin-right: 4px;
-  border-radius: var(--fs-radius-sm);
-  white-space: nowrap;
+  font-size: 13px; font-weight: 600;
+  letter-spacing: -0.005em;
+  cursor: pointer; padding: 4px 0;
+  text-decoration: none;
 }
-.fs-nav-mobile-sell:hover { background: var(--fs-bg-2); }
+.fs-mobile-subbar-link:hover { color: var(--fs-ink-2); }
 @media (max-width: 768px) {
-  .fs-nav-mobile-sell { display: inline-flex; align-items: center; }
+  .fs-mobile-subbar { display: block; }
 }
 .fs-nav-mobile-toggle:hover { background: var(--fs-bg-2); }
 @media (max-width: 768px) {
