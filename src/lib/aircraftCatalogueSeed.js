@@ -94,6 +94,33 @@ export const MAKES_SEED = [
   { slug: 'brantly',            name: 'Brantly',             country: 'USA',         founded_year: 1946, popularity: 71 },
   { slug: 'hiller',             name: 'Hiller',              country: 'USA',         founded_year: 1942, popularity: 72 },
 
+  // Tier 4 cont. — popular kit / amphib / bush / commuter / aerobatic
+  { slug: 'murphy',             name: 'Murphy Aircraft',     country: 'Canada',      founded_year: 1985, popularity: 73 },
+  { slug: 'just-aircraft',      name: 'Just Aircraft',       country: 'USA',         founded_year: 2002, popularity: 74 },
+  { slug: 'rans',               name: 'RANS',                country: 'USA',         founded_year: 1974, popularity: 75 },
+  { slug: 'glasair',            name: 'Glasair Aviation',    country: 'USA',         founded_year: 1979, popularity: 76 },
+  { slug: 'zenith',             name: 'Zenith / Zenair',     country: 'USA',         founded_year: 1974, popularity: 77 },
+  { slug: 'rutan',              name: 'Rutan',               country: 'USA',         founded_year: 1974, popularity: 78 },
+  { slug: 'velocity',           name: 'Velocity Aircraft',   country: 'USA',         founded_year: 1985, popularity: 79 },
+  { slug: 'lake',               name: 'Lake Aircraft',       country: 'USA',         founded_year: 1948, popularity: 80 },
+  { slug: 'stemme',             name: 'Stemme',              country: 'Germany',     founded_year: 1984, popularity: 81 },
+  { slug: 'pacific-aerospace',  name: 'Pacific Aerospace',   country: 'New Zealand', founded_year: 1982, popularity: 82 },
+  { slug: 'vulcanair',          name: 'Vulcanair',           country: 'Italy',       founded_year: 1996, popularity: 83 },
+  { slug: 'piaggio',            name: 'Piaggio Aero',        country: 'Italy',       founded_year: 1884, popularity: 84 },
+  { slug: 'dornier',            name: 'Dornier',             country: 'Germany',     founded_year: 1922, popularity: 85 },
+  { slug: 'shorts',             name: 'Short Brothers',      country: 'UK',          founded_year: 1908, popularity: 86 },
+  { slug: 'searey',             name: 'SeaRey (Progressive Aerodyne)', country: 'USA', founded_year: 1989, popularity: 87 },
+  { slug: 'helio',              name: 'Helio',               country: 'USA',         founded_year: 1948, popularity: 88 },
+  { slug: 'sukhoi',             name: 'Sukhoi',              country: 'Russia',      founded_year: 1939, popularity: 89 },
+  { slug: 'stearman',           name: 'Stearman (Boeing)',   country: 'USA',         founded_year: 1927, popularity: 90 },
+  { slug: 'thrush',             name: 'Thrush Aircraft',     country: 'USA',         founded_year: 2003, popularity: 91 },
+  { slug: 'ayres',              name: 'Ayres Corporation',   country: 'USA',         founded_year: 1977, popularity: 92 },
+  { slug: 'quicksilver',        name: 'Quicksilver',         country: 'USA',         founded_year: 1973, popularity: 93 },
+  { slug: 'quad-city',          name: 'Quad City Ultralight',country: 'USA',         founded_year: 1983, popularity: 94 },
+  { slug: 'kolb',               name: 'Kolb Aircraft',       country: 'USA',         founded_year: 1980, popularity: 95 },
+  { slug: 'jodel',              name: 'Jodel',               country: 'France',      founded_year: 1946, popularity: 96 },
+  { slug: 'robin',              name: 'Robin Aircraft',      country: 'France',      founded_year: 1957, popularity: 97 },
+
   // Tier 5 — vintage / collector (low volume but iconic)
   { slug: 'yakovlev',           name: 'Yakovlev (Yak)',      country: 'Russia',      founded_year: 1934, popularity: 60 },
   { slug: 'north-american',     name: 'North American',      country: 'USA',         founded_year: 1928, popularity: 61 },
@@ -607,4 +634,69 @@ export const MODELS_SEED = [
   m({ make: 'pipistrel', family: 'Sinus',  type_designator: 'SINS', category: 'LSA', mission: ['tourer'], year_first: 1995,                  mtow_kg: 472, seats: 2, engine_type: 'Rotax 912', cruise_kts: 117, range_nm: 750, fuel_burn_lph: 14, ceiling_ft: 24000, aliases: ['Sinus','Pipistrel Sinus','Sinus 912'] }),
   m({ make: 'pipistrel', family: 'Alpha',  variant: 'Trainer', type_designator: 'ALPH', category: 'LSA', mission: ['trainer'], year_first: 2010,                  mtow_kg: 472, seats: 2, engine_type: 'Rotax 912 ULS', cruise_kts: 108, range_nm: 540, fuel_burn_lph: 16, ceiling_ft: 14000, aliases: ['Alpha','Alpha Trainer','Pipistrel Alpha'] }),
   m({ make: 'tecnam',    family: 'P92',    variant: 'Eaglet',   type_designator: 'P92', category: 'LSA', mission: ['trainer','tourer'], year_first: 2008,                  mtow_kg: 600, seats: 2, engine_type: 'Rotax 912 ULS', cruise_kts: 110, range_nm: 600, fuel_burn_lph: 16, ceiling_ft: 14000, aliases: ['P92 Eaglet','Eaglet','Tecnam Eaglet'] }),
+
+  // ── KIT / BUSH (popular Controller listings) ──────────────────
+  m({ make: 'murphy',         family: 'Rebel',                 type_designator: 'MURB', category: 'Single Engine Piston', mission: ['kit','bush','floats'], year_first: 1994,                  mtow_kg: 815, seats: 3, engine_type: 'Lycoming O-320', cruise_kts: 110, range_nm: 460, fuel_burn_lph: 32, ceiling_ft: 14000, aliases: ['Murphy Rebel','Rebel'] }),
+  m({ make: 'murphy',         family: 'Moose',                 type_designator: 'MURB', category: 'Single Engine Piston', mission: ['kit','bush','floats'], year_first: 1995,                  mtow_kg: 1090, seats: 4, engine_type: 'Lycoming O-540', cruise_kts: 124, range_nm: 600, fuel_burn_lph: 50, ceiling_ft: 16000, aliases: ['Murphy Moose','Moose'] }),
+  m({ make: 'just-aircraft',  family: 'SuperSTOL',             type_designator: 'JSTL', category: 'LSA', mission: ['kit','bush','floats'], year_first: 2011,                  mtow_kg: 600, seats: 2, engine_type: 'Rotax 912/914', cruise_kts: 90, range_nm: 460, fuel_burn_lph: 18, ceiling_ft: 18000, aliases: ['SuperSTOL','Just SuperSTOL','Super STOL','Highlander Super STOL'] }),
+  m({ make: 'just-aircraft',  family: 'Highlander',            type_designator: 'JSTL', category: 'LSA', mission: ['kit','bush','floats'], year_first: 2008,                  mtow_kg: 600, seats: 2, engine_type: 'Rotax 912', cruise_kts: 100, range_nm: 460, fuel_burn_lph: 17, ceiling_ft: 14000, aliases: ['Highlander','Just Highlander'] }),
+  m({ make: 'rans',           family: 'S-7',  variant: 'Courier', type_designator: 'RANS', category: 'LSA', mission: ['kit','tourer'], year_first: 1985,                  mtow_kg: 590, seats: 2, engine_type: 'Rotax 912', cruise_kts: 105, range_nm: 460, fuel_burn_lph: 16, ceiling_ft: 13000, aliases: ['RANS S-7','S-7 Courier','S-7S'] }),
+  m({ make: 'rans',           family: 'S-19', variant: 'Venterra', type_designator: 'RANS', category: 'LSA', mission: ['kit','tourer'], year_first: 2007,                  mtow_kg: 590, seats: 2, engine_type: 'Rotax 912 ULS', cruise_kts: 130, range_nm: 660, fuel_burn_lph: 18, ceiling_ft: 14000, aliases: ['RANS S-19','S-19','Venterra'] }),
+  m({ make: 'rans',           family: 'S-21', variant: 'Outbound', type_designator: 'RANS', category: 'LSA', mission: ['kit','bush','floats'], year_first: 2018,                  mtow_kg: 590, seats: 2, engine_type: 'Rotax 912/915', cruise_kts: 110, range_nm: 600, fuel_burn_lph: 18, ceiling_ft: 14000, aliases: ['RANS S-21','S-21 Outbound','Outbound'] }),
+  m({ make: 'glasair',        family: 'Glasair', variant: 'III',   type_designator: 'GLSR', category: 'Single Engine Piston', mission: ['kit','tourer'], year_first: 1986,                  mtow_kg: 1043, seats: 2, engine_type: 'Lycoming IO-540', cruise_kts: 200, range_nm: 1000, fuel_burn_lph: 50, ceiling_ft: 22000, aliases: ['Glasair III','Glasair-III'] }),
+  m({ make: 'glasair',        family: 'Sportsman',             type_designator: 'GLSR', category: 'Single Engine Piston', mission: ['kit','tourer','bush'], year_first: 2003,                  mtow_kg: 998, seats: 4, engine_type: 'Lycoming IO-360/IO-390', cruise_kts: 145, range_nm: 800, fuel_burn_lph: 38, ceiling_ft: 18000, aliases: ['Sportsman','Glasair Sportsman','GS-2'] }),
+  m({ make: 'zenith',         family: 'CH 601', variant: 'Zodiac', type_designator: 'ZNTH', category: 'LSA', mission: ['kit','tourer'], year_first: 1991,                  mtow_kg: 590, seats: 2, engine_type: 'Rotax 912/Continental O-200', cruise_kts: 100, range_nm: 460, fuel_burn_lph: 18, ceiling_ft: 13000, aliases: ['CH 601','Zodiac','Zenith Zodiac','CH 650'] }),
+  m({ make: 'zenith',         family: 'CH 750', variant: 'Cruzer', type_designator: 'ZNTH', category: 'LSA', mission: ['kit','tourer','bush'], year_first: 2010,                  mtow_kg: 600, seats: 2, engine_type: 'Continental O-200/UL Power', cruise_kts: 95, range_nm: 460, fuel_burn_lph: 18, ceiling_ft: 12000, aliases: ['CH 750','CH 750 Cruzer','STOL CH 750','Zenith CH 750'] }),
+  m({ make: 'rutan',          family: 'VariEze',                type_designator: 'VEZE', category: 'Single Engine Piston', mission: ['kit','tourer','aerobatic'], year_first: 1976, year_last: 1985, mtow_kg: 476, seats: 2, engine_type: 'Continental O-200', cruise_kts: 150, range_nm: 800, fuel_burn_lph: 25, ceiling_ft: 22000, aliases: ['VariEze','Vari-Eze','Rutan VariEze'] }),
+  m({ make: 'rutan',          family: 'Long-EZ',                type_designator: 'LGEZ', category: 'Single Engine Piston', mission: ['kit','tourer'], year_first: 1980,                  mtow_kg: 612, seats: 2, engine_type: 'Lycoming O-235/O-320', cruise_kts: 160, range_nm: 1300, fuel_burn_lph: 30, ceiling_ft: 27000, aliases: ['Long-EZ','LongEZ','Long EZ','Rutan Long-EZ'] }),
+  m({ make: 'velocity',       family: 'XL',                    type_designator: 'VLOC', category: 'Single Engine Piston', mission: ['kit','tourer'], year_first: 1995,                  mtow_kg: 1224, seats: 4, engine_type: 'Lycoming IO-540', cruise_kts: 195, range_nm: 1100, fuel_burn_lph: 50, ceiling_ft: 22000, aliases: ['Velocity XL','XL-RG','XL-FG','Velocity XL-5'] }),
+
+  // ── AMPHIBIANS ────────────────────────────────────────────────
+  m({ make: 'lake',           family: 'LA-4',  variant: '200 Buccaneer', type_designator: 'LA4', category: 'Amphibious/Seaplane', mission: ['floats','tourer'], year_first: 1959,                  mtow_kg: 1020, seats: 4, engine_type: 'Lycoming O-360', cruise_kts: 120, range_nm: 600, fuel_burn_lph: 38, ceiling_ft: 14700, aliases: ['Lake LA-4','LA-4 Buccaneer','Buccaneer','LA-4-200'] }),
+  m({ make: 'lake',           family: 'LA-250', variant: 'Renegade',     type_designator: 'LA25', category: 'Amphibious/Seaplane', mission: ['floats','tourer'], year_first: 1983,                  mtow_kg: 1497, seats: 6, engine_type: 'Lycoming IO-540', cruise_kts: 150, range_nm: 800, fuel_burn_lph: 65, ceiling_ft: 14700, aliases: ['LA-250','Renegade','Lake Renegade','Lake LA-250'] }),
+  m({ make: 'searey',         family: 'SeaRey', variant: 'LSX',         type_designator: 'SREY', category: 'Amphibious/Seaplane', mission: ['floats','tourer'], year_first: 1992,                  mtow_kg: 680, seats: 2, engine_type: 'Rotax 912 ULS', cruise_kts: 100, range_nm: 350, fuel_burn_lph: 17, ceiling_ft: 12000, aliases: ['SeaRey','SeaRey LSX','SeaRey LSA'] }),
+
+  // ── MOTORGLIDER ───────────────────────────────────────────────
+  m({ make: 'stemme',         family: 'S10',                   type_designator: 'STM1', category: 'Glider', mission: ['tourer'], year_first: 1990,                  mtow_kg: 850, seats: 2, engine_type: 'Limbach L 2400', cruise_kts: 130, range_nm: 970, fuel_burn_lph: 24, ceiling_ft: 30000, aliases: ['Stemme S10','S10','S10-VT','Stemme S10-VT'] }),
+  m({ make: 'stemme',         family: 'S12',                   type_designator: 'STM1', category: 'Glider', mission: ['tourer'], year_first: 2014,                  mtow_kg: 900, seats: 2, engine_type: 'Rotax 914F', cruise_kts: 130, range_nm: 970, fuel_burn_lph: 24, ceiling_ft: 30000, aliases: ['Stemme S12','S12'] }),
+
+  // ── BUSH / COMMUTER (NZ + AU built) ───────────────────────────
+  m({ make: 'pacific-aerospace', family: '750', variant: 'XL',  type_designator: 'PA75', category: 'Turboprop', mission: ['working','floats'], year_first: 2003,                  mtow_kg: 3402, seats: 10, engine_type: 'Pratt & Whitney PT6A-34', cruise_kts: 170, range_nm: 880, fuel_burn_lph: 200, ceiling_ft: 25000, aliases: ['750XL','PAC 750','PAC 750XL','P-750','Pacific Aerospace 750','P-750 XSTOL'] }),
+  m({ make: 'pacific-aerospace', family: 'CT-4', variant: 'Airtrainer', type_designator: 'CT4', category: 'Single Engine Piston', mission: ['trainer','aerobatic'], year_first: 1972, year_last: 1998, mtow_kg: 1180, seats: 2, engine_type: 'Continental IO-360', cruise_kts: 130, range_nm: 600, fuel_burn_lph: 38, ceiling_ft: 17500, aliases: ['CT-4','CT4','Airtrainer','PAC CT-4'] }),
+
+  // ── ITALIAN TWIN PISTON ───────────────────────────────────────
+  m({ make: 'vulcanair',      family: 'P68',  variant: 'C',     type_designator: 'P68', category: 'Multi Engine Piston', mission: ['tourer'], engine_count: 2, year_first: 1995,                  mtow_kg: 2084, seats: 6, engine_type: '2x Lycoming IO-360', cruise_kts: 175, range_nm: 1100, fuel_burn_lph: 80, ceiling_ft: 19500, aliases: ['P68','P68C','Vulcanair P68','P68 Observer','P68R'] }),
+
+  // ── TWIN PUSH-PROP TURBOPROP ──────────────────────────────────
+  m({ make: 'piaggio',        family: 'P180', variant: 'Avanti II', type_designator: 'P180', category: 'Turboprop', mission: ['tourer'], engine_count: 2, year_first: 2005,                  mtow_kg: 5489, seats: 9, engine_type: '2x Pratt & Whitney PT6A-66B', cruise_kts: 402, range_nm: 1604, ceiling_ft: 41000, aliases: ['P180','Avanti','Avanti II','Avanti EVO','Piaggio Avanti'] }),
+
+  // ── COMMUTER (Dornier + Shorts) ───────────────────────────────
+  m({ make: 'dornier',        family: 'Do 228', variant: 'NG',  type_designator: 'D228', category: 'Turboprop', engine_count: 2, year_first: 2009,                  mtow_kg: 6575, seats: 19, engine_type: '2x Honeywell TPE331-10', cruise_kts: 233, range_nm: 540, ceiling_ft: 25000, aliases: ['Do 228','Do-228','Do 228 NG','Dornier 228'] }),
+  m({ make: 'shorts',         family: 'SC.7',  variant: 'Skyvan', type_designator: 'SC7', category: 'Turboprop', engine_count: 2, year_first: 1963, year_last: 1986, mtow_kg: 6577, seats: 19, engine_type: '2x Honeywell TPE331', cruise_kts: 173, range_nm: 694, ceiling_ft: 22000, aliases: ['SC.7','Skyvan','Shorts Skyvan','SC.7 Skyvan'] }),
+  m({ make: 'shorts',         family: '360',                   type_designator: 'SH36', category: 'Turboprop', engine_count: 2, year_first: 1981, year_last: 1991, mtow_kg: 12292, seats: 36, engine_type: '2x Pratt & Whitney PT6A-65AR', cruise_kts: 215, range_nm: 460, ceiling_ft: 11000, aliases: ['SD3-60','Shorts 360','Sherpa'] }),
+
+  // ── BUSH (Helio Courier) ──────────────────────────────────────
+  m({ make: 'helio',          family: 'H-295', variant: 'Super Courier', type_designator: 'H295', category: 'Single Engine Piston', mission: ['working','floats','bush'], year_first: 1965, year_last: 1985, mtow_kg: 1474, seats: 6, engine_type: 'Lycoming GO-480', cruise_kts: 128, range_nm: 660, fuel_burn_lph: 50, ceiling_ft: 20500, aliases: ['Helio Courier','H-295','Super Courier','Helio Super Courier'] }),
+
+  // ── SUKHOI AEROBATIC ──────────────────────────────────────────
+  m({ make: 'sukhoi',         family: 'Su-26',                  type_designator: 'SU26', category: 'Single Engine Piston', mission: ['aerobatic'], year_first: 1984, year_last: 2002, mtow_kg: 770, seats: 1, engine_type: 'Vedeneyev M-14P', cruise_kts: 145, range_nm: 350, fuel_burn_lph: 90, ceiling_ft: 13000, aliases: ['Su-26','Sukhoi Su-26'] }),
+  m({ make: 'sukhoi',         family: 'Su-29',                  type_designator: 'SU29', category: 'Single Engine Piston', mission: ['aerobatic'], year_first: 1993,                  mtow_kg: 860, seats: 2, engine_type: 'Vedeneyev M-14P', cruise_kts: 145, range_nm: 600, fuel_burn_lph: 90, ceiling_ft: 13000, aliases: ['Su-29','Sukhoi Su-29'] }),
+  m({ make: 'sukhoi',         family: 'Su-31',                  type_designator: 'SU31', category: 'Single Engine Piston', mission: ['aerobatic'], year_first: 1994,                  mtow_kg: 700, seats: 1, engine_type: 'Vedeneyev M-14PF', cruise_kts: 162, range_nm: 350, fuel_burn_lph: 95, ceiling_ft: 13000, aliases: ['Su-31','Sukhoi Su-31'] }),
+
+  // ── VINTAGE TRAINERS ──────────────────────────────────────────
+  m({ make: 'stearman',       family: 'PT-17', variant: 'Kaydet', type_designator: 'PT17', category: 'Warbird', mission: ['vintage','aerobatic'], year_first: 1934, year_last: 1945, mtow_kg: 1232, seats: 2, engine_type: 'Continental R-670', cruise_kts: 95, range_nm: 505, fuel_burn_lph: 100, ceiling_ft: 11200, aliases: ['Stearman','PT-17','Kaydet','Boeing Stearman','N2S'] }),
+
+  // ── AGRICULTURAL (Thrush, Ayres) ──────────────────────────────
+  m({ make: 'thrush',         family: 'S2R-T34',                type_designator: 'S2RT', category: 'Turboprop', mission: ['working'], year_first: 1995,                  mtow_kg: 4990, seats: 1, engine_type: 'Pratt & Whitney PT6A-34AG', cruise_kts: 150, range_nm: 540, ceiling_ft: 14000, aliases: ['Thrush 510','S2R-T34','Thrush S2R'] }),
+  m({ make: 'ayres',          family: 'Thrush',                 type_designator: 'S2R', category: 'Single Engine Piston', mission: ['working'], year_first: 1977, year_last: 2003, mtow_kg: 3402, seats: 1, engine_type: 'Pratt & Whitney R-1340', cruise_kts: 120, range_nm: 350, fuel_burn_lph: 200, ceiling_ft: 12000, aliases: ['Ayres Thrush','S2R Thrush'] }),
+
+  // ── ULTRALIGHTS ───────────────────────────────────────────────
+  m({ make: 'quicksilver',    family: 'GT-500',                 type_designator: 'QS5', category: 'Ultralight', mission: ['kit','tourer'], year_first: 1991,                  mtow_kg: 540, seats: 2, engine_type: 'Rotax 503/582', cruise_kts: 65, range_nm: 230, fuel_burn_lph: 14, ceiling_ft: 12500, aliases: ['Quicksilver GT-500','GT-500'] }),
+  m({ make: 'quad-city',      family: 'Challenger', variant: 'II', type_designator: 'CHL2', category: 'Ultralight', mission: ['kit','tourer'], year_first: 1983,                  mtow_kg: 408, seats: 2, engine_type: 'Rotax 503/582', cruise_kts: 65, range_nm: 200, fuel_burn_lph: 12, ceiling_ft: 11500, aliases: ['Challenger II','Quad City Challenger','Quad City Challenger II'] }),
+  m({ make: 'kolb',           family: 'Mark', variant: 'III Xtra', type_designator: 'KOLB', category: 'Ultralight', mission: ['kit','tourer'], year_first: 1991,                  mtow_kg: 408, seats: 2, engine_type: 'Rotax 582/912', cruise_kts: 70, range_nm: 200, fuel_burn_lph: 12, ceiling_ft: 12000, aliases: ['Kolb Mark III','Mark III','Mark III Xtra'] }),
+
+  // ── FRENCH HOMEBUILT / TOURER ─────────────────────────────────
+  m({ make: 'jodel',          family: 'D.140', variant: 'Mousquetaire', type_designator: 'D140', category: 'Single Engine Piston', mission: ['tourer','vintage'], year_first: 1958, year_last: 1976, mtow_kg: 1100, seats: 4, engine_type: 'Lycoming O-360', cruise_kts: 116, range_nm: 760, fuel_burn_lph: 35, ceiling_ft: 16400, aliases: ['Jodel D.140','D.140','Mousquetaire'] }),
+  m({ make: 'robin',          family: 'DR400', variant: '180 Régent', type_designator: 'DR40', category: 'Single Engine Piston', mission: ['tourer','trainer'], year_first: 1972,                  mtow_kg: 1100, seats: 4, engine_type: 'Lycoming O-360', cruise_kts: 130, range_nm: 720, fuel_burn_lph: 35, ceiling_ft: 14500, aliases: ['DR400','Robin DR400','DR-400','DR400/180'] }),
+  m({ make: 'robin',          family: 'R2160', variant: 'Alpha Sport', type_designator: 'R216', category: 'Single Engine Piston', mission: ['trainer','aerobatic'], year_first: 1976,                  mtow_kg: 770, seats: 2, engine_type: 'Lycoming O-320', cruise_kts: 116, range_nm: 700, fuel_burn_lph: 30, ceiling_ft: 14000, aliases: ['R2160','Robin R2160','Alpha Sport'] }),
 ];
