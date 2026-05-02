@@ -56,6 +56,7 @@ export default function HeroSearchPro({ model, count }) {
     yearFrom, setYearFrom, yearTo, setYearTo,
     priceFrom, setPriceFrom, priceTo, setPriceTo,
     aiQuery, setAiQuery,
+    rotatingPlaceholder,
     onAiSearch,
     onManualSearch,
   } = model;
@@ -108,7 +109,7 @@ export default function HeroSearchPro({ model, count }) {
         </span>
         <input
           className="fs-h-ai-input"
-          placeholder="Try our AI Quick Search"
+          placeholder={rotatingPlaceholder || 'Try our AI Quick Search'}
           value={aiQuery}
           onChange={(e) => setAiQuery(e.target.value)}
           onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); onAiSearch(e.target.value); } }}
@@ -117,6 +118,13 @@ export default function HeroSearchPro({ model, count }) {
         <kbd className="fs-h-kbd" aria-hidden="true">⌘K</kbd>
       </label>
 
+      {/* Cards group — wraps all three filter cards so we can draw a
+          single continuous connector line that passes through every
+          card and bridges the gaps between them. The line lives behind
+          the cards (z-index -1); cards' own backgrounds cover it where
+          they sit, so it only shows in the gaps; each card has its
+          own internal connector that completes the visible loop. */}
+      <div className="fs-h-cards-group">
       {/* Group 1 — what aircraft.   Type + Make in one stacked card
           with internal pin-line connector. */}
       <div className="fs-h-stack">
@@ -167,9 +175,8 @@ export default function HeroSearchPro({ model, count }) {
         />
       </div>
 
-      {/* Standalone Location pill — single field, no connector needed.
-          Reads as the "destination" of the search, mirroring how Uber
-          treats the Pickup-now pill as its own floating element. */}
+      {/* Standalone Location pill — single field, ends the route.
+          Reads as the "destination" of the search. */}
       <div className="fs-h-stack fs-h-stack-solo">
         <SelectField
           stacked
@@ -180,18 +187,15 @@ export default function HeroSearchPro({ model, count }) {
           options={STATES.map((s) => ({ value: s, label: s }))}
         />
       </div>
+      </div>{/* /fs-h-cards-group */}
 
-      {/* CTA + side link — Uber pattern: solid black button (not full
-          width), tight padding, with a text link to its right. */}
+      {/* CTA — Uber pattern: solid black button, tight padding. */}
       <div className="fs-h-cta-row">
         <button className="fs-h-cta" type="submit">
           {fmtCount
             ? <>Search <span className="fs-h-cta-count">{fmtCount}</span></>
             : 'Search'}
         </button>
-        <a href="/login" className="fs-h-cta-side">
-          Log in to save searches
-        </a>
       </div>
     </form>
   );

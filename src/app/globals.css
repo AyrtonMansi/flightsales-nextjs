@@ -3238,8 +3238,11 @@ html, body { overflow-x: hidden; max-width: 100%; }
 
 .fs-hero-v3-grid {
   display: grid;
-  grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
-  gap: 48px;
+  /* Left column hugs content (max 500px from .fs-h-stackform); right
+     column takes the rest. Keeps the search compact, illustration
+     gets the breathing room. */
+  grid-template-columns: minmax(0, 500px) minmax(0, 1fr);
+  gap: 56px;
   align-items: start;
   margin-bottom: 32px;
 }
@@ -3248,6 +3251,13 @@ html, body { overflow-x: hidden; max-width: 100%; }
     grid-template-columns: minmax(0, 1fr);
     gap: 16px;
   }
+  /* No illustration on mobile/tablet — center the search column so it
+     doesn't sit awkwardly left-aligned with empty space on the right. */
+  .fs-hero-v3-left .fs-h-stackform { margin-left: auto; margin-right: auto; }
+}
+@media (max-width: 480px) {
+  /* Phone — drop the max-width entirely so search uses full screen. */
+  .fs-hero-v3-left .fs-h-stackform { max-width: 100%; }
 }
 
 .fs-hero-v3-left h1 {
@@ -3298,15 +3308,62 @@ html, body { overflow-x: hidden; max-width: 100%; }
    Pin column (●) on the left + dotted connector between rows.
    ============================================================ */
 /* The hero v3 form is just a layout container — no background, no
-   border, no shadow. The AI input and the CTA + side-link float on
-   the page bg as standalone elements; only the filter rows live in
-   gray-tinted cards (.fs-h-stack). User-asked: AI search and Search
-   button visually outside the same surface as the filters. */
+   border, no shadow. The AI input and the CTA float on the page bg
+   as standalone elements; only the filter rows live in gray-tinted
+   cards (.fs-h-stack). Capped width so the search column doesn't
+   sprawl on wide screens. */
 .fs-h-stackform {
   display: flex;
   flex-direction: column;
   gap: 10px;
   width: 100%;
+  max-width: 500px;
+}
+
+/* Cards group — wraps the 3 filter cards. Hosts the single continuous
+   connector line that runs from the first pin to the last, passing
+   through the cards (where pin halos cover it) and the 10px gaps
+   between them. */
+.fs-h-cards-group {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+/* The continuous connector. Sits behind cards (z-index -1) so it's
+   only visible in the gaps between them — inside cards their own
+   per-card connector takes over via .fs-h-stack::before. Both lines
+   share the same x = 23.5px from card-edge, so the visible result is
+   one unbroken vertical line from first pin to last pin. */
+.fs-h-cards-group::before {
+  content: '';
+  position: absolute;
+  left: 23.5px;
+  top: 28px;            /* aligns with the first pin */
+  bottom: 28px;         /* aligns with the last pin */
+  width: 1.5px;
+  background: var(--fs-ink, #0a0a0a);
+  z-index: -1;
+}
+@media (max-width: 480px) {
+  /* Card padding tightens on mobile (12px) so the pins sit further
+     left — pull the connector with them. */
+  .fs-h-cards-group::before { left: 19.5px; }
+}
+/* Solo Location card — line drops in from the top of the card to its
+   centred destination square. Pairs with the form-group line above. */
+.fs-h-stack.fs-h-stack-solo {
+  position: relative;
+}
+.fs-h-stack.fs-h-stack-solo::before {
+  content: '';
+  position: absolute;
+  left: 23.5px;
+  top: 0;
+  bottom: 50%;         /* ends at the pin sitting at vertical centre */
+  width: 1.5px;
+  background: var(--fs-ink, #0a0a0a);
+  z-index: 0;
 }
 
 /* Soft-grey row stack matching Uber's pickup/dropoff card. No
@@ -3419,6 +3476,14 @@ html, body { overflow-x: hidden; max-width: 100%; }
 
 /* Stack-row mobile — drop label width so values fit */
 @media (max-width: 480px) {
+  /* Tighten the row chrome so 5+ rows fit comfortably on a phone. */
   .fs-h-stack-label { width: 56px; font-size: 10px; }
   .fs-h-stack-row { padding: 12px 12px; gap: 10px; }
+  /* Card-level connector tracks the new padding. */
+  .fs-h-stack:not(.fs-h-stack-solo)::before { left: 19.5px; }
+  .fs-h-stack.fs-h-stack-solo::before       { left: 19.5px; }
+  /* Smaller AI input padding so it doesn't dominate the phone. */
+  .fs-h-ai { padding: 12px 14px; }
+  .fs-h-stackform { gap: 8px; }
+  .fs-h-cards-group { gap: 8px; }
 }

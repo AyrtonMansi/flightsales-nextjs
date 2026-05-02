@@ -8,6 +8,7 @@ import HeroSearchPro from '../hero/HeroSearchPro';
 import HeroIllustration from '../hero/HeroIllustration';
 import { useAircraft, useFeaturedAircraft, useLatestAircraft, useDealers, useNews } from '../../lib/hooks';
 import { DEALERS, NEWS_ARTICLES } from '../../lib/constants';
+import { useRotatingPlaceholder, AI_SEARCH_EXAMPLES } from '../../lib/useRotatingPlaceholder';
 import { parseAiQuery } from '../../lib/parseAiQuery';
 
 const HomePage = ({ setPage, setSelectedListing, savedIds, onSave, setSearchFilters, initialHomeData }) => {
@@ -62,6 +63,11 @@ const HomePage = ({ setPage, setSelectedListing, savedIds, onSave, setSearchFilt
     setPage("buy");
   };
 
+  // Animated typewriter placeholder for the AI input — rotates through
+  // example queries (Cirrus SR22 under $700k, low-hours R44, etc.) so
+  // the field reads as inviting rather than empty.
+  const rotatingPlaceholder = useRotatingPlaceholder(AI_SEARCH_EXAMPLES);
+
   // Bundle every search-card input + handler into one model object so
   // HeroSearchPro stays a thin presentation layer over real handlers.
   const searchModel = {
@@ -71,6 +77,7 @@ const HomePage = ({ setPage, setSelectedListing, savedIds, onSave, setSearchFilt
     yearFrom, setYearFrom, yearTo, setYearTo,
     priceFrom, setPriceFrom, priceTo, setPriceTo,
     aiQuery, setAiQuery,
+    rotatingPlaceholder,
     onAiSearch: handleAiSearch,
     onManualSearch: handleManualSearch,
   };
