@@ -2859,54 +2859,50 @@ html, body { overflow-x: hidden; max-width: 100%; }
   font-size: 13px;
 }
 
-/* CTA — was full-width pure-black + drop shadow, read very loud against
-   the rest of the soft card. Now: right-aligned, 320px max, 44px tall,
-   ink colour (not full black), medium weight, 1px hairline shadow.
-   Still confident, no longer dominating. */
-.fs-h-cta {
-  margin-top: 6px;
-  align-self: flex-end;
-  width: auto;
-  max-width: 320px;
-  min-width: 200px;
-  padding: 0 18px;
-  height: 44px;
+/* CTA row — Uber pattern: a snug solid-black "See prices" button on
+   the LEFT, with a small text-link to its right ("Log in to see your
+   recent activity"). Button hugs its content; no full-width fill. */
+.fs-h-cta-row {
   display: flex;
   align-items: center;
+  gap: 20px;
+  margin-top: 8px;
+  flex-wrap: wrap;
+}
+.fs-h-cta {
+  /* Snug pill-square: hugs content, no max-width sprawl */
+  width: auto;
+  padding: 0 22px;
+  height: 44px;
+  display: inline-flex;
+  align-items: center;
   justify-content: center;
-  gap: 8px;
+  gap: 6px;
   border: 0;
-  border-radius: 12px;
+  border-radius: 8px;          /* harder edges than the v2 pill */
   background: var(--fs-ink);
-  color: #fff;
-  font: 500 14px/1 -apple-system, system-ui, sans-serif;
+  color: #fff !important;
+  font: 600 14px/1 -apple-system, system-ui, sans-serif;
   letter-spacing: -0.005em;
   cursor: pointer;
-  transition: transform 120ms ease, box-shadow 200ms ease, background 160ms ease;
-  box-shadow: 0 1px 2px rgba(10, 10, 10, 0.10);
+  transition: background 160ms ease;
 }
-.fs-h-cta:hover {
-  background: #1a1a1a;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 10px -4px rgba(10, 10, 10, 0.20);
-}
-.fs-h-cta:active { transform: translateY(0); }
-.fs-h-cta-icon {
-  display: inline-flex;
-  width: 16px;
-  height: 16px;
-}
-.fs-h-cta-text { display: inline-flex; gap: 6px; align-items: center; }
+.fs-h-cta:hover { background: #1a1a1a; }
 .fs-h-cta-count {
   font-weight: 700;
   font-variant-numeric: tabular-nums;
 }
-.fs-h-cta-arrow {
-  font-size: 17px;
-  line-height: 1;
-  transition: transform 200ms ease;
+/* Side text-link — underlined, ink colour, no button chrome */
+.fs-h-cta-side {
+  font: 500 14px/1.3 -apple-system, system-ui, sans-serif;
+  color: var(--fs-ink);
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  text-decoration-thickness: 1px;
+  cursor: pointer;
+  transition: color 120ms ease;
 }
-.fs-h-cta:hover .fs-h-cta-arrow { transform: translateX(2px); }
+.fs-h-cta-side:hover { color: var(--fs-ink-2); }
 
 /* Mobile — stack the 3-up row, keep 2-up for ranges, smaller padding */
 @media (max-width: 640px) {
@@ -3301,24 +3297,27 @@ html, body { overflow-x: hidden; max-width: 100%; }
    STACKED ROWS — Uber-style pickup/dropoff pattern
    Pin column (●) on the left + dotted connector between rows.
    ============================================================ */
+/* Soft-grey row stack matching Uber's pickup/dropoff card. No
+   surrounding border — the row fill alone defines the surface. */
 .fs-h-stack {
   position: relative;
-  background: #fff;
-  border: 1px solid rgba(10, 10, 10, 0.06);
+  background: var(--fs-bg-2, #f6f6f7);
+  border: 0;
   border-radius: 14px;
   padding: 0;
   overflow: hidden;
 }
-/* The dotted connector — sits behind the pin dots, fades into the
-   row top and bottom so it reads as a continuous trail. */
+/* Solid black connector line running through every pin. The pins
+   carry a halo that matches the row fill so the line cleanly
+   "passes through" each pin without needing per-pin masks. */
 .fs-h-stack::before {
   content: '';
   position: absolute;
-  left: 25px;
-  top: 38px;
-  bottom: 38px;
-  width: 0;
-  border-left: 1.5px dashed rgba(10, 10, 10, 0.18);
+  left: 23.5px;
+  top: 32px;
+  bottom: 32px;
+  width: 1.5px;
+  background: var(--fs-ink, #0a0a0a);
   z-index: 0;
 }
 .fs-h-stack-row {
@@ -3331,24 +3330,34 @@ html, body { overflow-x: hidden; max-width: 100%; }
   transition: background 120ms ease;
   z-index: 1;
 }
-.fs-h-stack-row:hover { background: rgba(10, 10, 10, 0.025); }
-.fs-h-stack-row + .fs-h-stack-row {
-  border-top: 1px solid rgba(10, 10, 10, 0.06);
-}
+.fs-h-stack-row:hover { background: rgba(10, 10, 10, 0.04); }
+/* No row border — Uber uses background-fill spacing alone. */
+
+/* Default pin: small solid filled black dot for the in-between
+   rows (waypoints between pickup and dropoff). The halo covers
+   the line passing behind it. */
 .fs-h-stack-pin {
-  width: 18px;
-  height: 18px;
+  width: 8px;
+  height: 8px;
   border-radius: 50%;
-  background: #fff;
-  border: 2.5px solid var(--fs-accent);
-  box-shadow: 0 0 0 2px #fff;   /* white halo so it covers the dotted line cleanly */
+  background: var(--fs-ink, #0a0a0a);
+  border: 0;
+  box-shadow: 0 0 0 4px var(--fs-bg-2, #f6f6f7);
   flex-shrink: 0;
+  margin-left: 4px;     /* nudge so the small dot centres on the line */
 }
-.fs-h-stack-row:nth-child(odd) .fs-h-stack-pin {
-  /* Odd-row pins fill solid for visual cadence — like Uber's pickup
-     dot is solid and dropoff is hollow square; we use solid+ring. */
-  background: var(--fs-accent);
-  border-color: var(--fs-accent);
+/* First row — Uber pickup mark: filled black circle, larger */
+.fs-h-stack-row:first-child .fs-h-stack-pin {
+  width: 14px;
+  height: 14px;
+  margin-left: 1px;
+}
+/* Last row — Uber dropoff mark: filled black square */
+.fs-h-stack-row:last-child .fs-h-stack-pin {
+  width: 12px;
+  height: 12px;
+  border-radius: 2px;
+  margin-left: 2px;
 }
 .fs-h-stack-label {
   font: 600 11px/1 -apple-system, system-ui, sans-serif;

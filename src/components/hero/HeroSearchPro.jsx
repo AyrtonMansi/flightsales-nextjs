@@ -170,16 +170,18 @@ export default function HeroSearchPro({ model, count }) {
         />
       </div>
 
-      {/* CTA + side link — live count + arrow */}
-      <button className="fs-h-cta" type="submit">
-        <span className="fs-h-cta-icon" aria-hidden="true">{Icons.search}</span>
-        <span className="fs-h-cta-text">
+      {/* CTA + side link — Uber pattern: solid black button (not full
+          width), tight padding, with a text link to its right. */}
+      <div className="fs-h-cta-row">
+        <button className="fs-h-cta" type="submit">
           {fmtCount
-            ? <>Search <span className="fs-h-cta-count">{fmtCount}</span> aircraft</>
-            : 'Search aircraft'}
-        </span>
-        <span className="fs-h-cta-arrow" aria-hidden="true">→</span>
-      </button>
+            ? <>Search <span className="fs-h-cta-count">{fmtCount}</span></>
+            : 'Search'}
+        </button>
+        <a href="/login" className="fs-h-cta-side">
+          Log in to save searches
+        </a>
+      </div>
     </form>
   );
 }
