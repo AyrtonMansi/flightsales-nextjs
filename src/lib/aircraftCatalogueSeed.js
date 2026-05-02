@@ -67,16 +67,40 @@ export const MAKES_SEED = [
   { slug: 'rockwell-commander', name: 'Rockwell Commander',  country: 'USA',         founded_year: 1972, popularity: 40 },
   { slug: 'aero-commander',     name: 'Aero Commander',      country: 'USA',         founded_year: 1944, popularity: 41 },
 
-  // Tier 4 — rare / vintage / specialty
+  // Tier 3 cont. — popular bush, commuter, corporate (FAA/CASA volume)
+  { slug: 'dhc',                name: 'De Havilland Canada', country: 'Canada',      founded_year: 1928, popularity: 42 },
+  { slug: 'md-helicopters',     name: 'MD Helicopters',      country: 'USA',         founded_year: 1955, popularity: 43 },
+  { slug: 'sikorsky',           name: 'Sikorsky',            country: 'USA',         founded_year: 1923, popularity: 44 },
+  { slug: 'leonardo',           name: 'Leonardo Helicopters', country: 'Italy',      founded_year: 1948, popularity: 45 },
+  { slug: 'britten-norman',     name: 'Britten-Norman',      country: 'UK',          founded_year: 1953, popularity: 46 },
+  { slug: 'learjet',            name: 'Learjet',             country: 'USA',         founded_year: 1962, popularity: 47 },
+  { slug: 'hawker',             name: 'Hawker (Beechcraft)', country: 'USA',         founded_year: 1932, popularity: 48 },
+  { slug: 'enstrom',            name: 'Enstrom',             country: 'USA',         founded_year: 1959, popularity: 49 },
+
+  // Tier 4 — rare / specialty (commuter, light jets, kit)
   { slug: 'schweizer',          name: 'Schweizer',           country: 'USA',         founded_year: 1939, popularity: 50 },
   { slug: 'rotorway',           name: 'Rotorway',            country: 'USA',         founded_year: 1961, popularity: 51 },
   { slug: 'schempp-hirth',      name: 'Schempp-Hirth',       country: 'Germany',     founded_year: 1935, popularity: 52 },
   { slug: 'schleicher',         name: 'Alexander Schleicher', country: 'Germany',    founded_year: 1927, popularity: 53 },
+  { slug: 'eclipse',            name: 'Eclipse Aviation',    country: 'USA',         founded_year: 1998, popularity: 54 },
+  { slug: 'mitsubishi',         name: 'Mitsubishi (MU-2)',   country: 'Japan',       founded_year: 1920, popularity: 55 },
+  { slug: 'saab',               name: 'Saab',                country: 'Sweden',      founded_year: 1937, popularity: 56 },
+  { slug: 'fokker',             name: 'Fokker',              country: 'Netherlands', founded_year: 1912, popularity: 57 },
+  { slug: 'kitfox',             name: 'Kitfox Aircraft',     country: 'USA',         founded_year: 1984, popularity: 58 },
+  { slug: 'aero-vodochody',     name: 'Aero Vodochody',      country: 'Czechia',     founded_year: 1919, popularity: 59 },
+
+  // Tier 5 — vintage / collector (low volume but iconic)
   { slug: 'yakovlev',           name: 'Yakovlev (Yak)',      country: 'Russia',      founded_year: 1934, popularity: 60 },
   { slug: 'north-american',     name: 'North American',      country: 'USA',         founded_year: 1928, popularity: 61 },
   { slug: 'bellanca',           name: 'Bellanca',            country: 'USA',         founded_year: 1927, popularity: 62 },
   { slug: 'stinson',            name: 'Stinson',             country: 'USA',         founded_year: 1920, popularity: 63 },
   { slug: 'wilga',              name: 'PZL (Wilga)',         country: 'Poland',      founded_year: 1957, popularity: 64 },
+  { slug: 'antonov',            name: 'Antonov',             country: 'Ukraine',     founded_year: 1946, popularity: 65 },
+  { slug: 'aeronca',            name: 'Aeronca',             country: 'USA',         founded_year: 1928, popularity: 66 },
+  { slug: 'luscombe',           name: 'Luscombe',            country: 'USA',         founded_year: 1933, popularity: 67 },
+  { slug: 'taylorcraft',        name: 'Taylorcraft',         country: 'USA',         founded_year: 1936, popularity: 68 },
+  { slug: 'globe',              name: 'Globe Aircraft',      country: 'USA',         founded_year: 1941, popularity: 69 },
+  { slug: 'waco',               name: 'WACO',                country: 'USA',         founded_year: 1923, popularity: 70 },
 ];
 
 // Build a model row. All optional fields default to null so callers can
@@ -314,4 +338,86 @@ export const MODELS_SEED = [
   m({ make: 'cessna',             family: '414',          variant: 'A Chancellor', type_designator: 'C414', category: 'Multi Engine Piston', mission: ['tourer'], engine_count: 2, year_first: 1978, year_last: 1985, mtow_kg: 3062, seats: 8, engine_type: '2x Continental TSIO-520', cruise_kts: 207, range_nm: 1340, fuel_burn_lph: 130, ceiling_ft: 30000, aliases: ['C414','414A','Chancellor'] }),
   m({ make: 'cessna',             family: '421',          variant: 'C Golden Eagle', type_designator: 'C421', category: 'Multi Engine Piston', mission: ['tourer'], engine_count: 2, year_first: 1976, year_last: 1985, mtow_kg: 3379, seats: 8, engine_type: '2x Continental GTSIO-520', cruise_kts: 220, range_nm: 1487, fuel_burn_lph: 150, ceiling_ft: 30200, aliases: ['C421','421C','Golden Eagle'] }),
   m({ make: 'piper',              family: 'PA-31',        variant: 'Navajo', type_designator: 'PA31', category: 'Multi Engine Piston', mission: ['tourer'], engine_count: 2, year_first: 1967, year_last: 1984, mtow_kg: 2948, seats: 8, engine_type: '2x Lycoming TIO-540', cruise_kts: 198, range_nm: 1000, fuel_burn_lph: 130, ceiling_ft: 26300, aliases: ['Navajo','PA-31','Navajo Chieftain'] }),
+
+  // ── DE HAVILLAND CANADA — bush + commuter staples ─────────────
+  m({ make: 'dhc', family: 'DHC-2',    variant: 'Beaver',     type_designator: 'DHC2', category: 'Single Engine Piston', mission: ['floats','working','tourer'],         year_first: 1947, year_last: 1967, mtow_kg: 2308, seats: 7, engine_type: 'Pratt & Whitney R-985', cruise_kts: 105, range_nm: 470, fuel_burn_lph: 110, ceiling_ft: 18000, aliases: ['Beaver','DHC-2','DHC2','de Havilland Beaver'] }),
+  m({ make: 'dhc', family: 'DHC-3',    variant: 'Otter',      type_designator: 'DHC3', category: 'Single Engine Piston', mission: ['floats','working'],                   year_first: 1951, year_last: 1967, mtow_kg: 3629, seats: 11, engine_type: 'Pratt & Whitney R-1340', cruise_kts: 105, range_nm: 540, fuel_burn_lph: 150, ceiling_ft: 18800, aliases: ['Otter','DHC-3','DHC3'] }),
+  m({ make: 'dhc', family: 'DHC-6',    variant: 'Twin Otter', type_designator: 'DHC6', category: 'Turboprop',            mission: ['floats','working'], engine_count: 2,  year_first: 1965,                  mtow_kg: 5670, seats: 19, engine_type: '2x PT6A-27', cruise_kts: 182, range_nm: 770, fuel_burn_lph: 280, ceiling_ft: 25000, aliases: ['Twin Otter','DHC-6','DHC6','Twin Otter 300','Twin Otter 400'] }),
+
+  // ── MD HELICOPTERS (formerly Hughes) ──────────────────────────
+  m({ make: 'md-helicopters', family: 'MD',  variant: '500E',           type_designator: 'H500', category: 'Helicopter', mission: ['working','tourer'], year_first: 1968,                  mtow_kg: 1361, seats: 5, engine_type: 'Allison 250-C20B', cruise_kts: 134, range_nm: 232, fuel_burn_lph: 105, ceiling_ft: 16000, aliases: ['MD500','MD 500E','Hughes 500','Hughes 369'] }),
+  m({ make: 'md-helicopters', family: 'MD',  variant: '520N (NOTAR)',   type_designator: 'H500', category: 'Helicopter', mission: ['tourer'],            year_first: 1990,                  mtow_kg: 1610, seats: 5, engine_type: 'Allison 250-C20R', cruise_kts: 130, range_nm: 220, fuel_burn_lph: 110, ceiling_ft: 17600, aliases: ['MD520N','MD 520N','520N','NOTAR'] }),
+  m({ make: 'md-helicopters', family: 'MD',  variant: '600N',           type_designator: 'H600', category: 'Helicopter', mission: ['tourer','working'], year_first: 1997,                  mtow_kg: 1860, seats: 8, engine_type: 'Allison 250-C47', cruise_kts: 135, range_nm: 358, fuel_burn_lph: 145, ceiling_ft: 15500, aliases: ['MD600N','MD 600N','600N'] }),
+  m({ make: 'md-helicopters', family: 'MD',  variant: '902 Explorer',   type_designator: 'EXPL', category: 'Helicopter', mission: ['tourer'], engine_count: 2, year_first: 1992,                  mtow_kg: 3175, seats: 8, engine_type: '2x PW207E', cruise_kts: 140, range_nm: 350, fuel_burn_lph: 280, ceiling_ft: 18900, aliases: ['MD902','MD 902','Explorer','MD Explorer'] }),
+
+  // ── SIKORSKY ──────────────────────────────────────────────────
+  m({ make: 'sikorsky', family: 'S-76', variant: 'C++',  type_designator: 'S76',  category: 'Helicopter', mission: ['tourer','working'], engine_count: 2, year_first: 1979,                  mtow_kg: 5307, seats: 13, engine_type: '2x Turbomeca Arriel 2S2', cruise_kts: 155, range_nm: 411, fuel_burn_lph: 320, ceiling_ft: 13800, aliases: ['S-76','S76','S-76C++','Sikorsky S-76'] }),
+  m({ make: 'sikorsky', family: 'S-92',                   type_designator: 'S92',  category: 'Helicopter', mission: ['working'],          engine_count: 2, year_first: 2004,                  mtow_kg: 12020, seats: 19, engine_type: '2x GE CT7-8A', cruise_kts: 145, range_nm: 539, fuel_burn_lph: 750, ceiling_ft: 15000, aliases: ['S-92','S92'] }),
+
+  // ── LEONARDO HELICOPTERS (ex-AgustaWestland) ──────────────────
+  m({ make: 'leonardo', family: 'AW119', variant: 'Koala', type_designator: 'A119', category: 'Helicopter', mission: ['tourer','working'], year_first: 1995,                  mtow_kg: 2850, seats: 8, engine_type: 'Pratt & Whitney PT6B-37A', cruise_kts: 134, range_nm: 524, fuel_burn_lph: 200, ceiling_ft: 15000, aliases: ['AW119','AW119 Kx','Koala','Agusta 119'] }),
+  m({ make: 'leonardo', family: 'AW139',                  type_designator: 'A139', category: 'Helicopter', mission: ['working'], engine_count: 2, year_first: 2001,                  mtow_kg: 7000, seats: 15, engine_type: '2x Pratt & Whitney PT6C-67C', cruise_kts: 165, range_nm: 573, fuel_burn_lph: 480, ceiling_ft: 20000, aliases: ['AW139','Agusta 139','AB139'] }),
+  m({ make: 'leonardo', family: 'AW169',                  type_designator: 'A169', category: 'Helicopter', mission: ['tourer','working'], engine_count: 2, year_first: 2015,                  mtow_kg: 4800, seats: 10, engine_type: '2x Pratt & Whitney PW210A', cruise_kts: 155, range_nm: 462, fuel_burn_lph: 380, ceiling_ft: 14000, aliases: ['AW169'] }),
+
+  // ── BRITTEN-NORMAN — Islander commuter ─────────────────────────
+  m({ make: 'britten-norman', family: 'BN-2', variant: 'Islander',          type_designator: 'BN2P', category: 'Multi Engine Piston', mission: ['working','tourer'], engine_count: 2, year_first: 1965,                  mtow_kg: 2993, seats: 9, engine_type: '2x Lycoming O-540', cruise_kts: 135, range_nm: 875, fuel_burn_lph: 100, ceiling_ft: 13600, aliases: ['Islander','BN-2','BN2','BN-2A','BN-2B','BN-2B-20'] }),
+  m({ make: 'britten-norman', family: 'BN-2T', variant: 'Turbine Islander', type_designator: 'BN2T', category: 'Turboprop',            mission: ['working'],          engine_count: 2, year_first: 1980,                  mtow_kg: 3175, seats: 9, engine_type: '2x Rolls-Royce 250-B17F', cruise_kts: 150, range_nm: 1100, fuel_burn_lph: 200, ceiling_ft: 25000, aliases: ['BN-2T','BN2T','Turbine Islander'] }),
+
+  // ── LEARJET ────────────────────────────────────────────────────
+  m({ make: 'learjet', family: 'Learjet', variant: '35A', type_designator: 'LJ35', category: 'Light Jet',   engine_count: 2, year_first: 1976, year_last: 1994, mtow_kg: 8300, seats: 8, engine_type: '2x Honeywell TFE731', cruise_kts: 460, range_nm: 2056, ceiling_ft: 45000, aliases: ['Learjet 35','LJ35','Learjet 35A'] }),
+  m({ make: 'learjet', family: 'Learjet', variant: '45',  type_designator: 'LJ45', category: 'Midsize Jet', engine_count: 2, year_first: 1995, year_last: 2012, mtow_kg: 9300, seats: 8, engine_type: '2x Honeywell TFE731-20', cruise_kts: 462, range_nm: 1968, ceiling_ft: 51000, aliases: ['Learjet 45','LJ45'] }),
+  m({ make: 'learjet', family: 'Learjet', variant: '60',  type_designator: 'LJ60', category: 'Midsize Jet', engine_count: 2, year_first: 1991,                  mtow_kg: 10660, seats: 8, engine_type: '2x Pratt & Whitney PW305A', cruise_kts: 466, range_nm: 2406, ceiling_ft: 51000, aliases: ['Learjet 60','LJ60','Learjet 60XR'] }),
+  m({ make: 'learjet', family: 'Learjet', variant: '75',  type_designator: 'LJ75', category: 'Midsize Jet', engine_count: 2, year_first: 2013,                  mtow_kg: 9750, seats: 9, engine_type: '2x Honeywell TFE731-40BR', cruise_kts: 465, range_nm: 2040, ceiling_ft: 51000, aliases: ['Learjet 75','LJ75','Learjet 75 Liberty'] }),
+
+  // ── HAWKER ─────────────────────────────────────────────────────
+  m({ make: 'hawker', family: 'Hawker', variant: '800XP', type_designator: 'H25B', category: 'Heavy Jet', engine_count: 2, year_first: 1995, year_last: 2007, mtow_kg: 12700, seats: 9, engine_type: '2x Honeywell TFE731-5BR', cruise_kts: 448, range_nm: 2540, ceiling_ft: 41000, aliases: ['Hawker 800XP','H800XP','HS-125','BAE 125'] }),
+  m({ make: 'hawker', family: 'Hawker', variant: '900XP', type_designator: 'H25B', category: 'Heavy Jet', engine_count: 2, year_first: 2007, year_last: 2013, mtow_kg: 12700, seats: 9, engine_type: '2x Honeywell TFE731-50BR', cruise_kts: 448, range_nm: 2818, ceiling_ft: 41000, aliases: ['Hawker 900XP','H900XP'] }),
+  m({ make: 'hawker', family: 'Hawker', variant: '4000', type_designator: 'HA4T', category: 'Heavy Jet', engine_count: 2, year_first: 2008, year_last: 2013, mtow_kg: 17008, seats: 8, engine_type: '2x Pratt & Whitney PW308A', cruise_kts: 470, range_nm: 3190, ceiling_ft: 45000, aliases: ['Hawker 4000','H4000'] }),
+
+  // ── ENSTROM — small turbine helo ───────────────────────────────
+  m({ make: 'enstrom', family: '280', variant: 'FX',  type_designator: 'EN28', category: 'Helicopter', mission: ['trainer','tourer'], year_first: 1985,                  mtow_kg: 1180, seats: 3, engine_type: 'Lycoming HIO-360', cruise_kts: 102, range_nm: 280, fuel_burn_lph: 50, ceiling_ft: 12000, aliases: ['Enstrom 280','280FX','280 FX'] }),
+  m({ make: 'enstrom', family: '480', variant: 'B',   type_designator: 'EN48', category: 'Helicopter', mission: ['tourer','trainer'], year_first: 1992,                  mtow_kg: 1361, seats: 5, engine_type: 'Allison 250-C20W', cruise_kts: 116, range_nm: 354, fuel_burn_lph: 105, ceiling_ft: 13000, aliases: ['Enstrom 480','480B'] }),
+
+  // ── ECLIPSE — light jets ──────────────────────────────────────
+  m({ make: 'eclipse', family: 'Eclipse', variant: '500', type_designator: 'EA50', category: 'Light Jet', engine_count: 2, year_first: 2006, year_last: 2008, mtow_kg: 2722, seats: 6, engine_type: '2x Pratt & Whitney PW610F', cruise_kts: 370, range_nm: 1125, ceiling_ft: 41000, aliases: ['Eclipse 500','EA-500','EA50'] }),
+  m({ make: 'eclipse', family: 'Eclipse', variant: '550', type_designator: 'EA50', category: 'Light Jet', engine_count: 2, year_first: 2014,                  mtow_kg: 2722, seats: 6, engine_type: '2x Pratt & Whitney PW610F', cruise_kts: 375, range_nm: 1125, ceiling_ft: 41000, aliases: ['Eclipse 550','EA-550'] }),
+
+  // ── MITSUBISHI MU-2 — turboprop twin ───────────────────────────
+  m({ make: 'mitsubishi', family: 'MU-2', variant: 'B-60 Marquise', type_designator: 'MU2',  category: 'Turboprop', engine_count: 2, year_first: 1979, year_last: 1986, mtow_kg: 5250, seats: 11, engine_type: '2x Honeywell TPE331-10', cruise_kts: 290, range_nm: 1500, ceiling_ft: 31000, aliases: ['MU-2','MU2','Marquise','MU-2B-60'] }),
+  m({ make: 'mitsubishi', family: 'MU-2', variant: 'Solitaire',     type_designator: 'MU2',  category: 'Turboprop', engine_count: 2, year_first: 1979, year_last: 1986, mtow_kg: 4990, seats: 9,  engine_type: '2x Honeywell TPE331-10', cruise_kts: 290, range_nm: 1300, ceiling_ft: 31000, aliases: ['Solitaire','MU-2 Solitaire'] }),
+
+  // ── SAAB — commuter turboprops ─────────────────────────────────
+  m({ make: 'saab', family: 'Saab', variant: '340A', type_designator: 'SF34', category: 'Turboprop', engine_count: 2, year_first: 1984, year_last: 1989, mtow_kg: 12700, seats: 34, engine_type: '2x GE CT7-5A2', cruise_kts: 250, range_nm: 800, ceiling_ft: 25000, aliases: ['Saab 340','Saab 340A','SF340'] }),
+  m({ make: 'saab', family: 'Saab', variant: '2000', type_designator: 'SB20', category: 'Turboprop', engine_count: 2, year_first: 1994, year_last: 1999, mtow_kg: 22999, seats: 50, engine_type: '2x Allison AE 2100A', cruise_kts: 350, range_nm: 1500, ceiling_ft: 31000, aliases: ['Saab 2000','S2000'] }),
+
+  // ── FOKKER — regional jets/turboprops ─────────────────────────
+  m({ make: 'fokker', family: 'F27', variant: 'Friendship', type_designator: 'F27',  category: 'Turboprop',           engine_count: 2, year_first: 1958, year_last: 1987, mtow_kg: 20410, seats: 48, engine_type: '2x Rolls-Royce Dart', cruise_kts: 250, range_nm: 1080, ceiling_ft: 29500, aliases: ['F27','F-27','Friendship','Fokker Friendship'] }),
+  m({ make: 'fokker', family: 'F50',                       type_designator: 'F50',  category: 'Turboprop',           engine_count: 2, year_first: 1987, year_last: 1997, mtow_kg: 19950, seats: 50, engine_type: '2x Pratt & Whitney PW125B', cruise_kts: 280, range_nm: 1600, ceiling_ft: 25000, aliases: ['F50','Fokker 50'] }),
+  m({ make: 'fokker', family: 'F100',                      type_designator: 'F100', category: 'Heavy Jet',           engine_count: 2, year_first: 1986, year_last: 1997, mtow_kg: 44450, seats: 100, engine_type: '2x Rolls-Royce Tay 650', cruise_kts: 462, range_nm: 1550, ceiling_ft: 35000, aliases: ['F100','Fokker 100'] }),
+
+  // ── KITFOX — popular kit/STOL ─────────────────────────────────
+  m({ make: 'kitfox', family: 'Series 7', variant: 'Super Sport', type_designator: 'KFOX', category: 'LSA', mission: ['kit','floats','working'], year_first: 2010,                  mtow_kg: 590, seats: 2, engine_type: 'Rotax 912 ULS', cruise_kts: 110, range_nm: 420, fuel_burn_lph: 17, ceiling_ft: 15000, aliases: ['Kitfox 7','Kitfox SS','Kitfox Super Sport','Series 7'] }),
+  m({ make: 'kitfox', family: 'Speedster',                       type_designator: 'KFOX', category: 'LSA', mission: ['kit','tourer'],          year_first: 2014,                  mtow_kg: 590, seats: 2, engine_type: 'Rotax 912 ULS', cruise_kts: 120, range_nm: 460, fuel_burn_lph: 17, ceiling_ft: 15000, aliases: ['Kitfox Speedster','Speedster'] }),
+
+  // ── AERO VODOCHODY L-39 — jet trainer / warbird ───────────────
+  m({ make: 'aero-vodochody', family: 'L-39', variant: 'Albatros', type_designator: 'L39', category: 'Warbird', mission: ['aerobatic'], engine_count: 1, year_first: 1971, year_last: 1996, mtow_kg: 4700, seats: 2, engine_type: 'Ivchenko AI-25TL', cruise_kts: 405, range_nm: 590, ceiling_ft: 36000, aliases: ['L-39','L39','L-39 Albatros','Albatros'] }),
+
+  // ── ANTONOV ────────────────────────────────────────────────────
+  m({ make: 'antonov', family: 'An-2', type_designator: 'AN2', category: 'Single Engine Piston', mission: ['working','floats'], year_first: 1947, year_last: 2001, mtow_kg: 5500, seats: 12, engine_type: 'Shvetsov ASh-62IR', cruise_kts: 100, range_nm: 525, fuel_burn_lph: 200, ceiling_ft: 14400, aliases: ['An-2','AN2','Antonov 2','Colt'] }),
+
+  // ── AERONCA — vintage 2-seat ──────────────────────────────────
+  m({ make: 'aeronca', family: '7AC',  variant: 'Champion', type_designator: 'AR15', category: 'Single Engine Piston', mission: ['tourer'], year_first: 1944, year_last: 1949, mtow_kg: 567, seats: 2, engine_type: 'Continental A-65', cruise_kts: 80, range_nm: 350, fuel_burn_lph: 18, ceiling_ft: 12500, aliases: ['7AC','Aeronca Champ','Champ','Champion'] }),
+  m({ make: 'aeronca', family: '11AC', variant: 'Chief',    type_designator: 'AR11', category: 'Single Engine Piston', mission: ['tourer'], year_first: 1945, year_last: 1950, mtow_kg: 567, seats: 2, engine_type: 'Continental A-65', cruise_kts: 76, range_nm: 280, fuel_burn_lph: 18, ceiling_ft: 12000, aliases: ['11AC','Aeronca Chief','Chief'] }),
+
+  // ── LUSCOMBE 8 ─────────────────────────────────────────────────
+  m({ make: 'luscombe', family: '8', variant: 'Silvaire', type_designator: 'LSC8', category: 'Single Engine Piston', mission: ['tourer'], year_first: 1937, year_last: 1960, mtow_kg: 590, seats: 2, engine_type: 'Continental A-65/C-85', cruise_kts: 90, range_nm: 400, fuel_burn_lph: 18, ceiling_ft: 14500, aliases: ['Luscombe 8','Silvaire','8A','8E','8F'] }),
+
+  // ── TAYLORCRAFT ────────────────────────────────────────────────
+  m({ make: 'taylorcraft', family: 'BC-12', variant: 'D', type_designator: 'TAY', category: 'Single Engine Piston', mission: ['tourer'], year_first: 1946, year_last: 1948, mtow_kg: 567, seats: 2, engine_type: 'Continental A-65', cruise_kts: 90, range_nm: 230, fuel_burn_lph: 18, ceiling_ft: 12000, aliases: ['BC-12D','Taylorcraft BC-12','BC12'] }),
+
+  // ── GLOBE SWIFT ────────────────────────────────────────────────
+  m({ make: 'globe', family: 'GC-1', variant: 'B Swift', type_designator: 'GC1', category: 'Single Engine Piston', mission: ['tourer','aerobatic'], year_first: 1946, year_last: 1951, mtow_kg: 717, seats: 2, engine_type: 'Continental C-145', cruise_kts: 130, range_nm: 420, fuel_burn_lph: 30, ceiling_ft: 16000, aliases: ['GC-1B','Swift','Globe Swift','Temco Swift','GC1B'] }),
+
+  // ── WACO YMF (modern reproduction biplane) ────────────────────
+  m({ make: 'waco', family: 'YMF', variant: '5C', type_designator: 'WAC5', category: 'Single Engine Piston', mission: ['aerobatic','tourer','vintage'], year_first: 1986,                  mtow_kg: 1361, seats: 3, engine_type: 'Jacobs R-755', cruise_kts: 100, range_nm: 560, fuel_burn_lph: 75, ceiling_ft: 17500, aliases: ['WACO YMF','YMF-5','YMF5','YMF-5C'] }),
 ];
