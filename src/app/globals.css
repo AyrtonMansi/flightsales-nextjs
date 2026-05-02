@@ -3297,6 +3297,18 @@ html, body { overflow-x: hidden; max-width: 100%; }
    STACKED ROWS — Uber-style pickup/dropoff pattern
    Pin column (●) on the left + dotted connector between rows.
    ============================================================ */
+/* The hero v3 form is just a layout container — no background, no
+   border, no shadow. The AI input and the CTA + side-link float on
+   the page bg as standalone elements; only the filter rows live in
+   gray-tinted cards (.fs-h-stack). User-asked: AI search and Search
+   button visually outside the same surface as the filters. */
+.fs-h-stackform {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+}
+
 /* Soft-grey row stack matching Uber's pickup/dropoff card. No
    surrounding border — the row fill alone defines the surface. */
 .fs-h-stack {
@@ -3309,8 +3321,9 @@ html, body { overflow-x: hidden; max-width: 100%; }
 }
 /* Solid black connector line running through every pin. The pins
    carry a halo that matches the row fill so the line cleanly
-   "passes through" each pin without needing per-pin masks. */
-.fs-h-stack::before {
+   "passes through" each pin without needing per-pin masks.
+   Suppressed on single-row .fs-h-stack-solo cards (Location). */
+.fs-h-stack:not(.fs-h-stack-solo)::before {
   content: '';
   position: absolute;
   left: 23.5px;

@@ -88,7 +88,7 @@ export default function HeroSearchPro({ model, count }) {
 
   return (
     <form
-      className="fs-h-card"
+      className="fs-h-stackform"
       onSubmit={(e) => { e.preventDefault(); onManualSearch(); }}
     >
       {/* AI input — sparkle, gradient wash, ⌘K hint */}
@@ -117,8 +117,8 @@ export default function HeroSearchPro({ model, count }) {
         <kbd className="fs-h-kbd" aria-hidden="true">⌘K</kbd>
       </label>
 
-      {/* Vertically-stacked rows with the Uber pin-line connector — one
-          row per facet so each gets a label + value + native picker. */}
+      {/* Group 1 — what aircraft.   Type + Make in one stacked card
+          with internal pin-line connector. */}
       <div className="fs-h-stack">
         <SelectField
           stacked
@@ -136,6 +136,11 @@ export default function HeroSearchPro({ model, count }) {
           placeholder="All makes"
           options={makeOptions}
         />
+      </div>
+
+      {/* Group 2 — when + how much.   Year + Price ranges, separate
+          card for visual breathing room (Uber-style breakup). */}
+      <div className="fs-h-stack">
         <SelectRangeField
           stacked
           label="Year"
@@ -160,6 +165,12 @@ export default function HeroSearchPro({ model, count }) {
           minOptions={PRICE_FROM_OPTIONS}
           maxOptions={PRICE_TO_OPTIONS}
         />
+      </div>
+
+      {/* Standalone Location pill — single field, no connector needed.
+          Reads as the "destination" of the search, mirroring how Uber
+          treats the Pickup-now pill as its own floating element. */}
+      <div className="fs-h-stack fs-h-stack-solo">
         <SelectField
           stacked
           label="Location"
