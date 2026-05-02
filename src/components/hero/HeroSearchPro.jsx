@@ -118,75 +118,69 @@ export default function HeroSearchPro({ model, count }) {
         <kbd className="fs-h-kbd" aria-hidden="true">⌘K</kbd>
       </label>
 
-      {/* Cards group — wraps all three filter cards so we can draw a
-          single continuous connector line that passes through every
-          card and bridges the gaps between them. The line lives behind
-          the cards (z-index -1); cards' own backgrounds cover it where
-          they sit, so it only shows in the gaps; each card has its
-          own internal connector that completes the visible loop. */}
+      {/* Cards group — five individual cards (one per facet) with a
+          single hairline connector that runs from Type's pickup pin
+          all the way to Location's destination square, passing through
+          every card and every gap. */}
       <div className="fs-h-cards-group">
-      {/* Group 1 — what aircraft.   Type + Make in one stacked card
-          with internal pin-line connector. */}
-      <div className="fs-h-stack">
-        <SelectField
-          stacked
-          label="Type"
-          value={searchCat}
-          onChange={setSearchCat}
-          placeholder="All types"
-          options={CATEGORIES.map((c) => ({ value: c, label: c }))}
-        />
-        <SelectField
-          stacked
-          label="Make"
-          value={searchMake}
-          onChange={setSearchMake}
-          placeholder="All makes"
-          options={makeOptions}
-        />
-      </div>
-
-      {/* Group 2 — when + how much.   Year + Price ranges, separate
-          card for visual breathing room (Uber-style breakup). */}
-      <div className="fs-h-stack">
-        <SelectRangeField
-          stacked
-          label="Year"
-          minValue={yearFrom}
-          maxValue={yearTo}
-          onMinChange={setYearFrom}
-          onMaxChange={setYearTo}
-          minPlaceholder="From"
-          maxPlaceholder="To"
-          minOptions={YEAR_OPTIONS}
-          maxOptions={YEAR_OPTIONS}
-        />
-        <SelectRangeField
-          stacked
-          label="Price"
-          minValue={priceFrom}
-          maxValue={priceTo}
-          onMinChange={setPriceFrom}
-          onMaxChange={setPriceTo}
-          minPlaceholder="Min"
-          maxPlaceholder="Max"
-          minOptions={PRICE_FROM_OPTIONS}
-          maxOptions={PRICE_TO_OPTIONS}
-        />
-      </div>
-
-      {/* Standalone Location pill — single field, ends the route.
-          Reads as the "destination" of the search. */}
-      <div className="fs-h-stack fs-h-stack-solo">
-        <SelectField
-          stacked
-          label="Location"
-          value={searchState}
-          onChange={setSearchState}
-          placeholder="Anywhere in Australia"
-          options={STATES.map((s) => ({ value: s, label: s }))}
-        />
-      </div>
+        <div className="fs-h-stack">
+          <SelectField
+            stacked
+            label="Type"
+            value={searchCat}
+            onChange={setSearchCat}
+            placeholder="All types"
+            options={CATEGORIES.map((c) => ({ value: c, label: c }))}
+          />
+        </div>
+        <div className="fs-h-stack">
+          <SelectField
+            stacked
+            label="Make"
+            value={searchMake}
+            onChange={setSearchMake}
+            placeholder="All makes"
+            options={makeOptions}
+          />
+        </div>
+        <div className="fs-h-stack">
+          <SelectRangeField
+            stacked
+            label="Year"
+            minValue={yearFrom}
+            maxValue={yearTo}
+            onMinChange={setYearFrom}
+            onMaxChange={setYearTo}
+            minPlaceholder="From"
+            maxPlaceholder="To"
+            minOptions={YEAR_OPTIONS}
+            maxOptions={YEAR_OPTIONS}
+          />
+        </div>
+        <div className="fs-h-stack">
+          <SelectRangeField
+            stacked
+            label="Price"
+            minValue={priceFrom}
+            maxValue={priceTo}
+            onMinChange={setPriceFrom}
+            onMaxChange={setPriceTo}
+            minPlaceholder="Min"
+            maxPlaceholder="Max"
+            minOptions={PRICE_FROM_OPTIONS}
+            maxOptions={PRICE_TO_OPTIONS}
+          />
+        </div>
+        <div className="fs-h-stack">
+          <SelectField
+            stacked
+            label="Location"
+            value={searchState}
+            onChange={setSearchState}
+            placeholder="Anywhere in Australia"
+            options={STATES.map((s) => ({ value: s, label: s }))}
+          />
+        </div>
       </div>{/* /fs-h-cards-group */}
 
       {/* CTA — Uber pattern: solid black button, tight padding. */}

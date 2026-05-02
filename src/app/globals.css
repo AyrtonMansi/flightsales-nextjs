@@ -3320,76 +3320,47 @@ html, body { overflow-x: hidden; max-width: 100%; }
   max-width: 500px;
 }
 
-/* Cards group — wraps the 3 filter cards. Hosts the single continuous
-   connector line that runs from the first pin to the last, passing
-   through the cards (where pin halos cover it) and the 10px gaps
-   between them. */
+/* Cards group — five individual cards stacked with consistent gaps.
+   The connector hairline runs through every card AND every gap so
+   the pins read as one continuous trail from Type → Location. */
 .fs-h-cards-group {
   position: relative;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 10px;          /* uniform gap between every card */
 }
-/* The continuous connector. Sits behind cards (z-index -1) so it's
-   only visible in the gaps between them — inside cards their own
-   per-card connector takes over via .fs-h-stack::before. Both lines
-   share the same x = 23.5px from card-edge, so the visible result is
-   one unbroken vertical line from first pin to last pin. */
+/* The single continuous connector. Spans from the first pin (centred
+   at ~25px from the cards-group top — first card top + half its
+   ~50px height) to the last pin (~25px from the bottom). Sits behind
+   the card backgrounds — pin halos cover it where each pin sits, the
+   line passes through the gaps in between, and inside cards the line
+   is visible above + below the pin (covered only by the halo). */
 .fs-h-cards-group::before {
   content: '';
   position: absolute;
   left: 24px;
-  top: 28px;            /* aligns with the first pin */
-  bottom: 28px;         /* aligns with the last pin */
+  top: 25px;
+  bottom: 25px;
   width: 1px;
-  background: rgba(10, 10, 10, 0.22);
-  /* No z-index — paint order alone keeps cards on top in the cards
-     they cover, line shows through in the gaps between them. */
+  background: rgba(10, 10, 10, 0.30);
+  /* z-index needs to be ABOVE the cards' bg so the line is visible
+     INSIDE cards too — pins' box-shadow halos still cover it where
+     they sit, so visually the line is unbroken from pin to pin. */
+  z-index: 1;
+  pointer-events: none;
 }
 @media (max-width: 480px) {
-  /* Card padding tightens on mobile (12px) so the pins sit further
-     left — pull the connector with them. */
   .fs-h-cards-group::before { left: 20px; }
 }
-/* Solo Location card — line drops in from the top of the card to its
-   centred destination square. Pairs with the form-group line above. */
-.fs-h-stack.fs-h-stack-solo {
-  position: relative;
-}
-.fs-h-stack.fs-h-stack-solo::before {
-  content: '';
-  position: absolute;
-  left: 24px;
-  top: 0;
-  bottom: 50%;         /* ends at the pin sitting at vertical centre */
-  width: 1px;
-  background: rgba(10, 10, 10, 0.22);
-  z-index: 0;
-}
 
-/* Soft-grey row stack matching Uber's pickup/dropoff card. No
-   surrounding border — the row fill alone defines the surface. */
+/* Each card — soft-grey pill, no surrounding border. */
 .fs-h-stack {
   position: relative;
   background: var(--fs-bg-2, #f6f6f7);
   border: 0;
   border-radius: 14px;
   padding: 0;
-  overflow: hidden;
-}
-/* Solid black connector line running through every pin. The pins
-   carry a halo that matches the row fill so the line cleanly
-   "passes through" each pin without needing per-pin masks.
-   Suppressed on single-row .fs-h-stack-solo cards (Location). */
-.fs-h-stack:not(.fs-h-stack-solo)::before {
-  content: '';
-  position: absolute;
-  left: 24px;
-  top: 32px;
-  bottom: 32px;
-  width: 1px;
-  background: rgba(10, 10, 10, 0.22);
-  z-index: 0;
+  overflow: visible;
 }
 .fs-h-stack-row {
   position: relative;
@@ -3407,10 +3378,9 @@ html, body { overflow-x: hidden; max-width: 100%; }
 /* Default pin: small solid filled black dot for the in-between
    rows (waypoints between pickup and dropoff). The halo covers
    the line passing behind it. */
-/* Default waypoint dot — small filled black 5px circle. Halo (4px ring
-   of card bg) covers the connector line passing behind it. Uber's
-   actual pins are this size — keeping ours small was the missing
-   piece making the joiner read "too bold" before. */
+/* Default waypoint dot — small filled black 5px circle on every
+   middle card (Make, Year, Price). Halo covers the line passing
+   behind it. */
 .fs-h-stack-pin {
   width: 5px;
   height: 5px;
@@ -3419,24 +3389,20 @@ html, body { overflow-x: hidden; max-width: 100%; }
   border: 0;
   box-shadow: 0 0 0 4px var(--fs-bg-2, #f6f6f7);
   flex-shrink: 0;
-  margin-left: 6px;     /* centres 5px dot on the 1px line at x=24 */
+  margin-left: 6px;     /* centres the 5px dot on the 1px line at x=24 */
 }
-.fs-h-stack-row:first-child .fs-h-stack-pin {
+/* First card in the group → Type → pickup circle */
+.fs-h-cards-group > .fs-h-stack:first-child .fs-h-stack-pin {
   width: 9px;
   height: 9px;
   margin-left: 4px;
 }
-.fs-h-stack-row:last-child .fs-h-stack-pin {
+/* Last card in the group → Location → destination square */
+.fs-h-cards-group > .fs-h-stack:last-child .fs-h-stack-pin {
   width: 9px;
   height: 9px;
   border-radius: 2px;
   margin-left: 4px;
-}
-@media (max-width: 480px) {
-  /* Card padding is 12px on phones (vs 16 desktop), so pins shift
-     left by 4px — already matched by .fs-h-cards-group::before
-     left:20 above. Pin margins stay the same since both line and
-     pins shift together. */
 }
 .fs-h-stack-label {
   font: 600 11px/1 -apple-system, system-ui, sans-serif;
