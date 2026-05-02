@@ -26,7 +26,7 @@ export function useAircraft(filters = {}) {
     // pass scalars (useFeaturedAircraft, dealer detail page, etc.)
     category, manufacturer, state, condition, dealerId,
     // new array-shaped multi-select fields used by BuyPage
-    categories, manufacturers, states, conditions,
+    categories, manufacturers, models, states, conditions,
     engineCounts, engineTypes, engineMakes,
     avionicsSuites, autopilots, damageHistory,
     minPrice, maxPrice, maxHours, ifrOnly, glassOnly,
@@ -43,6 +43,7 @@ export function useAircraft(filters = {}) {
 
   const catKey = (categories || []).join('|');
   const makeKey = (manufacturers || []).join('|');
+  const modelKey = (models || []).join('|');
   const stateKey = (states || []).join('|');
   const condKey = (conditions || []).join('|');
   const engCountKey = (engineCounts || []).join('|');
@@ -79,6 +80,7 @@ export function useAircraft(filters = {}) {
       // New multi-select path — Supabase `.in()` for OR-within-field.
       if (categories && categories.length) query = query.in('category', categories);
       if (manufacturers && manufacturers.length) query = query.in('manufacturer', manufacturers);
+      if (models && models.length) query = query.in('model', models);
       if (states && states.length) query = query.in('state', states);
       if (conditions && conditions.length) query = query.in('condition', conditions);
 
@@ -176,7 +178,7 @@ export function useAircraft(filters = {}) {
     }
   }, [
     category, manufacturer, state, condition, dealerId,
-    catKey, makeKey, stateKey, condKey,
+    catKey, makeKey, modelKey, stateKey, condKey,
     engCountKey, engTypeKey, engMakeKey,
     avSuiteKey, apKey, damageKey,
     minPrice, maxPrice, maxHours, ifrOnly, glassOnly,

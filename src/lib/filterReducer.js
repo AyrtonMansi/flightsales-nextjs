@@ -12,6 +12,7 @@ export const initialFilters = {
   search: '',
   categories: [],
   manufacturers: [],
+  models: [],          // free-text model strings (matches aircraft.model column)
   states: [],
   conditions: [],
   minPrice: '',
@@ -113,6 +114,7 @@ export function countActiveTotal(state) {
   if (state.search) n++;
   n += state.categories.length > 0 ? 1 : 0;
   n += state.manufacturers.length > 0 ? 1 : 0;
+  n += state.models.length > 0 ? 1 : 0;
   n += state.states.length > 0 ? 1 : 0;
   n += state.conditions.length > 0 ? 1 : 0;
   if (state.minPrice || state.maxPrice) n++;
@@ -134,6 +136,7 @@ export function toQueryFilters(state) {
     // basic
     categories: state.categories,
     manufacturers: state.manufacturers,
+    models: state.models,
     states: state.states,
     conditions: state.conditions,
     minPrice: state.minPrice || undefined,

@@ -77,6 +77,31 @@ export default function FilterColumn({ state, dispatch, total, user }) {
     ? catalogue.makes.map((mk) => ({ value: mk.name, label: mk.name }))
     : MANUFACTURERS.map((m) => ({ value: m, label: m }));
 
+  // Model options cascade from selected makes. We map the user-picked
+  // make NAMES (e.g. "Cessna") back to make slugs so we can fetch their
+  // models from the catalogue. Each option's value is the model row's
+  // name fragment that matches the listing's `model` column — so
+  // checking "172S Skyhawk" filters the DB by model = "172S Skyhawk".
+  const selectedMakeSlugs = state.manufacturers
+    .map((name) => catalogue.makes.find((mk) => mk.name === name)?.slug)
+    .filter(Boolean);
+  const modelOptions = selectedMakeSlugs.length === 0
+    ? []
+    : selectedMakeSlugs
+        .flatMap((slug) => catalogue.modelsByMake.get(slug) ?? [])
+        .map((mdl) => {
+          // The listing's `model` column stores the seller's text
+          // (e.g. "172S Skyhawk", "SR22T"). Match against the variant
+          // when present, falling back to family for variant-less entries.
+          const value = mdl.variant
+            ? `${mdl.family} ${mdl.variant}`.trim()
+            : mdl.family;
+          return { value, label: value };
+        })
+        // Dedupe — the same model name might appear under multiple makes
+        // (rare, but Vans RV variants can collide).
+        .filter((opt, i, arr) => arr.findIndex((o) => o.value === opt.value) === i);
+
   const activeTotal = countActiveTotal(state);
   const perfActive = countActiveInSection(state, SECTION_FIELDS.performance);
   const engActive = countActiveInSection(state, SECTION_FIELDS.engine);
@@ -161,6 +186,24 @@ export default function FilterColumn({ state, dispatch, total, user }) {
             searchKey="Filter makes"
           />
         </div>
+
+        {/* Model — cascades from Make. Hidden until a make is selected so
+            the filter doesn't dump 150 model names on a user who hasn't
+            narrowed yet. Once a make is picked, only that make's models
+            appear (with all selected makes' models if multi-selected). */}
+        {state.manufacturers.length > 0 && (
+          <div className="fs-fc-field">
+            <span className="fs-fc-label">Model</span>
+            <CheckboxList
+              options={modelOptions}
+              selected={state.models}
+              onToggle={v => toggle('models', v)}
+              maxVisible={6}
+              searchable
+              searchKey="Filter models"
+            />
+          </div>
+        )}
 
         {/* Location */}
         <div className="fs-fc-field">
