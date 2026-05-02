@@ -709,3 +709,31 @@ CREATE POLICY "Aircraft models are publicly readable"
 DROP POLICY IF EXISTS "Aircraft model aliases are publicly readable" ON aircraft_model_aliases;
 CREATE POLICY "Aircraft model aliases are publicly readable"
   ON aircraft_model_aliases FOR SELECT USING (true);
+
+-- ============================================================
+-- BUSINESS / DEALER ACCOUNT TYPE — extends profiles
+-- ============================================================
+-- Users now self-select Private vs Business at signup. Business path
+-- creates a dealer_applications row + flags pending_dealer=true; admin
+-- approval flips role to 'dealer' and clears the pending flag.
+
+ALTER TABLE profiles
+  ADD COLUMN IF NOT EXISTS account_type TEXT DEFAULT 'private'
+    CHECK (account_type IN ('private', 'business'));
+
+ALTER TABLE profiles
+  ADD COLUMN IF NOT EXISTS pending_dealer BOOLEAN DEFAULT FALSE;
+
+-- Subscription plan + status. 'hobby' = free; everything else needs a
+-- live Stripe sub. Stripe wiring is a separate sprint — these columns
+-- exist so the BusinessDashboard can read state from day one.
+ALTER TABLE profiles
+  ADD COLUMN IF NOT EXISTS subscription_plan TEXT DEFAULT 'hobby'
+    CHECK (subscription_plan IN ('hobby','private_premium','dealer_lite','pro','enterprise'));
+
+ALTER TABLE profiles
+  ADD COLUMN IF NOT EXISTS subscription_status TEXT DEFAULT 'inactive'
+    CHECK (subscription_status IN ('inactive','trial','active','past_due','cancelled'));
+
+-- Index for fast "find all pending dealers" admin queries
+CREATE INDEX IF NOT EXISTS idx_profiles_pending_dealer ON profiles(pending_dealer) WHERE pending_dealer = TRUE;

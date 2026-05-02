@@ -25,7 +25,10 @@ import LoginPage from "./pages/LoginPage";
 const ListingDetail   = dynamic(() => import("./pages/ListingDetail"));
 const SellPage        = dynamic(() => import("./pages/SellPage"));
 const DashboardPage   = dynamic(() => import("./pages/DashboardPage"));
+const BusinessDashboardPage = dynamic(() => import("./pages/BusinessDashboardPage"));
+const BusinessOnboarding    = dynamic(() => import("./onboarding/BusinessOnboarding"));
 const AdminPage       = dynamic(() => import("./pages/AdminPage"));
+import PendingReviewBanner from "./dealer/PendingReviewBanner";
 const RefundsPage     = dynamic(() => import("./pages/RefundsPage"));
 const AboutPage       = dynamic(() => import("./pages/AboutPage"));
 const NewsPage        = dynamic(() => import("./pages/NewsPage"));
@@ -204,6 +207,11 @@ export default function FlightSalesApp({
     // Role priority: explicit profiles.role column > is_dealer flag > private default.
     // Hardcoded admin email check has been removed — admins must be flagged via profiles.role = 'admin' in the DB.
     role: profile?.role === 'admin' ? 'admin' : (profile?.is_dealer ? 'dealer' : 'private'),
+    // Business-account state — drives onboarding redirect + pending banner.
+    account_type: profile?.account_type || 'private',
+    pending_dealer: !!profile?.pending_dealer,
+    subscription_plan: profile?.subscription_plan || 'hobby',
+    subscription_status: profile?.subscription_status || 'inactive',
     avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(profile?.full_name || authUser.email || 'User')}&background=0a0a0a&color=fff`,
     created_at: authUser.created_at
   } : null;
@@ -274,7 +282,28 @@ export default function FlightSalesApp({
     if (page === 'dashboard' && !authUser && !demoUser) setPage('login');
     if (page === 'dashboard' && effectiveUser?.role === 'admin') setPage('admin');
     if (page === 'admin' && effectiveUser?.role !== 'admin') setPage(authUser || demoUser ? 'dashboard' : 'login');
-  }, [page, authUser, authLoading, effectiveUser?.role, demoUser]);
+    // Business signups land on onboarding the first time. Once their
+    // application is submitted (pending_dealer flips true) or admin
+    // approves (role becomes 'dealer'), they fall through to the
+    // appropriate dashboard.
+    if (
+      page === 'dashboard' &&
+      effectiveUser?.account_type === 'business' &&
+      !effectiveUser?.pending_dealer &&
+      effectiveUser?.role !== 'dealer' &&
+      effectiveUser?.role !== 'admin'
+    ) {
+      setPage('onboarding');
+    }
+    // Onboarding gate — reachable only for signed-in users whose app
+    // hasn't been submitted yet. Bounce everyone else.
+    if (page === 'onboarding') {
+      if (!authUser && !demoUser) setPage('login');
+      else if (effectiveUser?.pending_dealer || effectiveUser?.role === 'dealer') {
+        setPage('dashboard');
+      }
+    }
+  }, [page, authUser, authLoading, effectiveUser?.role, effectiveUser?.account_type, effectiveUser?.pending_dealer, demoUser]);
 
   const onSave = async (id) => {
     if (!authUser) { setToast("Sign in to save aircraft"); return; }
@@ -321,6 +350,9 @@ export default function FlightSalesApp({
     <>
       <Nav page={page} setPage={setPageWrap} setMobileOpen={setMobileOpen} mobileOpen={mobileOpen} user={user} signOut={signOut} setDashboardTab={setDashboardTab} />
       <MobileSubBar setPage={setPageWrap} />
+      {/* Global "your business application is under review" banner —
+          renders nothing for users who aren't pending. */}
+      <PendingReviewBanner user={effectiveUser} onContinue={() => setPageWrap('dashboard')} />
       {page !== 'home' && page !== 'detail' && <Breadcrumbs />}
 
       {page === "home" && <HomePage setPage={setPageWrap} setSelectedListing={setSelectedListing} savedIds={savedIds} onSave={onSave} setSearchFilters={setSearchFilters} initialHomeData={initialHomeData} />}
@@ -334,7 +366,39 @@ export default function FlightSalesApp({
       {page === "contact" && <ContactPage />}
       {page === "refunds" && <RefundsPage />}
       {page === "login" && <LoginPage setPage={setPageWrap} signIn={signIn} signUp={signUp} signInWithGoogle={signInWithGoogle} resetPassword={resetPassword} loginDemo={loginDemo} />}
-      {page === "dashboard" && effectiveUser && effectiveUser.role !== 'admin' && <DashboardPage user={effectiveUser} setPage={setPageWrap} signOut={signOut} savedIds={savedIds} savedListings={savedListings} onSave={onSave} onSelectListing={setSelectedListing} activeTab={dashboardTab} setActiveTab={setDashboardTab} />}
+      {/* Business onboarding wizard — shown right after a brand-new
+          business signup. Self-completes by setting pending_dealer=true
+          and falls through to the dashboard. */}
+      {page === "onboarding" && effectiveUser && (
+        <BusinessOnboarding
+          user={effectiveUser}
+          onComplete={() => setPageWrap('dashboard')}
+        />
+      )}
+      {/* Dealer dashboard for verified dealers; private dashboard for
+          everyone else (private + pending business sellers — they get
+          the pending banner instead of the business dashboard). */}
+      {page === "dashboard" && effectiveUser && effectiveUser.role === 'dealer' && (
+        <BusinessDashboardPage
+          user={effectiveUser}
+          setPage={setPageWrap}
+          signOut={signOut}
+          onSelectListing={setSelectedListing}
+        />
+      )}
+      {page === "dashboard" && effectiveUser && effectiveUser.role !== 'admin' && effectiveUser.role !== 'dealer' && (
+        <DashboardPage
+          user={effectiveUser}
+          setPage={setPageWrap}
+          signOut={signOut}
+          savedIds={savedIds}
+          savedListings={savedListings}
+          onSave={onSave}
+          onSelectListing={setSelectedListing}
+          activeTab={dashboardTab}
+          setActiveTab={setDashboardTab}
+        />
+      )}
       {page === "admin" && effectiveUser?.role === 'admin' && <AdminPage user={effectiveUser} setPage={setPageWrap} signOut={signOut} />}
 
       <Footer />

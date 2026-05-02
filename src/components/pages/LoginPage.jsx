@@ -231,12 +231,12 @@ const LoginPage = ({ setPage, signIn, signUp, signInWithGoogle, resetPassword, l
                       <span style={{ fontSize: 11, color: "var(--fs-gray-400)" }}>Individual owner</span>
                     </div>
                     <div
-                      onClick={() => setAccountType('dealer')}
+                      onClick={() => setAccountType('business')}
                       style={{ 
                         padding: "14px 12px", 
                         borderRadius: "var(--fs-radius-sm)",
-                        border: accountType === 'dealer' ? "2px solid var(--fs-ink)" : "1px solid var(--fs-gray-200)",
-                        background: accountType === 'dealer' ? "#eff6ff" : "white",
+                        border: accountType === 'business' ? "2px solid var(--fs-ink)" : "1px solid var(--fs-gray-200)",
+                        background: accountType === 'business' ? "#eff6ff" : "white",
                         cursor: "pointer",
                         textAlign: "center",
                         transition: "all 0.15s ease",
@@ -247,7 +247,7 @@ const LoginPage = ({ setPage, signIn, signUp, signInWithGoogle, resetPassword, l
                       }}
                     >
                       <span style={{ fontSize: 20 }}>🏢</span>
-                      <span style={{ fontSize: 14, fontWeight: accountType === 'dealer' ? 600 : 400, color: accountType === 'dealer' ? "var(--fs-ink)" : "var(--fs-gray-700)" }}>
+                      <span style={{ fontSize: 14, fontWeight: accountType === 'business' ? 600 : 400, color: accountType === 'business' ? "var(--fs-ink)" : "var(--fs-gray-700)" }}>
                         Dealer
                       </span>
                       <span style={{ fontSize: 11, color: "var(--fs-gray-400)" }}>Business account</span>

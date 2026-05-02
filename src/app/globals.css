@@ -3083,3 +3083,141 @@ html, body { overflow-x: hidden; max-width: 100%; }
 }
 .fs-mmt-model .fs-fc-checkrow-label { color: var(--fs-ink-2); }
 .fs-mmt-more { padding-left: 4px; font-size: 12px; }
+
+/* ============================================================
+   BUSINESS ONBOARDING — full-screen wizard for new business signups
+   ============================================================ */
+.fs-onboard-shell {
+  min-height: calc(100vh - 64px);
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 48px 16px;
+  background: var(--fs-bg-2);
+}
+.fs-onboard-card {
+  width: 100%;
+  max-width: 640px;
+  background: var(--fs-white);
+  border: 1px solid var(--fs-line);
+  border-radius: 16px;
+  padding: 32px 36px;
+  box-shadow: 0 1px 3px rgba(10,10,10,0.04);
+}
+.fs-onboard-header { margin-bottom: 28px; }
+.fs-onboard-eyebrow {
+  display: inline-block;
+  font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase;
+  color: var(--fs-accent); font-weight: 600;
+  margin-bottom: 8px;
+}
+.fs-onboard-header h1 {
+  font-family: var(--fs-font);
+  font-size: 26px; font-weight: 700;
+  letter-spacing: -0.025em; color: var(--fs-ink);
+  margin: 0 0 8px;
+}
+.fs-onboard-header p {
+  color: var(--fs-ink-3); font-size: 14px; line-height: 1.5;
+}
+.fs-onboard-form { display: flex; flex-direction: column; gap: 16px; }
+.fs-onboard-error {
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #991b1b;
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-size: 13px;
+}
+.fs-onboard-actions {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-top: 8px; gap: 12px;
+}
+.fs-onboard-skip {
+  background: none; border: 0;
+  color: var(--fs-ink-3); font-size: 13px;
+  cursor: pointer; padding: 0; font-weight: 500;
+}
+.fs-onboard-skip:hover { color: var(--fs-ink); }
+.fs-onboard-submit {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: var(--fs-accent); color: #fff;
+  border: 0; border-radius: 10px;
+  padding: 12px 22px;
+  font-size: 14px; font-weight: 600; letter-spacing: -0.005em;
+  cursor: pointer;
+  transition: background 160ms ease, box-shadow 160ms ease;
+}
+.fs-onboard-submit:hover:not(:disabled) {
+  background: var(--fs-accent-700);
+  box-shadow: 0 0 0 3px var(--fs-accent-ring);
+}
+.fs-onboard-submit:disabled { opacity: 0.6; cursor: not-allowed; }
+.fs-onboard-foot {
+  margin-top: 24px;
+  font-size: 12px; color: var(--fs-ink-4);
+  text-align: center;
+}
+
+/* ============================================================
+   PENDING REVIEW BANNER — global "your application is under review"
+   ============================================================ */
+.fs-pending-banner {
+  background: var(--fs-accent-50);
+  border-bottom: 1px solid var(--fs-accent-100);
+  font-size: 13px;
+}
+.fs-pending-banner-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 10px 24px;
+  display: flex; align-items: center; gap: 12px;
+}
+.fs-pending-banner-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--fs-accent);
+  animation: fs-pulse 2s infinite ease-in-out;
+  flex-shrink: 0;
+}
+@keyframes fs-pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+.fs-pending-banner-text { flex: 1; color: var(--fs-ink-2); line-height: 1.4; }
+.fs-pending-banner-text strong { color: var(--fs-ink); font-weight: 600; }
+.fs-pending-banner-action {
+  background: transparent;
+  border: 1px solid var(--fs-accent);
+  color: var(--fs-accent-700);
+  border-radius: 999px;
+  padding: 4px 12px;
+  font-size: 12px; font-weight: 600;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.fs-pending-banner-action:hover { background: var(--fs-accent); color: #fff; }
+
+/* ============================================================
+   BUSINESS DASHBOARD STUB — plans grid
+   ============================================================ */
+.fs-dash-plans {
+  display: grid; gap: 16px;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+}
+.fs-dash-plan {
+  border: 1px solid var(--fs-line);
+  border-radius: 12px;
+  padding: 20px;
+  background: var(--fs-white);
+}
+.fs-dash-plan.on { border-color: var(--fs-accent); box-shadow: 0 0 0 3px var(--fs-accent-ring); }
+.fs-dash-plan h4 {
+  font-size: 16px; font-weight: 700; margin: 0 0 4px;
+  color: var(--fs-ink);
+}
+.fs-dash-plan-price {
+  font-size: 22px; font-weight: 700;
+  color: var(--fs-ink); margin: 4px 0 8px;
+  font-variant-numeric: tabular-nums;
+}
+.fs-dash-plan-desc {
+  font-size: 13px; color: var(--fs-ink-3);
+  line-height: 1.45; margin-bottom: 14px;
+}
