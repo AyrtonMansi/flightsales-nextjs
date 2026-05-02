@@ -2137,9 +2137,7 @@ html, body { overflow-x: hidden; max-width: 100%; }
   transition: border-color 0.12s, background 0.12s;
 }
 .fs-fc-checkrow input[type="checkbox"]:checked {
-  /* Sky-blue accent for the filled state — signals "active filter"
-     without competing with the primary CTA's ink black. */
-  background: var(--fs-accent); border-color: var(--fs-accent);
+  background: var(--fs-ink); border-color: var(--fs-ink);
 }
 .fs-fc-checkrow input[type="checkbox"]:checked::after {
   content: ''; position: absolute;
