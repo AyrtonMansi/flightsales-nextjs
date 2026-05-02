@@ -1,8 +1,9 @@
 'use client';
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import FilterSection from './FilterSection';
 import CheckboxList from './CheckboxList';
+import MakeModelTree from './MakeModelTree';
 import NumberField from './NumberField';
 import RangeSlider from './RangeSlider';
 import { CATEGORIES, MANUFACTURERS, STATES, CONDITIONS } from '../../lib/constants';
@@ -92,25 +93,37 @@ export default function FilterColumn({ state, dispatch, total, user }) {
   const makesFilteredByType = state.categories.length === 0
     ? allMakes
     : makesForCategories(catalogue, state.categories);
-  const makeOptionsRaw = makesFilteredByType.map((mk) => ({ value: mk.name, label: mk.name }));
-  const makeOptions = decorateAndSortByCount(makeOptionsRaw, facets.makeCounts, state.manufacturers);
+  // Make → its models, decorated with counts. The MakeModelTree renders
+  // a make's models inline below it when ticked, so we precompute every
+  // selected-make's model list keyed by slug. Computed from the catalogue
+  // (cascading by Type) so unrelated models never leak in.
+  const makesWithSlug = makesFilteredByType.map(mk => ({
+    value: mk.name,
+    label: mk.name,
+    slug: mk.slug,
+  }));
+  const makesDecorated = decorateAndSortByCount(makesWithSlug, facets.makeCounts, state.manufacturers);
 
   const selectedMakeSlugs = state.manufacturers
     .map((name) => allMakes.find((mk) => mk.name === name)?.slug)
     .filter(Boolean);
-  const modelOptionsRaw = modelsForMakesAndCategories(catalogue, selectedMakeSlugs, state.categories)
-    .map((mdl) => {
-      // The listing's `model` column stores the seller's text
-      // (e.g. "172S Skyhawk", "SR22T"). Match against variant when
-      // present, falling back to family for variant-less entries.
-      const value = mdl.variant
-        ? `${mdl.family} ${mdl.variant}`.trim()
-        : mdl.family;
-      return { value, label: value };
-    })
-    // Dedupe at the option-value level (variant collisions like RV-A vs RV).
-    .filter((opt, i, arr) => arr.findIndex((o) => o.value === opt.value) === i);
-  const modelOptions = decorateAndSortByCount(modelOptionsRaw, facets.modelCounts, state.models);
+
+  const modelsByMakeSlug = useMemo(() => {
+    const out = {};
+    for (const slug of selectedMakeSlugs) {
+      const list = modelsForMakesAndCategories(catalogue, [slug], state.categories)
+        .map((mdl) => {
+          const value = mdl.variant
+            ? `${mdl.family} ${mdl.variant}`.trim()
+            : mdl.family;
+          return { value, label: value };
+        })
+        .filter((opt, i, arr) => arr.findIndex((o) => o.value === opt.value) === i);
+      out[slug] = decorateAndSortByCount(list, facets.modelCounts, state.models);
+    }
+    return out;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedMakeSlugs.join('|'), state.categories.join('|'), state.models.join('|'), facets.modelCounts]);
 
   // ── Cascade cleanup ────────────────────────────────────────────
   // When the user changes a parent filter (Type, Make), drop any
@@ -126,8 +139,8 @@ export default function FilterColumn({ state, dispatch, total, user }) {
   //   2. Drop models no longer in the cascaded Model list.
   //   3. Clear all models when manufacturers becomes empty (the Model
   //      filter UI hides, leaving orphans that still apply to the query).
-  const validMakeNames = makeOptions.map((o) => o.value);
-  const validModelValues = modelOptions.map((o) => o.value);
+  const validMakeNames = makesDecorated.map((o) => o.value);
+  const validModelValues = Object.values(modelsByMakeSlug).flat().map((o) => o.value);
   const makesKey = state.manufacturers.join('|');
   const catsKey = state.categories.join('|');
 
@@ -235,38 +248,22 @@ export default function FilterColumn({ state, dispatch, total, user }) {
           />
         </div>
 
-        {/* Make */}
+        {/* Make + nested Model tree — pick a make and its models step
+            out indented below it. Replaces the older two-section pattern
+            where Model lived in its own block beneath Make. */}
         <div className="fs-fc-field">
-          <span className="fs-fc-label">Make</span>
-          <CheckboxList
-            options={makeOptions}
-            selected={state.manufacturers}
-            onToggle={v => toggle('manufacturers', v)}
-            maxVisible={5}
-            searchable
-            searchKey="Filter makes"
-            collapseZero
+          <span className="fs-fc-label">Make &amp; Model</span>
+          <MakeModelTree
+            makes={makesDecorated}
+            selectedMakes={state.manufacturers}
+            onToggleMake={v => toggle('manufacturers', v)}
+            modelsByMakeSlug={modelsByMakeSlug}
+            selectedModels={state.models}
+            onToggleModel={v => toggle('models', v)}
+            maxVisibleMakes={5}
+            maxVisibleModels={6}
           />
         </div>
-
-        {/* Model — cascades from Make. Hidden until a make is selected so
-            the filter doesn't dump 150 model names on a user who hasn't
-            narrowed yet. Once a make is picked, only that make's models
-            appear (with all selected makes' models if multi-selected). */}
-        {state.manufacturers.length > 0 && (
-          <div className="fs-fc-field">
-            <span className="fs-fc-label">Model</span>
-            <CheckboxList
-              options={modelOptions}
-              selected={state.models}
-              onToggle={v => toggle('models', v)}
-              maxVisible={6}
-              searchable
-              searchKey="Filter models"
-              collapseZero
-            />
-          </div>
-        )}
 
         {/* Location */}
         <div className="fs-fc-field">

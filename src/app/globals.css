@@ -298,23 +298,19 @@ a { color: inherit; text-decoration: none; }
   display: flex; align-items: center; gap: 8px;
   cursor: pointer; flex-shrink: 0;
 }
+/* Full logo in the brand sky-blue — wordmark + glyph + TLD all
+   accent. Lifts the page chrome out of pure black/white and gives
+   the brand its single coherent splash of colour. */
 .fs-nav-logo-mark {
-  color: var(--fs-ink);
+  color: var(--fs-accent);
   flex-shrink: 0;
 }
 .fs-nav-logo-text {
   font-family: var(--fs-font);
-  font-size: 20px; color: var(--fs-ink); letter-spacing: -0.04em; font-weight: 700;
+  font-size: 20px; color: var(--fs-accent); letter-spacing: -0.04em; font-weight: 700;
 }
-/* .com.au sits inside the wordmark at lighter weight + subdued ink so
-   the eye reads "FlightSales" first and ".com.au" as the localised
-   TLD. Same approach Stripe / Plaid / Linear use for their domain
-   appendages. The .com version (different domain TBD) just swaps
-   the suffix string in JSX. */
 .fs-nav-logo-tld {
   font-weight: 500;
-  /* Sky-blue accent on the TLD only — wordmark stays ink. Tiny splash
-     of brand colour, signals "live web product". */
   color: var(--fs-accent);
   letter-spacing: -0.02em;
   margin-left: 1px;
@@ -341,15 +337,15 @@ a { color: inherit; text-decoration: none; }
 }
 .fs-nav-btn-ghost { background: transparent; color: var(--fs-ink); }
 .fs-nav-btn-ghost:hover { background: var(--fs-bg-2); }
+/* Primary nav CTA — brand sky-blue. Pairs with the full-blue logo
+   so the button reads as a deliberate brand action rather than a
+   monochrome "list" button. */
 .fs-nav-btn-primary {
-  background: var(--fs-ink); color: white;
+  background: var(--fs-accent); color: white;
   transition: background 160ms ease, box-shadow 160ms ease;
 }
-/* Hover shows the sky-blue ring instead of changing fill — keeps the
-   button's brand voice (black) but signals interactivity with the
-   accent. */
 .fs-nav-btn-primary:hover {
-  background: var(--fs-ink-2);
+  background: var(--fs-accent-700);
   box-shadow: 0 0 0 3px var(--fs-accent-ring);
 }
 
@@ -3060,3 +3056,23 @@ html, body { overflow-x: hidden; max-width: 100%; }
   transition: color 120ms ease;
 }
 .fs-mmp-fallback:hover { color: var(--fs-ink, #0a0a0a); }
+
+/* ============================================================
+   MAKE / MODEL TREE — nested filter on /buy
+   When a make is ticked, its models step out indented below it.
+   ============================================================ */
+.fs-mmt-make { display: flex; flex-direction: column; }
+.fs-mmt-models {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin: 4px 0 6px 16px;
+  padding-left: 10px;
+  border-left: 1px solid var(--fs-line);
+}
+.fs-mmt-model {
+  font-size: 13px;
+  padding-left: 4px;
+}
+.fs-mmt-model .fs-fc-checkrow-label { color: var(--fs-ink-2); }
+.fs-mmt-more { padding-left: 4px; font-size: 12px; }
