@@ -117,9 +117,11 @@ export default function HeroSearchPro({ model, count }) {
         <kbd className="fs-h-kbd" aria-hidden="true">⌘K</kbd>
       </label>
 
-      {/* Top row: Type · Make · Location */}
-      <div className="fs-h-row fs-h-row-3">
+      {/* Vertically-stacked rows with the Uber pin-line connector — one
+          row per facet so each gets a label + value + native picker. */}
+      <div className="fs-h-stack">
         <SelectField
+          stacked
           label="Type"
           value={searchCat}
           onChange={setSearchCat}
@@ -127,25 +129,15 @@ export default function HeroSearchPro({ model, count }) {
           options={CATEGORIES.map((c) => ({ value: c, label: c }))}
         />
         <SelectField
+          stacked
           label="Make"
           value={searchMake}
           onChange={setSearchMake}
           placeholder="All makes"
           options={makeOptions}
         />
-        <SelectField
-          label="Location"
-          value={searchState}
-          onChange={setSearchState}
-          placeholder="Anywhere in Australia"
-          options={STATES.map((s) => ({ value: s, label: s }))}
-          icon={Icons.location}
-        />
-      </div>
-
-      {/* Bottom row: Year range · Price range — both as native selects */}
-      <div className="fs-h-row fs-h-row-2">
         <SelectRangeField
+          stacked
           label="Year"
           minValue={yearFrom}
           maxValue={yearTo}
@@ -157,6 +149,7 @@ export default function HeroSearchPro({ model, count }) {
           maxOptions={YEAR_OPTIONS}
         />
         <SelectRangeField
+          stacked
           label="Price"
           minValue={priceFrom}
           maxValue={priceTo}
@@ -167,9 +160,17 @@ export default function HeroSearchPro({ model, count }) {
           minOptions={PRICE_FROM_OPTIONS}
           maxOptions={PRICE_TO_OPTIONS}
         />
+        <SelectField
+          stacked
+          label="Location"
+          value={searchState}
+          onChange={setSearchState}
+          placeholder="Anywhere in Australia"
+          options={STATES.map((s) => ({ value: s, label: s }))}
+        />
       </div>
 
-      {/* CTA — live count + arrow */}
+      {/* CTA + side link — live count + arrow */}
       <button className="fs-h-cta" type="submit">
         <span className="fs-h-cta-icon" aria-hidden="true">{Icons.search}</span>
         <span className="fs-h-cta-text">
@@ -187,8 +188,36 @@ export default function HeroSearchPro({ model, count }) {
 // over the rendered label/value so the keyboard, screen-reader, and
 // mobile picker behaviour is the platform default while the visual
 // chrome stays consistent with the rest of the card.
-function SelectField({ label, value, onChange, placeholder, options, icon }) {
+//
+// `stacked` switches the row to the Uber-style horizontal layout:
+//   ●  Label                      Value     ▾
+// Otherwise it renders the older 3-column grid cell.
+function SelectField({ label, value, onChange, placeholder, options, icon, stacked }) {
   const isEmpty = !value;
+  if (stacked) {
+    return (
+      <label className="fs-h-stack-row">
+        <span className="fs-h-stack-pin" aria-hidden="true" />
+        <span className="fs-h-stack-label">{label}</span>
+        <span className={`fs-h-stack-value${isEmpty ? ' muted' : ''}`}>
+          {icon && <span className="fs-h-field-icon">{icon}</span>}
+          {value || placeholder}
+        </span>
+        <span className="fs-h-stack-chevron" aria-hidden="true">▾</span>
+        <select
+          className="fs-h-field-native"
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          aria-label={label}
+        >
+          <option value="">{placeholder}</option>
+          {options.map((opt) => (
+            <option key={opt.value} value={opt.value}>{opt.label}</option>
+          ))}
+        </select>
+      </label>
+    );
+  }
   return (
     <label className="fs-h-field fs-h-field-select">
       <span className="fs-h-field-label">{label}</span>
@@ -220,7 +249,54 @@ function SelectRangeField({
   onMinChange, onMaxChange,
   minPlaceholder, maxPlaceholder,
   minOptions, maxOptions,
+  stacked,
 }) {
+  if (stacked) {
+    const minEmpty = !minValue;
+    const maxEmpty = !maxValue;
+    return (
+      <div className="fs-h-stack-row fs-h-stack-row-range">
+        <span className="fs-h-stack-pin" aria-hidden="true" />
+        <span className="fs-h-stack-label">{label}</span>
+        <span className="fs-h-stack-range">
+          <span className="fs-h-range-cell">
+            <span className={`fs-h-stack-value${minEmpty ? ' muted' : ''}`}>
+              {labelFor(minOptions, minValue, minPlaceholder)}
+            </span>
+            <select
+              className="fs-h-field-native"
+              value={minValue}
+              onChange={(e) => onMinChange(e.target.value)}
+              aria-label={`${label} from`}
+            >
+              <option value="">{minPlaceholder}</option>
+              {minOptions.map((o) => (
+                <option key={o.value} value={o.value}>{o.label}</option>
+              ))}
+            </select>
+          </span>
+          <span className="fs-h-range-sep" aria-hidden="true">—</span>
+          <span className="fs-h-range-cell">
+            <span className={`fs-h-stack-value${maxEmpty ? ' muted' : ''}`}>
+              {labelFor(maxOptions, maxValue, maxPlaceholder)}
+            </span>
+            <select
+              className="fs-h-field-native"
+              value={maxValue}
+              onChange={(e) => onMaxChange(e.target.value)}
+              aria-label={`${label} to`}
+            >
+              <option value="">{maxPlaceholder}</option>
+              {maxOptions.map((o) => (
+                <option key={o.value} value={o.value}>{o.label}</option>
+              ))}
+            </select>
+          </span>
+        </span>
+        <span className="fs-h-stack-chevron" aria-hidden="true">▾</span>
+      </div>
+    );
+  }
   return (
     <div className="fs-h-field fs-h-field-range">
       <span className="fs-h-field-label">{label}</span>

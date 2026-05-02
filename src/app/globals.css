@@ -3221,3 +3221,182 @@ html, body { overflow-x: hidden; max-width: 100%; }
   font-size: 13px; color: var(--fs-ink-3);
   line-height: 1.45; margin-bottom: 14px;
 }
+
+/* ============================================================
+   HERO V3 — Uber-style two-column layout
+   Left: H1 + subtitle + search card.  Right: aircraft illustration.
+   Mobile collapses to single column; the illustration is hidden so
+   the search remains the priority on small screens.
+   ============================================================ */
+.fs-hero-v3 {
+  /* Override the fs-hero centred layout so the v3 grid lays out edge-
+     to-edge inside its container instead of centred max-width content. */
+  text-align: left;
+  display: block;
+  padding: 56px 0 64px;
+  min-height: auto;
+}
+@media (max-width: 768px) {
+  .fs-hero-v3 { padding: 24px 0 32px; }
+}
+
+.fs-hero-v3-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+  gap: 48px;
+  align-items: start;
+  margin-bottom: 32px;
+}
+@media (max-width: 960px) {
+  .fs-hero-v3-grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 16px;
+  }
+}
+
+.fs-hero-v3-left h1 {
+  font-family: var(--fs-font);
+  font-size: clamp(40px, 5.4vw, 64px);
+  font-weight: 700;
+  line-height: 1.05;
+  letter-spacing: -0.04em;
+  color: var(--fs-ink);
+  margin: 0 0 16px;
+}
+.fs-hero-v3-left .fs-hero-sub {
+  font-size: 16px;
+  color: var(--fs-ink-3);
+  margin: 0 0 24px;
+  max-width: 520px;
+  line-height: 1.5;
+}
+
+/* Right column illustration — a stylised aircraft scene rendered as an
+   inline SVG. Hidden on mobile so the search card stays priority. */
+.fs-hero-v3-right {
+  display: flex;
+  justify-content: center;
+  align-items: stretch;
+}
+.fs-hero-illust {
+  width: 100%;
+  max-width: 540px;
+  aspect-ratio: 1 / 1;
+  height: auto;
+  display: block;
+}
+@media (max-width: 960px) {
+  .fs-hero-v3-right { display: none; }
+}
+
+/* Hero card override — left-align in v3 (was centred via flex-end in v2);
+   the card is the left column itself, no max-width centring needed. */
+.fs-hero-v3 .fs-h-card {
+  margin: 0;
+  max-width: none;
+  width: 100%;
+}
+
+/* ============================================================
+   STACKED ROWS — Uber-style pickup/dropoff pattern
+   Pin column (●) on the left + dotted connector between rows.
+   ============================================================ */
+.fs-h-stack {
+  position: relative;
+  background: #fff;
+  border: 1px solid rgba(10, 10, 10, 0.06);
+  border-radius: 14px;
+  padding: 0;
+  overflow: hidden;
+}
+/* The dotted connector — sits behind the pin dots, fades into the
+   row top and bottom so it reads as a continuous trail. */
+.fs-h-stack::before {
+  content: '';
+  position: absolute;
+  left: 25px;
+  top: 38px;
+  bottom: 38px;
+  width: 0;
+  border-left: 1.5px dashed rgba(10, 10, 10, 0.18);
+  z-index: 0;
+}
+.fs-h-stack-row {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px;
+  cursor: pointer;
+  transition: background 120ms ease;
+  z-index: 1;
+}
+.fs-h-stack-row:hover { background: rgba(10, 10, 10, 0.025); }
+.fs-h-stack-row + .fs-h-stack-row {
+  border-top: 1px solid rgba(10, 10, 10, 0.06);
+}
+.fs-h-stack-pin {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #fff;
+  border: 2.5px solid var(--fs-accent);
+  box-shadow: 0 0 0 2px #fff;   /* white halo so it covers the dotted line cleanly */
+  flex-shrink: 0;
+}
+.fs-h-stack-row:nth-child(odd) .fs-h-stack-pin {
+  /* Odd-row pins fill solid for visual cadence — like Uber's pickup
+     dot is solid and dropoff is hollow square; we use solid+ring. */
+  background: var(--fs-accent);
+  border-color: var(--fs-accent);
+}
+.fs-h-stack-label {
+  font: 600 11px/1 -apple-system, system-ui, sans-serif;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--fs-ink-3);
+  width: 80px;
+  flex-shrink: 0;
+}
+.fs-h-stack-value {
+  flex: 1;
+  font: 500 15px/1.2 -apple-system, system-ui, sans-serif;
+  color: var(--fs-ink);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.fs-h-stack-value.muted { color: #9ca3af; font-weight: 400; }
+.fs-h-stack-chevron {
+  color: #9ca3af;
+  font-size: 14px;
+  flex-shrink: 0;
+}
+
+/* Range row — From — To inline */
+.fs-h-stack-row-range .fs-h-stack-range {
+  flex: 1;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+.fs-h-stack-row-range .fs-h-range-cell {
+  position: relative;
+  min-width: 0;
+}
+.fs-h-stack-row-range .fs-h-stack-value {
+  display: block;          /* override the flex from non-range rows */
+  font-variant-numeric: tabular-nums;
+}
+
+/* Stack-row mobile — drop label width so values fit */
+@media (max-width: 480px) {
+  .fs-h-stack-label { width: 56px; font-size: 10px; }
+  .fs-h-stack-row { padding: 12px 12px; gap: 10px; }
+}

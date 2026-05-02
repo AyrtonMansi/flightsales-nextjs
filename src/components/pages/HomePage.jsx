@@ -5,6 +5,7 @@ import { Icons } from '../Icons';
 import ListingCard from '../ListingCard';
 import HomeTypeRow from '../HomeTypeRow';
 import HeroSearchPro from '../hero/HeroSearchPro';
+import HeroIllustration from '../hero/HeroIllustration';
 import { useAircraft, useFeaturedAircraft, useLatestAircraft, useDealers, useNews } from '../../lib/hooks';
 import { DEALERS, NEWS_ARTICLES } from '../../lib/constants';
 import { parseAiQuery } from '../../lib/parseAiQuery';
@@ -76,15 +77,25 @@ const HomePage = ({ setPage, setSelectedListing, savedIds, onSave, setSearchFilt
 
   return (
     <>
-      {/* HERO */}
-      <section className="fs-hero">
-        <div className="fs-container fs-hero-content">
-          <h1>Find your next aircraft.</h1>
-          <p className="fs-hero-sub">
-            Australia's marketplace for aircraft. Search thousands of listings from verified dealers and private sellers.
-          </p>
-
-          <HeroSearchPro model={searchModel} count={totalListings} />
+      {/* HERO — v3 two-column Uber-style layout. Left: H1 + subtitle +
+          search card. Right: aircraft illustration. Below the columns:
+          the type-icon scroll (replaces what would have been Uber's
+          "Explore what you can do" feature cards). Mobile collapses to
+          single column with the illustration hidden. */}
+      <section className="fs-hero fs-hero-v3">
+        <div className="fs-container">
+          <div className="fs-hero-v3-grid">
+            <div className="fs-hero-v3-left">
+              <h1>Find your next aircraft.</h1>
+              <p className="fs-hero-sub">
+                Australia&apos;s marketplace for aircraft. Search thousands of listings from verified dealers and private sellers.
+              </p>
+              <HeroSearchPro model={searchModel} count={totalListings} />
+            </div>
+            <div className="fs-hero-v3-right" aria-hidden="true">
+              <HeroIllustration />
+            </div>
+          </div>
 
           {/* Type quick-pick — clicking an icon pre-fills the Type
               dropdown above. Stays within the same hero so the user
