@@ -8,6 +8,7 @@ import RangeSlider from './RangeSlider';
 import { CATEGORIES, MANUFACTURERS, STATES, CONDITIONS } from '../../lib/constants';
 import { useAircraftCatalogue, makesForCategories, modelsForMakesAndCategories } from '../../lib/aircraftCatalogue';
 import { SECTION_FIELDS, countActiveInSection, countActiveTotal, initialFilters } from '../../lib/filterReducer';
+import { useFacets, decorateAndSortByCount } from '../../lib/useFacets';
 
 // Curated option lists for the advanced filter checkbox sections. Kept here
 // (not in /lib/constants) because they're tightly coupled to the column's
@@ -80,17 +81,24 @@ export default function FilterColumn({ state, dispatch, total, user }) {
     ? catalogue.makes
     : MANUFACTURERS.map((m) => ({ slug: m.toLowerCase(), name: m }));
 
+  // Faceted listing counts — every filter option gets a (N) showing how
+  // many listings would match if it were added to the user's current
+  // selection. Sorted by count desc so the most-listed options bubble
+  // up; zero-count sinks behind the "Show more" toggle.
+  const facets = useFacets(state);
+
   // Cascade rules — pure helpers from aircraftCatalogue.js so the same
   // logic is unit-tested + shared with HeroSearchPro.
   const makesFilteredByType = state.categories.length === 0
     ? allMakes
     : makesForCategories(catalogue, state.categories);
-  const makeOptions = makesFilteredByType.map((mk) => ({ value: mk.name, label: mk.name }));
+  const makeOptionsRaw = makesFilteredByType.map((mk) => ({ value: mk.name, label: mk.name }));
+  const makeOptions = decorateAndSortByCount(makeOptionsRaw, facets.makeCounts, state.manufacturers);
 
   const selectedMakeSlugs = state.manufacturers
     .map((name) => allMakes.find((mk) => mk.name === name)?.slug)
     .filter(Boolean);
-  const modelOptions = modelsForMakesAndCategories(catalogue, selectedMakeSlugs, state.categories)
+  const modelOptionsRaw = modelsForMakesAndCategories(catalogue, selectedMakeSlugs, state.categories)
     .map((mdl) => {
       // The listing's `model` column stores the seller's text
       // (e.g. "172S Skyhawk", "SR22T"). Match against variant when
@@ -102,6 +110,7 @@ export default function FilterColumn({ state, dispatch, total, user }) {
     })
     // Dedupe at the option-value level (variant collisions like RV-A vs RV).
     .filter((opt, i, arr) => arr.findIndex((o) => o.value === opt.value) === i);
+  const modelOptions = decorateAndSortByCount(modelOptionsRaw, facets.modelCounts, state.models);
 
   // ── Cascade cleanup ────────────────────────────────────────────
   // When the user changes a parent filter (Type, Make), drop any
@@ -214,10 +223,15 @@ export default function FilterColumn({ state, dispatch, total, user }) {
         <div className="fs-fc-field">
           <span className="fs-fc-label">Category</span>
           <CheckboxList
-            options={CATEGORIES.map(c => ({ value: c, label: c }))}
+            options={decorateAndSortByCount(
+              CATEGORIES.map(c => ({ value: c, label: c })),
+              facets.categoryCounts,
+              state.categories,
+            )}
             selected={state.categories}
             onToggle={v => toggle('categories', v)}
             maxVisible={5}
+            collapseZero
           />
         </div>
 
@@ -231,6 +245,7 @@ export default function FilterColumn({ state, dispatch, total, user }) {
             maxVisible={5}
             searchable
             searchKey="Filter makes"
+            collapseZero
           />
         </div>
 
@@ -248,6 +263,7 @@ export default function FilterColumn({ state, dispatch, total, user }) {
               maxVisible={6}
               searchable
               searchKey="Filter models"
+              collapseZero
             />
           </div>
         )}
@@ -256,10 +272,15 @@ export default function FilterColumn({ state, dispatch, total, user }) {
         <div className="fs-fc-field">
           <span className="fs-fc-label">Location</span>
           <CheckboxList
-            options={STATES.map(s => ({ value: s, label: s }))}
+            options={decorateAndSortByCount(
+              STATES.map(s => ({ value: s, label: s })),
+              facets.stateCounts,
+              state.states,
+            )}
             selected={state.states}
             onToggle={v => toggle('states', v)}
             maxVisible={5}
+            collapseZero
           />
         </div>
 
@@ -267,9 +288,14 @@ export default function FilterColumn({ state, dispatch, total, user }) {
         <div className="fs-fc-field">
           <span className="fs-fc-label">Condition</span>
           <CheckboxList
-            options={CONDITIONS.map(c => ({ value: c, label: c }))}
+            options={decorateAndSortByCount(
+              CONDITIONS.map(c => ({ value: c, label: c })),
+              facets.conditionCounts,
+              state.conditions,
+            )}
             selected={state.conditions}
             onToggle={v => toggle('conditions', v)}
+            collapseZero
           />
         </div>
 
@@ -397,30 +423,37 @@ export default function FilterColumn({ state, dispatch, total, user }) {
             <div className="fs-fc-row">
               <span className="fs-fc-sublabel">Engine count</span>
               <CheckboxList
-                options={ENGINE_COUNTS}
+                options={decorateAndSortByCount(ENGINE_COUNTS, facets.engineCountCounts, state.engineCounts)}
                 selected={state.engineCounts}
                 onToggle={v => toggle('engineCounts', v)}
                 maxVisible={3}
+                collapseZero
               />
             </div>
             <div className="fs-fc-row">
               <span className="fs-fc-sublabel">Engine type</span>
               <CheckboxList
-                options={ENGINE_TYPES}
+                options={decorateAndSortByCount(ENGINE_TYPES, facets.engineTypeCounts, state.engineTypes)}
                 selected={state.engineTypes}
                 onToggle={v => toggle('engineTypes', v)}
                 maxVisible={4}
+                collapseZero
               />
             </div>
             <div className="fs-fc-row">
               <span className="fs-fc-sublabel">Engine make</span>
               <CheckboxList
-                options={ENGINE_MAKES.map(m => ({ value: m, label: m }))}
+                options={decorateAndSortByCount(
+                  ENGINE_MAKES.map(m => ({ value: m, label: m })),
+                  facets.engineMakeCounts,
+                  state.engineMakes,
+                )}
                 selected={state.engineMakes}
                 onToggle={v => toggle('engineMakes', v)}
                 maxVisible={5}
                 searchable
                 searchKey="Filter makes"
+                collapseZero
               />
             </div>
             <div className="fs-fc-row">
@@ -443,19 +476,29 @@ export default function FilterColumn({ state, dispatch, total, user }) {
             <div className="fs-fc-row">
               <span className="fs-fc-sublabel">Avionics suite</span>
               <CheckboxList
-                options={AVIONICS_SUITES.map(s => ({ value: s, label: s }))}
+                options={decorateAndSortByCount(
+                  AVIONICS_SUITES.map(s => ({ value: s, label: s })),
+                  facets.avSuiteCounts,
+                  state.avionicsSuites,
+                )}
                 selected={state.avionicsSuites}
                 onToggle={v => toggle('avionicsSuites', v)}
                 maxVisible={5}
+                collapseZero
               />
             </div>
             <div className="fs-fc-row">
               <span className="fs-fc-sublabel">Autopilot</span>
               <CheckboxList
-                options={AUTOPILOTS.map(a => ({ value: a, label: a }))}
+                options={decorateAndSortByCount(
+                  AUTOPILOTS.map(a => ({ value: a, label: a })),
+                  facets.autopilotCounts,
+                  state.autopilots,
+                )}
                 selected={state.autopilots}
                 onToggle={v => toggle('autopilots', v)}
                 maxVisible={5}
+                collapseZero
               />
             </div>
             <div className="fs-fc-row">
@@ -482,10 +525,11 @@ export default function FilterColumn({ state, dispatch, total, user }) {
             <div className="fs-fc-row">
               <span className="fs-fc-sublabel">Damage history</span>
               <CheckboxList
-                options={DAMAGE_HISTORY}
+                options={decorateAndSortByCount(DAMAGE_HISTORY, facets.damageCounts, state.damageHistory)}
                 selected={state.damageHistory}
                 onToggle={v => toggle('damageHistory', v)}
                 maxVisible={3}
+                collapseZero
               />
             </div>
             <div className="fs-fc-row">
