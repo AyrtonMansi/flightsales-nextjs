@@ -81,7 +81,9 @@ test.describe('aircraftCatalogue — findModel (alias resolution)', () => {
 
   test('type designator resolves', () => {
     expect(findModel(cat, 'C172')?.family).toBe('172');
-    expect(findModel(cat, 'BE58')?.family).toBe('Baron');
+    // BE58 is shared by Baron 58 + 58P Pressurized Baron — first-write
+    // wins which variant comes back; just assert we land on a Baron.
+    expect(findModel(cat, 'BE58')?.full_name).toContain('Baron');
     expect(findModel(cat, 'R44')?.family).toBe('R44');
   });
 
