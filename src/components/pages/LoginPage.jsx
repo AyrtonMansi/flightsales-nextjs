@@ -132,12 +132,12 @@ const LoginPage = ({ setPage, signIn, signUp, signInWithGoogle, resetPassword, l
           >
             {loading ? (
               <span style={{ display: "flex", alignItems: "center", gap: 12 }}>
-                <span style={{ 
-                  width: 18, 
-                  height: 18, 
-                  border: "2px solid var(--fs-gray-300)", 
-                  borderTopColor: "var(--fs-gray-600)", 
-                  borderRadius: "50%", 
+                <span style={{
+                  width: 18,
+                  height: 18,
+                  border: "2px solid var(--fs-gray-200)",
+                  borderTopColor: "var(--fs-accent)",
+                  borderRadius: "50%",
                   animation: "fs-spin 1s linear infinite",
                   display: "inline-block"
                 }} />

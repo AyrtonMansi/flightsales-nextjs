@@ -21,13 +21,13 @@ a { color: inherit; text-decoration: none; }
   to { transform: rotate(360deg); }
 }
 
-/* Form Input Focus States */
+/* Form Input Focus States — sky-blue accent ring */
 .fs-form-input:focus,
 .fs-form-select:focus,
 .fs-form-textarea:focus {
   outline: none;
-  border-color: var(--fs-gray-900) !important;
-  box-shadow: 0 0 0 3px rgba(0,0,0,0.08);
+  border-color: var(--fs-accent) !important;
+  box-shadow: 0 0 0 3px var(--fs-accent-ring);
   transition: all 0.15s ease;
 }
 
@@ -171,6 +171,14 @@ a { color: inherit; text-decoration: none; }
   --fs-gray-700: #2F2F2F;
   --fs-gray-800: #1F1F1F;
   --fs-gray-900: #000000;
+  /* Accent — subtle sky-blue used sparingly for signals (links, focus
+     rings, active filter ticks, AI input wash, the .com.au TLD glyph,
+     loading spinners). Never on primary CTAs (those stay ink). */
+  --fs-accent:      #53aae2;
+  --fs-accent-50:   #eef6fc;
+  --fs-accent-100:  #d6e9f6;
+  --fs-accent-700:  #3a92cb;
+  --fs-accent-ring: rgba(83, 170, 226, 0.20);
   /* Geometry — sharp, minimal */
   --fs-radius: 8px;
   --fs-radius-sm: 4px;
@@ -190,6 +198,25 @@ a { color: inherit; text-decoration: none; }
   /* Easings */
   --fs-ease-out: cubic-bezier(0.2, 0, 0, 1);
   --fs-ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* Body links — accent colour for prose / footer / linkified text.
+   Excludes structural anchors (Nav links, ListingCard wrappers, dealer
+   tile links, brand logo) which inherit by design and have their own
+   styles. The .fs-link class is the explicit opt-in for any custom
+   anchor that wants the accent treatment. */
+.fs-prose a,
+footer a:not(.fs-nav-link):not(.fs-nav-btn):not(.fs-nav-logo),
+.fs-link {
+  color: var(--fs-accent);
+  text-decoration: none;
+  transition: color 120ms ease;
+}
+.fs-prose a:hover,
+footer a:not(.fs-nav-link):not(.fs-nav-btn):not(.fs-nav-logo):hover,
+.fs-link:hover {
+  color: var(--fs-accent-700);
+  text-decoration: underline;
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -288,7 +315,9 @@ a { color: inherit; text-decoration: none; }
    the suffix string in JSX. */
 .fs-nav-logo-tld {
   font-weight: 500;
-  color: var(--fs-ink-3);
+  /* Sky-blue accent on the TLD only — wordmark stays ink. Tiny splash
+     of brand colour, signals "live web product". */
+  color: var(--fs-accent);
   letter-spacing: -0.02em;
   margin-left: 1px;
 }
@@ -316,8 +345,15 @@ a { color: inherit; text-decoration: none; }
 .fs-nav-btn-ghost:hover { background: var(--fs-bg-2); }
 .fs-nav-btn-primary {
   background: var(--fs-ink); color: white;
+  transition: background 160ms ease, box-shadow 160ms ease;
 }
-.fs-nav-btn-primary:hover { background: var(--fs-ink-2); }
+/* Hover shows the sky-blue ring instead of changing fill — keeps the
+   button's brand voice (black) but signals interactivity with the
+   accent. */
+.fs-nav-btn-primary:hover {
+  background: var(--fs-ink-2);
+  box-shadow: 0 0 0 3px var(--fs-accent-ring);
+}
 
 /* Rego lookup button — sits next to the rego input on /sell. The previous
    build used .fs-nav-btn-primary which only set background/color; no
@@ -374,7 +410,9 @@ a { color: inherit; text-decoration: none; }
 }
 .fs-sell-progress-step.done .fs-sell-progress-bar,
 .fs-sell-progress-step.active .fs-sell-progress-bar {
-  background: var(--fs-ink);
+  /* Active + completed steps fill with accent — gives the listing
+     wizard a visible progress signal. Step labels stay ink black. */
+  background: var(--fs-accent);
 }
 .fs-sell-progress-label {
   font-size: 12px;
@@ -1799,8 +1837,8 @@ html, body { overflow-x: hidden; max-width: 100%; }
   letter-spacing: -0.005em;
 }
 .fs-form-input:focus, .fs-form-textarea:focus, .fs-form-select:focus {
-  border-color: var(--fs-ink);
-  box-shadow: 0 0 0 3px rgba(0,0,0,0.06), 0 2px 8px rgba(0,0,0,0.04);
+  border-color: var(--fs-accent);
+  box-shadow: 0 0 0 3px var(--fs-accent-ring), 0 2px 8px rgba(0,0,0,0.04);
   transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
   transform: translateY(-1px);
 }
@@ -2101,7 +2139,9 @@ html, body { overflow-x: hidden; max-width: 100%; }
   transition: border-color 0.12s, background 0.12s;
 }
 .fs-fc-checkrow input[type="checkbox"]:checked {
-  background: var(--fs-ink); border-color: var(--fs-ink);
+  /* Sky-blue accent for the filled state — signals "active filter"
+     without competing with the primary CTA's ink black. */
+  background: var(--fs-accent); border-color: var(--fs-accent);
 }
 .fs-fc-checkrow input[type="checkbox"]:checked::after {
   content: ''; position: absolute;
@@ -2657,7 +2697,7 @@ html, body { overflow-x: hidden; max-width: 100%; }
   text-align: left;
 }
 
-/* AI input — violet wash + sparkle + ⌘K hint */
+/* AI input — sky-blue wash + sparkle + ⌘K hint */
 .fs-h-ai {
   position: relative;
   display: flex;
@@ -2667,21 +2707,21 @@ html, body { overflow-x: hidden; max-width: 100%; }
   border-radius: 14px;
   background:
     linear-gradient(90deg,
-      rgba(99, 102, 241, 0.06) 0%,
-      rgba(168, 85, 247, 0.04) 40%,
-      rgba(255, 255, 255, 0) 80%);
-  border: 1px solid rgba(99, 102, 241, 0.14);
+      rgba(83, 170, 226, 0.07) 0%,
+      rgba(83, 170, 226, 0.03) 50%,
+      rgba(255, 255, 255, 0) 90%);
+  border: 1px solid rgba(83, 170, 226, 0.18);
   transition: border-color 160ms ease, box-shadow 160ms ease;
   cursor: text;
 }
 .fs-h-ai:focus-within {
-  border-color: rgba(99, 102, 241, 0.4);
-  box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.08);
+  border-color: var(--fs-accent);
+  box-shadow: 0 0 0 4px var(--fs-accent-ring);
 }
 .fs-h-ai-spark {
   width: 20px;
   height: 20px;
-  color: #6366f1;
+  color: var(--fs-accent);
   display: grid;
   place-items: center;
   flex-shrink: 0;
@@ -2917,8 +2957,8 @@ html, body { overflow-x: hidden; max-width: 100%; }
   transition: border-color 120ms ease, box-shadow 120ms ease;
 }
 .fs-mmp-input:focus {
-  border-color: var(--fs-ink, #0a0a0a);
-  box-shadow: 0 0 0 3px rgba(10, 10, 10, 0.06);
+  border-color: var(--fs-accent);
+  box-shadow: 0 0 0 3px var(--fs-accent-ring);
 }
 .fs-mmp-input::placeholder { color: #9ca3af; font-weight: 400; }
 
