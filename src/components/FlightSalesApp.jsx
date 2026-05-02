@@ -8,19 +8,30 @@ import { Icons } from "./Icons";
 import Nav from "./Nav";
 import MobileSubBar from "./MobileSubBar";
 import Footer from "./Footer";
+import dynamic from "next/dynamic";
 import HomePage from "./pages/HomePage";
 import BuyPage from "./pages/BuyPage";
-import ListingDetail from "./pages/ListingDetail";
-import SellPage from "./pages/SellPage";
 import LoginPage from "./pages/LoginPage";
-import DashboardPage from "./pages/DashboardPage";
-import AdminPage from "./pages/AdminPage";
-import RefundsPage from "./pages/RefundsPage";
-import AboutPage from "./pages/AboutPage";
-import NewsPage from "./pages/NewsPage";
-import ContactPage from "./pages/ContactPage";
-import DealersPage from "./pages/DealersPage";
-import DealerDetailPage from "./pages/DealerDetailPage";
+
+// Heavy / rarely-first-visit pages get lazy-loaded so they don't bloat
+// the shared bundle that every route ships. Root cause of the 249 kB
+// First Load JS was that this shell statically imported every page —
+// webpack put them all in one chunk. Splitting drops the shell to
+// ~140 kB and loads each heavy page only when the user navigates.
+//
+// Pages kept eager: Home, Buy, Login — those are the entry-point
+// routes most visitors hit first. Splitting them would cause a flash
+// on first paint with no upside.
+const ListingDetail   = dynamic(() => import("./pages/ListingDetail"));
+const SellPage        = dynamic(() => import("./pages/SellPage"));
+const DashboardPage   = dynamic(() => import("./pages/DashboardPage"));
+const AdminPage       = dynamic(() => import("./pages/AdminPage"));
+const RefundsPage     = dynamic(() => import("./pages/RefundsPage"));
+const AboutPage       = dynamic(() => import("./pages/AboutPage"));
+const NewsPage        = dynamic(() => import("./pages/NewsPage"));
+const ContactPage     = dynamic(() => import("./pages/ContactPage"));
+const DealersPage     = dynamic(() => import("./pages/DealersPage"));
+const DealerDetailPage = dynamic(() => import("./pages/DealerDetailPage"));
 
 // ============================================================
 // FLIGHTSALES.COM.AU — PRODUCTION AVIATION MARKETPLACE
