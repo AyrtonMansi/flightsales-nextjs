@@ -5,6 +5,8 @@ import { createListing, uploadImage } from '../../lib/hooks';
 import { MANUFACTURERS, CATEGORIES, STATES, CONDITIONS } from '../../lib/constants';
 import EmailVerifyGate, { isVerified } from '../EmailVerifyGate';
 import PhotoReorder from '../PhotoReorder';
+import MakeModelPicker from '../sell/MakeModelPicker';
+import { modelToFormFields, getSeedCatalogue } from '../../lib/aircraftCatalogue';
 
 const SellPage = ({ user, setPage }) => {
   // Hooks first — must run on every render in the same order regardless of
@@ -17,11 +19,17 @@ const SellPage = ({ user, setPage }) => {
   const [uploadedImages, setUploadedImages] = useState([]);
   const [uploadingImages, setUploadingImages] = useState(false);
   const fileInputRef = useRef(null);
+  // When the user opens the catalogue picker, hide the legacy free-text
+  // make/model selects. They can still bail back via "enter manually".
+  const [useCataloguePicker, setUseCataloguePicker] = useState(true);
   const [formData, setFormData] = useState({
     manufacturer: '',
     model: '',
+    model_slug: '',         // links to aircraft_models when picked from the catalogue
     year: '',
     category: '',
+    seats: '',
+    mtow: '',
     rego: '',
     condition: 'Pre-Owned',
     price: '',
@@ -337,26 +345,62 @@ const SellPage = ({ user, setPage }) => {
                   </div>
                   
                   <div className="fs-grid-2">
-                    <div className="fs-form-group">
-                      <label className="fs-form-label">Manufacturer *</label>
-                  <select 
-                    className="fs-form-select"
-                    value={formData.manufacturer}
-                    onChange={e => handleInputChange('manufacturer', e.target.value)}
-                  >
-                    <option value="">Select...</option>
-                    {MANUFACTURERS.map(m => <option key={m} value={m}>{m}</option>)}
-                  </select>
-                </div>
-                <div className="fs-form-group">
-                  <label className="fs-form-label">Model *</label>
-                  <input 
-                    className="fs-form-input" 
-                    placeholder="e.g. SR22T, C182T"
-                    value={formData.model}
-                    onChange={e => handleInputChange('model', e.target.value)}
-                  />
-                </div>
+                    {useCataloguePicker ? (
+                      // Catalogue picker — typeahead Make then typeahead Model.
+                      // Picking a model auto-fills category, MTOW, seats,
+                      // engine, etc. so the user only edits the year + condition.
+                      <div className="fs-form-group" style={{ gridColumn: '1 / -1' }}>
+                        <MakeModelPicker
+                          initialMake={formData.manufacturer}
+                          initialModel={formData.model}
+                          onPick={({ make, model }) => {
+                            const cat = getSeedCatalogue();
+                            const fields = modelToFormFields(model, cat.makesBySlug);
+                            setFormData(prev => ({
+                              ...prev,
+                              manufacturer: make?.name ?? prev.manufacturer,
+                              model: fields.model ?? prev.model,
+                              category: fields.category ?? prev.category,
+                              seats: fields.seats ?? prev.seats,
+                              mtow: fields.mtow ?? prev.mtow,
+                              engineType: fields.engineType ?? prev.engineType,
+                              model_slug: fields.model_slug,
+                            }));
+                          }}
+                          onManualFallback={() => setUseCataloguePicker(false)}
+                        />
+                      </div>
+                    ) : (
+                      <>
+                        <div className="fs-form-group">
+                          <label className="fs-form-label">Manufacturer *</label>
+                          <select
+                            className="fs-form-select"
+                            value={formData.manufacturer}
+                            onChange={e => handleInputChange('manufacturer', e.target.value)}
+                          >
+                            <option value="">Select...</option>
+                            {MANUFACTURERS.map(m => <option key={m} value={m}>{m}</option>)}
+                          </select>
+                          <button
+                            type="button"
+                            onClick={() => setUseCataloguePicker(true)}
+                            style={{ marginTop: 6, fontSize: 12, color: 'var(--fs-ink-3)', background: 'none', border: 0, padding: 0, cursor: 'pointer', textAlign: 'left' }}
+                          >
+                            ← Back to catalogue search
+                          </button>
+                        </div>
+                        <div className="fs-form-group">
+                          <label className="fs-form-label">Model *</label>
+                          <input
+                            className="fs-form-input"
+                            placeholder="e.g. SR22T, C182T"
+                            value={formData.model}
+                            onChange={e => handleInputChange('model', e.target.value)}
+                          />
+                        </div>
+                      </>
+                    )}
                 <div className="fs-form-group">
                   <label className="fs-form-label">Year *</label>
                   <input 
@@ -622,6 +666,7 @@ const SellPage = ({ user, setPage }) => {
                                 title: `${formData.year} ${formData.manufacturer} ${formData.model}`.trim(),
                                 manufacturer: formData.manufacturer,
                                 model: formData.model,
+                                model_slug: formData.model_slug || null,
                                 year: parseInt(formData.year),
                                 category: formData.category,
                                 rego: formData.rego,

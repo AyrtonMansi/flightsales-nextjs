@@ -603,3 +603,109 @@ CREATE POLICY "Authenticated users can delete aircraft images"
   ON storage.objects FOR DELETE
   TO authenticated
   USING (bucket_id = 'aircraft-images');
+
+-- ============================================================
+-- AIRCRAFT CATALOGUE — makes, models, aliases
+-- ============================================================
+-- The static catalogue (top ~200 models with verified specs) ships in
+-- the JS bundle (src/lib/aircraftCatalogueSeed.js) so the picker works
+-- on day one even with an empty DB. These tables let admins + bulk
+-- imports (FAA, CASA registers) extend the catalogue beyond the seed.
+-- The runtime hook merges seed + DB so additions appear automatically.
+
+CREATE TABLE IF NOT EXISTS aircraft_makes (
+  id SERIAL PRIMARY KEY,
+  slug TEXT NOT NULL UNIQUE,                    -- 'cessna'
+  name TEXT NOT NULL UNIQUE,                    -- 'Cessna'
+  country TEXT,                                 -- 'USA'
+  founded_year INTEGER,
+  active BOOLEAN DEFAULT true,
+  homepage_url TEXT,
+  wikipedia_url TEXT,
+  logo_url TEXT,
+  source TEXT DEFAULT 'crowdsourced',           -- seed | faa | casa | crowdsourced
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS aircraft_models (
+  id SERIAL PRIMARY KEY,
+  make_slug TEXT NOT NULL REFERENCES aircraft_makes(slug) ON DELETE CASCADE,
+  family TEXT NOT NULL,                         -- '172'
+  variant TEXT,                                 -- 'S Skyhawk'
+  full_name TEXT NOT NULL,                      -- 'Cessna 172S Skyhawk'
+  slug TEXT NOT NULL UNIQUE,                    -- 'cessna-172s-skyhawk'
+  type_designator TEXT,                         -- 'C172' (ICAO Doc 8643)
+  category TEXT NOT NULL,                       -- maps to CATEGORIES
+  mission TEXT[] DEFAULT '{}',                  -- {trainer,tourer}
+  -- Lifecycle
+  year_first INTEGER,
+  year_last INTEGER,                            -- NULL if in production
+  -- Performance specs (NULL where unknown)
+  mtow_kg INTEGER,
+  seats INTEGER,
+  engine_type TEXT,
+  engine_count INTEGER DEFAULT 1,
+  cruise_kts INTEGER,
+  range_nm INTEGER,
+  fuel_burn_lph INTEGER,
+  ceiling_ft INTEGER,
+  -- Metadata
+  wikipedia_url TEXT,
+  hero_image_url TEXT,
+  description TEXT,
+  -- Provenance
+  source TEXT DEFAULT 'crowdsourced',           -- seed | faa | casa | crowdsourced | wiki
+  source_updated_at TIMESTAMP WITH TIME ZONE,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  UNIQUE (make_slug, full_name)
+);
+
+-- Aliases — every spelling/abbreviation that should resolve to the same
+-- canonical model. "C-172", "Skyhawk", "C172S" all map to the Cessna 172S
+-- row. Powers fuzzy matching from existing free-text listings + sloppy
+-- search input.
+CREATE TABLE IF NOT EXISTS aircraft_model_aliases (
+  id SERIAL PRIMARY KEY,
+  model_slug TEXT NOT NULL REFERENCES aircraft_models(slug) ON DELETE CASCADE,
+  alias TEXT NOT NULL,
+  alias_normalized TEXT NOT NULL,               -- lowercase, no spaces/hyphens
+  UNIQUE (alias_normalized)
+);
+
+CREATE INDEX IF NOT EXISTS idx_models_make ON aircraft_models(make_slug);
+CREATE INDEX IF NOT EXISTS idx_models_category ON aircraft_models(category);
+CREATE INDEX IF NOT EXISTS idx_models_type_designator ON aircraft_models(type_designator);
+CREATE INDEX IF NOT EXISTS idx_models_mission ON aircraft_models USING GIN(mission);
+CREATE INDEX IF NOT EXISTS idx_models_fts ON aircraft_models
+  USING GIN (to_tsvector('english',
+    coalesce(full_name,'') || ' ' ||
+    coalesce(type_designator,'') || ' ' ||
+    coalesce(family,'') || ' ' ||
+    coalesce(variant,'')
+  ));
+CREATE INDEX IF NOT EXISTS idx_aliases_normalized ON aircraft_model_aliases(alias_normalized);
+
+-- Wire to listings — nullable so existing free-text listings still work.
+ALTER TABLE aircraft ADD COLUMN IF NOT EXISTS model_slug TEXT
+  REFERENCES aircraft_models(slug) ON DELETE SET NULL;
+CREATE INDEX IF NOT EXISTS idx_aircraft_model_slug ON aircraft(model_slug);
+
+-- RLS — catalogue tables are publicly readable; only service role writes
+-- (admin + import scripts use service role key).
+ALTER TABLE aircraft_makes ENABLE ROW LEVEL SECURITY;
+ALTER TABLE aircraft_models ENABLE ROW LEVEL SECURITY;
+ALTER TABLE aircraft_model_aliases ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "Aircraft makes are publicly readable" ON aircraft_makes;
+CREATE POLICY "Aircraft makes are publicly readable"
+  ON aircraft_makes FOR SELECT USING (true);
+
+DROP POLICY IF EXISTS "Aircraft models are publicly readable" ON aircraft_models;
+CREATE POLICY "Aircraft models are publicly readable"
+  ON aircraft_models FOR SELECT USING (true);
+
+DROP POLICY IF EXISTS "Aircraft model aliases are publicly readable" ON aircraft_model_aliases;
+CREATE POLICY "Aircraft model aliases are publicly readable"
+  ON aircraft_model_aliases FOR SELECT USING (true);
