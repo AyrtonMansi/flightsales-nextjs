@@ -43,7 +43,50 @@ const INAPP = {
   'user.suspended': (v) => ({ title: 'Account suspended', body: v.reason || 'See email for details.', link: '/' }),
 };
 
+// Auth gate. Two valid callers:
+//   1. Server-to-server with `x-internal-token: ${INTERNAL_API_TOKEN}` —
+//      admin tabs in this app POST after a DB mutation; the token is
+//      also rotatable independent of any session.
+//   2. A real admin session — we read the supabase auth cookie, look up
+//      the profile, and require role='admin'. Nothing else gets in.
+//
+// Without a gate, anyone with the URL can fire admin emails to any
+// address and insert forged notification rows. That's a phishing
+// foothold via our own infrastructure.
+async function isAuthorisedAdmin(req) {
+  const expected = process.env.INTERNAL_API_TOKEN;
+  if (expected && req.headers.get('x-internal-token') === expected) return true;
+
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const anon = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  if (!url || !anon) return false;
+
+  // Build a request-scoped supabase client that can read the user's
+  // auth cookie — service role client doesn't see the session.
+  const cookieHeader = req.headers.get('cookie') || '';
+  const userClient = createClient(url, anon, {
+    auth: { persistSession: false, autoRefreshToken: false },
+    global: { headers: { cookie: cookieHeader } },
+  });
+  const { data: { user } } = await userClient.auth.getUser();
+  if (!user) return false;
+
+  // Verify admin role server-side via the service-role-able client.
+  const adminC = adminClient();
+  if (!adminC) return false;
+  const { data: profile } = await adminC
+    .from('profiles')
+    .select('role')
+    .eq('id', user.id)
+    .maybeSingle();
+  return profile?.role === 'admin';
+}
+
 export async function POST(req) {
+  if (!await isAuthorisedAdmin(req)) {
+    return NextResponse.json({ ok: false, error: 'forbidden' }, { status: 403 });
+  }
+
   let body;
   try { body = await req.json(); } catch { return NextResponse.json({ ok: false, error: 'invalid_json' }, { status: 400 }); }
   const { event, targetUserId, vars = {} } = body || {};

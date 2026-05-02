@@ -337,15 +337,17 @@ a { color: inherit; text-decoration: none; }
 }
 .fs-nav-btn-ghost { background: transparent; color: var(--fs-ink); }
 .fs-nav-btn-ghost:hover { background: var(--fs-bg-2); }
-/* Primary nav CTA — brand sky-blue. Pairs with the full-blue logo
-   so the button reads as a deliberate brand action rather than a
-   monochrome "list" button. */
+/* Primary nav CTA — brand sky-blue. White text explicitly to defeat
+   any inherited ink colour. Pairs with the full-blue logo so the
+   button reads as a deliberate brand action. */
 .fs-nav-btn-primary {
-  background: var(--fs-accent); color: white;
+  background: var(--fs-accent) !important;
+  color: #ffffff !important;
   transition: background 160ms ease, box-shadow 160ms ease;
 }
 .fs-nav-btn-primary:hover {
-  background: var(--fs-accent-700);
+  background: var(--fs-accent-700) !important;
+  color: #ffffff !important;
   box-shadow: 0 0 0 3px var(--fs-accent-ring);
 }
 
@@ -2857,31 +2859,36 @@ html, body { overflow-x: hidden; max-width: 100%; }
   font-size: 13px;
 }
 
-/* CTA — gradient ink, live count, lift on hover */
+/* CTA — was full-width pure-black + drop shadow, read very loud against
+   the rest of the soft card. Now: right-aligned, 320px max, 44px tall,
+   ink colour (not full black), medium weight, 1px hairline shadow.
+   Still confident, no longer dominating. */
 .fs-h-cta {
-  margin-top: 4px;
-  height: 56px;
+  margin-top: 6px;
+  align-self: flex-end;
+  width: auto;
+  max-width: 320px;
+  min-width: 200px;
+  padding: 0 18px;
+  height: 44px;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 10px;
+  gap: 8px;
   border: 0;
-  border-radius: 14px;
-  background: linear-gradient(180deg, #1a1a1a 0%, #0a0a0a 100%);
+  border-radius: 12px;
+  background: var(--fs-ink);
   color: #fff;
-  font: 600 15px/1 -apple-system, system-ui, sans-serif;
+  font: 500 14px/1 -apple-system, system-ui, sans-serif;
   letter-spacing: -0.005em;
   cursor: pointer;
-  transition: transform 120ms ease, box-shadow 200ms ease;
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.08),
-    0 6px 16px -8px rgba(10, 10, 10, 0.32);
+  transition: transform 120ms ease, box-shadow 200ms ease, background 160ms ease;
+  box-shadow: 0 1px 2px rgba(10, 10, 10, 0.10);
 }
 .fs-h-cta:hover {
+  background: #1a1a1a;
   transform: translateY(-1px);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.12),
-    0 12px 28px -10px rgba(10, 10, 10, 0.42);
+  box-shadow: 0 4px 10px -4px rgba(10, 10, 10, 0.20);
 }
 .fs-h-cta:active { transform: translateY(0); }
 .fs-h-cta-icon {
