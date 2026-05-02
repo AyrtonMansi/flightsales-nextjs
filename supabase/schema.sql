@@ -558,3 +558,48 @@ CREATE INDEX IF NOT EXISTS idx_saved_searches_due ON saved_searches(frequency, l
 -- this user ('day2' | 'day7'). Cheap dedup — no separate event row
 -- needed at this volume.
 ALTER TABLE profiles ADD COLUMN IF NOT EXISTS onboarding_step_sent TEXT;
+
+-- ============================================================
+-- STORAGE — listing photos bucket
+-- ============================================================
+-- The /sell page calls supabase.storage.from('aircraft-images').upload(),
+-- so we provision the bucket + the policies it needs in the same
+-- migration as the tables. Idempotent: re-running this whole file is
+-- always safe.
+
+INSERT INTO storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
+VALUES ('aircraft-images', 'aircraft-images', true, 5242880,
+        ARRAY['image/jpeg','image/png','image/webp','image/gif']::text[])
+ON CONFLICT (id) DO UPDATE SET
+  public = true,
+  file_size_limit = 5242880,
+  allowed_mime_types = ARRAY['image/jpeg','image/png','image/webp','image/gif']::text[];
+
+-- Public read so listing photos can render anonymously on /buy and
+-- /listings/[id] without an auth round-trip.
+DROP POLICY IF EXISTS "Aircraft images are publicly readable" ON storage.objects;
+CREATE POLICY "Aircraft images are publicly readable"
+  ON storage.objects FOR SELECT
+  USING (bucket_id = 'aircraft-images');
+
+-- Authenticated users can upload to their own listing folder. Path
+-- pattern is "<listing_id>/<timestamp>.<ext>" — RLS on the listings
+-- table already gates which listing_id the user owns, so a logged-in
+-- user can only add to a listing they actually created.
+DROP POLICY IF EXISTS "Authenticated users can upload aircraft images" ON storage.objects;
+CREATE POLICY "Authenticated users can upload aircraft images"
+  ON storage.objects FOR INSERT
+  TO authenticated
+  WITH CHECK (bucket_id = 'aircraft-images');
+
+DROP POLICY IF EXISTS "Authenticated users can update aircraft images" ON storage.objects;
+CREATE POLICY "Authenticated users can update aircraft images"
+  ON storage.objects FOR UPDATE
+  TO authenticated
+  USING (bucket_id = 'aircraft-images');
+
+DROP POLICY IF EXISTS "Authenticated users can delete aircraft images" ON storage.objects;
+CREATE POLICY "Authenticated users can delete aircraft images"
+  ON storage.objects FOR DELETE
+  TO authenticated
+  USING (bucket_id = 'aircraft-images');

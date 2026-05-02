@@ -37,14 +37,16 @@ export async function GET(request) {
   }
 
   try {
-    // Check cache first (24 hour TTL)
+    // Check cache first (24 hour TTL) — works regardless of whether the
+    // live scraper is available, so previously-looked-up regos still
+    // auto-fill on serverless deploys.
     const { data: cached } = await supabase
       .from('casa_cache')
       .select('*')
       .eq('rego', rego)
       .gt('cached_at', new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString())
       .single();
-    
+
     if (cached) {
       return Response.json({
         ...cached.data,
@@ -52,30 +54,55 @@ export async function GET(request) {
         _cached_at: cached.cached_at
       });
     }
-    
-    // Scrape CASA Aircraft Register
-    const data = await scrapeCASA(rego);
-    
+
+    // Live scrape uses headless Chromium, which doesn't ship on Vercel
+    // serverless. We still try it — works locally and on long-running
+    // hosts — but if it can't launch a browser, return 503 with a
+    // machine-readable available:false flag so the SellPage can fall
+    // back to manual entry without showing a scary "lookup failed"
+    // error to the user.
+    let data;
+    try {
+      data = await scrapeCASA(rego);
+    } catch (scrapeErr) {
+      const msg = String(scrapeErr?.message || '');
+      const isUnavailable =
+        msg.includes("Executable doesn't exist") ||
+        msg.includes('chromium') ||
+        msg.includes('chrome-headless-shell') ||
+        msg.includes('ENOENT');
+      if (isUnavailable) {
+        return Response.json(
+          {
+            error: 'Rego lookup is temporarily unavailable. Please enter aircraft details manually below.',
+            available: false,
+          },
+          { status: 503 }
+        );
+      }
+      throw scrapeErr;
+    }
+
     if (!data) {
       return Response.json(
         { error: 'Aircraft not found in CASA register' },
         { status: 404 }
       );
     }
-    
+
     // Cache the result
     await supabase.from('casa_cache').insert({
       rego,
       data,
       cached_at: new Date().toISOString()
     });
-    
+
     return Response.json({
       ...data,
       _source: 'casa',
       _cached_at: new Date().toISOString()
     });
-    
+
   } catch (error) {
     console.error('CASA lookup error:', error);
     return Response.json(

@@ -112,11 +112,21 @@ const SellPage = ({ user, setPage }) => {
     try {
       const response = await fetch(`/api/casa-lookup?rego=${rego}`);
       const data = await response.json();
-      
+
+      // Service-unavailable (503) means the live scraper isn't installed
+      // on this deploy — fall back to manual entry without surfacing a
+      // scary "lookup failed" error. The form still opens; the user
+      // just types details in.
+      if (response.status === 503 || data?.available === false) {
+        setShowManualForm(true);
+        setLookupError(null);
+        return;
+      }
+
       if (!response.ok) {
         throw new Error(data.error || 'Lookup failed');
       }
-      
+
       // Map CASA data to form fields - comprehensive mapping
       const updates = { rego };
       if (data.manufacturer) updates.manufacturer = data.manufacturer;
@@ -129,14 +139,14 @@ const SellPage = ({ user, setPage }) => {
       if (data.serialNumber) updates.serialNumber = data.serialNumber;
       if (data.propeller) updates.propeller = data.propeller;
       if (data.registration) updates.rego = data.registration;
-      
+
       setFormData(prev => ({ ...prev, ...updates }));
       setAutoFilled(true);
       setShowManualForm(true);
-      
+
       // Show toast
       setToast?.('Aircraft details found and auto-filled!');
-      
+
     } catch (error) {
       setLookupError(error.message || 'Aircraft not found in CASA register');
       // Still show form so they can enter manually
