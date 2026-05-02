@@ -1,19 +1,13 @@
-// Tells crawlers what to index. /admin, /dashboard, /login are noindex
-// already via per-route metadata, but listing them here too keeps the
-// signal explicit at the protocol level.
-
-const SITE = 'https://flightsales.com.au';
+// Block all crawlers during pre-launch phase.
+// Change to allow when ready to go live.
 
 export default function robots() {
   return {
     rules: [
       {
         userAgent: '*',
-        allow: '/',
-        disallow: ['/admin', '/dashboard', '/login', '/auth/'],
+        disallow: '/',
       },
     ],
-    sitemap: `${SITE}/sitemap.xml`,
-    host: SITE,
   };
 }

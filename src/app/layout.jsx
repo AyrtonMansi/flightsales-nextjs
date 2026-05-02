@@ -1,9 +1,20 @@
 import './globals.css';
+import PasswordGate from '@/components/PasswordGate';
 
 export const metadata = {
   title: 'Flightsales.com.au | Australia\'s Aircraft Marketplace',
   description: 'Buy and sell aircraft with confidence. Australia\'s most trusted aviation marketplace with verified dealers, transparent listings, and real market data.',
   keywords: 'aircraft for sale, planes for sale australia, aviation marketplace, buy aircraft, sell aircraft, cessna, cirrus, piper, helicopter',
+  robots: {
+    index: false,
+    follow: false,
+    nocache: true,
+    googleBot: {
+      index: false,
+      follow: false,
+      noimageindex: true,
+    },
+  },
   openGraph: {
     title: 'Flightsales.com.au | Buy & Sell Aircraft',
     description: 'Australia\'s most trusted aviation marketplace.',
@@ -47,7 +58,11 @@ export default function RootLayout({ children }) {
           />
         )}
       </head>
-      <body>{children}</body>
+      <body>
+        <PasswordGate>
+          {children}
+        </PasswordGate>
+      </body>
     </html>
   );
 }
