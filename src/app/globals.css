@@ -437,7 +437,6 @@ a { color: inherit; text-decoration: none; }
    under the hamburger spatially. Hidden on desktop. */
 .fs-mobile-subbar {
   display: none;
-  border-bottom: 1px solid var(--fs-line);
   padding: 8px 20px;
   background: var(--fs-white);
   text-align: right;
@@ -576,9 +575,10 @@ a { color: inherit; text-decoration: none; }
   padding: 0 4px;
 }
 @media (max-width: 768px) {
-  /* Mobile: don't centre — let the row scroll horizontally so all
-     types are reachable even though they don't all fit. */
-  .fs-type-row-inner { justify-content: flex-start; padding: 0 16px; }
+  /* Mobile: keep it centred too — even if the row overflows, the
+     center alignment puts the most popular types front-and-centre,
+     and the horizontal scroll still works for the long tail. */
+  .fs-type-row-inner { padding: 0 16px; }
 }
 .fs-type-tile {
   flex-shrink: 0;
@@ -586,19 +586,18 @@ a { color: inherit; text-decoration: none; }
   align-items: center; justify-content: center; gap: 6px;
   width: 80px;
   padding: 12px 8px;
-  background: var(--fs-white);
-  border: 1px solid var(--fs-line);
+  background: transparent;
+  border: 0;
   border-radius: var(--fs-radius);
   cursor: pointer;
   font-family: var(--fs-font);
   color: var(--fs-ink);
-  transition: background 0.12s, border-color 0.12s, transform 0.12s;
+  transition: background 0.12s, color 0.12s, transform 0.12s;
 }
-.fs-type-tile:hover { background: var(--fs-bg); border-color: var(--fs-ink-4); }
+.fs-type-tile:hover { background: rgba(10, 10, 10, 0.04); }
 .fs-type-tile:active { transform: scale(0.97); }
 .fs-type-tile.on {
   background: var(--fs-ink);
-  border-color: var(--fs-ink);
   color: var(--fs-white);
 }
 .fs-type-tile-icon {
