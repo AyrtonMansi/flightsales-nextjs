@@ -41,8 +41,8 @@ export default function PasswordGate({ children }) {
     }
   };
 
-  // Don't show gate if password protection is disabled
-  if (process.env.NEXT_PUBLIC_SITE_PASSWORD_PROTECTED !== 'true') {
+  // Don't show gate if password protection is explicitly disabled
+  if (process.env.NEXT_PUBLIC_SITE_PASSWORD_PROTECTED === 'false') {
     return children;
   }
 

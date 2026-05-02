@@ -2,8 +2,10 @@ export async function POST(request) {
   try {
     const { password } = await request.json();
     
-    // Check if password protection is enabled
-    if (process.env.SITE_PASSWORD_PROTECTED !== 'true') {
+    // Check if password protection is enabled (default to true for safety)
+    const isProtected = process.env.SITE_PASSWORD_PROTECTED !== 'false';
+    
+    if (!isProtected) {
       return Response.json({ ok: true });
     }
     
