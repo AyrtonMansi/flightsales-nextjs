@@ -3379,7 +3379,7 @@ html, body { overflow-x: hidden; max-width: 100%; }
    rows (waypoints between pickup and dropoff). The halo covers
    the line passing behind it. */
 /* Default waypoint dot — small filled black 5px circle on every
-   middle card (Make, Year, Price). Halo covers the line passing
+   middle card (Type, Make, Year, Price). Halo covers the line passing
    behind it. */
 .fs-h-stack-pin {
   width: 5px;
@@ -3391,18 +3391,20 @@ html, body { overflow-x: hidden; max-width: 100%; }
   flex-shrink: 0;
   margin-left: 6px;     /* centres the 5px dot on the 1px line at x=24 */
 }
-/* First card in the group → Type → pickup circle */
-.fs-h-cards-group > .fs-h-stack:first-child .fs-h-stack-pin {
-  width: 9px;
-  height: 9px;
-  margin-left: 4px;
-}
-/* Last card in the group → Location → destination square */
+/* Last card in the group → Location → black teardrop map-pin icon
+   instead of a plain dot/square. Reads instantly as "destination /
+   place". Inline SVG via background-image so we don't need to thread
+   an icon prop through SelectField. The element's box-shadow halo
+   still covers the connector line where it sits. */
 .fs-h-cards-group > .fs-h-stack:last-child .fs-h-stack-pin {
-  width: 9px;
-  height: 9px;
-  border-radius: 2px;
-  margin-left: 4px;
+  width: 13px;
+  height: 17px;
+  border-radius: 0;
+  margin-left: 2px;
+  background:
+    transparent
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%230a0a0a'><path d='M12 2C8 2 5 5 5 9c0 5 7 13 7 13s7-8 7-13c0-4-3-7-7-7zm0 9.5c-1.4 0-2.5-1.1-2.5-2.5S10.6 6.5 12 6.5s2.5 1.1 2.5 2.5-1.1 2.5-2.5 2.5z'/></svg>")
+    no-repeat center / contain;
 }
 .fs-h-stack-label {
   font: 600 11px/1 -apple-system, system-ui, sans-serif;
