@@ -2873,3 +2873,145 @@ html, body { overflow-x: hidden; max-width: 100%; }
   .fs-h-kbd { display: none; }
 }
 
+
+/* ============================================================
+   AIRCRAFT MAKE/MODEL PICKER — used on /sell
+   Two-stage typeahead (Make then Model). Each input has a
+   suggestion popup; picking a model surfaces a spec preview
+   row so the user knows the catalogue auto-filled the form.
+   ============================================================ */
+
+.fs-mmp { display: flex; flex-direction: column; gap: 12px; }
+
+.fs-mmp-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr);
+  gap: 12px;
+}
+@media (max-width: 640px) {
+  .fs-mmp-row { grid-template-columns: minmax(0, 1fr); }
+}
+
+.fs-mmp-field {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.fs-mmp-label {
+  font: 600 11px/1 -apple-system, system-ui, sans-serif;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--fs-ink-3, #6b7280);
+}
+.fs-mmp-input {
+  width: 100%;
+  height: 42px;
+  padding: 0 12px;
+  border: 1px solid var(--fs-line, #e5e7eb);
+  border-radius: 10px;
+  background: #fff;
+  font: 500 15px/1.2 -apple-system, system-ui, sans-serif;
+  color: var(--fs-ink, #0a0a0a);
+  outline: 0;
+  transition: border-color 120ms ease, box-shadow 120ms ease;
+}
+.fs-mmp-input:focus {
+  border-color: var(--fs-ink, #0a0a0a);
+  box-shadow: 0 0 0 3px rgba(10, 10, 10, 0.06);
+}
+.fs-mmp-input::placeholder { color: #9ca3af; font-weight: 400; }
+
+.fs-mmp-pop {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  z-index: 30;
+  margin: 0;
+  padding: 4px;
+  list-style: none;
+  background: #fff;
+  border: 1px solid var(--fs-line, #e5e7eb);
+  border-radius: 10px;
+  box-shadow:
+    0 10px 30px -12px rgba(10, 10, 10, 0.18),
+    0 4px 8px -4px rgba(10, 10, 10, 0.06);
+  max-height: 320px;
+  overflow-y: auto;
+}
+.fs-mmp-opt {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 12px;
+  border: 0;
+  background: transparent;
+  border-radius: 8px;
+  text-align: left;
+  cursor: pointer;
+  transition: background 100ms ease;
+}
+.fs-mmp-opt:hover, .fs-mmp-opt:focus-visible {
+  background: rgba(10, 10, 10, 0.04);
+  outline: 0;
+}
+.fs-mmp-opt-name {
+  font: 500 14px/1.2 -apple-system, system-ui, sans-serif;
+  color: var(--fs-ink, #0a0a0a);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.fs-mmp-opt-meta {
+  font: 500 12px/1 -apple-system, system-ui, sans-serif;
+  color: var(--fs-ink-3, #6b7280);
+  font-variant-numeric: tabular-nums;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+.fs-mmp-opt-meta code {
+  font: 500 11px/1 ui-monospace, SFMono-Regular, monospace;
+  background: rgba(10, 10, 10, 0.05);
+  padding: 2px 5px;
+  border-radius: 4px;
+  color: var(--fs-ink, #0a0a0a);
+}
+
+.fs-mmp-specs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px 18px;
+  padding: 10px 14px;
+  background: var(--fs-bg-2, #f6f6f7);
+  border: 1px solid var(--fs-line, #e5e7eb);
+  border-radius: 10px;
+}
+.fs-mmp-spec { display: inline-flex; flex-direction: column; gap: 2px; min-width: 0; }
+.fs-mmp-spec-label {
+  font: 600 10px/1 -apple-system, system-ui, sans-serif;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--fs-ink-3, #6b7280);
+}
+.fs-mmp-spec-value {
+  font: 600 13px/1.2 -apple-system, system-ui, sans-serif;
+  color: var(--fs-ink, #0a0a0a);
+  font-variant-numeric: tabular-nums;
+}
+
+.fs-mmp-fallback {
+  align-self: flex-start;
+  padding: 6px 0;
+  border: 0;
+  background: transparent;
+  font: 500 13px/1 -apple-system, system-ui, sans-serif;
+  color: var(--fs-ink-3, #6b7280);
+  cursor: pointer;
+  transition: color 120ms ease;
+}
+.fs-mmp-fallback:hover { color: var(--fs-ink, #0a0a0a); }

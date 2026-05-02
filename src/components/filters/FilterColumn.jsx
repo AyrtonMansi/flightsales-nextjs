@@ -5,6 +5,7 @@ import CheckboxList from './CheckboxList';
 import NumberField from './NumberField';
 import RangeSlider from './RangeSlider';
 import { CATEGORIES, MANUFACTURERS, STATES, CONDITIONS } from '../../lib/constants';
+import { useAircraftCatalogue } from '../../lib/aircraftCatalogue';
 import { SECTION_FIELDS, countActiveInSection, countActiveTotal, initialFilters } from '../../lib/filterReducer';
 
 // Curated option lists for the advanced filter checkbox sections. Kept here
@@ -67,6 +68,14 @@ const OWNER_COUNTS = [
 export default function FilterColumn({ state, dispatch, total, user }) {
   const setField = (field, value) => dispatch({ type: 'SET', field, value });
   const toggle = (field, value) => dispatch({ type: 'TOGGLE_IN_ARRAY', field, value });
+
+  // Pull makes from the catalogue (seed + DB extras), with the legacy
+  // MANUFACTURERS list as a guaranteed fallback if the catalogue ever
+  // came back empty for any reason.
+  const catalogue = useAircraftCatalogue();
+  const makeOptions = catalogue.makes.length > 0
+    ? catalogue.makes.map((mk) => ({ value: mk.name, label: mk.name }))
+    : MANUFACTURERS.map((m) => ({ value: m, label: m }));
 
   const activeTotal = countActiveTotal(state);
   const perfActive = countActiveInSection(state, SECTION_FIELDS.performance);
@@ -144,7 +153,7 @@ export default function FilterColumn({ state, dispatch, total, user }) {
         <div className="fs-fc-field">
           <span className="fs-fc-label">Make</span>
           <CheckboxList
-            options={MANUFACTURERS.map(m => ({ value: m, label: m }))}
+            options={makeOptions}
             selected={state.manufacturers}
             onToggle={v => toggle('manufacturers', v)}
             maxVisible={5}

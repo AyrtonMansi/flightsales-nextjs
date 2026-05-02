@@ -20,11 +20,13 @@ test.describe('SEO', () => {
   });
 
   test('robots.txt is served', async ({ request }) => {
+    // robots.js currently disallows all crawlers during the pre-launch
+    // phase. Test asserts the file is served + identifies user agents;
+    // when launch flips robots back to allow, add the Sitemap matcher.
     const res = await request.get('/robots.txt');
     expect(res.status()).toBe(200);
     const body = await res.text();
     expect(body).toMatch(/User-Agent/i);
-    expect(body).toMatch(/Sitemap/i);
   });
 
   test('sitemap.xml is served', async ({ request }) => {

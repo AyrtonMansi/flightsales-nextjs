@@ -1,6 +1,7 @@
 'use client';
 import { Icons } from '../Icons';
-import { CATEGORIES, MANUFACTURERS, STATES } from '../../lib/constants';
+import { CATEGORIES, STATES } from '../../lib/constants';
+import { useAircraftCatalogue } from '../../lib/aircraftCatalogue';
 
 // HeroSearchPro — 2026 redraw of the hero search card.
 //
@@ -62,6 +63,11 @@ export default function HeroSearchPro({ model, count }) {
     ? count.toLocaleString()
     : null;
 
+  // Pull makes from the catalogue (seed + DB extras) so the dropdown
+  // covers every supported manufacturer with a single source of truth.
+  const catalogue = useAircraftCatalogue();
+  const makeOptions = catalogue.makes.map((mk) => ({ value: mk.name, label: mk.name }));
+
   return (
     <form
       className="fs-h-card"
@@ -107,7 +113,7 @@ export default function HeroSearchPro({ model, count }) {
           value={searchMake}
           onChange={setSearchMake}
           placeholder="All makes"
-          options={MANUFACTURERS.map((m) => ({ value: m, label: m }))}
+          options={makeOptions}
         />
         <SelectField
           label="Location"
