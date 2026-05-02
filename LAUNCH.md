@@ -12,51 +12,38 @@ exact ops work outstanding to flip the site live for real users.
 > - Every public route returns 200 against `next dev`
 > - Every API route validates input + gates auth correctly
 >
+> ✅ COMPLETED (Sat 2026-05-02)
+> - Vercel deployment fixed — redeployed from correct GitHub repo
+> - Supabase schema applied — 13 tables + storage bucket created
+> - Vercel env vars updated with correct Supabase project ref (gztdahwsfwybpzqcegty)
+>
 > What I cannot verify from here (you must check on the live deploy)
-> - Vercel env vars
-> - Supabase storage bucket existence
 > - Resend domain verification
 > - DNS pointing flightsales.com.au at Vercel
 
 ---
 
-## 1. Apply the latest schema migration
+## 1. ✅ Apply the latest schema migration — DONE
 
-Re-run `supabase/schema.sql` in the Supabase SQL editor. It's idempotent
-(`CREATE TABLE IF NOT EXISTS`, `ADD COLUMN IF NOT EXISTS`, `ON CONFLICT
-DO NOTHING`) so you can run the whole thing safely against an existing DB.
+Schema has been applied successfully. Verified:
+- **13 tables** in public schema
+- **aircraft-images bucket** exists and is public
 
-Most recent additions you might not have:
-- `notifications` (in-app bell + Realtime)
-- `email_log`, `listing_reports`, `saved_searches`, `dealer_applications`,
-  `admin_audit`, `casa_cache`
-- Storage bucket `aircraft-images` with RLS policies (just added — see
-  the bottom of `schema.sql`)
-- Many filter columns on `aircraft` (advanced search filters)
-- `profiles.role`, `profiles.suspended_at`, `profiles.onboarding_step_sent`
-
-Verify after running:
-
-```sql
-select table_name from information_schema.tables
-where table_schema='public' order by table_name;
-
-select id, public from storage.buckets where id='aircraft-images';
-```
-
-You should see all 13 tables and the bucket.
+If you need to re-run: `supabase/schema.sql` is idempotent (`CREATE TABLE IF NOT EXISTS`, `ADD COLUMN IF NOT EXISTS`, `ON CONFLICT DO NOTHING`).
 
 ---
 
-## 2. Vercel environment variables
+## 2. Vercel environment variables — PARTIALLY DONE
 
-Vercel project → Settings → Environment Variables → set these for
-**Production** (and **Preview** if you want PR deploys to email):
+✅ Already set (updated with correct Supabase project ref gztdahwsfwybpzqcegty):
+- `NEXT_PUBLIC_SUPABASE_URL` = `https://gztdahwsfwybpzqcegty.supabase.co`
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY` = set
+- `NEXT_PUBLIC_SITE_URL` = set
+
+❌ Still need to add:
 
 | Name | Where it comes from |
 |---|---|
-| `NEXT_PUBLIC_SUPABASE_URL` | Supabase → Project Settings → API |
-| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase → Project Settings → API |
 | `SUPABASE_SERVICE_ROLE_KEY` | Supabase → Project Settings → API (do **not** prefix with `NEXT_PUBLIC_`) |
 | `RESEND_API_KEY` | Resend → API Keys |
 | `EMAIL_FROM` | e.g. `FlightSales <noreply@flightsales.com.au>` |
@@ -64,7 +51,6 @@ Vercel project → Settings → Environment Variables → set these for
 | `EMAIL_BCC_ADMIN` | your admin inbox |
 | `CRON_SECRET` | random 32-char hex (generated below) |
 | `INTERNAL_API_TOKEN` | random 32-char hex (generated below) |
-| `NEXT_PUBLIC_SITE_URL` | `https://flightsales.com.au` |
 | `NEXT_PUBLIC_FS_ABN` | your ABN (shown on legal pages) |
 
 Optional but recommended:
@@ -149,6 +135,21 @@ Run through in order:
 
 If any step fails, paste the failing screen + the browser console error
 into the next session.
+
+### Quick verification commands
+
+```bash
+# Check site loads
+curl -s https://flightsales-nextjs.vercel.app | head -5
+
+# Check API responds (RLS error expected without auth)
+curl -s -X POST https://flightsales-nextjs.vercel.app/api/contact \
+  -H "Content-Type: application/json" \
+  -d '{"name":"Test","email":"test@test.com","message":"Test"}'
+
+# Should return: {"ok":false,"error":"db_insert_failed",...}
+# (This means DB is connected but RLS blocks anonymous inserts)
+```
 
 ---
 
