@@ -3342,7 +3342,7 @@ html, body { overflow-x: hidden; max-width: 100%; }
   top: 28px;            /* aligns with the first pin */
   bottom: 28px;         /* aligns with the last pin */
   width: 1px;
-  background: rgba(10, 10, 10, 0.30);
+  background: rgba(10, 10, 10, 0.22);
   /* No z-index — paint order alone keeps cards on top in the cards
      they cover, line shows through in the gaps between them. */
 }
@@ -3363,7 +3363,7 @@ html, body { overflow-x: hidden; max-width: 100%; }
   top: 0;
   bottom: 50%;         /* ends at the pin sitting at vertical centre */
   width: 1px;
-  background: rgba(10, 10, 10, 0.30);
+  background: rgba(10, 10, 10, 0.22);
   z-index: 0;
 }
 
@@ -3388,7 +3388,7 @@ html, body { overflow-x: hidden; max-width: 100%; }
   top: 32px;
   bottom: 32px;
   width: 1px;
-  background: rgba(10, 10, 10, 0.30);
+  background: rgba(10, 10, 10, 0.22);
   z-index: 0;
 }
 .fs-h-stack-row {
@@ -3407,28 +3407,36 @@ html, body { overflow-x: hidden; max-width: 100%; }
 /* Default pin: small solid filled black dot for the in-between
    rows (waypoints between pickup and dropoff). The halo covers
    the line passing behind it. */
+/* Default waypoint dot — small filled black 5px circle. Halo (4px ring
+   of card bg) covers the connector line passing behind it. Uber's
+   actual pins are this size — keeping ours small was the missing
+   piece making the joiner read "too bold" before. */
 .fs-h-stack-pin {
-  width: 8px;
-  height: 8px;
+  width: 5px;
+  height: 5px;
   border-radius: 50%;
   background: var(--fs-ink, #0a0a0a);
   border: 0;
   box-shadow: 0 0 0 4px var(--fs-bg-2, #f6f6f7);
   flex-shrink: 0;
-  margin-left: 4px;     /* nudge so the small dot centres on the line */
+  margin-left: 6px;     /* centres 5px dot on the 1px line at x=24 */
 }
-/* First row — Uber pickup mark: filled black circle, larger */
 .fs-h-stack-row:first-child .fs-h-stack-pin {
-  width: 14px;
-  height: 14px;
-  margin-left: 1px;
+  width: 9px;
+  height: 9px;
+  margin-left: 4px;
 }
-/* Last row — Uber dropoff mark: filled black square */
 .fs-h-stack-row:last-child .fs-h-stack-pin {
-  width: 12px;
-  height: 12px;
+  width: 9px;
+  height: 9px;
   border-radius: 2px;
-  margin-left: 2px;
+  margin-left: 4px;
+}
+@media (max-width: 480px) {
+  /* Card padding is 12px on phones (vs 16 desktop), so pins shift
+     left by 4px — already matched by .fs-h-cards-group::before
+     left:20 above. Pin margins stay the same since both line and
+     pins shift together. */
 }
 .fs-h-stack-label {
   font: 600 11px/1 -apple-system, system-ui, sans-serif;
