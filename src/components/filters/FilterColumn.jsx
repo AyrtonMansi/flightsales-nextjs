@@ -71,34 +71,54 @@ export default function FilterColumn({ state, dispatch, total, user }) {
 
   // Pull makes from the catalogue (seed + DB extras), with the legacy
   // MANUFACTURERS list as a guaranteed fallback if the catalogue ever
-  // came back empty for any reason.
+  // came back empty for any reason. Makes already arrive popularity-
+  // ordered from buildCatalogue (Cessna/Piper at the top, niche makes
+  // at the bottom).
   const catalogue = useAircraftCatalogue();
-  const makeOptions = catalogue.makes.length > 0
-    ? catalogue.makes.map((mk) => ({ value: mk.name, label: mk.name }))
-    : MANUFACTURERS.map((m) => ({ value: m, label: m }));
+  const allMakes = catalogue.makes.length > 0
+    ? catalogue.makes
+    : MANUFACTURERS.map((m) => ({ slug: m.toLowerCase(), name: m }));
 
-  // Model options cascade from selected makes. We map the user-picked
-  // make NAMES (e.g. "Cessna") back to make slugs so we can fetch their
-  // models from the catalogue. Each option's value is the model row's
-  // name fragment that matches the listing's `model` column — so
-  // checking "172S Skyhawk" filters the DB by model = "172S Skyhawk".
+  // Type cascade — when the user has selected one or more Type filters
+  // (e.g. Helicopter), filter the available makes to only those that
+  // have at least one model in the selected categories. So picking
+  // Type=Helicopter hides Cessna / Piper / Cirrus from the Make list,
+  // showing only Robinson / Bell / Airbus Helicopters / Schweizer.
+  const makesFilteredByType = state.categories.length === 0
+    ? allMakes
+    : allMakes.filter((mk) => {
+        const models = catalogue.modelsByMake.get(mk.slug) ?? [];
+        return models.some((mdl) => state.categories.includes(mdl.category));
+      });
+  const makeOptions = makesFilteredByType.map((mk) => ({ value: mk.name, label: mk.name }));
+
+  // Model options cascade from selected makes AND selected categories.
+  // Map picked make NAMES (e.g. "Cessna") to slugs to fetch their
+  // catalogue models. Each option's value matches the listing's `model`
+  // column so checking "172S Skyhawk" filters the DB rows.
   const selectedMakeSlugs = state.manufacturers
-    .map((name) => catalogue.makes.find((mk) => mk.name === name)?.slug)
+    .map((name) => allMakes.find((mk) => mk.name === name)?.slug)
     .filter(Boolean);
   const modelOptions = selectedMakeSlugs.length === 0
     ? []
     : selectedMakeSlugs
         .flatMap((slug) => catalogue.modelsByMake.get(slug) ?? [])
+        // Cascade by selected Types too — a Robinson user who also
+        // ticked Helicopter sees only R22/R44/R66, never some hypothetical
+        // future Robinson fixed-wing.
+        .filter((mdl) =>
+          state.categories.length === 0 || state.categories.includes(mdl.category)
+        )
         .map((mdl) => {
           // The listing's `model` column stores the seller's text
-          // (e.g. "172S Skyhawk", "SR22T"). Match against the variant
-          // when present, falling back to family for variant-less entries.
+          // (e.g. "172S Skyhawk", "SR22T"). Match against variant when
+          // present, falling back to family for variant-less entries.
           const value = mdl.variant
             ? `${mdl.family} ${mdl.variant}`.trim()
             : mdl.family;
           return { value, label: value };
         })
-        // Dedupe — the same model name might appear under multiple makes
+        // Dedupe — same model name might appear under multiple makes
         // (rare, but Vans RV variants can collide).
         .filter((opt, i, arr) => arr.findIndex((o) => o.value === opt.value) === i);
 

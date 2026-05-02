@@ -51,7 +51,16 @@ export function buildCatalogue(extraMakes = [], extraModels = []) {
     if (!mk?.slug) continue;
     makesBySlug.set(mk.slug, { ...makesBySlug.get(mk.slug), ...mk });
   }
-  const makes = [...makesBySlug.values()].sort((a, b) => a.name.localeCompare(b.name));
+  // Sort makes by popularity (lower = more popular, AU-market focus),
+  // alphabetical as tiebreaker. Default popularity = 99 so any DB-added
+  // makes without a rank fall to the bottom rather than disrupting
+  // the top of the list.
+  const makes = [...makesBySlug.values()].sort((a, b) => {
+    const ar = a.popularity ?? 99;
+    const br = b.popularity ?? 99;
+    if (ar !== br) return ar - br;
+    return a.name.localeCompare(b.name);
+  });
 
   // Models — DB wins on slug collision
   const modelsBySlug = new Map();

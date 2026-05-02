@@ -63,10 +63,18 @@ export default function HeroSearchPro({ model, count }) {
     ? count.toLocaleString()
     : null;
 
-  // Pull makes from the catalogue (seed + DB extras) so the dropdown
-  // covers every supported manufacturer with a single source of truth.
+  // Pull makes from the catalogue (popularity-ordered) and cascade-
+  // filter by the picked Type so Helicopter narrows Make to Robinson /
+  // Bell / Airbus Helicopters / Schweizer instead of dumping every
+  // fixed-wing manufacturer in the user's face.
   const catalogue = useAircraftCatalogue();
-  const makeOptions = catalogue.makes.map((mk) => ({ value: mk.name, label: mk.name }));
+  const visibleMakes = !searchCat
+    ? catalogue.makes
+    : catalogue.makes.filter((mk) => {
+        const models = catalogue.modelsByMake.get(mk.slug) ?? [];
+        return models.some((mdl) => mdl.category === searchCat);
+      });
+  const makeOptions = visibleMakes.map((mk) => ({ value: mk.name, label: mk.name }));
 
   return (
     <form

@@ -16,44 +16,67 @@
 // per manufacturer type certificate data sheets. Mission tags are
 // editorial — debate-friendly but defensible.
 
+// `popularity` ranks AU-market visibility — lower = more common in
+// listings, shown higher in the make/model dropdowns. 1–10 = top tier,
+// 11–25 = common, 26+ = niche / vintage / heavy. Default is 99 (rare).
 export const MAKES_SEED = [
-  { slug: 'airbus-helicopters', name: 'Airbus Helicopters', country: 'France', founded_year: 1992, homepage_url: 'https://www.airbus.com/en/products-services/helicopters' },
-  { slug: 'aviat',              name: 'Aviat Aircraft',     country: 'USA',    founded_year: 1995, homepage_url: 'https://aviataircraft.com/' },
-  { slug: 'beechcraft',         name: 'Beechcraft',         country: 'USA',    founded_year: 1932, homepage_url: 'https://txtav.com/en/beechcraft' },
-  { slug: 'bell',               name: 'Bell',               country: 'USA',    founded_year: 1935, homepage_url: 'https://www.bellflight.com/' },
-  { slug: 'bristell',           name: 'Bristell',           country: 'Czechia', founded_year: 2010 },
-  { slug: 'cessna',             name: 'Cessna',             country: 'USA',    founded_year: 1927, homepage_url: 'https://cessna.txtav.com/' },
-  { slug: 'cirrus',             name: 'Cirrus',             country: 'USA',    founded_year: 1984, homepage_url: 'https://cirrusaircraft.com/' },
-  { slug: 'cubcrafters',        name: 'CubCrafters',        country: 'USA',    founded_year: 1980 },
-  { slug: 'daher',              name: 'Daher',              country: 'France', founded_year: 1863, homepage_url: 'https://www.tbm.aero/' },
-  { slug: 'diamond',            name: 'Diamond Aircraft',   country: 'Austria', founded_year: 1981, homepage_url: 'https://www.diamondaircraft.com/' },
-  { slug: 'embraer',            name: 'Embraer',            country: 'Brazil', founded_year: 1969 },
-  { slug: 'extra',              name: 'Extra Aircraft',     country: 'Germany', founded_year: 1980 },
-  { slug: 'foxbat',             name: 'Aeroprakt (Foxbat)', country: 'Ukraine', founded_year: 1989 },
-  { slug: 'gippsaero',          name: 'GippsAero',          country: 'Australia', founded_year: 1990, homepage_url: 'https://gippsaero.com/' },
-  { slug: 'hondajet',           name: 'HondaJet',           country: 'Japan',  founded_year: 2006 },
-  { slug: 'jabiru',             name: 'Jabiru',             country: 'Australia', founded_year: 1988, homepage_url: 'https://jabiru.net.au/' },
-  { slug: 'lancair',            name: 'Lancair',            country: 'USA',    founded_year: 1981 },
-  { slug: 'maule',              name: 'Maule',              country: 'USA',    founded_year: 1941 },
-  { slug: 'mooney',             name: 'Mooney',             country: 'USA',    founded_year: 1929 },
-  { slug: 'pilatus',            name: 'Pilatus',            country: 'Switzerland', founded_year: 1939, homepage_url: 'https://www.pilatus-aircraft.com/' },
-  { slug: 'piper',              name: 'Piper',              country: 'USA',    founded_year: 1937, homepage_url: 'https://www.piper.com/' },
-  { slug: 'pipistrel',          name: 'Pipistrel',          country: 'Slovenia', founded_year: 1989, homepage_url: 'https://www.pipistrel-aircraft.com/' },
-  { slug: 'pitts',              name: 'Pitts (Aviat)',      country: 'USA',    founded_year: 1944 },
-  { slug: 'robinson',           name: 'Robinson Helicopter', country: 'USA',   founded_year: 1973, homepage_url: 'https://robinsonheli.com/' },
-  { slug: 'schweizer',          name: 'Schweizer',          country: 'USA',    founded_year: 1939 },
-  { slug: 'sling',              name: 'Sling Aircraft',     country: 'South Africa', founded_year: 2006, homepage_url: 'https://airplanefactory.com/' },
-  { slug: 'socata',             name: 'Socata',             country: 'France', founded_year: 1911 },
-  { slug: 'tecnam',             name: 'Tecnam',             country: 'Italy',  founded_year: 1986, homepage_url: 'https://www.tecnam.com/' },
-  { slug: 'vans',               name: 'Vans Aircraft',      country: 'USA',    founded_year: 1973, homepage_url: 'https://www.vansaircraft.com/' },
-  { slug: 'autogyro',           name: 'AutoGyro',           country: 'Germany', founded_year: 1999 },
-  { slug: 'magni',              name: 'Magni Gyro',         country: 'Italy',  founded_year: 1990 },
-  { slug: 'rotorway',           name: 'Rotorway',           country: 'USA',    founded_year: 1961 },
-  { slug: 'schempp-hirth',      name: 'Schempp-Hirth',      country: 'Germany', founded_year: 1935 },
-  { slug: 'schleicher',         name: 'Alexander Schleicher', country: 'Germany', founded_year: 1927 },
-  { slug: 'icon',               name: 'Icon Aircraft',      country: 'USA',    founded_year: 2006 },
-  { slug: 'flight-design',      name: 'Flight Design',      country: 'Germany', founded_year: 1988 },
-  { slug: 'american-champion',  name: 'American Champion',  country: 'USA',    founded_year: 1989 },
+  // Tier 1 — the names every Australian pilot knows
+  { slug: 'cessna',             name: 'Cessna',              country: 'USA',         founded_year: 1927, popularity: 1,  homepage_url: 'https://cessna.txtav.com/' },
+  { slug: 'piper',              name: 'Piper',               country: 'USA',         founded_year: 1937, popularity: 2,  homepage_url: 'https://www.piper.com/' },
+  { slug: 'cirrus',             name: 'Cirrus',              country: 'USA',         founded_year: 1984, popularity: 3,  homepage_url: 'https://cirrusaircraft.com/' },
+  { slug: 'beechcraft',         name: 'Beechcraft',          country: 'USA',         founded_year: 1932, popularity: 4,  homepage_url: 'https://txtav.com/en/beechcraft' },
+  { slug: 'robinson',           name: 'Robinson Helicopter', country: 'USA',         founded_year: 1973, popularity: 5,  homepage_url: 'https://robinsonheli.com/' },
+  { slug: 'diamond',            name: 'Diamond Aircraft',    country: 'Austria',     founded_year: 1981, popularity: 6,  homepage_url: 'https://www.diamondaircraft.com/' },
+  { slug: 'tecnam',             name: 'Tecnam',              country: 'Italy',       founded_year: 1986, popularity: 7,  homepage_url: 'https://www.tecnam.com/' },
+  { slug: 'pilatus',            name: 'Pilatus',             country: 'Switzerland', founded_year: 1939, popularity: 8,  homepage_url: 'https://www.pilatus-aircraft.com/' },
+  { slug: 'mooney',             name: 'Mooney',              country: 'USA',         founded_year: 1929, popularity: 9 },
+  { slug: 'daher',              name: 'Daher',               country: 'France',      founded_year: 1863, popularity: 10, homepage_url: 'https://www.tbm.aero/' },
+
+  // Tier 2 — common, AU-relevant
+  { slug: 'bell',               name: 'Bell',                country: 'USA',         founded_year: 1935, popularity: 11, homepage_url: 'https://www.bellflight.com/' },
+  { slug: 'airbus-helicopters', name: 'Airbus Helicopters',  country: 'France',      founded_year: 1992, popularity: 12, homepage_url: 'https://www.airbus.com/en/products-services/helicopters' },
+  { slug: 'vans',               name: 'Vans Aircraft',       country: 'USA',         founded_year: 1973, popularity: 13, homepage_url: 'https://www.vansaircraft.com/' },
+  { slug: 'sling',              name: 'Sling Aircraft',      country: 'South Africa', founded_year: 2006, popularity: 14, homepage_url: 'https://airplanefactory.com/' },
+  { slug: 'pipistrel',          name: 'Pipistrel',           country: 'Slovenia',    founded_year: 1989, popularity: 15, homepage_url: 'https://www.pipistrel-aircraft.com/' },
+  { slug: 'jabiru',             name: 'Jabiru',              country: 'Australia',   founded_year: 1988, popularity: 16, homepage_url: 'https://jabiru.net.au/' },
+  { slug: 'gippsaero',          name: 'GippsAero',           country: 'Australia',   founded_year: 1990, popularity: 17, homepage_url: 'https://gippsaero.com/' },
+  { slug: 'embraer',            name: 'Embraer',             country: 'Brazil',      founded_year: 1969, popularity: 18 },
+  { slug: 'hondajet',           name: 'HondaJet',            country: 'Japan',       founded_year: 2006, popularity: 19 },
+  { slug: 'cubcrafters',        name: 'CubCrafters',         country: 'USA',         founded_year: 1980, popularity: 20 },
+  { slug: 'maule',              name: 'Maule',               country: 'USA',         founded_year: 1941, popularity: 21 },
+  { slug: 'aviat',              name: 'Aviat Aircraft',      country: 'USA',         founded_year: 1995, popularity: 22, homepage_url: 'https://aviataircraft.com/' },
+  { slug: 'foxbat',             name: 'Aeroprakt (Foxbat)',  country: 'Ukraine',     founded_year: 1989, popularity: 23 },
+  { slug: 'bristell',           name: 'Bristell',            country: 'Czechia',     founded_year: 2010, popularity: 24 },
+  { slug: 'flight-design',      name: 'Flight Design',       country: 'Germany',     founded_year: 1988, popularity: 25 },
+
+  // Tier 3 — niche / specialised
+  { slug: 'gulfstream',         name: 'Gulfstream',          country: 'USA',         founded_year: 1958, popularity: 26 },
+  { slug: 'bombardier',         name: 'Bombardier',          country: 'Canada',      founded_year: 1942, popularity: 27 },
+  { slug: 'dassault',           name: 'Dassault Aviation',   country: 'France',      founded_year: 1929, popularity: 28 },
+  { slug: 'quest',              name: 'Quest Aircraft',      country: 'USA',         founded_year: 2001, popularity: 29 },
+  { slug: 'air-tractor',        name: 'Air Tractor',         country: 'USA',         founded_year: 1972, popularity: 30 },
+  { slug: 'autogyro',           name: 'AutoGyro',            country: 'Germany',     founded_year: 1999, popularity: 31 },
+  { slug: 'magni',              name: 'Magni Gyro',          country: 'Italy',       founded_year: 1990, popularity: 32 },
+  { slug: 'extra',              name: 'Extra Aircraft',      country: 'Germany',     founded_year: 1980, popularity: 33 },
+  { slug: 'pitts',              name: 'Pitts (Aviat)',       country: 'USA',         founded_year: 1944, popularity: 34 },
+  { slug: 'icon',               name: 'Icon Aircraft',       country: 'USA',         founded_year: 2006, popularity: 35 },
+  { slug: 'american-champion',  name: 'American Champion',   country: 'USA',         founded_year: 1989, popularity: 36 },
+  { slug: 'lancair',            name: 'Lancair',             country: 'USA',         founded_year: 1981, popularity: 37 },
+  { slug: 'socata',             name: 'Socata',              country: 'France',      founded_year: 1911, popularity: 38 },
+  { slug: 'grumman',            name: 'Grumman / AGAC',      country: 'USA',         founded_year: 1929, popularity: 39 },
+  { slug: 'rockwell-commander', name: 'Rockwell Commander',  country: 'USA',         founded_year: 1972, popularity: 40 },
+  { slug: 'aero-commander',     name: 'Aero Commander',      country: 'USA',         founded_year: 1944, popularity: 41 },
+
+  // Tier 4 — rare / vintage / specialty
+  { slug: 'schweizer',          name: 'Schweizer',           country: 'USA',         founded_year: 1939, popularity: 50 },
+  { slug: 'rotorway',           name: 'Rotorway',            country: 'USA',         founded_year: 1961, popularity: 51 },
+  { slug: 'schempp-hirth',      name: 'Schempp-Hirth',       country: 'Germany',     founded_year: 1935, popularity: 52 },
+  { slug: 'schleicher',         name: 'Alexander Schleicher', country: 'Germany',    founded_year: 1927, popularity: 53 },
+  { slug: 'yakovlev',           name: 'Yakovlev (Yak)',      country: 'Russia',      founded_year: 1934, popularity: 60 },
+  { slug: 'north-american',     name: 'North American',      country: 'USA',         founded_year: 1928, popularity: 61 },
+  { slug: 'bellanca',           name: 'Bellanca',            country: 'USA',         founded_year: 1927, popularity: 62 },
+  { slug: 'stinson',            name: 'Stinson',             country: 'USA',         founded_year: 1920, popularity: 63 },
+  { slug: 'wilga',              name: 'PZL (Wilga)',         country: 'Poland',      founded_year: 1957, popularity: 64 },
 ];
 
 // Build a model row. All optional fields default to null so callers can
@@ -251,4 +274,44 @@ export const MODELS_SEED = [
   m({ make: 'schempp-hirth', family: 'Discus', variant: '2', type_designator: 'DSC2', category: 'Glider', mission: [], year_first: 1998,                  mtow_kg: 525, seats: 1, engine_type: null, aliases: ['Discus 2','Discus-2','Schempp-Hirth Discus 2'] }),
   m({ make: 'schleicher', family: 'ASW', variant: '28', type_designator: 'ASW28', category: 'Glider', mission: [], year_first: 1999,                  mtow_kg: 525, seats: 1, engine_type: null, aliases: ['ASW 28','ASW-28','ASW28','Schleicher ASW 28'] }),
   m({ make: 'schleicher', family: 'ASK', variant: '21', type_designator: 'ASK21', category: 'Glider', mission: ['trainer'], year_first: 1979,                  mtow_kg: 600, seats: 2, engine_type: null, aliases: ['ASK 21','ASK-21','ASK21','Schleicher ASK 21'] }),
+
+  // ── HEAVY JETS — Gulfstream / Bombardier / Dassault ────────────
+  m({ make: 'gulfstream',    family: 'G280',                type_designator: 'GLF4', category: 'Heavy Jet',   engine_count: 2, year_first: 2012,                  mtow_kg: 17962, seats: 10, engine_type: '2x Honeywell HTF7250G', cruise_kts: 459, range_nm: 3600, ceiling_ft: 45000, aliases: ['G280','Gulfstream G280'] }),
+  m({ make: 'gulfstream',    family: 'G650',                type_designator: 'GLF6', category: 'Heavy Jet',   engine_count: 2, year_first: 2012,                  mtow_kg: 45178, seats: 18, engine_type: '2x Rolls-Royce BR725', cruise_kts: 488, range_nm: 7000, ceiling_ft: 51000, aliases: ['G650','G650ER','Gulfstream G650'] }),
+  m({ make: 'bombardier',    family: 'Challenger',  variant: '350', type_designator: 'CL30', category: 'Heavy Jet',   engine_count: 2, year_first: 2014,                  mtow_kg: 18416, seats: 10, engine_type: '2x Honeywell HTF7350', cruise_kts: 470, range_nm: 3200, ceiling_ft: 45000, aliases: ['Challenger 350','CL350'] }),
+  m({ make: 'bombardier',    family: 'Global',       variant: '6000', type_designator: 'GL5T', category: 'Heavy Jet',   engine_count: 2, year_first: 2012,                  mtow_kg: 45132, seats: 17, engine_type: '2x Rolls-Royce BR710', cruise_kts: 488, range_nm: 6000, ceiling_ft: 51000, aliases: ['Global 6000','Global Express XRS'] }),
+  m({ make: 'dassault',      family: 'Falcon',       variant: '7X',  type_designator: 'FA7X', category: 'Heavy Jet',   engine_count: 3, year_first: 2007,                  mtow_kg: 31298, seats: 16, engine_type: '3x PW307A', cruise_kts: 488, range_nm: 5950, ceiling_ft: 51000, aliases: ['Falcon 7X','7X','Dassault 7X'] }),
+  m({ make: 'dassault',      family: 'Falcon',       variant: '2000LXS', type_designator: 'F2TH', category: 'Heavy Jet', engine_count: 2, year_first: 2014,                  mtow_kg: 19414, seats: 10, engine_type: '2x PW308C', cruise_kts: 482, range_nm: 4000, ceiling_ft: 47000, aliases: ['Falcon 2000','Falcon 2000LXS'] }),
+
+  // ── BUSH / TURBOPROP — Quest Kodiak ───────────────────────────
+  m({ make: 'quest',         family: 'Kodiak',      variant: '100', type_designator: 'KODI', category: 'Turboprop',   mission: ['working','floats'], year_first: 2007,                  mtow_kg: 3290, seats: 10, engine_type: 'PT6A-34', cruise_kts: 174, range_nm: 1132, fuel_burn_lph: 175, ceiling_ft: 25000, aliases: ['Kodiak','Kodiak 100','Quest Kodiak'] }),
+
+  // ── AG / WORKING ──────────────────────────────────────────────
+  m({ make: 'air-tractor',   family: 'AT-502',                type_designator: 'AT5T', category: 'Single Engine Piston', mission: ['working'], year_first: 1987,                  mtow_kg: 4173, seats: 1, engine_type: 'PT6A-34AG', cruise_kts: 156, range_nm: 400, ceiling_ft: 14000, aliases: ['AT-502','AT-502B'] }),
+  m({ make: 'air-tractor',   family: 'AT-802',                type_designator: 'AT8T', category: 'Turboprop',   mission: ['working'], year_first: 1990,                  mtow_kg: 7257, seats: 1, engine_type: 'PT6A-65AG', cruise_kts: 188, range_nm: 800, ceiling_ft: 16000, aliases: ['AT-802','AT-802A','Fire Boss'] }),
+
+  // ── GRUMMAN / AGAC SINGLES ────────────────────────────────────
+  m({ make: 'grumman',       family: 'AA-5',          variant: 'Tiger', type_designator: 'AA5',  category: 'Single Engine Piston', mission: ['tourer'], year_first: 1975, year_last: 1979, mtow_kg: 1090, seats: 4, engine_type: 'Lycoming O-360', cruise_kts: 139, range_nm: 700, fuel_burn_lph: 38, ceiling_ft: 13800, aliases: ['Tiger','AA-5B','Grumman Tiger'] }),
+  m({ make: 'grumman',       family: 'AA-5',          variant: 'Cheetah', type_designator: 'AA5', category: 'Single Engine Piston', mission: ['tourer'], year_first: 1976, year_last: 1979, mtow_kg: 998, seats: 4, engine_type: 'Lycoming O-320', cruise_kts: 122, range_nm: 600, fuel_burn_lph: 30, ceiling_ft: 13800, aliases: ['Cheetah','AA-5A'] }),
+
+  // ── SOCATA — French singles ────────────────────────────────────
+  m({ make: 'socata',        family: 'TB',            variant: '10 Tobago', type_designator: 'TB10', category: 'Single Engine Piston', mission: ['tourer','trainer'], year_first: 1977, year_last: 2002, mtow_kg: 1150, seats: 4, engine_type: 'Lycoming O-360', cruise_kts: 130, range_nm: 760, fuel_burn_lph: 38, ceiling_ft: 13000, aliases: ['TB10','Tobago','Socata TB10'] }),
+  m({ make: 'socata',        family: 'TB',            variant: '20 Trinidad', type_designator: 'TB20', category: 'Single Engine Piston', mission: ['tourer'], year_first: 1981, year_last: 2002, mtow_kg: 1400, seats: 4, engine_type: 'Lycoming IO-540', cruise_kts: 165, range_nm: 1100, fuel_burn_lph: 50, ceiling_ft: 19200, aliases: ['TB20','Trinidad','Socata TB20'] }),
+
+  // ── ROCKWELL / AERO COMMANDER ─────────────────────────────────
+  m({ make: 'rockwell-commander', family: 'Commander', variant: '114', type_designator: 'AC11', category: 'Single Engine Piston', mission: ['tourer'], year_first: 1976, year_last: 1995, mtow_kg: 1452, seats: 4, engine_type: 'Lycoming IO-540', cruise_kts: 154, range_nm: 740, fuel_burn_lph: 50, ceiling_ft: 16500, aliases: ['Commander 114','114B','Rockwell 114'] }),
+  m({ make: 'aero-commander',     family: 'Commander', variant: '500B', type_designator: 'AC50', category: 'Multi Engine Piston', mission: ['tourer'], engine_count: 2, year_first: 1958, year_last: 1973, mtow_kg: 2880, seats: 7, engine_type: '2x Lycoming IO-540', cruise_kts: 195, range_nm: 1000, fuel_burn_lph: 130, ceiling_ft: 19000, aliases: ['Commander 500','Aero Commander 500B'] }),
+
+  // ── WARBIRDS / VINTAGE ─────────────────────────────────────────
+  m({ make: 'yakovlev',           family: 'Yak-52',                  type_designator: 'YK52', category: 'Warbird',     mission: ['aerobatic'], year_first: 1978,                  mtow_kg: 1305, seats: 2, engine_type: 'Vedeneyev M-14P', cruise_kts: 151, range_nm: 290, fuel_burn_lph: 90, ceiling_ft: 13000, aliases: ['Yak-52','Yak 52','Yakovlev Yak-52'] }),
+  m({ make: 'north-american',     family: 'T-6',          variant: 'Texan',  type_designator: 'T6',   category: 'Warbird',     mission: ['aerobatic','tourer'], year_first: 1937, year_last: 1945, mtow_kg: 2548, seats: 2, engine_type: 'Pratt & Whitney R-1340', cruise_kts: 140, range_nm: 730, fuel_burn_lph: 200, ceiling_ft: 24200, aliases: ['T-6 Texan','SNJ','Harvard','AT-6'] }),
+  m({ make: 'bellanca',           family: 'Citabria',     variant: '7ECA', type_designator: 'BL8',  category: 'Single Engine Piston', mission: ['aerobatic','tourer'], year_first: 1964, year_last: 1980, mtow_kg: 750, seats: 2, engine_type: 'Lycoming O-235', cruise_kts: 100, range_nm: 460, fuel_burn_lph: 30, ceiling_ft: 12000, aliases: ['Citabria 7ECA','Citabria','Bellanca Citabria'] }),
+  m({ make: 'stinson',            family: '108',          variant: 'Voyager', type_designator: 'STIN', category: 'Single Engine Piston', mission: ['tourer'], year_first: 1946, year_last: 1950, mtow_kg: 1043, seats: 4, engine_type: 'Franklin 6A4', cruise_kts: 105, range_nm: 480, fuel_burn_lph: 38, ceiling_ft: 14000, aliases: ['Stinson 108','108 Voyager','Stinson Voyager'] }),
+  m({ make: 'wilga',              family: 'PZL-104',      variant: '80',   type_designator: 'WLGA', category: 'Single Engine Piston', mission: ['floats','working'], year_first: 1962, year_last: 2006, mtow_kg: 1330, seats: 4, engine_type: 'Ivchenko AI-14', cruise_kts: 90, range_nm: 280, fuel_burn_lph: 60, ceiling_ft: 13000, aliases: ['Wilga','Wilga 80','PZL-104 Wilga'] }),
+
+  // ── EXTRA POPULAR HELI / TWIN VARIANTS ─────────────────────────
+  m({ make: 'airbus-helicopters', family: 'EC120',        variant: 'B Colibri', type_designator: 'EC20', category: 'Helicopter',   mission: ['tourer','trainer'], year_first: 1997,                  mtow_kg: 1700, seats: 5, engine_type: 'Turbomeca Arrius 2F', cruise_kts: 120, range_nm: 380, fuel_burn_lph: 130, ceiling_ft: 17000, aliases: ['EC120','EC120B','Colibri','H120'] }),
+  m({ make: 'cessna',             family: '414',          variant: 'A Chancellor', type_designator: 'C414', category: 'Multi Engine Piston', mission: ['tourer'], engine_count: 2, year_first: 1978, year_last: 1985, mtow_kg: 3062, seats: 8, engine_type: '2x Continental TSIO-520', cruise_kts: 207, range_nm: 1340, fuel_burn_lph: 130, ceiling_ft: 30000, aliases: ['C414','414A','Chancellor'] }),
+  m({ make: 'cessna',             family: '421',          variant: 'C Golden Eagle', type_designator: 'C421', category: 'Multi Engine Piston', mission: ['tourer'], engine_count: 2, year_first: 1976, year_last: 1985, mtow_kg: 3379, seats: 8, engine_type: '2x Continental GTSIO-520', cruise_kts: 220, range_nm: 1487, fuel_burn_lph: 150, ceiling_ft: 30200, aliases: ['C421','421C','Golden Eagle'] }),
+  m({ make: 'piper',              family: 'PA-31',        variant: 'Navajo', type_designator: 'PA31', category: 'Multi Engine Piston', mission: ['tourer'], engine_count: 2, year_first: 1967, year_last: 1984, mtow_kg: 2948, seats: 8, engine_type: '2x Lycoming TIO-540', cruise_kts: 198, range_nm: 1000, fuel_burn_lph: 130, ceiling_ft: 26300, aliases: ['Navajo','PA-31','Navajo Chieftain'] }),
 ];

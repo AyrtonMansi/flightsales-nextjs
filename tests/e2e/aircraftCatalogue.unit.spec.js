@@ -147,11 +147,15 @@ test.describe('aircraftCatalogue — searchMakes', () => {
     expect(r.find(m => m.slug === 'beechcraft')).toBeTruthy();
   });
 
-  test('empty query returns all alphabetised', () => {
+  test('empty query returns popularity-ordered list (Cessna first)', () => {
     const r = searchMakes(cat, '', { limit: 100 });
     expect(r.length).toBeGreaterThan(20);
+    expect(r[0].slug).toBe('cessna');
+    // Verify popularity is monotonically non-decreasing for ranked makes
     for (let i = 1; i < r.length; i++) {
-      expect(r[i].name.localeCompare(r[i - 1].name)).toBeGreaterThanOrEqual(0);
+      const prev = r[i - 1].popularity ?? 99;
+      const curr = r[i].popularity ?? 99;
+      expect(curr).toBeGreaterThanOrEqual(prev);
     }
   });
 });
