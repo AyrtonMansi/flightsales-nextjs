@@ -3338,17 +3338,18 @@ html, body { overflow-x: hidden; max-width: 100%; }
 .fs-h-cards-group::before {
   content: '';
   position: absolute;
-  left: 23.5px;
+  left: 24px;
   top: 28px;            /* aligns with the first pin */
   bottom: 28px;         /* aligns with the last pin */
-  width: 1.5px;
-  background: var(--fs-ink, #0a0a0a);
-  z-index: -1;
+  width: 1px;
+  background: rgba(10, 10, 10, 0.30);
+  /* No z-index — paint order alone keeps cards on top in the cards
+     they cover, line shows through in the gaps between them. */
 }
 @media (max-width: 480px) {
   /* Card padding tightens on mobile (12px) so the pins sit further
      left — pull the connector with them. */
-  .fs-h-cards-group::before { left: 19.5px; }
+  .fs-h-cards-group::before { left: 20px; }
 }
 /* Solo Location card — line drops in from the top of the card to its
    centred destination square. Pairs with the form-group line above. */
@@ -3358,11 +3359,11 @@ html, body { overflow-x: hidden; max-width: 100%; }
 .fs-h-stack.fs-h-stack-solo::before {
   content: '';
   position: absolute;
-  left: 23.5px;
+  left: 24px;
   top: 0;
   bottom: 50%;         /* ends at the pin sitting at vertical centre */
-  width: 1.5px;
-  background: var(--fs-ink, #0a0a0a);
+  width: 1px;
+  background: rgba(10, 10, 10, 0.30);
   z-index: 0;
 }
 
@@ -3383,11 +3384,11 @@ html, body { overflow-x: hidden; max-width: 100%; }
 .fs-h-stack:not(.fs-h-stack-solo)::before {
   content: '';
   position: absolute;
-  left: 23.5px;
+  left: 24px;
   top: 32px;
   bottom: 32px;
-  width: 1.5px;
-  background: var(--fs-ink, #0a0a0a);
+  width: 1px;
+  background: rgba(10, 10, 10, 0.30);
   z-index: 0;
 }
 .fs-h-stack-row {
@@ -3480,8 +3481,8 @@ html, body { overflow-x: hidden; max-width: 100%; }
   .fs-h-stack-label { width: 56px; font-size: 10px; }
   .fs-h-stack-row { padding: 12px 12px; gap: 10px; }
   /* Card-level connector tracks the new padding. */
-  .fs-h-stack:not(.fs-h-stack-solo)::before { left: 19.5px; }
-  .fs-h-stack.fs-h-stack-solo::before       { left: 19.5px; }
+  .fs-h-stack:not(.fs-h-stack-solo)::before { left: 20px; }
+  .fs-h-stack.fs-h-stack-solo::before       { left: 20px; }
   /* Smaller AI input padding so it doesn't dominate the phone. */
   .fs-h-ai { padding: 12px 14px; }
   .fs-h-stackform { gap: 8px; }
