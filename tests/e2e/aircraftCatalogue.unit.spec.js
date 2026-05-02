@@ -12,6 +12,7 @@ import { test, expect } from '@playwright/test';
 import {
   getSeedCatalogue, findModel, searchModels, searchMakes,
   normalize, slugify, modelToFormFields,
+  makesForCategories, modelsForMakesAndCategories,
 } from '../../src/lib/aircraftCatalogue.js';
 
 test.describe('aircraftCatalogue — assembly', () => {
@@ -181,5 +182,108 @@ test.describe('aircraftCatalogue — modelToFormFields', () => {
 
   test('returns empty object for null model (defensive)', () => {
     expect(modelToFormFields(null, cat.makesBySlug)).toEqual({});
+  });
+});
+
+test.describe('aircraftCatalogue — makesForCategories cascade', () => {
+  const cat = getSeedCatalogue();
+
+  test('no categories → returns all makes', () => {
+    const r = makesForCategories(cat, []);
+    expect(r.length).toBe(cat.makes.length);
+  });
+
+  test('Helicopter → only helicopter makers', () => {
+    const r = makesForCategories(cat, ['Helicopter']);
+    const slugs = r.map((mk) => mk.slug).sort();
+    // Confirm at least Robinson + Bell + Airbus Helicopters + Schweizer
+    expect(slugs).toContain('robinson');
+    expect(slugs).toContain('bell');
+    expect(slugs).toContain('airbus-helicopters');
+    expect(slugs).toContain('schweizer');
+    // Confirm fixed-wing makers are gone
+    expect(slugs).not.toContain('cessna');
+    expect(slugs).not.toContain('piper');
+    expect(slugs).not.toContain('cirrus');
+  });
+
+  test('Single Engine Piston → only SEP makers', () => {
+    const r = makesForCategories(cat, ['Single Engine Piston']);
+    const slugs = r.map((mk) => mk.slug);
+    expect(slugs).toContain('cessna');
+    expect(slugs).toContain('piper');
+    expect(slugs).toContain('cirrus');
+    expect(slugs).not.toContain('robinson');
+    expect(slugs).not.toContain('bell');
+  });
+
+  test('multi-category union (SEP + Helicopter) → both groups', () => {
+    const r = makesForCategories(cat, ['Single Engine Piston', 'Helicopter']);
+    const slugs = r.map((mk) => mk.slug);
+    expect(slugs).toContain('cessna');
+    expect(slugs).toContain('robinson');
+  });
+
+  test('niche category (Glider) → only glider makers', () => {
+    const r = makesForCategories(cat, ['Glider']);
+    const slugs = r.map((mk) => mk.slug);
+    expect(slugs).toContain('schempp-hirth');
+    expect(slugs).toContain('schleicher');
+    expect(slugs).not.toContain('cessna');
+  });
+});
+
+test.describe('aircraftCatalogue — modelsForMakesAndCategories cascade', () => {
+  const cat = getSeedCatalogue();
+
+  test('no makes → empty (nothing to filter)', () => {
+    const r = modelsForMakesAndCategories(cat, [], []);
+    expect(r).toEqual([]);
+  });
+
+  test('one make, no category → all that make\'s models', () => {
+    const r = modelsForMakesAndCategories(cat, ['robinson'], []);
+    expect(r.length).toBeGreaterThan(2);
+    expect(r.every((m) => m.make === 'robinson')).toBe(true);
+  });
+
+  test('one make + matching category → cascade narrows correctly', () => {
+    const r = modelsForMakesAndCategories(cat, ['robinson'], ['Helicopter']);
+    expect(r.length).toBeGreaterThan(2);
+    expect(r.every((m) => m.category === 'Helicopter')).toBe(true);
+  });
+
+  test('one make + non-matching category → empty (no Robinson SEPs)', () => {
+    const r = modelsForMakesAndCategories(cat, ['robinson'], ['Single Engine Piston']);
+    expect(r).toEqual([]);
+  });
+
+  test('Cessna + Helicopter → empty (no Cessna helis in seed)', () => {
+    const r = modelsForMakesAndCategories(cat, ['cessna'], ['Helicopter']);
+    expect(r).toEqual([]);
+  });
+
+  test('multi-make union, no category → models from both', () => {
+    const r = modelsForMakesAndCategories(cat, ['cessna', 'piper'], []);
+    expect(r.find((m) => m.make === 'cessna')).toBeTruthy();
+    expect(r.find((m) => m.make === 'piper')).toBeTruthy();
+  });
+
+  test('Cessna + SEP → only Cessna SEP models (no Citations, no twins)', () => {
+    const r = modelsForMakesAndCategories(cat, ['cessna'], ['Single Engine Piston']);
+    expect(r.length).toBeGreaterThan(5);
+    expect(r.every((m) => m.make === 'cessna')).toBe(true);
+    expect(r.every((m) => m.category === 'Single Engine Piston')).toBe(true);
+    // Citations are Light/Midsize/Heavy Jet → must not appear
+    expect(r.find((m) => m.family === 'Citation')).toBeFalsy();
+    // 310 + 337 are MEP → must not appear
+    expect(r.find((m) => m.family === '310')).toBeFalsy();
+  });
+
+  test('returns deduplicated by slug', () => {
+    // Same model can't appear twice for the same input.
+    const r = modelsForMakesAndCategories(cat, ['cessna'], []);
+    const slugs = r.map((m) => m.slug);
+    expect(new Set(slugs).size).toBe(slugs.length);
   });
 });

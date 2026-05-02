@@ -1,7 +1,8 @@
 'use client';
+import { useEffect } from 'react';
 import { Icons } from '../Icons';
 import { CATEGORIES, STATES } from '../../lib/constants';
-import { useAircraftCatalogue } from '../../lib/aircraftCatalogue';
+import { useAircraftCatalogue, makesForCategories } from '../../lib/aircraftCatalogue';
 
 // HeroSearchPro — 2026 redraw of the hero search card.
 //
@@ -68,13 +69,22 @@ export default function HeroSearchPro({ model, count }) {
   // Bell / Airbus Helicopters / Schweizer instead of dumping every
   // fixed-wing manufacturer in the user's face.
   const catalogue = useAircraftCatalogue();
-  const visibleMakes = !searchCat
-    ? catalogue.makes
-    : catalogue.makes.filter((mk) => {
-        const models = catalogue.modelsByMake.get(mk.slug) ?? [];
-        return models.some((mdl) => mdl.category === searchCat);
-      });
+  const visibleMakes = makesForCategories(catalogue, searchCat ? [searchCat] : []);
   const makeOptions = visibleMakes.map((mk) => ({ value: mk.name, label: mk.name }));
+
+  // Cascade cleanup — if the user picks a Type that excludes the
+  // currently-selected Make, clear the Make so they don't end up with
+  // an "invisible" filter (e.g. picking Helicopter while Cessna was
+  // selected would leave Cessna in the URL but missing from the
+  // dropdown options). Rerunning when Type changes is safe because
+  // the cleanup is idempotent.
+  useEffect(() => {
+    if (!searchMake || !searchCat) return;
+    const stillValid = visibleMakes.some((mk) => mk.name === searchMake);
+    if (!stillValid) setSearchMake('');
+    // intentional: visibleMakes identity changes every render
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchCat]);
 
   return (
     <form

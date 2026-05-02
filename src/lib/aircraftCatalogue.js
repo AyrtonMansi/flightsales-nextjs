@@ -279,6 +279,47 @@ export function modelToFormFields(model, makesBySlug) {
   return out;
 }
 
+// ── Cascade helpers ──────────────────────────────────────────────────
+//
+// Pure functions used by the filter UI to derive the visible Make/Model
+// options from the user's current Type/Make selections. Lifted out of
+// the components so the same rules apply on the hero card and the
+// /buy filter rail without copy-paste, and so each rule is unit-testable.
+
+/**
+ * Filter the catalogue's makes to those that have at least one model
+ * matching one of the selected categories. If `categories` is empty,
+ * returns all makes.
+ */
+export function makesForCategories(catalogue, categories) {
+  if (!categories || categories.length === 0) return catalogue.makes;
+  return catalogue.makes.filter((mk) => {
+    const models = catalogue.modelsByMake.get(mk.slug) ?? [];
+    return models.some((mdl) => categories.includes(mdl.category));
+  });
+}
+
+/**
+ * Filter the catalogue's models to those owned by one of the selected
+ * make slugs AND matching one of the selected categories. Empty
+ * categories means no Type filter (keep all models from the makes).
+ * Returns a deduped, popularity-ordered list.
+ */
+export function modelsForMakesAndCategories(catalogue, makeSlugs, categories) {
+  if (!makeSlugs || makeSlugs.length === 0) return [];
+  const fromMakes = makeSlugs.flatMap((s) => catalogue.modelsByMake.get(s) ?? []);
+  const filtered = (!categories || categories.length === 0)
+    ? fromMakes
+    : fromMakes.filter((mdl) => categories.includes(mdl.category));
+  // Dedupe by slug (rare but possible across makes).
+  const seen = new Set();
+  return filtered.filter((mdl) => {
+    if (seen.has(mdl.slug)) return false;
+    seen.add(mdl.slug);
+    return true;
+  });
+}
+
 // Test seam — return the seed-only catalogue without a hook (for unit tests).
 export function getSeedCatalogue() {
   return SEED_CATALOGUE;

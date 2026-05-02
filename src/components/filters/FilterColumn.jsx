@@ -1,11 +1,12 @@
 'use client';
+import { useEffect } from 'react';
 import Link from 'next/link';
 import FilterSection from './FilterSection';
 import CheckboxList from './CheckboxList';
 import NumberField from './NumberField';
 import RangeSlider from './RangeSlider';
 import { CATEGORIES, MANUFACTURERS, STATES, CONDITIONS } from '../../lib/constants';
-import { useAircraftCatalogue } from '../../lib/aircraftCatalogue';
+import { useAircraftCatalogue, makesForCategories, modelsForMakesAndCategories } from '../../lib/aircraftCatalogue';
 import { SECTION_FIELDS, countActiveInSection, countActiveTotal, initialFilters } from '../../lib/filterReducer';
 
 // Curated option lists for the advanced filter checkbox sections. Kept here
@@ -79,48 +80,74 @@ export default function FilterColumn({ state, dispatch, total, user }) {
     ? catalogue.makes
     : MANUFACTURERS.map((m) => ({ slug: m.toLowerCase(), name: m }));
 
-  // Type cascade — when the user has selected one or more Type filters
-  // (e.g. Helicopter), filter the available makes to only those that
-  // have at least one model in the selected categories. So picking
-  // Type=Helicopter hides Cessna / Piper / Cirrus from the Make list,
-  // showing only Robinson / Bell / Airbus Helicopters / Schweizer.
+  // Cascade rules — pure helpers from aircraftCatalogue.js so the same
+  // logic is unit-tested + shared with HeroSearchPro.
   const makesFilteredByType = state.categories.length === 0
     ? allMakes
-    : allMakes.filter((mk) => {
-        const models = catalogue.modelsByMake.get(mk.slug) ?? [];
-        return models.some((mdl) => state.categories.includes(mdl.category));
-      });
+    : makesForCategories(catalogue, state.categories);
   const makeOptions = makesFilteredByType.map((mk) => ({ value: mk.name, label: mk.name }));
 
-  // Model options cascade from selected makes AND selected categories.
-  // Map picked make NAMES (e.g. "Cessna") to slugs to fetch their
-  // catalogue models. Each option's value matches the listing's `model`
-  // column so checking "172S Skyhawk" filters the DB rows.
   const selectedMakeSlugs = state.manufacturers
     .map((name) => allMakes.find((mk) => mk.name === name)?.slug)
     .filter(Boolean);
-  const modelOptions = selectedMakeSlugs.length === 0
-    ? []
-    : selectedMakeSlugs
-        .flatMap((slug) => catalogue.modelsByMake.get(slug) ?? [])
-        // Cascade by selected Types too — a Robinson user who also
-        // ticked Helicopter sees only R22/R44/R66, never some hypothetical
-        // future Robinson fixed-wing.
-        .filter((mdl) =>
-          state.categories.length === 0 || state.categories.includes(mdl.category)
-        )
-        .map((mdl) => {
-          // The listing's `model` column stores the seller's text
-          // (e.g. "172S Skyhawk", "SR22T"). Match against variant when
-          // present, falling back to family for variant-less entries.
-          const value = mdl.variant
-            ? `${mdl.family} ${mdl.variant}`.trim()
-            : mdl.family;
-          return { value, label: value };
-        })
-        // Dedupe — same model name might appear under multiple makes
-        // (rare, but Vans RV variants can collide).
-        .filter((opt, i, arr) => arr.findIndex((o) => o.value === opt.value) === i);
+  const modelOptions = modelsForMakesAndCategories(catalogue, selectedMakeSlugs, state.categories)
+    .map((mdl) => {
+      // The listing's `model` column stores the seller's text
+      // (e.g. "172S Skyhawk", "SR22T"). Match against variant when
+      // present, falling back to family for variant-less entries.
+      const value = mdl.variant
+        ? `${mdl.family} ${mdl.variant}`.trim()
+        : mdl.family;
+      return { value, label: value };
+    })
+    // Dedupe at the option-value level (variant collisions like RV-A vs RV).
+    .filter((opt, i, arr) => arr.findIndex((o) => o.value === opt.value) === i);
+
+  // ── Cascade cleanup ────────────────────────────────────────────
+  // When the user changes a parent filter (Type, Make), drop any
+  // child-filter selections that are no longer reachable through the
+  // visible options. Without this, picking Type=Helicopter while Cessna
+  // was selected would leave "Cessna" in the manufacturers array but
+  // hidden from the dropdown — DB query returns 0 rows and the user
+  // can't find what to uncheck.
+  //
+  // Three rules, all gated by length checks so the effect is a no-op
+  // 99% of the time and never causes infinite re-renders:
+  //   1. Drop manufacturers no longer in the type-filtered Make list.
+  //   2. Drop models no longer in the cascaded Model list.
+  //   3. Clear all models when manufacturers becomes empty (the Model
+  //      filter UI hides, leaving orphans that still apply to the query).
+  const validMakeNames = makeOptions.map((o) => o.value);
+  const validModelValues = modelOptions.map((o) => o.value);
+  const makesKey = state.manufacturers.join('|');
+  const catsKey = state.categories.join('|');
+
+  useEffect(() => {
+    // Rule 1
+    if (state.categories.length > 0 && state.manufacturers.length > 0) {
+      const filtered = state.manufacturers.filter((n) => validMakeNames.includes(n));
+      if (filtered.length !== state.manufacturers.length) {
+        dispatch({ type: 'SET', field: 'manufacturers', value: filtered });
+        return;   // let the rerun handle the model cleanup
+      }
+    }
+    // Rule 3 — clear models when no makes
+    if (state.manufacturers.length === 0 && state.models.length > 0) {
+      dispatch({ type: 'SET', field: 'models', value: [] });
+      return;
+    }
+    // Rule 2 — prune models that don't fit the cascaded options
+    if (state.models.length > 0) {
+      const filtered = state.models.filter((v) => validModelValues.includes(v));
+      if (filtered.length !== state.models.length) {
+        dispatch({ type: 'SET', field: 'models', value: filtered });
+      }
+    }
+    // catsKey + makesKey strings cover the parent-change triggers; the
+    // option-list arrays themselves change identity every render so we
+    // intentionally don't depend on them.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [catsKey, makesKey]);
 
   const activeTotal = countActiveTotal(state);
   const perfActive = countActiveInSection(state, SECTION_FIELDS.performance);
