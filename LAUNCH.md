@@ -33,24 +33,26 @@ If you need to re-run: `supabase/schema.sql` is idempotent (`CREATE TABLE IF NOT
 
 ---
 
-## 2. Vercel environment variables — PARTIALLY DONE
+## 2. ✅ Vercel environment variables — DONE
 
-✅ Already set (updated with correct Supabase project ref gztdahwsfwybpzqcegty):
+✅ All required env vars set:
 - `NEXT_PUBLIC_SUPABASE_URL` = `https://gztdahwsfwybpzqcegty.supabase.co`
 - `NEXT_PUBLIC_SUPABASE_ANON_KEY` = set
-- `NEXT_PUBLIC_SITE_URL` = set
+- `NEXT_PUBLIC_SITE_URL` = `https://flightsales.com.au`
+- `SUPABASE_SERVICE_ROLE_KEY` = set
+- `EMAIL_FROM` = `FlightSales <noreply@flightsales.com.au>`
+- `EMAIL_REPLY_TO` = `support@flightsales.com.au`
+- `EMAIL_BCC_ADMIN` = `ayrton@flightsales.com.au`
+- `CRON_SECRET` = set
+- `INTERNAL_API_TOKEN` = set
+- `SITE_PASSWORD_PROTECTED` = `true`
+- `SITE_PASSWORD` = `flightsales2026`
 
 ❌ Still need to add:
 
 | Name | Where it comes from |
 |---|---|
-| `SUPABASE_SERVICE_ROLE_KEY` | Supabase → Project Settings → API (do **not** prefix with `NEXT_PUBLIC_`) |
-| `RESEND_API_KEY` | Resend → API Keys |
-| `EMAIL_FROM` | e.g. `FlightSales <noreply@flightsales.com.au>` |
-| `EMAIL_REPLY_TO` | e.g. `support@flightsales.com.au` |
-| `EMAIL_BCC_ADMIN` | your admin inbox |
-| `CRON_SECRET` | random 32-char hex (generated below) |
-| `INTERNAL_API_TOKEN` | random 32-char hex (generated below) |
+| `RESEND_API_KEY` | Resend → API Keys (needed for transactional email) |
 | `NEXT_PUBLIC_FS_ABN` | your ABN (shown on legal pages) |
 
 Optional but recommended:
@@ -66,7 +68,19 @@ After adding env vars → **Redeploy**. Vercel doesn't hot-reload them.
 
 ---
 
-## 3. Resend domain verification
+## 3. ✅ Pre-launch protection — DONE
+
+The site is password-protected and blocked from search engines:
+- **Password gate**: All visitors must enter `flightsales2026` to access
+- **robots.txt**: `Disallow: /` blocks all crawlers
+- **Meta tags**: `noindex, nofollow` on all pages
+
+To remove protection when ready to launch:
+1. Set `SITE_PASSWORD_PROTECTED=false` in Vercel env vars
+2. Revert `robots.txt` to allow crawling
+3. Remove `noindex` meta tags from layout
+
+## 4. Resend domain verification
 
 If not done already:
 
@@ -84,15 +98,17 @@ but looks unprofessional).
 
 ---
 
-## 4. Domain → Vercel
+## 5. Domain → Vercel
 
 Vercel project → Settings → Domains → add `flightsales.com.au` and
 `www.flightsales.com.au`. Update DNS at your registrar per Vercel's
 instructions. Wait for SSL provisioning (~minutes).
 
+**Note**: Keep the site password-protected until you're ready to launch publicly.
+
 ---
 
-## 5. Make yourself admin
+## 6. Make yourself admin
 
 Once you've signed up with your real email:
 
@@ -106,7 +122,7 @@ admin users away from `/dashboard`.
 
 ---
 
-## 6. Cron jobs
+## 7. Cron jobs
 
 Vercel automatically registers them from `vercel.json`. After deploy:
 - Vercel project → **Cron Jobs** tab → confirm 3 entries:
@@ -117,7 +133,7 @@ Vercel automatically registers them from `vercel.json`. After deploy:
 
 ---
 
-## 7. Pre-launch smoke test (do this on the real domain)
+## 8. Pre-launch smoke test (do this on the real domain)
 
 Run through in order:
 
