@@ -89,6 +89,11 @@ export const MAKES_SEED = [
   { slug: 'kitfox',             name: 'Kitfox Aircraft',     country: 'USA',         founded_year: 1984, popularity: 58 },
   { slug: 'aero-vodochody',     name: 'Aero Vodochody',      country: 'Czechia',     founded_year: 1919, popularity: 59 },
 
+  // Tier 4 cont. — niche helicopter brands
+  { slug: 'kaman',              name: 'Kaman',               country: 'USA',         founded_year: 1945, popularity: 70 },
+  { slug: 'brantly',            name: 'Brantly',             country: 'USA',         founded_year: 1946, popularity: 71 },
+  { slug: 'hiller',             name: 'Hiller',              country: 'USA',         founded_year: 1942, popularity: 72 },
+
   // Tier 5 — vintage / collector (low volume but iconic)
   { slug: 'yakovlev',           name: 'Yakovlev (Yak)',      country: 'Russia',      founded_year: 1934, popularity: 60 },
   { slug: 'north-american',     name: 'North American',      country: 'USA',         founded_year: 1928, popularity: 61 },
@@ -420,4 +425,77 @@ export const MODELS_SEED = [
 
   // ── WACO YMF (modern reproduction biplane) ────────────────────
   m({ make: 'waco', family: 'YMF', variant: '5C', type_designator: 'WAC5', category: 'Single Engine Piston', mission: ['aerobatic','tourer','vintage'], year_first: 1986,                  mtow_kg: 1361, seats: 3, engine_type: 'Jacobs R-755', cruise_kts: 100, range_nm: 560, fuel_burn_lph: 75, ceiling_ft: 17500, aliases: ['WACO YMF','YMF-5','YMF5','YMF-5C'] }),
+
+  // ── BUSINESS JETS — fill out the most-listed lines ─────────────
+  // Cessna Citation — older + workhorse variants
+  m({ make: 'cessna', family: 'Citation', variant: 'CJ1+',         type_designator: 'C525', category: 'Light Jet',   engine_count: 2, year_first: 2005, year_last: 2010, mtow_kg: 4853, seats: 7, engine_type: '2x Williams FJ44-1AP', cruise_kts: 389, range_nm: 1300, ceiling_ft: 41000, aliases: ['CJ1+','Citation CJ1+'] }),
+  m({ make: 'cessna', family: 'Citation', variant: 'CJ2+',         type_designator: 'C25A', category: 'Light Jet',   engine_count: 2, year_first: 2006,                  mtow_kg: 5670, seats: 8, engine_type: '2x Williams FJ44-3A-24', cruise_kts: 418, range_nm: 1613, ceiling_ft: 45000, aliases: ['CJ2+','Citation CJ2+'] }),
+  m({ make: 'cessna', family: 'Citation', variant: 'V Encore',     type_designator: 'C560', category: 'Midsize Jet', engine_count: 2, year_first: 2000, year_last: 2006, mtow_kg: 7484, seats: 8, engine_type: '2x Pratt & Whitney PW535A', cruise_kts: 430, range_nm: 1738, ceiling_ft: 45000, aliases: ['Citation Encore','Citation V Encore','Encore','Encore+'] }),
+  m({ make: 'cessna', family: 'Citation', variant: 'XLS',          type_designator: 'C56X', category: 'Midsize Jet', engine_count: 2, year_first: 2004, year_last: 2008, mtow_kg: 9163, seats: 9, engine_type: '2x Pratt & Whitney PW545B', cruise_kts: 430, range_nm: 1858, ceiling_ft: 45000, aliases: ['XLS','Citation XLS'] }),
+  m({ make: 'cessna', family: 'Citation', variant: 'Sovereign',    type_designator: 'C680', category: 'Midsize Jet', engine_count: 2, year_first: 2004, year_last: 2014, mtow_kg: 13744, seats: 10, engine_type: '2x Pratt & Whitney PW306C', cruise_kts: 458, range_nm: 2725, ceiling_ft: 47000, aliases: ['Citation Sovereign','Sovereign','C680'] }),
+  m({ make: 'cessna', family: 'Citation', variant: 'Sovereign+',   type_designator: 'C680', category: 'Midsize Jet', engine_count: 2, year_first: 2014,                  mtow_kg: 13744, seats: 10, engine_type: '2x Pratt & Whitney PW306D', cruise_kts: 458, range_nm: 3200, ceiling_ft: 47000, aliases: ['Citation Sovereign+','Sovereign Plus'] }),
+  m({ make: 'cessna', family: 'Citation', variant: 'X',            type_designator: 'C750', category: 'Midsize Jet', engine_count: 2, year_first: 1996, year_last: 2012, mtow_kg: 16373, seats: 8, engine_type: '2x Rolls-Royce AE 3007C', cruise_kts: 525, range_nm: 3070, ceiling_ft: 51000, aliases: ['Citation X','C750'] }),
+  m({ make: 'cessna', family: 'Citation', variant: 'X+',           type_designator: 'C750', category: 'Midsize Jet', engine_count: 2, year_first: 2014, year_last: 2018, mtow_kg: 16601, seats: 12, engine_type: '2x Rolls-Royce AE 3007C2', cruise_kts: 528, range_nm: 3242, ceiling_ft: 51000, aliases: ['Citation X+','Citation Ten','X Plus'] }),
+
+  // Gulfstream — extended family
+  m({ make: 'gulfstream', family: 'G450',  type_designator: 'GLF4', category: 'Heavy Jet', engine_count: 2, year_first: 2004, year_last: 2017, mtow_kg: 33838, seats: 16, engine_type: '2x Rolls-Royce Tay 611-8C',  cruise_kts: 459, range_nm: 4350, ceiling_ft: 45000, aliases: ['G450','Gulfstream G450','GIV-X'] }),
+  m({ make: 'gulfstream', family: 'G500',  type_designator: 'GA5C', category: 'Heavy Jet', engine_count: 2, year_first: 2018,                  mtow_kg: 36287, seats: 19, engine_type: '2x Pratt & Whitney PW814GA', cruise_kts: 488, range_nm: 5300, ceiling_ft: 51000, aliases: ['G500','Gulfstream G500'] }),
+  m({ make: 'gulfstream', family: 'G550',  type_designator: 'GLF5', category: 'Heavy Jet', engine_count: 2, year_first: 2003, year_last: 2021, mtow_kg: 41277, seats: 19, engine_type: '2x Rolls-Royce BR710C4-11', cruise_kts: 488, range_nm: 6750, ceiling_ft: 51000, aliases: ['G550','Gulfstream G550'] }),
+  m({ make: 'gulfstream', family: 'G600',  type_designator: 'GA6C', category: 'Heavy Jet', engine_count: 2, year_first: 2019,                  mtow_kg: 43091, seats: 19, engine_type: '2x Pratt & Whitney PW815GA', cruise_kts: 488, range_nm: 6500, ceiling_ft: 51000, aliases: ['G600','Gulfstream G600'] }),
+  m({ make: 'gulfstream', family: 'G700',  type_designator: 'GA7C', category: 'Heavy Jet', engine_count: 2, year_first: 2024,                  mtow_kg: 48081, seats: 19, engine_type: '2x Rolls-Royce Pearl 700', cruise_kts: 516, range_nm: 7500, ceiling_ft: 51000, aliases: ['G700','Gulfstream G700'] }),
+
+  // Bombardier — extended Global + Challenger
+  m({ make: 'bombardier', family: 'Global',     variant: '5000', type_designator: 'GL5T', category: 'Heavy Jet', engine_count: 2, year_first: 2003,                  mtow_kg: 41957, seats: 17, engine_type: '2x Rolls-Royce BR710A2-20', cruise_kts: 488, range_nm: 5200, ceiling_ft: 51000, aliases: ['Global 5000'] }),
+  m({ make: 'bombardier', family: 'Global',     variant: '7500', type_designator: 'GL7T', category: 'Heavy Jet', engine_count: 2, year_first: 2018,                  mtow_kg: 51710, seats: 19, engine_type: '2x GE Passport',                  cruise_kts: 516, range_nm: 7700, ceiling_ft: 51000, aliases: ['Global 7500','Global 7000'] }),
+  m({ make: 'bombardier', family: 'Challenger', variant: '605',  type_designator: 'CL60', category: 'Heavy Jet', engine_count: 2, year_first: 2007, year_last: 2014, mtow_kg: 21863, seats: 12, engine_type: '2x GE CF34-3B',                cruise_kts: 459, range_nm: 4000, ceiling_ft: 41000, aliases: ['Challenger 605','CL605'] }),
+  m({ make: 'bombardier', family: 'Challenger', variant: '650',  type_designator: 'CL60', category: 'Heavy Jet', engine_count: 2, year_first: 2014,                  mtow_kg: 21863, seats: 12, engine_type: '2x GE CF34-3B MTO',            cruise_kts: 459, range_nm: 4000, ceiling_ft: 41000, aliases: ['Challenger 650','CL650'] }),
+
+  // Embraer — Phenom + Praetor + Legacy
+  m({ make: 'embraer', family: 'Phenom',  variant: '300E',  type_designator: 'E55P', category: 'Light Jet',   engine_count: 2, year_first: 2020,                  mtow_kg: 8150, seats: 9,  engine_type: '2x Pratt & Whitney PW535E1', cruise_kts: 464, range_nm: 2010, ceiling_ft: 45000, aliases: ['Phenom 300E','Phenom 300 Enhanced'] }),
+  m({ make: 'embraer', family: 'Praetor', variant: '500',   type_designator: 'E55P', category: 'Midsize Jet', engine_count: 2, year_first: 2019,                  mtow_kg: 8950, seats: 9,  engine_type: '2x Honeywell HTF7500E',     cruise_kts: 466, range_nm: 3340, ceiling_ft: 45000, aliases: ['Praetor 500','Embraer Praetor 500'] }),
+  m({ make: 'embraer', family: 'Praetor', variant: '600',   type_designator: 'E55P', category: 'Midsize Jet', engine_count: 2, year_first: 2019,                  mtow_kg: 19200, seats: 12, engine_type: '2x Honeywell HTF7500E',     cruise_kts: 466, range_nm: 4018, ceiling_ft: 45000, aliases: ['Praetor 600','Embraer Praetor 600'] }),
+  m({ make: 'embraer', family: 'Legacy',  variant: '500',   type_designator: 'E55P', category: 'Midsize Jet', engine_count: 2, year_first: 2014, year_last: 2019, mtow_kg: 17962, seats: 12, engine_type: '2x Honeywell HTF7500E',     cruise_kts: 462, range_nm: 3125, ceiling_ft: 45000, aliases: ['Legacy 500','Embraer Legacy 500'] }),
+  m({ make: 'embraer', family: 'Legacy',  variant: '650E',  type_designator: 'E135', category: 'Heavy Jet',   engine_count: 2, year_first: 2014,                  mtow_kg: 24300, seats: 14, engine_type: '2x Rolls-Royce AE 3007 A2', cruise_kts: 453, range_nm: 3900, ceiling_ft: 41000, aliases: ['Legacy 650','Legacy 650E','Embraer Legacy 650'] }),
+
+  // Dassault — extended Falcon
+  m({ make: 'dassault', family: 'Falcon', variant: '8X',    type_designator: 'FA8X', category: 'Heavy Jet', engine_count: 3, year_first: 2016,                  mtow_kg: 33113, seats: 16, engine_type: '3x Pratt & Whitney PW307D', cruise_kts: 488, range_nm: 6450, ceiling_ft: 51000, aliases: ['Falcon 8X','F8X'] }),
+  m({ make: 'dassault', family: 'Falcon', variant: '900LX', type_designator: 'F900', category: 'Heavy Jet', engine_count: 3, year_first: 2010,                  mtow_kg: 21889, seats: 14, engine_type: '3x Honeywell TFE731-60',    cruise_kts: 459, range_nm: 4750, ceiling_ft: 51000, aliases: ['Falcon 900LX','F900LX','Falcon 900'] }),
+  m({ make: 'dassault', family: 'Falcon', variant: '6X',    type_designator: 'F6X',  category: 'Heavy Jet', engine_count: 2, year_first: 2023,                  mtow_kg: 35224, seats: 16, engine_type: '2x Pratt & Whitney PW812D',  cruise_kts: 488, range_nm: 5500, ceiling_ft: 51000, aliases: ['Falcon 6X','F6X'] }),
+
+  // Beechcraft Premier — Beechcraft's light jet
+  m({ make: 'beechcraft', family: 'Premier', variant: 'IA', type_designator: 'PRM1', category: 'Light Jet', engine_count: 2, year_first: 2005, year_last: 2013, mtow_kg: 5670, seats: 7, engine_type: '2x Williams FJ44-2A', cruise_kts: 451, range_nm: 1500, ceiling_ft: 41000, aliases: ['Premier IA','Premier I','Beechcraft Premier','390 Premier'] }),
+
+  // HondaJet Elite II + Cirrus Vision G2+
+  m({ make: 'hondajet', family: 'HA-420', variant: 'Elite II', type_designator: 'HDJT', category: 'Light Jet', engine_count: 2, year_first: 2022,                  mtow_kg: 4853, seats: 7, engine_type: '2x GE Honda HF120', cruise_kts: 422, range_nm: 1547, ceiling_ft: 43000, aliases: ['HondaJet Elite II','HA-420 Elite II'] }),
+  m({ make: 'cirrus',   family: 'Vision Jet', variant: 'G2+', type_designator: 'SF50', category: 'Light Jet', engine_count: 1, year_first: 2022,                  mtow_kg: 2722, seats: 7, engine_type: 'Williams FJ33-5A',  cruise_kts: 311, range_nm: 1275, ceiling_ft: 31000, aliases: ['SF50 G2+','Vision Jet G2+'] }),
+
+  // ── HELICOPTERS — fill out top lines ───────────────────────────
+  // Airbus Helicopters expansion (H135, H145, H160, H175, AS355)
+  m({ make: 'airbus-helicopters', family: 'H135',                type_designator: 'EC35', category: 'Helicopter', mission: ['working','tourer'], engine_count: 2, year_first: 1996,                  mtow_kg: 2980, seats: 8,  engine_type: '2x Turbomeca Arrius 2B2', cruise_kts: 137, range_nm: 343, fuel_burn_lph: 220, ceiling_ft: 20000, aliases: ['H135','EC135','EC135 T3'] }),
+  m({ make: 'airbus-helicopters', family: 'H145',                type_designator: 'EC45', category: 'Helicopter', mission: ['working'],          engine_count: 2, year_first: 2014,                  mtow_kg: 3700, seats: 10, engine_type: '2x Turbomeca Arriel 2E',  cruise_kts: 137, range_nm: 351, fuel_burn_lph: 320, ceiling_ft: 18000, aliases: ['H145','EC145','EC145 T2','BK117 D-2'] }),
+  m({ make: 'airbus-helicopters', family: 'H160',                type_designator: 'EC60', category: 'Helicopter', mission: ['working','tourer'], engine_count: 2, year_first: 2021,                  mtow_kg: 6000, seats: 12, engine_type: '2x Safran Arrano 1A',     cruise_kts: 145, range_nm: 475, fuel_burn_lph: 420, ceiling_ft: 20000, aliases: ['H160','Airbus H160'] }),
+  m({ make: 'airbus-helicopters', family: 'H175',                type_designator: 'EC75', category: 'Helicopter', mission: ['working'],          engine_count: 2, year_first: 2014,                  mtow_kg: 7800, seats: 18, engine_type: '2x Pratt & Whitney PT6C-67E', cruise_kts: 150, range_nm: 622, fuel_burn_lph: 540, ceiling_ft: 20000, aliases: ['H175','EC175'] }),
+  m({ make: 'airbus-helicopters', family: 'AS355', variant: 'NP TwinSquirrel', type_designator: 'AS55', category: 'Helicopter', mission: ['working','tourer'], engine_count: 2, year_first: 2008,                  mtow_kg: 2600, seats: 6,  engine_type: '2x Turbomeca Arrius 1A1', cruise_kts: 121, range_nm: 380, fuel_burn_lph: 240, ceiling_ft: 13100, aliases: ['AS355','AS355 NP','TwinSquirrel','Twin Squirrel','Ecureuil 2'] }),
+
+  // Bell expansion (505, 429, 430, 222, UH-1)
+  m({ make: 'bell', family: '505', variant: 'Jet Ranger X', type_designator: 'B505', category: 'Helicopter', mission: ['trainer','tourer'], year_first: 2017,                  mtow_kg: 1669, seats: 5, engine_type: 'Safran Arrius 2R',          cruise_kts: 125, range_nm: 340, fuel_burn_lph: 130, ceiling_ft: 18000, aliases: ['Bell 505','Jet Ranger X','505 Jet Ranger X'] }),
+  m({ make: 'bell', family: '429',                          type_designator: 'B429', category: 'Helicopter', mission: ['working'], engine_count: 2, year_first: 2009,                  mtow_kg: 3175, seats: 8, engine_type: '2x Pratt & Whitney PW207D1', cruise_kts: 150, range_nm: 411, fuel_burn_lph: 280, ceiling_ft: 20000, aliases: ['Bell 429','429 GlobalRanger'] }),
+  m({ make: 'bell', family: '430',                          type_designator: 'B430', category: 'Helicopter', mission: ['working'], engine_count: 2, year_first: 1996, year_last: 2008, mtow_kg: 4218, seats: 10, engine_type: '2x Rolls-Royce 250-C40B', cruise_kts: 144, range_nm: 364, fuel_burn_lph: 320, ceiling_ft: 17000, aliases: ['Bell 430'] }),
+  m({ make: 'bell', family: '222', variant: 'B',            type_designator: 'B222', category: 'Helicopter', mission: ['tourer'], engine_count: 2, year_first: 1979, year_last: 1991, mtow_kg: 3742, seats: 10, engine_type: '2x Lycoming LTS101-750C-1', cruise_kts: 130, range_nm: 380, fuel_burn_lph: 320, ceiling_ft: 14600, aliases: ['Bell 222','222B'] }),
+  m({ make: 'bell', family: 'UH-1', variant: 'H Iroquois', type_designator: 'UH1',  category: 'Warbird',     mission: ['working','vintage'], year_first: 1959, year_last: 1986, mtow_kg: 4310, seats: 14, engine_type: 'Lycoming T53-L-13',          cruise_kts: 110, range_nm: 270, ceiling_ft: 19390, aliases: ['UH-1','UH-1H','Huey','Bell Huey','Iroquois'] }),
+
+  // Robinson R44 Cadet — training variant
+  m({ make: 'robinson', family: 'R44', variant: 'Cadet', type_designator: 'R44', category: 'Helicopter', mission: ['trainer'], year_first: 2016,                  mtow_kg: 1043, seats: 2, engine_type: 'Lycoming O-540-F1B5', cruise_kts: 110, range_nm: 350, fuel_burn_lph: 56, ceiling_ft: 14000, aliases: ['R44 Cadet','Cadet'] }),
+
+  // Leonardo AW109 series
+  m({ make: 'leonardo', family: 'AW109', variant: 'Power',   type_designator: 'A109', category: 'Helicopter', mission: ['tourer','working'], engine_count: 2, year_first: 1996,                  mtow_kg: 2850, seats: 8, engine_type: '2x Pratt & Whitney PW206C',  cruise_kts: 154, range_nm: 510, fuel_burn_lph: 230, ceiling_ft: 19600, aliases: ['AW109','AW109 Power','A109','Agusta 109'] }),
+  m({ make: 'leonardo', family: 'AW109', variant: 'Trekker', type_designator: 'A109', category: 'Helicopter', mission: ['tourer','working'], engine_count: 2, year_first: 2014,                  mtow_kg: 3175, seats: 8, engine_type: '2x Pratt & Whitney PW207C',  cruise_kts: 154, range_nm: 459, fuel_burn_lph: 230, ceiling_ft: 19500, aliases: ['AW109 Trekker','Trekker'] }),
+
+  // MD Helicopters MD 530F (Lifter, hot-and-high)
+  m({ make: 'md-helicopters', family: 'MD', variant: '530F', type_designator: 'H500', category: 'Helicopter', mission: ['working'], year_first: 1985,                  mtow_kg: 1610, seats: 5, engine_type: 'Allison 250-C30',  cruise_kts: 134, range_nm: 232, fuel_burn_lph: 130, ceiling_ft: 18700, aliases: ['MD530F','MD 530F','530F','Lifter'] }),
+
+  // Brantly / Kaman / Hiller — niche helo brands
+  m({ make: 'brantly', family: 'B-2', variant: 'B', type_designator: 'BL2', category: 'Helicopter', mission: ['trainer','tourer'], year_first: 1959, year_last: 1969, mtow_kg: 757, seats: 2, engine_type: 'Lycoming IVO-360', cruise_kts: 87, range_nm: 250, fuel_burn_lph: 38, ceiling_ft: 11000, aliases: ['Brantly B-2B','B-2','B2B'] }),
+  m({ make: 'kaman',   family: 'K-MAX', variant: 'K-1200', type_designator: 'KMAX', category: 'Helicopter', mission: ['working'], year_first: 1991,                  mtow_kg: 5443, seats: 1, engine_type: 'Honeywell T53-17A-1', cruise_kts: 80, range_nm: 267, fuel_burn_lph: 230, ceiling_ft: 15000, aliases: ['K-MAX','K1200','Kaman K-MAX','synchropter'] }),
+  m({ make: 'hiller',  family: 'UH-12', variant: 'E', type_designator: 'H12', category: 'Helicopter', mission: ['trainer','vintage'], year_first: 1959, year_last: 1965, mtow_kg: 1247, seats: 3, engine_type: 'Lycoming VO-540', cruise_kts: 75, range_nm: 200, fuel_burn_lph: 60, ceiling_ft: 13200, aliases: ['Hiller UH-12','UH-12E','Hiller 12','OH-23'] }),
 ];
