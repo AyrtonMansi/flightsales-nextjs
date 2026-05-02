@@ -1,8 +1,5 @@
 'use client';
-import { useEffect } from 'react';
-import { Icons } from '../Icons';
 import { CATEGORIES, STATES } from '../../lib/constants';
-import { useAircraftCatalogue, makesForCategories } from '../../lib/aircraftCatalogue';
 
 // HeroSearchPro — 2026 redraw of the hero search card.
 //
@@ -65,27 +62,11 @@ export default function HeroSearchPro({ model, count }) {
     ? count.toLocaleString()
     : null;
 
-  // Pull makes from the catalogue (popularity-ordered) and cascade-
-  // filter by the picked Type so Helicopter narrows Make to Robinson /
-  // Bell / Airbus Helicopters / Schweizer instead of dumping every
-  // fixed-wing manufacturer in the user's face.
-  const catalogue = useAircraftCatalogue();
-  const visibleMakes = makesForCategories(catalogue, searchCat ? [searchCat] : []);
-  const makeOptions = visibleMakes.map((mk) => ({ value: mk.name, label: mk.name }));
-
-  // Cascade cleanup — if the user picks a Type that excludes the
-  // currently-selected Make, clear the Make so they don't end up with
-  // an "invisible" filter (e.g. picking Helicopter while Cessna was
-  // selected would leave Cessna in the URL but missing from the
-  // dropdown options). Rerunning when Type changes is safe because
-  // the cleanup is idempotent.
-  useEffect(() => {
-    if (!searchMake || !searchCat) return;
-    const stillValid = visibleMakes.some((mk) => mk.name === searchMake);
-    if (!stillValid) setSearchMake('');
-    // intentional: visibleMakes identity changes every render
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searchCat]);
+  // Make is intentionally NOT shown in the hero — it's too granular
+  // for the entry-point funnel. The /buy filter rail handles Make
+  // (and Model, with cascading + counts) deeply. AI quick search up
+  // top still parses brand names like "Cessna" into the make filter,
+  // so the path is preserved for users who already know what they want.
 
   return (
     <form
@@ -131,16 +112,6 @@ export default function HeroSearchPro({ model, count }) {
             onChange={setSearchCat}
             placeholder="All types"
             options={CATEGORIES.map((c) => ({ value: c, label: c }))}
-          />
-        </div>
-        <div className="fs-h-stack">
-          <SelectField
-            stacked
-            label="Make"
-            value={searchMake}
-            onChange={setSearchMake}
-            placeholder="All makes"
-            options={makeOptions}
           />
         </div>
         <div className="fs-h-stack">
