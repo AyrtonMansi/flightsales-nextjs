@@ -3619,3 +3619,154 @@ html, body { overflow-x: hidden; max-width: 100%; }
   border-bottom-color: var(--fs-accent);
 }
 .fs-admin-subtab:hover { color: var(--fs-ink); }
+
+/* ================================================================
+ * Bulk import (dealer dashboard)
+ * Drop zone, AI-cleaned preview grid, status flags, result panel.
+ * ================================================================ */
+.fs-bulk-drop {
+  border: 1.5px dashed var(--fs-line, #e6e6e6);
+  border-radius: 16px;
+  padding: 32px 24px;
+  background: var(--fs-bg-soft, #fafafa);
+  text-align: center;
+}
+.fs-bulk-drop-icon {
+  width: 44px; height: 44px; line-height: 40px;
+  border-radius: 50%;
+  background: #fff;
+  border: 1px solid var(--fs-line, #e6e6e6);
+  margin: 0 auto 8px;
+  font-size: 20px;
+  color: var(--fs-ink-3, #777);
+}
+.fs-bulk-textarea {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid var(--fs-line, #e6e6e6);
+  border-radius: 10px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 12.5px;
+  background: #fff;
+  resize: vertical;
+}
+.fs-bulk-textarea:focus {
+  outline: none;
+  border-color: var(--fs-ink, #111);
+}
+.fs-bulk-error {
+  color: var(--fs-warning, #c2410c);
+  font-size: 13px;
+  margin: 12px 0 0;
+}
+.fs-bulk-btn-secondary {
+  padding: 10px 18px;
+  border: 1px solid var(--fs-line, #e6e6e6);
+  background: #fff;
+  border-radius: 10px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 120ms ease, border-color 120ms ease;
+}
+.fs-bulk-btn-secondary:hover {
+  background: var(--fs-bg-soft, #fafafa);
+  border-color: var(--fs-ink-3, #777);
+}
+.fs-bulk-btn-secondary:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.fs-bulk-summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 12px 16px;
+  background: var(--fs-bg-soft, #fafafa);
+  border: 1px solid var(--fs-line, #e6e6e6);
+  border-radius: 10px;
+  margin-bottom: 12px;
+  font-size: 13.5px;
+  flex-wrap: wrap;
+}
+.fs-bulk-grid-wrap {
+  border: 1px solid var(--fs-line, #e6e6e6);
+  border-radius: 10px;
+  overflow: auto;
+  background: #fff;
+  max-width: 100%;
+}
+.fs-bulk-grid {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+.fs-bulk-grid thead th {
+  position: sticky;
+  top: 0;
+  background: var(--fs-bg-soft, #fafafa);
+  text-align: left;
+  font-weight: 600;
+  padding: 10px 8px;
+  border-bottom: 1px solid var(--fs-line, #e6e6e6);
+  white-space: nowrap;
+  z-index: 1;
+}
+.fs-bulk-grid td {
+  padding: 6px 8px;
+  border-bottom: 1px solid #f3f3f3;
+  vertical-align: middle;
+}
+.fs-bulk-row-warn td { background: #fff8ed; }
+.fs-bulk-row-info td { background: #f3f7ff; }
+.fs-bulk-row-off  td { opacity: 0.45; }
+
+.fs-bulk-cell {
+  width: 100%;
+  min-width: 80px;
+  padding: 6px 8px;
+  border: 1px solid transparent;
+  background: transparent;
+  border-radius: 6px;
+  font-size: 13px;
+  font-family: inherit;
+}
+.fs-bulk-cell:focus,
+.fs-bulk-cell:hover {
+  outline: none;
+  border-color: var(--fs-line, #e6e6e6);
+  background: #fff;
+}
+
+.fs-bulk-status {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+.fs-bulk-status-ok   { background: #e8f6ec; color: #1a7f37; }
+.fs-bulk-status-warn { background: #fef0d8; color: #b45309; }
+.fs-bulk-status-info { background: #e6efff; color: #1d4ed8; }
+.fs-bulk-ai-tag {
+  display: inline-block;
+  margin-left: 6px;
+  padding: 1px 6px;
+  background: #111;
+  color: #fff;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+.fs-bulk-hint {
+  margin-top: 10px;
+  font-size: 12.5px;
+  color: var(--fs-ink-3, #777);
+}
+
+@media (max-width: 720px) {
+  .fs-bulk-summary { flex-direction: column; align-items: stretch; }
+  .fs-bulk-grid    { font-size: 12px; }
+}
