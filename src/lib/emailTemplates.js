@@ -209,6 +209,62 @@ const TEMPLATES = {
     }),
     text: `${v.matchCount} new aircraft match your saved search "${v.searchName}". View: ${SITE}/buy`,
   }),
+
+  // Lead delivery — sent to the partner's lead_email when method='email'.
+  // Plain, scannable: who the user is + what listing they were looking
+  // at + how to reach them. Reply-to is the buyer so the partner can
+  // respond directly without going through us.
+  'affiliate.lead': (v) => ({
+    subject: `New lead from FlightSales: ${v.userName || 'a buyer'} — ${v.partnerType || 'enquiry'}`,
+    html: shell({
+      preheader: `${v.userName} is enquiring about ${v.partnerType || 'a service'}.`,
+      body: `
+        <h2 style="font-size:18px;margin:0 0 12px;">New lead from FlightSales</h2>
+        <p style="margin:0 0 14px;">
+          A buyer has requested ${escape(v.partnerType || 'a service')} from your business via FlightSales.com.au.
+        </p>
+        <table style="width:100%;border-collapse:collapse;margin:0 0 20px;">
+          <tr><td style="padding:8px 0;color:#71717a;width:120px;">Name</td><td style="padding:8px 0;font-weight:600;">${escape(v.userName)}</td></tr>
+          <tr><td style="padding:8px 0;color:#71717a;">Email</td><td style="padding:8px 0;"><a href="mailto:${escape(v.userEmail)}" style="color:#0a0a0a;">${escape(v.userEmail)}</a></td></tr>
+          ${v.userPhone ? `<tr><td style="padding:8px 0;color:#71717a;">Phone</td><td style="padding:8px 0;">${escape(v.userPhone)}</td></tr>` : ''}
+          ${v.listingTitle ? `<tr><td style="padding:8px 0;color:#71717a;">Aircraft</td><td style="padding:8px 0;">${escape(v.listingTitle)}${v.listingPrice ? ` — $${Number(v.listingPrice).toLocaleString()}` : ''}</td></tr>` : ''}
+          ${v.listingUrl ? `<tr><td style="padding:8px 0;color:#71717a;">Listing</td><td style="padding:8px 0;"><a href="${escape(v.listingUrl)}" style="color:#0a0a0a;">View on FlightSales</a></td></tr>` : ''}
+        </table>
+        ${v.message ? `
+          <p style="margin:0 0 8px;color:#71717a;font-size:13px;">Message from buyer:</p>
+          <p style="margin:0 0 20px;padding:12px;background:#f6f6f7;border-radius:8px;font-size:14px;">${escape(v.message)}</p>
+        ` : ''}
+        <p style="margin:0;color:#71717a;font-size:12px;">
+          Reply directly to this email — it goes straight to the buyer.
+        </p>
+      `,
+    }),
+    text: `New lead from FlightSales\n\nName: ${v.userName}\nEmail: ${v.userEmail}\n${v.userPhone ? `Phone: ${v.userPhone}\n` : ''}${v.listingTitle ? `Aircraft: ${v.listingTitle}\n` : ''}${v.message ? `\nMessage:\n${v.message}` : ''}`,
+  }),
+
+  // Confirmation copy sent to the buyer — "we've forwarded your details
+  // to {partner}, expect contact within 24h". Sets expectations + audit
+  // trail for the buyer.
+  'affiliate.lead_confirmation': (v) => ({
+    subject: `Your enquiry to ${v.partnerName} has been sent`,
+    html: shell({
+      preheader: `${v.partnerName} will be in touch shortly.`,
+      body: `
+        <h2 style="font-size:18px;margin:0 0 12px;">Enquiry sent</h2>
+        <p style="margin:0 0 14px;">
+          Hi ${escape(v.userName)} — we've forwarded your details to <strong>${escape(v.partnerName)}</strong>.
+          They'll typically reach out within 24 hours.
+        </p>
+        <p style="margin:0 0 20px;color:#71717a;font-size:14px;">
+          What we shared: your name, email${v.userPhone ? ', phone' : ''}${v.listingTitle ? `, and the listing you were viewing (${escape(v.listingTitle)})` : ''}.
+        </p>
+        <p style="margin:0;color:#71717a;font-size:13px;">
+          Didn't expect this? Just reply to this email and we'll look into it.
+        </p>
+      `,
+    }),
+    text: `Hi ${v.userName} — we've forwarded your details to ${v.partnerName}. They'll typically reach out within 24 hours.`,
+  }),
 };
 
 function escape(s) {

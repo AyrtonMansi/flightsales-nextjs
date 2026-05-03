@@ -737,3 +737,118 @@ ALTER TABLE profiles
 
 -- Index for fast "find all pending dealers" admin queries
 CREATE INDEX IF NOT EXISTS idx_profiles_pending_dealer ON profiles(pending_dealer) WHERE pending_dealer = TRUE;
+
+-- ============================================================
+-- AFFILIATE PARTNERS — finance, insurance, escrow, maintenance,
+-- training, inspection, transport. Pluggable: each partner has
+-- targeting rules, lead-capture method, commission terms. Lead
+-- rows track every referral + delivery status + conversion.
+-- ============================================================
+
+CREATE TABLE IF NOT EXISTS affiliates (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  slug TEXT UNIQUE NOT NULL,
+  name TEXT NOT NULL,
+  type TEXT NOT NULL CHECK (type IN (
+    'finance', 'insurance', 'escrow', 'maintenance',
+    'training', 'inspection', 'transport', 'other'
+  )),
+  status TEXT NOT NULL DEFAULT 'pending'
+    CHECK (status IN ('pending', 'active', 'paused', 'terminated')),
+
+  -- Public-facing branding
+  logo_url TEXT,
+  website_url TEXT,
+  description TEXT,                          -- shown on partner card
+  cta_text TEXT,                             -- e.g. "Get a finance quote"
+
+  -- Targeting — when this partner's CTA appears
+  min_listing_price INTEGER,
+  max_listing_price INTEGER,
+  categories TEXT[],                         -- empty = all categories
+  states TEXT[],                             -- empty = anywhere in AU
+  display_priority INTEGER DEFAULT 100,      -- lower = shown first when multiple match
+
+  -- Lead delivery — how we hand the lead to the partner
+  lead_capture_method TEXT NOT NULL DEFAULT 'email'
+    CHECK (lead_capture_method IN ('email', 'webhook', 'api')),
+  lead_email TEXT,                           -- for method='email'
+  lead_webhook_url TEXT,                     -- for method='webhook' (POST)
+  api_endpoint_url TEXT,                     -- for method='api'
+  api_credential_secret TEXT,                -- encrypted; admin-only
+
+  -- Business terms
+  commission_pct NUMERIC(5, 2),              -- our cut % (info only — payout
+                                             -- is reconciled manually for v1)
+  contract_url TEXT,                         -- link to signed agreement
+
+  -- Internal contact
+  contact_name TEXT,
+  contact_email TEXT,
+  notes TEXT,                                -- admin-only
+
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_affiliates_status ON affiliates(status);
+CREATE INDEX IF NOT EXISTS idx_affiliates_type   ON affiliates(type);
+
+-- Lead rows — one per referral. Tracks who sent it, the listing context,
+-- delivery state, and (for converted leads) the deal value + commission.
+CREATE TABLE IF NOT EXISTS affiliate_leads (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  affiliate_id UUID NOT NULL REFERENCES affiliates(id) ON DELETE CASCADE,
+  user_id UUID REFERENCES auth.users(id) ON DELETE SET NULL,
+  listing_id INTEGER REFERENCES aircraft(id) ON DELETE SET NULL,
+
+  user_name TEXT NOT NULL,
+  user_email TEXT NOT NULL,
+  user_phone TEXT,
+  message TEXT,
+
+  -- Pipeline state
+  status TEXT NOT NULL DEFAULT 'sent'
+    CHECK (status IN ('sent', 'contacted', 'quoted', 'converted', 'dead')),
+  conversion_value NUMERIC,                  -- closed deal amount
+  commission_amount NUMERIC,                 -- our payout
+
+  -- Delivery — did the partner actually receive it?
+  delivery_status TEXT NOT NULL DEFAULT 'pending'
+    CHECK (delivery_status IN ('pending', 'delivered', 'failed')),
+  delivery_response JSONB,                   -- partner's reply (webhook/api)
+  delivery_error TEXT,                       -- if failed
+
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_affiliate_leads_affiliate ON affiliate_leads(affiliate_id, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_affiliate_leads_status    ON affiliate_leads(status);
+CREATE INDEX IF NOT EXISTS idx_affiliate_leads_user      ON affiliate_leads(user_id);
+
+ALTER TABLE affiliates       ENABLE ROW LEVEL SECURITY;
+ALTER TABLE affiliate_leads  ENABLE ROW LEVEL SECURITY;
+
+-- RLS: anyone can READ active affiliates (the user-facing /partners page +
+-- listing-detail CTAs); only admins write. Lead inserts go through the
+-- /api/affiliate-leads route with service role, so RLS doesn't need to
+-- gate inserts here — keeping it locked is the safe default.
+DROP POLICY IF EXISTS "Active affiliates are publicly readable" ON affiliates;
+CREATE POLICY "Active affiliates are publicly readable"
+  ON affiliates FOR SELECT
+  USING (status = 'active');
+
+DROP POLICY IF EXISTS "Admins manage affiliates" ON affiliates;
+CREATE POLICY "Admins manage affiliates"
+  ON affiliates FOR ALL
+  TO authenticated
+  USING (EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND role = 'admin'))
+  WITH CHECK (EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND role = 'admin'));
+
+DROP POLICY IF EXISTS "Users see own affiliate leads" ON affiliate_leads;
+CREATE POLICY "Users see own affiliate leads"
+  ON affiliate_leads FOR SELECT
+  TO authenticated
+  USING (user_id = auth.uid()
+         OR EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND role = 'admin'));

@@ -9,6 +9,7 @@ import EnquiriesTab from '../admin/tabs/EnquiriesTab';
 import LeadsTab from '../admin/tabs/LeadsTab';
 import ContentTab from '../admin/tabs/ContentTab';
 import AuditTab from '../admin/tabs/AuditTab';
+import AffiliatesTab from '../admin/tabs/AffiliatesTab';
 import AdminTwoFactorPrompt from '../admin/AdminTwoFactorPrompt';
 
 // Thin tab-switching shell. All tab logic lives in src/components/admin/tabs/.
@@ -48,6 +49,7 @@ const AdminPage = ({ user, setPage, signOut }) => {
     { id: 'dealers', label: 'Dealer Applications', badge: counts.dealerAppsPending },
     { id: 'enquiries', label: 'Enquiries', badge: counts.enquiriesNew },
     { id: 'leads', label: 'Lead Management', badge: counts.leadsNew },
+    { id: 'affiliates', label: 'Affiliates' },
     { id: 'content', label: 'Content' },
     { id: 'audit', label: 'Audit' },
   ];
@@ -130,6 +132,7 @@ const AdminPage = ({ user, setPage, signOut }) => {
             {activeTab === 'dealers' && <DealerAppsTab adminId={user?.id} />}
             {activeTab === 'enquiries' && <EnquiriesTab />}
             {activeTab === 'leads' && <LeadsTab />}
+            {activeTab === 'affiliates' && <AffiliatesTab />}
             {activeTab === 'content' && <ContentTab />}
             {activeTab === 'audit' && <AuditTab />}
           </div>

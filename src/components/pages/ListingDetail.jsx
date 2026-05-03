@@ -4,6 +4,7 @@ import { Icons } from '../Icons';
 import AircraftImage from '../AircraftImage';
 import ListingCard from '../ListingCard';
 import EnquiryModal from '../EnquiryModal';
+import AffiliateCTA from '../affiliates/AffiliateCTA';
 import ReportListingModal from '../ReportListingModal';
 import { useAircraft } from '../../lib/hooks';
 import { formatPriceFull, formatHours, timeAgo, isJustListed } from '../../lib/format';
@@ -262,6 +263,13 @@ const ListingDetail = ({ listing, onBack, savedIds, onSave, user, onSelectDealer
             textUnderlineOffset: 2, cursor: 'pointer',
           }}
         >Report it</button>.
+      </div>
+
+      {/* Partner CTAs — shown contextually based on listing price /
+          category / state. Only renders cards for which an active
+          partner matches; if no matches, renders nothing. */}
+      <div className="fs-container" style={{ marginTop: 24, marginBottom: 24 }}>
+        <AffiliateCTA listing={l} user={user} />
       </div>
 
       {showEnquiry && <EnquiryModal listing={l} onClose={() => setShowEnquiry(false)} user={user} />}

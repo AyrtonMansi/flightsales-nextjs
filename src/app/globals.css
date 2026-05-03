@@ -3512,3 +3512,110 @@ html, body { overflow-x: hidden; max-width: 100%; }
   .fs-h-stackform { gap: 8px; }
   .fs-h-cards-group { gap: 8px; }
 }
+
+/* ============================================================
+   AFFILIATE PARTNER CARDS — listing detail + /partners directory
+   ============================================================ */
+.fs-affiliate-stack {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 12px;
+}
+.fs-affiliate-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 16px;
+}
+.fs-affiliate-card {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  grid-template-areas:
+    "logo body"
+    "logo cta";
+  align-items: center;
+  gap: 14px;
+  padding: 16px 18px;
+  background: var(--fs-white);
+  border: 1px solid var(--fs-line);
+  border-radius: 14px;
+  transition: border-color 160ms ease, box-shadow 160ms ease;
+}
+.fs-affiliate-card:hover {
+  border-color: var(--fs-accent);
+  box-shadow: 0 0 0 3px var(--fs-accent-ring);
+}
+.fs-affiliate-card-logo {
+  grid-area: logo;
+  width: 44px; height: 44px;
+  object-fit: contain;
+  background: #fff;
+  border: 1px solid var(--fs-line);
+  border-radius: 8px;
+  padding: 4px;
+}
+.fs-affiliate-card-logo-fallback {
+  display: grid; place-items: center;
+  background: var(--fs-bg-2);
+  color: var(--fs-ink-3);
+  font-weight: 700;
+}
+.fs-affiliate-card-body { grid-area: body; min-width: 0; }
+.fs-affiliate-card-eyebrow {
+  margin: 0 0 2px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--fs-accent-700);
+}
+.fs-affiliate-card-name {
+  margin: 0 0 4px;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--fs-ink);
+}
+.fs-affiliate-card-desc {
+  margin: 0;
+  font-size: 13px;
+  color: var(--fs-ink-3);
+  line-height: 1.4;
+}
+.fs-affiliate-card-cta {
+  grid-area: cta;
+  justify-self: start;
+  margin-top: 8px;
+  background: var(--fs-accent);
+  color: #fff !important;
+  border: 0;
+  padding: 8px 14px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 120ms ease;
+}
+.fs-affiliate-card-cta:hover { background: var(--fs-accent-700); }
+
+/* Admin sub-tabs (used inside AffiliatesTab to switch Partners ↔ Leads) */
+.fs-admin-subtabs {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 20px;
+  border-bottom: 1px solid var(--fs-line);
+}
+.fs-admin-subtab {
+  padding: 10px 14px;
+  background: none;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  cursor: pointer;
+  font: 600 14px/1 inherit;
+  color: var(--fs-ink-3);
+  transition: color 120ms ease, border-color 120ms ease;
+}
+.fs-admin-subtab.on {
+  color: var(--fs-ink);
+  border-bottom-color: var(--fs-accent);
+}
+.fs-admin-subtab:hover { color: var(--fs-ink); }

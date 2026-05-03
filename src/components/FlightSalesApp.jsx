@@ -30,6 +30,7 @@ const BusinessOnboarding    = dynamic(() => import("./onboarding/BusinessOnboard
 const AdminPage       = dynamic(() => import("./pages/AdminPage"));
 import PendingReviewBanner from "./dealer/PendingReviewBanner";
 const RefundsPage     = dynamic(() => import("./pages/RefundsPage"));
+const PartnersPage    = dynamic(() => import("./pages/PartnersPage"));
 const AboutPage       = dynamic(() => import("./pages/AboutPage"));
 const NewsPage        = dynamic(() => import("./pages/NewsPage"));
 const ContactPage     = dynamic(() => import("./pages/ContactPage"));
@@ -192,6 +193,7 @@ export default function FlightSalesApp({
       if (path === "/news") return setPage("news");
       if (path === "/about") return setPage("about");
       if (path === "/contact") return setPage("contact");
+      if (path === "/partners") return setPage("partners");
     };
     window.addEventListener("popstate", handlePop);
     return () => window.removeEventListener("popstate", handlePop);
@@ -365,6 +367,7 @@ export default function FlightSalesApp({
       {page === "about" && <AboutPage />}
       {page === "contact" && <ContactPage />}
       {page === "refunds" && <RefundsPage />}
+      {page === "partners" && <PartnersPage />}
       {page === "login" && <LoginPage setPage={setPageWrap} signIn={signIn} signUp={signUp} signInWithGoogle={signInWithGoogle} resetPassword={resetPassword} loginDemo={loginDemo} />}
       {/* Business onboarding wizard — shown right after a brand-new
           business signup. Self-completes by setting pending_dealer=true
