@@ -224,7 +224,12 @@ const LoginPage = ({ setPage, signIn, signUp, signInWithGoogle, resetPassword, l
                         gap: 4
                       }}
                     >
-                      <span style={{ fontSize: 20 }}>👤</span>
+                      <span aria-hidden="true" style={{ color: accountType === 'private' ? 'var(--fs-ink)' : 'var(--fs-gray-500)' }}>
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+                          <circle cx="12" cy="8" r="4" />
+                          <path d="M4 21v-1a6 6 0 0 1 6-6h4a6 6 0 0 1 6 6v1" />
+                        </svg>
+                      </span>
                       <span style={{ fontSize: 14, fontWeight: accountType === 'private' ? 600 : 400, color: accountType === 'private' ? "var(--fs-ink)" : "var(--fs-gray-700)" }}>
                         Private Seller
                       </span>
@@ -246,7 +251,15 @@ const LoginPage = ({ setPage, signIn, signUp, signInWithGoogle, resetPassword, l
                         gap: 4
                       }}
                     >
-                      <span style={{ fontSize: 20 }}>🏢</span>
+                      <span aria-hidden="true" style={{ color: accountType === 'business' ? 'var(--fs-ink)' : 'var(--fs-gray-500)' }}>
+                        <svg width="26" height="22" viewBox="0 0 32 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+                          {/* Hangar arch + door — purpose-built dealer mark, fits the aircraft marketplace context. */}
+                          <path d="M3 22V12L16 4l13 8v10" />
+                          <path d="M3 22h26" />
+                          <path d="M11 22v-7a5 5 0 0 1 10 0v7" />
+                          <line x1="16" y1="15" x2="16" y2="22" />
+                        </svg>
+                      </span>
                       <span style={{ fontSize: 14, fontWeight: accountType === 'business' ? 600 : 400, color: accountType === 'business' ? "var(--fs-ink)" : "var(--fs-gray-700)" }}>
                         Dealer
                       </span>
