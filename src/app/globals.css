@@ -2879,15 +2879,18 @@ html, body { overflow-x: hidden; max-width: 100%; }
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
   align-items: center;
-  gap: 6px;
+  column-gap: 10px;
 }
 /* Each side of the range owns its own transparent native select so a tap
-   on the From cell only opens the From picker (not To). */
+   on the From cell only opens the From picker (not To). Text aligns
+   inward toward the dash so values bookend it evenly. */
 .fs-h-range-cell {
   position: relative;
   display: block;
   min-width: 0;
 }
+.fs-h-range-cell:first-child .fs-h-range-text { text-align: right; padding-right: 2px; }
+.fs-h-range-cell:last-child  .fs-h-range-text { text-align: left;  padding-left: 2px; }
 .fs-h-range-text {
   display: block;
   font: 600 15px/1.2 -apple-system, system-ui, sans-serif;
@@ -3481,13 +3484,16 @@ html, body { overflow-x: hidden; max-width: 100%; }
   flex-shrink: 0;
 }
 
-/* Range row — From — To inline */
+/* Range row — From — To inline. Values bookend the dash so a short
+   "1995 — 2024" reads cleanly without one cell drifting left while the
+   other floats away. Min cell text aligns right, max cell aligns left,
+   dash sits centred between. */
 .fs-h-stack-row-range .fs-h-stack-range {
   flex: 1;
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
   align-items: center;
-  gap: 6px;
+  column-gap: 10px;
   min-width: 0;
 }
 .fs-h-stack-row-range .fs-h-range-cell {
@@ -3497,6 +3503,20 @@ html, body { overflow-x: hidden; max-width: 100%; }
 .fs-h-stack-row-range .fs-h-stack-value {
   display: block;          /* override the flex from non-range rows */
   font-variant-numeric: tabular-nums;
+}
+.fs-h-stack-row-range .fs-h-range-cell:first-child .fs-h-stack-value {
+  text-align: right;
+  padding-right: 2px;
+}
+.fs-h-stack-row-range .fs-h-range-cell:last-child .fs-h-stack-value {
+  text-align: left;
+  padding-left: 2px;
+}
+.fs-h-stack-row-range .fs-h-range-sep {
+  color: var(--fs-ink-4);
+  font-size: 13px;
+  line-height: 1;
+  user-select: none;
 }
 
 /* Stack-row mobile — drop label width so values fit */
