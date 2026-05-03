@@ -3770,3 +3770,81 @@ html, body { overflow-x: hidden; max-width: 100%; }
   .fs-bulk-summary { flex-direction: column; align-items: stretch; }
   .fs-bulk-grid    { font-size: 12px; }
 }
+
+/* ================================================================
+ * ABN verification card (dealer dashboard → Business profile)
+ * Single input + verify button + result panel + green badge.
+ * ================================================================ */
+.fs-abn-card {
+  border: 1px solid var(--fs-line, #e6e6e6);
+  border-radius: 14px;
+  padding: 24px;
+  background: #fff;
+  max-width: 720px;
+}
+.fs-abn-head {
+  display: flex; align-items: flex-start; justify-content: space-between;
+  gap: 16px; margin-bottom: 18px;
+}
+.fs-abn-title { font-size: 17px; font-weight: 600; margin: 0 0 4px; }
+.fs-abn-sub   { font-size: 13.5px; color: var(--fs-ink-3, #545454); margin: 0; line-height: 1.5; }
+.fs-abn-badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 5px 12px;
+  background: #e8f6ec;
+  color: #1a7f37;
+  border-radius: 999px;
+  font-size: 12px; font-weight: 700;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.fs-abn-row {
+  display: flex; gap: 10px; align-items: stretch;
+  margin-bottom: 12px;
+}
+.fs-abn-error {
+  margin: 4px 0 16px;
+  color: #c2410c;
+  font-size: 13px;
+}
+.fs-abn-result {
+  margin-top: 8px;
+  padding: 16px 18px;
+  border-radius: 10px;
+  border: 1px solid var(--fs-line, #e6e6e6);
+  background: var(--fs-bg-soft, #fafafa);
+}
+.fs-abn-result-ok   { border-color: #b6dfc1; background: #f3faf5; }
+.fs-abn-result-warn { border-color: #f3d4a0; background: #fff8ed; }
+.fs-abn-result dl {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px 24px;
+  margin: 0 0 6px;
+}
+.fs-abn-result dl > div { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.fs-abn-result dt {
+  font-size: 11.5px; font-weight: 600;
+  color: var(--fs-ink-3, #545454);
+  letter-spacing: 0.02em; text-transform: uppercase;
+}
+.fs-abn-result dd {
+  font-size: 14px; color: var(--fs-ink, #111);
+  margin: 0; word-break: break-word;
+}
+.fs-abn-hint {
+  margin: 12px 0 0;
+  font-size: 13px; color: #92400e;
+  line-height: 1.45;
+}
+.fs-abn-foot {
+  margin: 14px 0 0;
+  font-size: 12px; color: var(--fs-ink-4, #757575);
+  line-height: 1.45;
+}
+@media (max-width: 560px) {
+  .fs-abn-head    { flex-direction: column; }
+  .fs-abn-row     { flex-direction: column; }
+  .fs-abn-result dl { grid-template-columns: 1fr; gap: 8px; }
+}

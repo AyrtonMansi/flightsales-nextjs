@@ -157,6 +157,21 @@ ALTER TABLE aircraft ADD COLUMN IF NOT EXISTS rejection_reason TEXT;    -- shown
 ALTER TABLE profiles ADD COLUMN IF NOT EXISTS suspended_at TIMESTAMP WITH TIME ZONE;
 ALTER TABLE profiles ADD COLUMN IF NOT EXISTS suspension_reason TEXT;
 
+-- ABN verification — auto-verifies a dealer's business via the Australian
+-- Business Register (ABR) lookup. abn_verified_at is the auth signal: any
+-- non-null value means we successfully matched an active ABN to this
+-- profile. Cached fields below let us show "Verified by ABR" without
+-- hitting ABR on every render.
+ALTER TABLE profiles ADD COLUMN IF NOT EXISTS abn TEXT;
+ALTER TABLE profiles ADD COLUMN IF NOT EXISTS abn_verified_at TIMESTAMP WITH TIME ZONE;
+ALTER TABLE profiles ADD COLUMN IF NOT EXISTS abn_business_name TEXT;
+ALTER TABLE profiles ADD COLUMN IF NOT EXISTS abn_entity_type TEXT;
+ALTER TABLE profiles ADD COLUMN IF NOT EXISTS abn_status TEXT;            -- 'Active' | 'Cancelled'
+ALTER TABLE profiles ADD COLUMN IF NOT EXISTS abn_gst_registered BOOLEAN;
+ALTER TABLE profiles ADD COLUMN IF NOT EXISTS abn_postcode TEXT;
+ALTER TABLE profiles ADD COLUMN IF NOT EXISTS abn_state TEXT;
+CREATE INDEX IF NOT EXISTS idx_profiles_abn ON profiles(abn);
+
 -- ============================================
 -- DEALER APPLICATIONS
 -- ============================================

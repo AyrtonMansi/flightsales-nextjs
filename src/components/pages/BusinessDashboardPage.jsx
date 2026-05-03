@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { Icons } from '../Icons';
 import ListingCard from '../ListingCard';
 import BulkImportTab from '../dealer/BulkImportTab';
+import AbnVerifyCard from '../dealer/AbnVerifyCard';
 import { useMyListings, useMyEnquiries } from '../../lib/hooks';
 
 // Verified-dealer dashboard. Differs from the private DashboardPage in
@@ -227,7 +228,14 @@ const BusinessDashboardPage = ({ user, setPage, signOut, onSelectListing }) => {
 
             {activeTab === 'bulk' && <BulkImportTab user={user} />}
 
-            {!['overview','listings','enquiries','subscription','bulk'].includes(activeTab) && (
+            {activeTab === 'business' && (
+              <>
+                <h2 className="fs-section-title" style={{ marginBottom: 16 }}>Business profile</h2>
+                <AbnVerifyCard user={user} />
+              </>
+            )}
+
+            {!['overview','listings','enquiries','subscription','bulk','business'].includes(activeTab) && (
               <>
                 <h2 className="fs-section-title" style={{ marginBottom: 16 }}>{
                   sidebar.flatMap(s => s.items || [s])
