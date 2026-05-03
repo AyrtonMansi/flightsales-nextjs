@@ -10,7 +10,7 @@ import { CATEGORIES, STATES } from '../../lib/constants';
 //     labels, 15px semibold values, tabular numerals on prices/years.
 //   - AI input gets a faint violet→indigo wash + ⌘K kbd hint, signalling
 //     "smart" without being loud.
-//   - CTA reports a live count: "Search 1,247 aircraft →".
+//   - CTA: a single-word "Search" button — Uber-style, no count clutter.
 //   - Year and Price are native dropdowns (selects) sitting transparent
 //     over the rendered value — keyboard / iOS picker behave normally,
 //     visual chrome stays consistent with the other fields.
@@ -45,7 +45,7 @@ const PRICE_TO_OPTIONS = [
 const labelFor = (opts, value, fallback) =>
   opts.find((o) => o.value === value)?.label ?? fallback;
 
-export default function HeroSearchPro({ model, count }) {
+export default function HeroSearchPro({ model }) {
   const {
     searchCat, setSearchCat,
     searchMake, setSearchMake,
@@ -57,10 +57,6 @@ export default function HeroSearchPro({ model, count }) {
     onAiSearch,
     onManualSearch,
   } = model;
-
-  const fmtCount = typeof count === 'number'
-    ? count.toLocaleString()
-    : null;
 
   // Make is intentionally NOT shown in the hero — it's too granular
   // for the entry-point funnel. The /buy filter rail handles Make
@@ -157,9 +153,7 @@ export default function HeroSearchPro({ model, count }) {
       {/* CTA — Uber pattern: solid black button, tight padding. */}
       <div className="fs-h-cta-row">
         <button className="fs-h-cta" type="submit">
-          {fmtCount
-            ? <>Search <span className="fs-h-cta-count">{fmtCount}</span></>
-            : 'Search'}
+          Search
         </button>
       </div>
     </form>

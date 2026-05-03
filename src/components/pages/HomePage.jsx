@@ -94,7 +94,10 @@ const HomePage = ({ setPage, setSelectedListing, savedIds, onSave, setSearchFilt
           <div className="fs-hero-v3-grid">
             <div className="fs-hero-v3-left">
               <h1>Find your next aircraft.</h1>
-              <HeroSearchPro model={searchModel} count={totalListings} />
+              <p className="fs-hero-sub">
+                Search thousands of listings from verified dealers and private sellers.
+              </p>
+              <HeroSearchPro model={searchModel} />
             </div>
             <div className="fs-hero-v3-right" aria-hidden="true">
               <HeroIllustration />
