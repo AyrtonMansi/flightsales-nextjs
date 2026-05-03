@@ -38,8 +38,11 @@ export async function POST(req) {
   // via Turnstile, this is the second line of defence).
   const ip = callerIp(req);
   const rl = await rateLimit(`affiliate-lead:${ip}`, { limit: 10, windowMs: 60 * 60 * 1000 });
-  if (!rl.allowed) {
-    return NextResponse.json({ ok: false, error: 'rate_limited' }, { status: 429 });
+  if (!rl.ok) {
+    return NextResponse.json(
+      { ok: false, error: 'rate_limited', retryAfter: rl.retryAfter },
+      { status: 429, headers: rl.retryAfter ? { 'Retry-After': String(rl.retryAfter) } : undefined },
+    );
   }
 
   let body;

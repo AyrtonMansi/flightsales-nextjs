@@ -137,11 +137,22 @@ export function useAircraft(filters = {}) {
       if (privateOnly && !dealerOnly) query = query.is('dealer_id', null);
       if (featuredOnly) query = query.eq('featured', true);
 
-      // Search
+      // Search — sanitise the term before splicing into a PostgREST .or()
+      // filter. Comma is the filter separator, parens group sub-expressions,
+      // and %/_ are ILIKE wildcards; an unescaped value would let a crafted
+      // query inject extra filters. Whitelist keeps the shape simple: only
+      // word chars, spaces, hyphens, dots — covers every real aircraft
+      // search (Cessna 172, VH-ABC, PA.28-180) and rejects everything else.
       if (search) {
-        query = query.or(
-          `title.ilike.%${search}%,manufacturer.ilike.%${search}%,model.ilike.%${search}%`
-        );
+        const safe = String(search)
+          .slice(0, 80)
+          .replace(/[^A-Za-z0-9 .\-]/g, ' ')
+          .trim();
+        if (safe) {
+          query = query.or(
+            `title.ilike.%${safe}%,manufacturer.ilike.%${safe}%,model.ilike.%${safe}%`
+          );
+        }
       }
 
       // Sort
