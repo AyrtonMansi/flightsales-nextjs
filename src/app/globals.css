@@ -2127,9 +2127,9 @@ html, body { overflow-x: hidden; max-width: 100%; }
 
 .fs-fc-field { display: flex; flex-direction: column; gap: 8px; }
 .fs-fc-label {
-  font-size: 12px; font-weight: 600;
-  color: var(--fs-ink-3);
-  letter-spacing: 0.005em;
+  font-size: 13px; font-weight: 700;
+  color: var(--fs-ink);
+  letter-spacing: 0.01em;
 }
 .fs-fc-sublabel {
   font-size: 12px; font-weight: 500;
