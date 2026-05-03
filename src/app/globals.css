@@ -493,6 +493,9 @@ a { color: inherit; text-decoration: none; }
   .fs-nav-links, .fs-nav-actions { display: none; }
   .fs-nav-mobile-toggle { display: flex; }
   .fs-nav-mobile-shortcuts { display: inline-flex; margin-left: auto; margin-right: 0; }
+  /* Kill the desktop 32px flex gap so the shortcuts cluster sits flush
+     against the burger on mobile. */
+  .fs-nav-inner { gap: 0; }
 }
 
 /* Desktop avatar dropdown — used to be inline-styled per-element;
