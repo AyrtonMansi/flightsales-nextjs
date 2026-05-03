@@ -600,6 +600,17 @@ a { color: inherit; text-decoration: none; }
   background: var(--fs-ink);
   color: var(--fs-white);
 }
+
+/* Scroll hint — a small centred hairline pill under the type row.
+   Visual cue that the row scrolls horizontally without adding any
+   chrome. Pure CSS, decorative, hidden from screen readers. */
+.fs-type-row-scrollhint {
+  margin: 14px auto 0;
+  width: 56px;
+  height: 3px;
+  border-radius: 999px;
+  background: rgba(10, 10, 10, 0.12);
+}
 .fs-type-tile-icon {
   display: inline-flex; align-items: center; justify-content: center;
   width: 40px; height: 24px;
