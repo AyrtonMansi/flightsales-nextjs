@@ -135,6 +135,30 @@ const Nav = ({ page, setPage, setMobileOpen, mobileOpen, user, signOut, setDashb
             )}
           </div>
 
+          {/* Mobile shortcut row — sits next to the burger so the user
+              can hit the notification bell + their profile without
+              opening the drawer. Hidden on desktop (the desktop
+              actions block already carries them). */}
+          <div className="fs-nav-mobile-shortcuts">
+            {user && <NotificationBell user={user} setPage={setPage} />}
+            <button
+              type="button"
+              className="fs-nav-mobile-profile"
+              onClick={() => { setPage(user ? 'dashboard' : 'login'); setMobileOpen(false); }}
+              aria-label={user ? 'Open dashboard' : 'Sign in'}
+            >
+              {user ? (
+                <img
+                  src={user.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.full_name || user.email || 'U')}&background=0a0a0a&color=fff`}
+                  alt=""
+                  aria-hidden="true"
+                />
+              ) : (
+                Icons.user
+              )}
+            </button>
+          </div>
+
           <button
             className="fs-nav-mobile-toggle"
             onClick={() => setMobileOpen(!mobileOpen)}

@@ -455,6 +455,36 @@ a { color: inherit; text-decoration: none; }
   .fs-mobile-subbar { display: block; }
 }
 .fs-nav-mobile-toggle:hover { background: var(--fs-bg-2); }
+
+/* Mobile shortcut row — bell + profile, sit to the LEFT of the burger
+   so the user can hit them without opening the drawer. Hidden on
+   desktop where the regular nav already carries them. */
+.fs-nav-mobile-shortcuts {
+  display: none;
+  align-items: center;
+  gap: 4px;
+}
+.fs-nav-mobile-profile {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px; height: 36px;
+  padding: 0;
+  border-radius: 999px;
+  background: none;
+  border: 0;
+  color: var(--fs-ink);
+  cursor: pointer;
+  transition: background 120ms ease;
+}
+.fs-nav-mobile-profile:hover { background: var(--fs-bg-2); }
+.fs-nav-mobile-profile img {
+  width: 28px; height: 28px;
+  border-radius: 999px;
+  object-fit: cover;
+  display: block;
+}
+
 @media (max-width: 768px) {
   .fs-nav-inner { height: 64px; }
   /* The desktop links + actions both fully hide on mobile — the drawer
@@ -462,6 +492,7 @@ a { color: inherit; text-decoration: none; }
      on top of each other, which is why "Buy" was hidden under "Sell".) */
   .fs-nav-links, .fs-nav-actions { display: none; }
   .fs-nav-mobile-toggle { display: flex; }
+  .fs-nav-mobile-shortcuts { display: inline-flex; margin-left: auto; margin-right: 4px; }
 }
 
 /* Desktop avatar dropdown — used to be inline-styled per-element;
@@ -554,10 +585,14 @@ a { color: inherit; text-decoration: none; }
 /* Aircraft type icon row — horizontal scrollable strip under the hero
    search. Each tile = ink-black silhouette + tiny label. Clicking
    pre-fills the Type dropdown above. Centred when the row fits the
-   viewport, scrolls horizontally when it doesn't. Hidden scrollbar
-   on Webkit + Firefox. */
-.fs-type-row {
+   viewport, scrolls horizontally when it doesn't. The wrap below
+   contains the row + the static scroll-hint pill — only the inner
+   .fs-type-row scrolls, so the hint stays put. */
+.fs-type-row-wrap {
   margin-top: 24px;
+  width: 100%;
+}
+.fs-type-row {
   width: 100%;
   overflow-x: auto;
   overflow-y: hidden;

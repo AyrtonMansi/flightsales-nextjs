@@ -94,9 +94,6 @@ const HomePage = ({ setPage, setSelectedListing, savedIds, onSave, setSearchFilt
           <div className="fs-hero-v3-grid">
             <div className="fs-hero-v3-left">
               <h1>Find your next aircraft.</h1>
-              <p className="fs-hero-sub">
-                Australia&apos;s marketplace for aircraft. Search thousands of listings from verified dealers and private sellers.
-              </p>
               <HeroSearchPro model={searchModel} count={totalListings} />
             </div>
             <div className="fs-hero-v3-right" aria-hidden="true">

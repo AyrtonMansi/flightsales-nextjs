@@ -183,26 +183,28 @@ const TYPES = [
 
 export default function HomeTypeRow({ activeType, onPick }) {
   return (
-    <div className="fs-type-row" role="group" aria-label="Browse by aircraft type">
-      <div className="fs-type-row-inner">
-        {TYPES.map(t => {
-          const active = activeType === t.value;
-          return (
-            <button
-              key={t.value}
-              type="button"
-              className={`fs-type-tile${active ? ' on' : ''}`}
-              onClick={() => onPick(t.value)}
-              aria-pressed={active}
-            >
-              <span className="fs-type-tile-icon">{t.icon}</span>
-              <span className="fs-type-tile-label">{t.label}</span>
-            </button>
-          );
-        })}
+    <div className="fs-type-row-wrap" role="group" aria-label="Browse by aircraft type">
+      <div className="fs-type-row">
+        <div className="fs-type-row-inner">
+          {TYPES.map(t => {
+            const active = activeType === t.value;
+            return (
+              <button
+                key={t.value}
+                type="button"
+                className={`fs-type-tile${active ? ' on' : ''}`}
+                onClick={() => onPick(t.value)}
+                aria-pressed={active}
+              >
+                <span className="fs-type-tile-icon">{t.icon}</span>
+                <span className="fs-type-tile-label">{t.label}</span>
+              </button>
+            );
+          })}
+        </div>
       </div>
-      {/* Subtle scroll indicator — a centred hairline pill under the row
-          that hints "this scrolls horizontally" without being intrusive. */}
+      {/* Scroll hint — lives OUTSIDE the scroll container so it stays
+          fixed in place while the silhouettes scroll horizontally. */}
       <div className="fs-type-row-scrollhint" aria-hidden="true" />
     </div>
   );
