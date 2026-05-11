@@ -138,7 +138,24 @@ export async function POST(req: NextRequest) {
 
   // Persist — store every row regardless of active status so the user
   // can see WHY they failed verification ("ABN cancelled 2019-04-01").
-  const patch = {
+  // Also gate dealer role on ABN status for business accounts: active
+  // ABN auto-promotes to dealer; cancelled/non-active reverts to private
+  // so a lapsed business loses listing rights automatically.
+  //
+  // The role flip ONLY applies when account_type='business' — private
+  // sellers stay private even if they verify an ABN (e.g. a sole trader
+  // who isn't running a dealership).
+  const { data: existingProfile } = await auth.adminC
+    .from('profiles')
+    .select('account_type, role, is_dealer')
+    .eq('id', auth.user.id)
+    .maybeSingle();
+
+  const isBusinessAccount = existingProfile?.account_type === 'business';
+  const shouldPromoteToDealer = isBusinessAccount && isActive;
+  const shouldRevertToPrivate = isBusinessAccount && !isActive && existingProfile?.is_dealer;
+
+  const patch: Record<string, unknown> = {
     abn,
     abn_business_name: legal,
     abn_entity_type:   abrJson.EntityTypeName ?? null,
@@ -146,12 +163,17 @@ export async function POST(req: NextRequest) {
     abn_gst_registered: !!abrJson.Gst,
     abn_postcode:      abrJson.AddressPostcode ?? null,
     abn_state:         abrJson.AddressState ?? null,
-    // Only stamp verified_at when ABR confirms Active. Reset it on
-    // cancelled/non-active so a previously-verified dealer who lapses
-    // loses the badge automatically.
     abn_verified_at:   isActive ? new Date().toISOString() : null,
     updated_at:        new Date().toISOString(),
   };
+  if (shouldPromoteToDealer) {
+    patch.is_dealer = true;
+    // Only flip role if it isn't already admin — admins keep their role.
+    if (existingProfile?.role !== 'admin') patch.role = 'dealer';
+  } else if (shouldRevertToPrivate) {
+    patch.is_dealer = false;
+    if (existingProfile?.role === 'dealer') patch.role = 'private';
+  }
 
   const { error: upErr } = await auth.adminC
     .from('profiles')
@@ -165,6 +187,8 @@ export async function POST(req: NextRequest) {
   return NextResponse.json({
     ok: true,
     verified: isActive,
+    promoted: shouldPromoteToDealer,
+    reverted: shouldRevertToPrivate,
     abn,
     business_name: legal,
     entity_type: abrJson.EntityTypeName ?? null,

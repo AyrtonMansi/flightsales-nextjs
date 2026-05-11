@@ -59,6 +59,14 @@ export default function AbnVerifyCard({ user }) {
         return;
       }
       setResult({ ...j, verified_at: new Date().toISOString() });
+      // When the server promoted us to dealer (business account + active ABN),
+      // the parent dashboard is rendering its gated "pre-approval" state. A
+      // full reload is the simplest way to re-fetch the profile and flip the
+      // UI to the proper dealer dashboard. Soft-refetch via context would be
+      // tidier but requires plumbing; reload is reliable and rare-path.
+      if (j.promoted && typeof window !== 'undefined') {
+        setTimeout(() => window.location.reload(), 1200);
+      }
     } catch {
       setError('Network error. Try again.');
     } finally {

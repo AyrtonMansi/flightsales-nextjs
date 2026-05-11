@@ -212,6 +212,17 @@ export default function FlightSalesApp({
     // Business-account state — drives onboarding redirect + pending banner.
     account_type: profile?.account_type || 'private',
     pending_dealer: !!profile?.pending_dealer,
+    // ABN verification — required for business accounts to be granted
+    // dealer role. Surfaced here so SellPage / BusinessDashboardPage gate
+    // unverified business accounts before any listing or bulk-import path.
+    abn: profile?.abn || null,
+    abn_verified_at: profile?.abn_verified_at || null,
+    abn_business_name: profile?.abn_business_name || null,
+    abn_entity_type: profile?.abn_entity_type || null,
+    abn_status: profile?.abn_status || null,
+    abn_gst_registered: !!profile?.abn_gst_registered,
+    abn_postcode: profile?.abn_postcode || null,
+    abn_state: profile?.abn_state || null,
     subscription_plan: profile?.subscription_plan || 'hobby',
     subscription_status: profile?.subscription_status || 'inactive',
     avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(profile?.full_name || authUser.email || 'User')}&background=0a0a0a&color=fff`,

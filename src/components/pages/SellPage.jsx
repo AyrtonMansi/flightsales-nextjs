@@ -52,6 +52,44 @@ const SellPage = ({ user, setPage }) => {
   // Stripe not yet wired — every new listing is Basic until payment is integrated.
   const selectedPlan = 'Basic';
 
+  // ABN gate — business accounts must ABN-verify before they can list.
+  // Private sellers are unaffected (a personal sale doesn't require an ABN).
+  // Private/admin accounts skip this entirely.
+  if (user && user.account_type === 'business' && !user.abn_verified_at && user.role !== 'admin') {
+    return (
+      <>
+        <div className="fs-about-hero">
+          <div className="fs-container">
+            <h1 style={{ fontFamily: 'var(--fs-font)', fontSize: 40, fontWeight: 700, letterSpacing: '-0.03em' }}>
+              Verify your business first
+            </h1>
+            <p style={{ color: 'var(--fs-ink-3)', marginTop: 8, fontSize: 16 }}>
+              Business accounts need an active ABN before listing. Takes ~5 seconds.
+            </p>
+          </div>
+        </div>
+        <section className="fs-section">
+          <div className="fs-container" style={{ maxWidth: 520, margin: '0 auto' }}>
+            <div className="fs-detail-specs" style={{ textAlign: 'center', padding: '40px 32px' }}>
+              <p style={{ fontSize: 14, color: 'var(--fs-ink-3)', marginBottom: 24, lineHeight: 1.55 }}>
+                We verify every business against the Australian Business Register. Once your ABN
+                comes back <strong>Active</strong>, you&apos;ll unlock listing, bulk import, and
+                lead-pipeline tools — instantly, no admin review.
+              </p>
+              <button
+                className="fs-form-submit"
+                onClick={() => setPage('dashboard')}
+                style={{ maxWidth: 280, margin: '0 auto' }}
+              >
+                Go to ABN verification →
+              </button>
+            </div>
+          </div>
+        </section>
+      </>
+    );
+  }
+
   // Signed-out gate
   if (!user) {
     return (

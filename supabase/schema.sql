@@ -76,6 +76,22 @@ CREATE INDEX IF NOT EXISTS idx_aircraft_condition ON aircraft(condition);
 CREATE INDEX IF NOT EXISTS idx_aircraft_dealer ON aircraft(dealer_id);
 CREATE INDEX IF NOT EXISTS idx_aircraft_user ON aircraft(user_id);
 
+-- Parallel FK from aircraft.user_id to profiles.id so PostgREST can embed
+-- the seller's profile fields (incl. abn_verified_at) into listing
+-- selects. Logically redundant with the existing aircraft.user_id ->
+-- auth.users.id FK because profiles.id = auth.users.id, but PostgREST
+-- needs the direct FK on the *embedded* table to wire the relationship.
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'aircraft_user_id_profiles_fkey'
+  ) THEN
+    ALTER TABLE aircraft
+      ADD CONSTRAINT aircraft_user_id_profiles_fkey
+      FOREIGN KEY (user_id) REFERENCES profiles(id) ON DELETE SET NULL;
+  END IF;
+END $$;
+
 -- ============================================
 -- ENQUIRIES TABLE
 -- ============================================

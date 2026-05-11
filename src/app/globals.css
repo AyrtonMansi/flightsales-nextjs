@@ -1217,6 +1217,18 @@ html, body { overflow-x: hidden; max-width: 100%; }
 }
 .fs-card-dealer svg { width: 12px; height: 12px; color: var(--fs-ink-3); flex-shrink: 0; }
 .fs-card-dealer-sep { color: var(--fs-ink-4); }
+/* ABR-verified pill — small badge that sits next to the dealer name.
+   Uses the same green semantics as the dashboard verification card
+   so buyers see a consistent trust signal across every surface. */
+.fs-card-abn-pill {
+  font-size: 10px; font-weight: 700;
+  letter-spacing: 0.04em;
+  padding: 1px 6px;
+  border-radius: 999px;
+  background: #e8f6ec;
+  color: #1a7f37;
+  flex-shrink: 0;
+}
 .fs-card-dealer-loc { color: var(--fs-ink-3); }
 .fs-card-footer {
   display: none; /* footer info now lives inside card body */

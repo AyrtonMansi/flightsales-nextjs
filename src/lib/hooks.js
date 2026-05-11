@@ -67,7 +67,7 @@ export function useAircraft(filters = {}) {
     try {
       let query = supabase
         .from('aircraft')
-        .select(`*, dealer:dealers(id, name, location, rating, verified)`, { count: 'exact' })
+        .select(`*, dealer:dealers(id, name, location, rating, verified), seller:profiles!aircraft_user_id_profiles_fkey(abn_verified_at, abn_business_name)`, { count: 'exact' })
         .eq('status', 'active');
 
       // Single-string back-compat path (used by Home / dealer detail).
@@ -223,7 +223,7 @@ export function useFeaturedAircraft() {
       try {
         const { data, error: err } = await supabase
           .from('aircraft')
-          .select(`*, dealer:dealers(id, name, location, rating, verified)`)
+          .select(`*, dealer:dealers(id, name, location, rating, verified), seller:profiles!aircraft_user_id_profiles_fkey(abn_verified_at, abn_business_name)`)
           .eq('featured', true)
           .eq('status', 'active')
           .order('created_at', { ascending: false })
@@ -255,7 +255,7 @@ export function useLatestAircraft() {
       try {
         const { data } = await supabase
           .from('aircraft')
-          .select(`*, dealer:dealers(id, name, location, rating, verified)`)
+          .select(`*, dealer:dealers(id, name, location, rating, verified), seller:profiles!aircraft_user_id_profiles_fkey(abn_verified_at, abn_business_name)`)
           .eq('status', 'active')
           .order('created_at', { ascending: false })
           .limit(3);

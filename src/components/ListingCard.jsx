@@ -98,6 +98,11 @@ const ListingCard = ({ listing, onSave, saved, onQuickLook }) => {
             <>
               {Icons.shield}
               <span>{dealerName}</span>
+              {/* ABR-verified badge — shown when the seller has a current
+                  active ABN. Pulled from the seller profile join. */}
+              {listing.seller?.abn_verified_at && (
+                <span className="fs-card-abn-pill" title="Business verified by ABR">ABR</span>
+              )}
               {location && (
                 <>
                   <span className="fs-card-dealer-sep">·</span>

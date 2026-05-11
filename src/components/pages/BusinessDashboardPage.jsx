@@ -21,6 +21,52 @@ const BusinessDashboardPage = ({ user, setPage, signOut, onSelectListing }) => {
   const { listings: myListings = [] } = useMyListings(user?.id);
   const { enquiries: myEnquiries = [] } = useMyEnquiries(user?.id);
 
+  // ABN gate: business accounts must verify their ABN against the ABR
+  // before they can list. Verified active ABN auto-promotes to dealer
+  // role (handled server-side in /api/abn-verify); until then they see
+  // ONLY the verification card, no other tabs. This makes ABN the
+  // mandatory step-zero rather than a self-serve perk.
+  const isBusinessAccount = user?.account_type === 'business';
+  const abnVerified = !!user?.abn_verified_at;
+  const needsAbnGate = isBusinessAccount && !abnVerified;
+  if (needsAbnGate) {
+    return (
+      <>
+        <section className="fs-dash-hero">
+          <div className="fs-container fs-dash-hero-inner">
+            <div className="fs-dash-hero-id">
+              <div className="fs-dash-hero-avatar">
+                {user?.full_name?.[0]?.toUpperCase() || 'B'}
+              </div>
+              <div>
+                <span className="fs-dash-hero-eyebrow">One step to go</span>
+                <h1 className="fs-dash-hero-title">
+                  Verify your business
+                </h1>
+                <p className="fs-dash-hero-sub">
+                  We auto-verify against the Australian Business Register. Takes ~5 seconds.
+                </p>
+              </div>
+            </div>
+            <button className="fs-dash-hero-signout" onClick={async () => { await signOut?.(); setPage('home'); }}>
+              Sign out
+            </button>
+          </div>
+        </section>
+        <section className="fs-section" style={{ padding: '24px 0' }}>
+          <div className="fs-container" style={{ maxWidth: 760 }}>
+            <AbnVerifyCard user={user} />
+            <p style={{ marginTop: 16, fontSize: 13, color: 'var(--fs-ink-3)' }}>
+              Once your ABN is verified <strong>Active</strong>, you&apos;ll unlock the dealer dashboard
+              — listings, bulk import, lead pipeline. Refresh after verifying if the page
+              doesn&apos;t auto-advance.
+            </p>
+          </div>
+        </section>
+      </>
+    );
+  }
+
   const planLabel = (() => {
     switch (user?.subscription_plan) {
       case 'dealer_lite':       return 'Dealer Lite';
