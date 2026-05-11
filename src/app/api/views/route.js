@@ -6,6 +6,7 @@
 
 import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
+import { rateLimit, callerIp } from '../../../lib/ratelimit';
 
 export const runtime = 'nodejs';
 
@@ -17,6 +18,18 @@ function adminClient() {
 }
 
 export async function POST(req) {
+  // Per-IP rate limit — service-role write that's otherwise unauthenticated.
+  // Cookie-dedup below stops legitimate refreshes counting twice, but a
+  // scripted attacker could rotate cookies; cap at 120/min/IP.
+  const ip = callerIp(req);
+  const rl = await rateLimit(`views:${ip}`, { limit: 120, windowMs: 60 * 1000 });
+  if (!rl.ok) {
+    return NextResponse.json(
+      { ok: false, error: 'rate_limited' },
+      { status: 429, headers: rl.retryAfter ? { 'Retry-After': String(rl.retryAfter) } : undefined },
+    );
+  }
+
   let body;
   try { body = await req.json(); } catch { return NextResponse.json({ ok: false }, { status: 400 }); }
   const { aircraftId } = body || {};
