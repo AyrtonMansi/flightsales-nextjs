@@ -815,7 +815,7 @@ CREATE TABLE IF NOT EXISTS affiliate_leads (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   affiliate_id UUID NOT NULL REFERENCES affiliates(id) ON DELETE CASCADE,
   user_id UUID REFERENCES auth.users(id) ON DELETE SET NULL,
-  listing_id INTEGER REFERENCES aircraft(id) ON DELETE SET NULL,
+  listing_id UUID REFERENCES aircraft(id) ON DELETE SET NULL,
 
   user_name TEXT NOT NULL,
   user_email TEXT NOT NULL,
