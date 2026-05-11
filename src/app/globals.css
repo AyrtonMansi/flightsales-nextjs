@@ -1460,7 +1460,12 @@ html, body { overflow-x: hidden; max-width: 100%; }
   max-height: calc(100vh - 96px);
   overflow-y: auto;
   scrollbar-width: thin;
-  padding-right: 4px;
+  /* Reserve a stable gutter for the scrollbar so it never overlaps the
+     filter content. scrollbar-gutter is the modern proper fix; we
+     also keep the explicit padding-right as a safety net for the
+     wider webkit ::-webkit-scrollbar thumb below. */
+  scrollbar-gutter: stable;
+  padding-right: 12px;
 }
 .fs-buy-sidebar::-webkit-scrollbar { width: 6px; }
 .fs-buy-sidebar::-webkit-scrollbar-thumb { background: var(--fs-line); border-radius: 3px; }
