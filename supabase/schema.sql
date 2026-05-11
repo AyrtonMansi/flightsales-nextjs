@@ -494,24 +494,16 @@ CREATE OR REPLACE TRIGGER on_auth_user_created
   EXECUTE FUNCTION handle_new_user();
 
 -- ============================================
--- SEED DATA
+-- SEED DATA — intentionally empty.
 -- ============================================
-
-INSERT INTO dealers (name, location, listings, rating, since, logo, speciality, verified) VALUES
-  ('Southern Aviation Group', 'Moorabbin, VIC', 14, 4.8, 2015, 'SAG', 'Cirrus, Diamond, Mooney', true),
-  ('Queensland Aircraft Sales', 'Archerfield, QLD', 22, 4.9, 2008, 'QAS', 'Multi-engine, Turboprop', true),
-  ('Rotorwest Aviation', 'Jandakot, WA', 8, 4.7, 2012, 'RW', 'Robinson, Bell Helicopters', true),
-  ('Sling Australia', 'Tyabb, VIC', 6, 5.0, 2019, 'SA', 'Sling Aircraft (Authorised Dealer)', true),
-  ('Executive Aviation Group', 'Sydney, NSW', 11, 4.9, 2003, 'EAG', 'Turboprop, Jet, High-value', true),
-  ('Australian Light Aircraft', 'Bacchus Marsh, VIC', 9, 4.6, 2017, 'ALA', 'LSA, Ultralight, Recreational', true)
-ON CONFLICT DO NOTHING;
-
-INSERT INTO news_articles (title, excerpt, category, date, read_time, slug, published) VALUES
-  ('CASA Approves New Electric Aircraft Category for Training Operations', 'The Civil Aviation Safety Authority has approved a new category of electric aircraft for use in pilot training, opening the door for flight schools to adopt zero-emission trainers.', 'Regulation', '2026-03-20', 4, 'casa-electric-training', true),
-  ('Market Report: Australian GA Aircraft Values Rise 12% in Q1 2026', 'Strong demand and limited supply continue to drive pre-owned aircraft prices upward across all categories, with single-engine pistons seeing the largest gains.', 'Market', '2026-03-18', 6, 'market-q1-2026', true),
-  ('Sling Aircraft Delivers 100th Australian-Assembled TSi', 'Sling Australia''s Tyabb facility has reached a major milestone with the delivery of its 100th locally assembled TSi, cementing the type''s popularity in the Australian market.', 'Industry', '2026-03-15', 3, 'sling-100th-tsi', true),
-  ('New Bankstown Airport Hangar Complex Opens with 40 Additional Bays', 'A $28M hangar development at Bankstown Airport has been completed, adding 40 new bays to address Sydney''s chronic aircraft storage shortage.', 'Infrastructure', '2026-03-12', 4, 'bankstown-hangars', true)
-ON CONFLICT (slug) DO NOTHING;
+-- The dealers + news_articles seed blocks that lived here were
+-- deceiving once the site went public (fake businesses shown to real
+-- buyers as if they were verified). Removed pre-launch.
+--
+-- If you need fixture data for local dev or tests, keep it under
+-- tests/fixtures/ so it can't accidentally leak into production
+-- again. Real dealers come through the dealer-applications flow;
+-- real news through the admin News tab.
 
 -- ============================================
 -- LAUNCH WAVE: view tracking, listing expiry, reports, 2FA flag
