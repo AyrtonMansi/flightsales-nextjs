@@ -184,7 +184,9 @@ export default function ListingDetailDrawer({
                 className="fs-drawer-btn fs-drawer-btn-secondary"
                 onClick={onMarkSold}
               >Mark sold</button>
-              {status !== 'rejected' && (
+              {/* Hide reject button when the listing is already in
+                  the "sent back" state (pending + rejection_reason set). */}
+              {!(status === 'pending' && listing?.rejection_reason) && (
                 <button
                   type="button"
                   className="fs-drawer-btn fs-drawer-btn-destructive"

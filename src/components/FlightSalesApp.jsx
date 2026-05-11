@@ -28,7 +28,6 @@ const DashboardPage   = dynamic(() => import("./pages/DashboardPage"));
 const BusinessDashboardPage = dynamic(() => import("./pages/BusinessDashboardPage"));
 const BusinessOnboarding    = dynamic(() => import("./onboarding/BusinessOnboarding"));
 const AdminPage       = dynamic(() => import("./pages/AdminPage"));
-import PendingReviewBanner from "./dealer/PendingReviewBanner";
 const RefundsPage     = dynamic(() => import("./pages/RefundsPage"));
 const PartnersPage    = dynamic(() => import("./pages/PartnersPage"));
 const AboutPage       = dynamic(() => import("./pages/AboutPage"));
@@ -298,28 +297,21 @@ export default function FlightSalesApp({
     if (page === 'dashboard' && !authUser && !demoUser) setPage('login');
     if (page === 'dashboard' && effectiveUser?.role === 'admin') setPage('admin');
     if (page === 'admin' && effectiveUser?.role !== 'admin') setPage(authUser || demoUser ? 'dashboard' : 'login');
-    // Business signups land on onboarding the first time. Once their
-    // application is submitted (pending_dealer flips true) or admin
-    // approves (role becomes 'dealer'), they fall through to the
-    // appropriate dashboard.
-    if (
-      page === 'dashboard' &&
-      effectiveUser?.account_type === 'business' &&
-      !effectiveUser?.pending_dealer &&
-      effectiveUser?.role !== 'dealer' &&
-      effectiveUser?.role !== 'admin'
-    ) {
-      setPage('onboarding');
-    }
-    // Onboarding gate — reachable only for signed-in users whose app
-    // hasn't been submitted yet. Bounce everyone else.
+    // Business accounts that haven't ABN-verified yet land on the
+    // dashboard, which renders the ABN-gate card as its only content
+    // (BusinessDashboardPage handles that natively). The previous
+    // implementation force-redirected them to /onboarding, but the
+    // "skip" button then bounced straight back here — a no-escape
+    // loop. Skipping the redirect entirely is cleaner: one gate, one
+    // surface. /onboarding stays reachable from the post-signup
+    // success state for users who want the dedicated wizard view.
     if (page === 'onboarding') {
       if (!authUser && !demoUser) setPage('login');
-      else if (effectiveUser?.pending_dealer || effectiveUser?.role === 'dealer') {
+      else if (effectiveUser?.role === 'dealer' || effectiveUser?.abn_verified_at) {
         setPage('dashboard');
       }
     }
-  }, [page, authUser, authLoading, effectiveUser?.role, effectiveUser?.account_type, effectiveUser?.pending_dealer, demoUser]);
+  }, [page, authUser, authLoading, effectiveUser?.role, effectiveUser?.account_type, effectiveUser?.abn_verified_at, demoUser]);
 
   const onSave = async (id) => {
     if (!authUser) { setToast("Sign in to save aircraft"); return; }
@@ -366,16 +358,13 @@ export default function FlightSalesApp({
     <>
       <Nav page={page} setPage={setPageWrap} setMobileOpen={setMobileOpen} mobileOpen={mobileOpen} user={user} signOut={signOut} setDashboardTab={setDashboardTab} />
       <MobileSubBar setPage={setPageWrap} />
-      {/* Global "your business application is under review" banner —
-          renders nothing for users who aren't pending. */}
-      <PendingReviewBanner user={effectiveUser} onContinue={() => setPageWrap('dashboard')} />
       {page !== 'home' && page !== 'detail' && <Breadcrumbs />}
 
       {page === "home" && <HomePage setPage={setPageWrap} setSelectedListing={setSelectedListing} savedIds={savedIds} onSave={onSave} setSearchFilters={setSearchFilters} initialHomeData={initialHomeData} />}
       {page === "buy" && <BuyPage setSelectedListing={setSelectedListing} savedIds={savedIds} onSave={onSave} initialFilters={searchFilters} user={user} setPage={setPageWrap} />}
       {page === "detail" && <ListingDetail listing={selectedListing} onBack={() => setPageWrap("buy")} savedIds={savedIds} onSave={onSave} user={user} onSelectDealer={(d) => { setSelectedDealer(d); setPage("dealer-detail"); if (typeof window !== "undefined" && d?.id) { window.history.pushState({}, "", `/dealers/${d.id}`); } window.scrollTo(0, 0); }} />}
       {page === "sell" && <SellPage user={user} setPage={setPageWrap} />}
-      {page === "dealers" && <DealersPage onSelectDealer={(d) => { setSelectedDealer(d); setPage("dealer-detail"); if (typeof window !== "undefined" && d?.id) { window.history.pushState({}, "", `/dealers/${d.id}`); } window.scrollTo(0, 0); }} />}
+      {page === "dealers" && <DealersPage setPage={setPageWrap} onSelectDealer={(d) => { setSelectedDealer(d); setPage("dealer-detail"); if (typeof window !== "undefined" && d?.id) { window.history.pushState({}, "", `/dealers/${d.id}`); } window.scrollTo(0, 0); }} />}
       {page === "dealer-detail" && <DealerDetailPage dealer={selectedDealer} onBack={() => setPageWrap("dealers")} setSelectedListing={setSelectedListing} savedIds={savedIds} onSave={onSave} />}
       {page === "news" && <NewsPage />}
       {page === "about" && <AboutPage />}
@@ -384,9 +373,10 @@ export default function FlightSalesApp({
       {page === "partners" && <PartnersPage />}
       {page === "pricing" && <PricingPage />}
       {page === "login" && <LoginPage setPage={setPageWrap} signIn={signIn} signUp={signUp} signInWithGoogle={signInWithGoogle} resetPassword={resetPassword} loginDemo={loginDemo} />}
-      {/* Business onboarding wizard — shown right after a brand-new
-          business signup. Self-completes by setting pending_dealer=true
-          and falls through to the dashboard. */}
+      {/* Business onboarding — single-step ABN verification card.
+          Stamps account_type='business' on mount and presents the
+          ABN verifier. Once verified, /api/abn-verify flips role to
+          'dealer' and the page reloads into the dealer dashboard. */}
       {page === "onboarding" && effectiveUser && (
         <BusinessOnboarding
           user={effectiveUser}

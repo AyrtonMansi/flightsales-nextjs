@@ -1070,18 +1070,13 @@ export function useDealerApplications() {
     return j;
   };
 
-  const submitApp = async (userId, payload) => {
-    const { data, error: err } = await supabase
-      .from('dealer_applications')
-      .insert({ user_id: userId, ...payload })
-      .select()
-      .single();
-    if (err) throw err;
-    setApps(prev => [data, ...prev]);
-    return data;
-  };
+  // submitApp was removed pre-launch — new business signups go straight
+  // through the ABN auto-verification flow now (no manual dealer-
+  // application submission). The `dealer_applications` table stays as
+  // an admin-only manual override path for edge cases the ABN flow
+  // can't handle (e.g. ABN registered in a different legal name).
 
-  return { apps, loading, refetch: fetchAll, approveApp, rejectApp, submitApp };
+  return { apps, loading, refetch: fetchAll, approveApp, rejectApp };
 }
 
 // ─── News articles (admin CRUD) ─────────────────────────────────────────────

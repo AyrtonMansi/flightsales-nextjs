@@ -10,10 +10,16 @@ import ListingDetailDrawer from '../ListingDetailDrawer';
 
 // Status filter options for the listings tab. "Pending" is the most common
 // admin landing state — defaults there to surface what needs review.
+//
+// "Rejected" is NOT a distinct DB status — the aircraft schema CHECK only
+// allows active/sold/pending. A rejected listing is one that admin sent back
+// to the seller with a rejection_reason, leaving status='pending'. We surface
+// these via the rejection_reason-IS-NOT-NULL filter so admin can see what's
+// in the resubmit loop.
 const STATUS_OPTIONS = (counts) => [
   { value: 'pending', label: 'Pending', count: counts.pending },
   { value: 'active', label: 'Active', count: counts.active },
-  { value: 'rejected', label: 'Rejected', count: counts.rejected },
+  { value: 'rejected', label: 'Sent back', count: counts.rejected },
   { value: 'sold', label: 'Sold', count: counts.sold },
   { value: 'all', label: 'All', count: counts.total },
 ];
@@ -29,18 +35,29 @@ export default function ListingsTab() {
   const [selected, setSelected] = useState(new Set());
   const [confirm, setConfirm] = useState(null); // { kind, ids, ... }
 
-  // Status counts power the toolbar pill badges.
+  // Status counts power the toolbar pill badges. "Sent back" =
+  // status='pending' AND rejection_reason set (admin previously rejected
+  // and sent to seller with a reason). Pure "pending" = no rejection
+  // reason yet (fresh submission awaiting first review).
   const counts = useMemo(() => ({
-    pending: listings.filter(l => l.status === 'pending').length,
+    pending: listings.filter(l => l.status === 'pending' && !l.rejection_reason).length,
     active: listings.filter(l => l.status === 'active').length,
-    rejected: listings.filter(l => l.status === 'rejected').length,
+    rejected: listings.filter(l => l.status === 'pending' && l.rejection_reason).length,
     sold: listings.filter(l => l.status === 'sold').length,
     total: listings.length,
   }), [listings]);
 
-  // Apply status filter pre-search/sort.
+  // Apply status filter pre-search/sort. 'rejected' is a derived filter
+  // (status='pending' + rejection_reason set), all others map 1:1 to the
+  // status column.
   const filteredByStatus = useMemo(() => {
     if (statusFilter === 'all') return listings;
+    if (statusFilter === 'rejected') {
+      return listings.filter(l => l.status === 'pending' && l.rejection_reason);
+    }
+    if (statusFilter === 'pending') {
+      return listings.filter(l => l.status === 'pending' && !l.rejection_reason);
+    }
     return listings.filter(l => (l.status || 'pending') === statusFilter);
   }, [listings, statusFilter]);
 
