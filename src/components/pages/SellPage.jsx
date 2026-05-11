@@ -7,6 +7,8 @@ import EmailVerifyGate, { isVerified } from '../EmailVerifyGate';
 import PhotoReorder from '../PhotoReorder';
 import MakeModelPicker from '../sell/MakeModelPicker';
 import { modelToFormFields, getSeedCatalogue } from '../../lib/aircraftCatalogue';
+import AbnVerifyCard from '../dealer/AbnVerifyCard';
+import { showToast } from '../../lib/toast';
 
 const SellPage = ({ user, setPage }) => {
   // Hooks first — must run on every render in the same order regardless of
@@ -54,7 +56,10 @@ const SellPage = ({ user, setPage }) => {
 
   // ABN gate — business accounts must ABN-verify before they can list.
   // Private sellers are unaffected (a personal sale doesn't require an ABN).
-  // Private/admin accounts skip this entirely.
+  // Private/admin accounts skip this entirely. We render the verify card
+  // INLINE so the user stays on /sell — after a successful verify, the
+  // AbnVerifyCard reloads the page and they land right back here ready
+  // to list.
   if (user && user.account_type === 'business' && !user.abn_verified_at && user.role !== 'admin') {
     return (
       <>
@@ -69,21 +74,11 @@ const SellPage = ({ user, setPage }) => {
           </div>
         </div>
         <section className="fs-section">
-          <div className="fs-container" style={{ maxWidth: 520, margin: '0 auto' }}>
-            <div className="fs-detail-specs" style={{ textAlign: 'center', padding: '40px 32px' }}>
-              <p style={{ fontSize: 14, color: 'var(--fs-ink-3)', marginBottom: 24, lineHeight: 1.55 }}>
-                We verify every business against the Australian Business Register. Once your ABN
-                comes back <strong>Active</strong>, you&apos;ll unlock listing, bulk import, and
-                lead-pipeline tools — instantly, no admin review.
-              </p>
-              <button
-                className="fs-form-submit"
-                onClick={() => setPage('dashboard')}
-                style={{ maxWidth: 280, margin: '0 auto' }}
-              >
-                Go to ABN verification →
-              </button>
-            </div>
+          <div className="fs-container" style={{ maxWidth: 720, margin: '0 auto' }}>
+            <AbnVerifyCard user={user} />
+            <p style={{ fontSize: 13, color: 'var(--fs-ink-3)', marginTop: 16, textAlign: 'center' }}>
+              Once your ABN verifies, this page will reload and you can list immediately.
+            </p>
           </div>
         </section>
       </>
@@ -190,8 +185,9 @@ const SellPage = ({ user, setPage }) => {
       setAutoFilled(true);
       setShowManualForm(true);
 
-      // Show toast
-      setToast?.('Aircraft details found and auto-filled!');
+      // Show toast — was using `setToast?.()` which was never defined,
+      // resulting in a ReferenceError after a successful CASA lookup.
+      showToast('Aircraft details found and auto-filled!');
 
     } catch (error) {
       setLookupError(error.message || 'Aircraft not found in CASA register');

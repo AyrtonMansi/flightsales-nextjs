@@ -53,7 +53,23 @@ export async function POST(req: NextRequest) {
   const userEmail   = clean(body.userEmail, 200);
   const userPhone   = clean(body.userPhone, 50);
   const message     = clean(body.message, 2000);
-  const userId      = clean(body.userId, 64) || null;
+  // Derive the user_id from the auth cookie, not the body — preserves
+  // accurate attribution even if the client tampers with the payload.
+  let userId: string | null = null;
+  try {
+    const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    const anon = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+    if (url && anon) {
+      const cookieHeader = req.headers.get('cookie') || '';
+      const userClient = createClient(url, anon, {
+        auth: { persistSession: false, autoRefreshToken: false },
+        global: { headers: { cookie: cookieHeader } },
+      });
+      const { data: { user } } = await userClient.auth.getUser();
+      userId = user?.id || null;
+    }
+  } catch { /* anon caller — leave userId null */ }
+
   // listingId is a UUID string (matches the schema fix that made
   // affiliate_leads.listing_id a UUID, not an INTEGER).
   const listingId   = clean(body.listingId, 64);

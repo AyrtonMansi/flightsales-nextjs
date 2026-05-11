@@ -841,10 +841,32 @@ export function useAdminListings() {
 
   useEffect(() => { fetchAll(); }, [fetchAll]);
 
+  // All admin mutations route through /api/admin/listings — the server
+  // verifies role='admin' via cookie, then uses service-role to bypass
+  // the aircraft status-flip trigger. Client-side mutations would be
+  // rejected by the trigger (and the previous behaviour let sellers
+  // bypass admin approval entirely).
+  const callAdmin = async (action, id, params = {}) => {
+    const res = await fetch('/api/admin/listings', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id, action, ...params }),
+    });
+    const j = await res.json();
+    if (!res.ok || !j.ok) throw new Error(j.error || 'admin_listing_failed');
+    return j.listing;
+  };
+
   const updateStatus = async (id, status) => {
-    const { data, error: err } = await supabase
-      .from('aircraft').update({ status }).eq('id', id).select().single();
-    if (err) throw err;
+    // Map old status strings to new actions. 'active' = approve,
+    // 'sold' = archive, 'pending' is the natural state so it falls
+    // through to a server-side update via the approve path with reason
+    // null (kept for back-compat with bulk operations).
+    const action =
+      status === 'active' ? 'approve' :
+      status === 'sold'   ? 'archive' :
+      'restore';
+    const data = await callAdmin(action, id);
     setListings(prev => prev.map(l => l.id === id ? { ...l, ...data } : l));
     return data;
   };
@@ -852,28 +874,19 @@ export function useAdminListings() {
   // Reject + capture a reason in a single round-trip. The seller can read
   // the reason on their dashboard and resubmit.
   const rejectListing = async (id, reason) => {
-    const { data, error: err } = await supabase
-      .from('aircraft')
-      .update({ status: 'rejected', rejection_reason: reason || null })
-      .eq('id', id)
-      .select()
-      .single();
-    if (err) throw err;
+    const data = await callAdmin('reject', id, { reason });
     setListings(prev => prev.map(l => l.id === id ? { ...l, ...data } : l));
     return data;
   };
 
   const setFeatured = async (id, featured) => {
-    const { data, error: err } = await supabase
-      .from('aircraft').update({ featured }).eq('id', id).select().single();
-    if (err) throw err;
+    const data = await callAdmin(featured ? 'feature' : 'unfeature', id);
     setListings(prev => prev.map(l => l.id === id ? { ...l, ...data } : l));
     return data;
   };
 
   // Bulk status change. One request per id; failures are returned per-id so
-  // partial success is recoverable. Could be one query with `.in('id', ids)`,
-  // but per-id keeps the audit log entries one-per-listing.
+  // partial success is recoverable.
   const bulkUpdateStatus = async (ids, status) => {
     const results = await Promise.allSettled(ids.map(id => updateStatus(id, status)));
     return {
@@ -912,36 +925,34 @@ export function useAdminUsers() {
 
   useEffect(() => { fetchAll(); }, [fetchAll]);
 
-  const promoteToDealer = async (userId, dealerId = null) => {
-    const { error: err } = await supabase
-      .from('profiles').update({ is_dealer: true, dealer_id: dealerId }).eq('id', userId);
-    if (err) throw err;
-    setUsers(prev => prev.map(u => u.id === userId ? { ...u, is_dealer: true, dealer_id: dealerId } : u));
+  // All user mutations route through /api/admin/users — server verifies
+  // admin role and bypasses the profile column-lock trigger via service
+  // role. Client-side mutations on protected columns (role, is_dealer,
+  // suspended_at) are now rejected by the trigger.
+  const callAdmin = async (action, userId, params = {}) => {
+    const res = await fetch('/api/admin/users', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userId, action, ...params }),
+    });
+    const j = await res.json();
+    if (!res.ok || !j.ok) throw new Error(j.error || 'admin_user_failed');
+    return j.user;
   };
 
-  // Suspend a user with a reason. RLS should reject any further mutations
-  // from suspended profiles; we also stamp the timestamp so the UI can
-  // surface "suspended for X days" tooltips.
+  const promoteToDealer = async (userId) => {
+    const data = await callAdmin('promote', userId);
+    setUsers(prev => prev.map(u => u.id === userId ? { ...u, ...data } : u));
+  };
+
   const suspendUser = async (userId, reason) => {
-    const { error: err } = await supabase
-      .from('profiles')
-      .update({ suspended_at: new Date().toISOString(), suspension_reason: reason || null })
-      .eq('id', userId);
-    if (err) throw err;
-    setUsers(prev => prev.map(u => u.id === userId
-      ? { ...u, suspended_at: new Date().toISOString(), suspension_reason: reason || null }
-      : u));
+    const data = await callAdmin('suspend', userId, { reason });
+    setUsers(prev => prev.map(u => u.id === userId ? { ...u, ...data } : u));
   };
 
   const unsuspendUser = async (userId) => {
-    const { error: err } = await supabase
-      .from('profiles')
-      .update({ suspended_at: null, suspension_reason: null })
-      .eq('id', userId);
-    if (err) throw err;
-    setUsers(prev => prev.map(u => u.id === userId
-      ? { ...u, suspended_at: null, suspension_reason: null }
-      : u));
+    const data = await callAdmin('unsuspend', userId);
+    setUsers(prev => prev.map(u => u.id === userId ? { ...u, ...data } : u));
   };
 
   return { users, loading, refetch: fetchAll, promoteToDealer, suspendUser, unsuspendUser };
@@ -1024,54 +1035,33 @@ export function useDealerApplications() {
 
   useEffect(() => { fetchAll(); }, [fetchAll]);
 
-  const approveApp = async (app, reviewerId) => {
-    // 1) Create a dealers row mirroring the application's business info so
-    // listings can FK to it. Idempotent-ish — if a dealer with this name
-    // already exists, we still link the user.
-    const { data: dealer, error: dErr } = await supabase
-      .from('dealers')
-      .insert({
-        name: app.business_name,
-        location: app.location,
-        verified: true,
-      })
-      .select()
-      .single();
-    if (dErr && dErr.code !== '23505') throw dErr;
-    const dealerId = dealer?.id || null;
-    // 2) Flip the applicant's profile
-    const { error: pErr } = await supabase
-      .from('profiles')
-      .update({ is_dealer: true, dealer_id: dealerId })
-      .eq('id', app.user_id);
-    if (pErr) throw pErr;
-    // 3) Mark the application approved
-    const { data: updated, error: aErr } = await supabase
-      .from('dealer_applications')
-      .update({ status: 'approved', reviewed_by: reviewerId, reviewed_at: new Date().toISOString() })
-      .eq('id', app.id)
-      .select()
-      .single();
-    if (aErr) throw aErr;
-    setApps(prev => prev.map(a => a.id === app.id ? { ...a, ...updated } : a));
-    return updated;
+  // Approve/reject route through /api/admin/dealer-apps — server uses
+  // service role to bypass the profile column-lock trigger when flipping
+  // is_dealer + role='dealer'. Returns the updated row.
+  const approveApp = async (app /* reviewerId derived server-side */) => {
+    const res = await fetch('/api/admin/dealer-apps', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id: app.id, action: 'approve' }),
+    });
+    const j = await res.json();
+    if (!res.ok || !j.ok) throw new Error(j.error || 'approve_failed');
+    setApps(prev => prev.map(a => a.id === app.id ? { ...a, status: 'approved' } : a));
+    return j;
   };
 
-  const rejectApp = async (appId, reason, reviewerId) => {
-    const { data, error: err } = await supabase
-      .from('dealer_applications')
-      .update({
-        status: 'rejected',
-        rejection_reason: reason || null,
-        reviewed_by: reviewerId,
-        reviewed_at: new Date().toISOString(),
-      })
-      .eq('id', appId)
-      .select()
-      .single();
-    if (err) throw err;
-    setApps(prev => prev.map(a => a.id === appId ? { ...a, ...data } : a));
-    return data;
+  const rejectApp = async (appId, reason) => {
+    const res = await fetch('/api/admin/dealer-apps', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id: appId, action: 'reject', reason }),
+    });
+    const j = await res.json();
+    if (!res.ok || !j.ok) throw new Error(j.error || 'reject_failed');
+    setApps(prev => prev.map(a => a.id === appId
+      ? { ...a, status: 'rejected', rejection_reason: reason || null }
+      : a));
+    return j;
   };
 
   const submitApp = async (userId, payload) => {

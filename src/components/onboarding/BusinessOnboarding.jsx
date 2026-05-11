@@ -1,204 +1,64 @@
 'use client';
-import { useState } from 'react';
+import { useEffect } from 'react';
 import { supabase } from '../../lib/supabase';
-import { showToast } from '../../lib/toast';
-import { Icons } from '../Icons';
+import AbnVerifyCard from '../dealer/AbnVerifyCard';
 
-// Full-screen wizard a brand-new business signup hits right after they
-// confirm their email. Captures the dealer-application detail + flips
-// profiles.pending_dealer = true so the rest of the app can show the
-// "we're reviewing your application" banner until admin approves.
+// New business signups land here first. We ensure account_type is
+// stamped 'business' on the profile (so subsequent gates and the
+// dashboard treat them correctly) and then show the ABN verification
+// card. Active ABN auto-promotes them to dealer (server-side, in
+// /api/abn-verify) and the AbnVerifyCard triggers a page reload that
+// drops them into the proper dealer dashboard.
 //
-// Once submitted, the user lands on /dashboard. They can browse, save,
-// even submit listings (status='pending') — but the BusinessDashboard
-// proper unlocks only after the admin sets role='dealer'.
+// Replaces the legacy multi-field "tell us about your business"
+// form. ABN against the ABR is a stronger signal than self-reported
+// business name + email, and the rest of the profile data (location,
+// phone) is captured in the Business profile tab after promotion.
 
 export default function BusinessOnboarding({ user, onComplete }) {
-  const [businessName, setBusinessName] = useState('');
-  const [abn, setAbn] = useState('');
-  const [location, setLocation] = useState('');
-  const [businessType, setBusinessType] = useState('dealer');
-  const [annualListings, setAnnualListings] = useState('');
-  const [phone, setPhone] = useState(user?.phone || '');
-  const [message, setMessage] = useState('');
-  const [submitting, setSubmitting] = useState(false);
-  const [error, setError] = useState(null);
-
-  const handle = async (e) => {
-    e.preventDefault();
-    if (!businessName.trim() || !location.trim()) {
-      setError('Business name and location are required.');
-      return;
-    }
-    setSubmitting(true);
-    setError(null);
-    try {
-      // 1. Insert into dealer_applications. Admin's Dealer Apps tab
-      //    surfaces pending rows for review.
-      const { error: appErr } = await supabase
-        .from('dealer_applications')
-        .insert({
-          user_id: user.id,
-          business_name: businessName.trim(),
-          abn: abn.trim() || null,
-          location: location.trim(),
-          message: [
-            businessType ? `Type: ${businessType}` : null,
-            annualListings ? `Est. annual listings: ${annualListings}` : null,
-            phone ? `Phone: ${phone}` : null,
-            message.trim() || null,
-          ].filter(Boolean).join('\n') || null,
-          status: 'pending',
-        });
-      if (appErr) throw appErr;
-
-      // 2. Flip the user's profile to pending_dealer + business account
-      //    type. Role stays 'private' until admin approves.
-      const { error: profErr } = await supabase
-        .from('profiles')
-        .update({
-          account_type: 'business',
-          pending_dealer: true,
-          phone: phone || null,
-        })
-        .eq('id', user.id);
-      if (profErr) throw profErr;
-
-      showToast('Application submitted — we\'ll review within 24-48h.');
-      onComplete?.();
-    } catch (err) {
-      setError(err?.message || 'Submit failed. Please try again.');
-    } finally {
-      setSubmitting(false);
-    }
-  };
+  // Idempotently stamp account_type='business' on the profile so the
+  // dashboard's ABN gate triggers and the role-flip logic recognises
+  // them as a business user.
+  useEffect(() => {
+    if (!user?.id) return;
+    supabase
+      .from('profiles')
+      .update({ account_type: 'business' })
+      .eq('id', user.id)
+      .then(() => { /* fire and forget */ });
+  }, [user?.id]);
 
   return (
     <div className="fs-onboard-shell">
-      <div className="fs-onboard-card">
+      <div className="fs-onboard-card" style={{ maxWidth: 640 }}>
         <div className="fs-onboard-header">
-          <span className="fs-onboard-eyebrow">Business onboarding</span>
-          <h1>Tell us about your business</h1>
-          <p>We verify every dealer / brokerage to keep the marketplace trusted. Most applications are reviewed within 24–48 hours.</p>
+          <span className="fs-onboard-eyebrow">One step to go</span>
+          <h1>Verify your business</h1>
+          <p>
+            We auto-verify dealers against the Australian Business Register
+            so buyers know who they&apos;re dealing with. Takes about five
+            seconds — no admin review required for an active ABN.
+          </p>
         </div>
 
-        <form onSubmit={handle} className="fs-onboard-form">
-          <div className="fs-form-group">
-            <label className="fs-form-label">Business name *</label>
-            <input
-              type="text"
-              className="fs-form-input"
-              value={businessName}
-              onChange={(e) => setBusinessName(e.target.value)}
-              placeholder="Southern Aviation Group"
-              required
-            />
-          </div>
+        <div style={{ marginTop: 24 }}>
+          <AbnVerifyCard user={user} />
+        </div>
 
-          <div className="fs-grid-2">
-            <div className="fs-form-group">
-              <label className="fs-form-label">ABN</label>
-              <input
-                type="text"
-                className="fs-form-input"
-                value={abn}
-                onChange={(e) => setAbn(e.target.value)}
-                placeholder="11-digit ABN"
-              />
-            </div>
-            <div className="fs-form-group">
-              <label className="fs-form-label">Location *</label>
-              <input
-                type="text"
-                className="fs-form-input"
-                value={location}
-                onChange={(e) => setLocation(e.target.value)}
-                placeholder="Moorabbin, VIC"
-                required
-              />
-            </div>
-          </div>
-
-          <div className="fs-grid-2">
-            <div className="fs-form-group">
-              <label className="fs-form-label">Business type</label>
-              <select
-                className="fs-form-select"
-                value={businessType}
-                onChange={(e) => setBusinessType(e.target.value)}
-              >
-                <option value="dealer">Aircraft dealer</option>
-                <option value="broker">Broker</option>
-                <option value="manufacturer">Manufacturer</option>
-                <option value="maintenance">Maintenance / MRO</option>
-                <option value="charter">Charter operator</option>
-                <option value="other">Other</option>
-              </select>
-            </div>
-            <div className="fs-form-group">
-              <label className="fs-form-label">Estimated annual listings</label>
-              <select
-                className="fs-form-select"
-                value={annualListings}
-                onChange={(e) => setAnnualListings(e.target.value)}
-              >
-                <option value="">Choose…</option>
-                <option value="1-5">1–5</option>
-                <option value="6-20">6–20</option>
-                <option value="21-50">21–50</option>
-                <option value="50+">50+</option>
-              </select>
-            </div>
-          </div>
-
-          <div className="fs-form-group">
-            <label className="fs-form-label">Business phone</label>
-            <input
-              type="tel"
-              className="fs-form-input"
-              value={phone}
-              onChange={(e) => setPhone(e.target.value)}
-              placeholder="04XX XXX XXX"
-            />
-          </div>
-
-          <div className="fs-form-group">
-            <label className="fs-form-label">Anything else? (optional)</label>
-            <textarea
-              className="fs-form-input"
-              rows={3}
-              value={message}
-              onChange={(e) => setMessage(e.target.value)}
-              placeholder="Years in business, primary categories sold, website…"
-            />
-          </div>
-
-          {error && (
-            <div className="fs-onboard-error" role="alert">{error}</div>
-          )}
-
-          <div className="fs-onboard-actions">
-            <button
-              type="button"
-              className="fs-onboard-skip"
-              onClick={() => onComplete?.({ skipped: true })}
-              disabled={submitting}
-            >
-              Skip — set up later
-            </button>
-            <button
-              type="submit"
-              className="fs-onboard-submit"
-              disabled={submitting}
-            >
-              {submitting ? 'Submitting…' : 'Submit for review'} {Icons.arrowRight}
-            </button>
-          </div>
-        </form>
-
-        <p className="fs-onboard-foot">
-          You&apos;ll get an email once approved. In the meantime, you can browse listings and save aircraft.
+        <p className="fs-onboard-foot" style={{ marginTop: 16 }}>
+          Once your ABN comes back <strong>Active</strong>, you&apos;ll be redirected
+          to the dealer dashboard automatically.
         </p>
+
+        <div className="fs-onboard-actions" style={{ marginTop: 16, justifyContent: 'flex-start' }}>
+          <button
+            type="button"
+            className="fs-onboard-skip"
+            onClick={() => onComplete?.({ skipped: true })}
+          >
+            I&apos;ll do this later — take me to the dashboard
+          </button>
+        </div>
       </div>
     </div>
   );

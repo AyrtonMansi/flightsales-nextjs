@@ -883,3 +883,157 @@ CREATE POLICY "Users see own affiliate leads"
   TO authenticated
   USING (user_id = auth.uid()
          OR EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND role = 'admin'));
+
+-- ============================================================
+-- SECURITY HARDENING (audit follow-up)
+-- ============================================================
+-- 1) Column-level lock on profiles. The existing UPDATE policy is
+--    `USING (auth.uid() = id)` — column-blind, which means any signed-in
+--    user could promote themselves to admin by calling
+--    .from('profiles').update({ role: 'admin' }) from the browser.
+--
+--    This trigger blocks non-service-role writes to the columns that
+--    only the server (admin routes, abn-verify route) is allowed to
+--    mutate. Service-role bypasses via auth.role().
+-- ============================================================
+
+CREATE OR REPLACE FUNCTION protect_profile_columns()
+RETURNS TRIGGER AS $$
+DECLARE
+  caller_role TEXT;
+BEGIN
+  -- Service role bypasses (server admin routes, abn-verify route).
+  caller_role := COALESCE(
+    current_setting('request.jwt.claims', true)::jsonb->>'role',
+    ''
+  );
+  IF caller_role = 'service_role' THEN
+    RETURN NEW;
+  END IF;
+
+  -- Anyone else: ensure the protected columns are unchanged.
+  IF NEW.role               IS DISTINCT FROM OLD.role               THEN RAISE EXCEPTION 'cannot modify profiles.role';               END IF;
+  IF NEW.is_dealer          IS DISTINCT FROM OLD.is_dealer          THEN RAISE EXCEPTION 'cannot modify profiles.is_dealer';          END IF;
+  IF NEW.abn                IS DISTINCT FROM OLD.abn                THEN RAISE EXCEPTION 'cannot modify profiles.abn directly (use /api/abn-verify)';                END IF;
+  IF NEW.abn_verified_at    IS DISTINCT FROM OLD.abn_verified_at    THEN RAISE EXCEPTION 'cannot modify profiles.abn_verified_at';    END IF;
+  IF NEW.abn_business_name  IS DISTINCT FROM OLD.abn_business_name  THEN RAISE EXCEPTION 'cannot modify profiles.abn_business_name';  END IF;
+  IF NEW.abn_entity_type    IS DISTINCT FROM OLD.abn_entity_type    THEN RAISE EXCEPTION 'cannot modify profiles.abn_entity_type';    END IF;
+  IF NEW.abn_status         IS DISTINCT FROM OLD.abn_status         THEN RAISE EXCEPTION 'cannot modify profiles.abn_status';         END IF;
+  IF NEW.abn_gst_registered IS DISTINCT FROM OLD.abn_gst_registered THEN RAISE EXCEPTION 'cannot modify profiles.abn_gst_registered'; END IF;
+  IF NEW.abn_postcode       IS DISTINCT FROM OLD.abn_postcode       THEN RAISE EXCEPTION 'cannot modify profiles.abn_postcode';       END IF;
+  IF NEW.abn_state          IS DISTINCT FROM OLD.abn_state          THEN RAISE EXCEPTION 'cannot modify profiles.abn_state';          END IF;
+  IF NEW.pending_dealer     IS DISTINCT FROM OLD.pending_dealer     THEN RAISE EXCEPTION 'cannot modify profiles.pending_dealer';     END IF;
+  IF NEW.suspended_at       IS DISTINCT FROM OLD.suspended_at       THEN RAISE EXCEPTION 'cannot modify profiles.suspended_at';       END IF;
+  IF NEW.suspension_reason  IS DISTINCT FROM OLD.suspension_reason  THEN RAISE EXCEPTION 'cannot modify profiles.suspension_reason';  END IF;
+  IF NEW.subscription_plan  IS DISTINCT FROM OLD.subscription_plan  THEN RAISE EXCEPTION 'cannot modify profiles.subscription_plan';  END IF;
+  IF NEW.subscription_status IS DISTINCT FROM OLD.subscription_status THEN RAISE EXCEPTION 'cannot modify profiles.subscription_status'; END IF;
+  IF NEW.dealer_id          IS DISTINCT FROM OLD.dealer_id          THEN RAISE EXCEPTION 'cannot modify profiles.dealer_id';          END IF;
+
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+DROP TRIGGER IF EXISTS protect_profile_columns_trigger ON profiles;
+CREATE TRIGGER protect_profile_columns_trigger
+  BEFORE UPDATE ON profiles
+  FOR EACH ROW
+  EXECUTE FUNCTION protect_profile_columns();
+
+-- ============================================================
+-- 2) RLS on the six unprotected tables. PostgREST was exposing them
+--    to any signed-in session. Default-deny + owner-only SELECT +
+--    admin SELECT-all + admin-only mutations.
+-- ============================================================
+
+-- dealer_applications
+ALTER TABLE dealer_applications ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "Users see own dealer app"           ON dealer_applications;
+DROP POLICY IF EXISTS "Admins see all dealer apps"         ON dealer_applications;
+DROP POLICY IF EXISTS "Users insert own dealer app"        ON dealer_applications;
+DROP POLICY IF EXISTS "Admins update dealer apps"          ON dealer_applications;
+CREATE POLICY "Users see own dealer app"           ON dealer_applications FOR SELECT TO authenticated
+  USING (user_id = auth.uid()
+         OR EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND role = 'admin'));
+CREATE POLICY "Users insert own dealer app"        ON dealer_applications FOR INSERT TO authenticated
+  WITH CHECK (user_id = auth.uid());
+CREATE POLICY "Admins update dealer apps"          ON dealer_applications FOR UPDATE TO authenticated
+  USING (EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND role = 'admin'))
+  WITH CHECK (EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND role = 'admin'));
+
+-- admin_audit (read-only to admins; writes only via service role)
+ALTER TABLE admin_audit ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "Admins see audit log" ON admin_audit;
+CREATE POLICY "Admins see audit log" ON admin_audit FOR SELECT TO authenticated
+  USING (EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND role = 'admin'));
+
+-- notifications (owner reads, server inserts via service role, owner marks read)
+ALTER TABLE notifications ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "Users see own notifications"   ON notifications;
+DROP POLICY IF EXISTS "Users update own notifications" ON notifications;
+CREATE POLICY "Users see own notifications"   ON notifications FOR SELECT TO authenticated
+  USING (user_id = auth.uid());
+CREATE POLICY "Users update own notifications" ON notifications FOR UPDATE TO authenticated
+  USING (user_id = auth.uid())
+  WITH CHECK (user_id = auth.uid());
+
+-- email_log (admin-only read; writes via service role)
+ALTER TABLE email_log ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "Admins see email log" ON email_log;
+CREATE POLICY "Admins see email log" ON email_log FOR SELECT TO authenticated
+  USING (EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND role = 'admin'));
+
+-- listing_reports (admin-only read; inserts go through /api/reports via service role)
+ALTER TABLE listing_reports ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "Admins see listing reports" ON listing_reports;
+CREATE POLICY "Admins see listing reports" ON listing_reports FOR SELECT TO authenticated
+  USING (EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND role = 'admin'));
+
+-- saved_searches (owner-only CRUD)
+ALTER TABLE saved_searches ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "Users CRUD own saved searches" ON saved_searches;
+CREATE POLICY "Users CRUD own saved searches" ON saved_searches FOR ALL TO authenticated
+  USING (user_id = auth.uid())
+  WITH CHECK (user_id = auth.uid());
+
+-- ============================================================
+-- 3) Restrict aircraft status flips so sellers can't bypass admin
+--    approval by self-flipping pending -> active. Owners may update
+--    most fields (price, photos, description) but NOT status. Admin
+--    server routes use service role + bypass this.
+-- ============================================================
+DROP POLICY IF EXISTS "Owners can update own listing" ON aircraft;
+DROP POLICY IF EXISTS "Authenticated users can update aircraft" ON aircraft;
+CREATE POLICY "Owners can update own listing content" ON aircraft
+  FOR UPDATE TO authenticated
+  USING (auth.uid() = user_id)
+  WITH CHECK (auth.uid() = user_id);
+
+-- Block sellers from setting status to anything other than what it already is.
+-- (Service role bypasses, so admin routes can still update status.)
+CREATE OR REPLACE FUNCTION block_seller_status_flip()
+RETURNS TRIGGER AS $$
+DECLARE
+  caller_role TEXT;
+BEGIN
+  caller_role := COALESCE(current_setting('request.jwt.claims', true)::jsonb->>'role', '');
+  IF caller_role = 'service_role' THEN
+    RETURN NEW;
+  END IF;
+  IF NEW.status IS DISTINCT FROM OLD.status THEN
+    RAISE EXCEPTION 'cannot modify aircraft.status — admin only (use /api/admin/listings)';
+  END IF;
+  IF NEW.featured IS DISTINCT FROM OLD.featured THEN
+    RAISE EXCEPTION 'cannot modify aircraft.featured — admin only';
+  END IF;
+  IF NEW.rejection_reason IS DISTINCT FROM OLD.rejection_reason THEN
+    RAISE EXCEPTION 'cannot modify aircraft.rejection_reason — admin only';
+  END IF;
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+DROP TRIGGER IF EXISTS block_seller_status_flip_trigger ON aircraft;
+CREATE TRIGGER block_seller_status_flip_trigger
+  BEFORE UPDATE ON aircraft
+  FOR EACH ROW
+  EXECUTE FUNCTION block_seller_status_flip();

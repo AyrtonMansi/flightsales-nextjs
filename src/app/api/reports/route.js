@@ -10,6 +10,22 @@ import { rateLimit, callerIp } from '../../../lib/ratelimit';
 
 export const runtime = 'nodejs';
 
+// Derive reporter user_id from the auth cookie, not the request body.
+// Trusting body-supplied user IDs lets an attacker forge attribution
+// against any user. Anonymous reports are still allowed (returns null).
+async function reporterFromAuth(req) {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const anon = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  if (!url || !anon) return null;
+  const cookieHeader = req.headers.get('cookie') || '';
+  const userClient = createClient(url, anon, {
+    auth: { persistSession: false, autoRefreshToken: false },
+    global: { headers: { cookie: cookieHeader } },
+  });
+  const { data: { user } } = await userClient.auth.getUser();
+  return user?.id || null;
+}
+
 const ALLOWED_REASONS = new Set([
   'fake_listing', 'wrong_price', 'sold_elsewhere', 'spam', 'other',
 ]);
@@ -36,13 +52,17 @@ export async function POST(req) {
 
   let body;
   try { body = await req.json(); } catch { return NextResponse.json({ ok: false }, { status: 400 }); }
-  const { aircraftId, reason, details, reporterEmail, reporterUserId } = body || {};
+  // NOTE: reporter_user_id is intentionally NOT read from body anymore —
+  // we derive it from the auth cookie to prevent forged attribution.
+  const { aircraftId, reason, details, reporterEmail } = body || {};
   if (!aircraftId || !reason) {
     return NextResponse.json({ ok: false, error: 'missing_fields' }, { status: 400 });
   }
   if (!ALLOWED_REASONS.has(reason)) {
     return NextResponse.json({ ok: false, error: 'bad_reason' }, { status: 400 });
   }
+
+  const reporterUserId = await reporterFromAuth(req);
 
   const supabase = adminClient();
   if (!supabase) return NextResponse.json({ ok: false, error: 'no_db' }, { status: 500 });
@@ -54,7 +74,7 @@ export async function POST(req) {
       reason,
       details: details || null,
       reporter_email: reporterEmail || null,
-      reporter_user_id: reporterUserId || null,
+      reporter_user_id: reporterUserId,
     })
     .select()
     .single();
