@@ -5,6 +5,9 @@ import ListingCard from '../ListingCard';
 import { useMyListings, useMyEnquiries, useProfile } from '../../lib/hooks';
 import { showToast } from '../../lib/toast';
 import ListingEditModal from '../ListingEditModal';
+import NotificationsTab from '../dashboard/tabs/NotificationsTab';
+import ProfileTab from '../dashboard/tabs/ProfileTab';
+import DiscountsTab from '../dashboard/tabs/DiscountsTab';
 
 const DashboardPage = ({ user, setPage, signOut, savedIds, savedListings, onSave, onSelectListing, activeTab: activeTabProp, setActiveTab: setActiveTabProp }) => {
   // Note: caller (App) gates rendering so user is always defined and not an admin here.
@@ -1148,262 +1151,24 @@ const DashboardPage = ({ user, setPage, signOut, savedIds, savedListings, onSave
 
               {/* NOTIFICATIONS TAB */}
               {activeTab === 'notifications' && (
-                <>
-                  <h3 style={{ fontSize: 20, fontWeight: 700, marginBottom: 16 }}>Notification Preferences</h3>
-                  <div className="fs-detail-specs" style={{ padding: "24px", borderRadius: 12 }}>
-                    <h4 style={{ fontSize: 16, fontWeight: 600, marginBottom: 20 }}>Email Notifications</h4>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: 16, marginBottom: 32 }}>
-                      {[
-                        { key: 'emailEnquiries', label: 'New enquiries on my listings', desc: 'When someone contacts you about your aircraft' },
-                        { key: 'emailOffers', label: 'Offers on my listings', desc: 'When someone makes an offer on your aircraft' },
-                        { key: 'emailSavedSearch', label: 'Saved search alerts', desc: 'When new aircraft match your saved searches' },
-                      ].map(item => (
-                        <div key={item.key} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                          <div>
-                            <p style={{ fontSize: 14, fontWeight: 500 }}>{item.label}</p>
-                            <p style={{ fontSize: 12, color: 'var(--fs-gray-400)' }}>{item.desc}</p>
-                          </div>
-                          <button
-                            onClick={() => setNotifications(prev => ({ ...prev, [item.key]: !prev[item.key] }))}
-                            style={{
-                              width: 48,
-                              height: 24,
-                              borderRadius: "var(--fs-radius-lg)",
-                              background: notifications[item.key] ? 'var(--fs-ink)' : 'var(--fs-gray-200)',
-                              border: 'none',
-                              cursor: 'pointer',
-                              position: 'relative',
-                              transition: 'background 0.2s'
-                            }}
-                          >
-                            <span style={{
-                              position: 'absolute',
-                              top: 2,
-                              left: notifications[item.key] ? 26 : 2,
-                              width: 20,
-                              height: 20,
-                              borderRadius: '50%',
-                              background: 'white',
-                              transition: 'left 0.2s'
-                            }} />
-                          </button>
-                        </div>
-                      ))}
-                    </div>
-
-                    <h4 style={{ fontSize: 16, fontWeight: 600, marginBottom: 20 }}>SMS Notifications</h4>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: 16, marginBottom: 32 }}>
-                      {[
-                        { key: 'smsEnquiries', label: 'New enquiries', desc: 'Text message for urgent enquiries' },
-                        { key: 'smsOffers', label: 'New offers', desc: 'Text message when you receive an offer' },
-                      ].map(item => (
-                        <div key={item.key} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                          <div>
-                            <p style={{ fontSize: 14, fontWeight: 500 }}>{item.label}</p>
-                            <p style={{ fontSize: 12, color: 'var(--fs-gray-400)' }}>{item.desc}</p>
-                          </div>
-                          <button
-                            onClick={() => setNotifications(prev => ({ ...prev, [item.key]: !prev[item.key] }))}
-                            style={{
-                              width: 48,
-                              height: 24,
-                              borderRadius: "var(--fs-radius-lg)",
-                              background: notifications[item.key] ? 'var(--fs-ink)' : 'var(--fs-gray-200)',
-                              border: 'none',
-                              cursor: 'pointer',
-                              position: 'relative',
-                              transition: 'background 0.2s'
-                            }}
-                          >
-                            <span style={{
-                              position: 'absolute',
-                              top: 2,
-                              left: notifications[item.key] ? 26 : 2,
-                              width: 20,
-                              height: 20,
-                              borderRadius: '50%',
-                              background: 'white',
-                              transition: 'left 0.2s'
-                            }} />
-                          </button>
-                        </div>
-                      ))}
-                    </div>
-
-                    <h4 style={{ fontSize: 16, fontWeight: 600, marginBottom: 20 }}>Other</h4>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-                      {[
-                        { key: 'marketingEmails', label: 'Marketing emails', desc: 'Promotions, tips, and news from Flightsales' },
-                      ].map(item => (
-                        <div key={item.key} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                          <div>
-                            <p style={{ fontSize: 14, fontWeight: 500 }}>{item.label}</p>
-                            <p style={{ fontSize: 12, color: 'var(--fs-gray-400)' }}>{item.desc}</p>
-                          </div>
-                          <button
-                            onClick={() => setNotifications(prev => ({ ...prev, [item.key]: !prev[item.key] }))}
-                            style={{
-                              width: 48,
-                              height: 24,
-                              borderRadius: "var(--fs-radius-lg)",
-                              background: notifications[item.key] ? 'var(--fs-ink)' : 'var(--fs-gray-200)',
-                              border: 'none',
-                              cursor: 'pointer',
-                              position: 'relative',
-                              transition: 'background 0.2s'
-                            }}
-                          >
-                            <span style={{
-                              position: 'absolute',
-                              top: 2,
-                              left: notifications[item.key] ? 26 : 2,
-                              width: 20,
-                              height: 20,
-                              borderRadius: '50%',
-                              background: 'white',
-                              transition: 'left 0.2s'
-                            }} />
-                          </button>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </>
+                <NotificationsTab notifications={notifications} setNotifications={setNotifications} />
               )}
 
               {/* DISCOUNTS TAB */}
               {activeTab === 'discounts' && (
-                <>
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
-                    <div>
-                      <h3 style={{ fontSize: 20, fontWeight: 700, marginBottom: 4 }}>Discounts</h3>
-                      <p style={{ fontSize: 14, color: 'var(--fs-gray-500)' }}>Your available promo codes</p>
-                    </div>
-                  </div>
-
-                  {discounts.length === 0 ? (
-                    <div className="fs-detail-specs" style={{ padding: "64px", textAlign: "center", borderRadius: 12 }}>
-                      <div style={{ fontSize: 56, marginBottom: 20, opacity: 0.5 }}>{Icons.gift}</div>
-                      <h3 style={{ fontSize: 20, fontWeight: 700, marginBottom: 8 }}>No discounts</h3>
-                      <p style={{ fontSize: 15, color: "var(--fs-gray-500)", maxWidth: 400, margin: '0 auto' }}>
-                        Check back for special offers and promotions.
-                      </p>
-                    </div>
-                  ) : (
-                    <div className="fs-grid-2">
-                      {discounts.map(discount => (
-                        <div key={discount.id} className="fs-detail-specs" style={{ padding: "24px", borderRadius: "var(--fs-radius-lg)", position: 'relative', opacity: discount.used ? 0.6 : 1 }}>
-                          {discount.used && (
-                            <div style={{ position: 'absolute', top: 12, right: 12, padding: '4px 8px', background: 'var(--fs-gray-200)', borderRadius: 4, fontSize: 11, fontWeight: 600 }}>USED</div>
-                          )}
-                          <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16 }}>
-                            <div style={{ width: 48, height: 48, borderRadius: "var(--fs-radius-lg)", background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 24 }}>
-                              🎁
-                            </div>
-                            <div>
-                              <h4 style={{ fontSize: 16, fontWeight: 700 }}>{discount.discount}</h4>
-                              <p style={{ fontSize: 13, color: 'var(--fs-gray-500)' }}>Expires: {discount.expiry}</p>
-                            </div>
-                          </div>
-                          <div style={{ padding: "12px", background: "var(--fs-gray-100)", borderRadius: "var(--fs-radius)", display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                            <code style={{ fontSize: 14, fontWeight: 600, letterSpacing: 1 }}>{discount.code}</code>
-                            {!discount.used && (
-                              <button style={{ padding: "6px 12px", background: "var(--fs-ink)", color: 'white', border: "none", borderRadius: 4, fontSize: 12, cursor: "pointer" }}>Copy</button>
-                            )}
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </>
+                <DiscountsTab discounts={discounts} />
               )}
 
               {activeTab === 'profile' && (
-                <>
-                  <h3 style={{ fontSize: 20, fontWeight: 700, marginBottom: 16 }}>Profile Settings</h3>
-                  <div className="fs-detail-specs" style={{ padding: "24px" }}>
-                    {!editProfile ? (
-                      <>
-                        <div style={{ display: "flex", alignItems: "center", gap: 16, marginBottom: 24 }}>
-                          <img src={user.avatar} alt={user.full_name} style={{ width: 80, height: 80, borderRadius: "50%" }} />
-                          <div>
-                            <h4 style={{ fontSize: 18, fontWeight: 600 }}>{profileData.full_name}</h4>
-                            <p style={{ fontSize: 14, color: "var(--fs-gray-500)" }}>{profileData.email}</p>
-                          </div>
-                        </div>
-                        <div style={{ marginBottom: 24 }}>
-                          <div style={{ display: "flex", justifyContent: "space-between", padding: "12px 0", borderBottom: "1px solid var(--fs-gray-100)" }}>
-                            <span style={{ color: "var(--fs-gray-500)" }}>Phone</span>
-                            <span>{profileData.phone || 'Not set'}</span>
-                          </div>
-                          <div style={{ display: "flex", justifyContent: "space-between", padding: "12px 0", borderBottom: "1px solid var(--fs-gray-100)" }}>
-                            <span style={{ color: "var(--fs-gray-500)" }}>Location</span>
-                            <span>{profileData.location || 'Not set'}</span>
-                          </div>
-                          <div style={{ display: "flex", justifyContent: "space-between", padding: "12px 0" }}>
-                            <span style={{ color: "var(--fs-gray-500)" }}>Account Type</span>
-                            <span style={{ textTransform: "capitalize" }}>{user.role}</span>
-                          </div>
-                        </div>
-                        <button 
-                          className="fs-detail-cta fs-detail-cta-primary"
-                          onClick={() => setEditProfile(true)}
-                        >
-                          Edit Profile
-                        </button>
-                      </>
-                    ) : (
-                      <>
-                        <div className="fs-form-group">
-                          <label className="fs-form-label">Full Name</label>
-                          <input 
-                            className="fs-form-input" 
-                            value={profileData.full_name}
-                            onChange={e => setProfileData({...profileData, full_name: e.target.value})}
-                          />
-                        </div>
-                        <div className="fs-form-group">
-                          <label className="fs-form-label">Email</label>
-                          <input className="fs-form-input" value={profileData.email} disabled />
-                        </div>
-                        <div className="fs-form-group">
-                          <label className="fs-form-label">Phone</label>
-                          <input 
-                            className="fs-form-input" 
-                            value={profileData.phone}
-                            onChange={e => setProfileData({...profileData, phone: e.target.value})}
-                            placeholder="04XX XXX XXX"
-                          />
-                        </div>
-                        <div className="fs-form-group">
-                          <label className="fs-form-label">Location</label>
-                          <input 
-                            className="fs-form-input" 
-                            value={profileData.location}
-                            onChange={e => setProfileData({...profileData, location: e.target.value})}
-                            placeholder="e.g. Sydney, NSW"
-                          />
-                        </div>
-                        <div style={{ display: "flex", gap: 12 }}>
-                          <button
-                            className="fs-form-submit"
-                            onClick={handleSaveProfile}
-                            disabled={savingProfile}
-                            style={{ opacity: savingProfile ? 0.7 : 1 }}
-                          >
-                            {savingProfile ? "Saving..." : "Save Changes"}
-                          </button>
-                          <button 
-                            className="fs-detail-cta fs-detail-cta-secondary"
-                            onClick={() => setEditProfile(false)}
-                          >
-                            Cancel
-                          </button>
-                        </div>
-                      </>
-                    )}
-                  </div>
-                </>
+                <ProfileTab
+                  user={user}
+                  profileData={profileData}
+                  setProfileData={setProfileData}
+                  editProfile={editProfile}
+                  setEditProfile={setEditProfile}
+                  savingProfile={savingProfile}
+                  onSave={handleSaveProfile}
+                />
               )}
             </div>
           </div>
