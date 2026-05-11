@@ -53,10 +53,24 @@ const HomePage = ({ setPage, setSelectedListing, savedIds, onSave, setSearchFilt
   };
 
   const handleManualSearch = () => {
+    // The hero Location dropdown now encodes its value as either
+    //   'state:NSW'    — sub-division pick (AU state, US state, etc.)
+    //   'country:AU'   — country-level pick (whole country)
+    // or empty string. Decode into the country + state fields the
+    // BuyPage filter rail consumes.
+    let stateCode = '';
+    let countryCode = '';
+    if (typeof searchState === 'string') {
+      if (searchState.startsWith('state:'))   stateCode   = searchState.slice(6);
+      else if (searchState.startsWith('country:')) countryCode = searchState.slice(8);
+      else if (searchState) stateCode = searchState; // back-compat with raw AU state codes
+    }
+
     const filters = {
       cat: searchCat,
       make: searchMake,
-      state: searchState,
+      state: stateCode,
+      country: countryCode,
       yearFrom,
       yearTo,
       priceFrom,

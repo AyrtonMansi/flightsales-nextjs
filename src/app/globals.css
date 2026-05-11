@@ -2426,6 +2426,18 @@ html, body { overflow-x: hidden; max-width: 100%; }
 .fs-admin-table td { padding: 14px 16px; border-bottom: 1px solid var(--fs-bg-2); vertical-align: middle; }
 .fs-admin-table tbody tr:hover { background: var(--fs-bg); }
 .fs-admin-table tbody tr.fs-admin-row-suspended { opacity: 0.55; }
+/* Detail row shown directly under its parent row when the user clicks
+   "Show". Subtle inset background + lifted top border so it reads as
+   "an extension of the row above" rather than a separate record. */
+.fs-admin-table tbody tr.fs-admin-row-detail {
+  background: var(--fs-bg-soft, #fafafa);
+}
+.fs-admin-table tbody tr.fs-admin-row-detail td {
+  padding-top: 8px;
+  padding-bottom: 14px;
+  border-top: 0;
+  font-size: 13px;
+}
 .fs-admin-cell-strong { font-weight: 500; color: var(--fs-ink); margin: 0; }
 .fs-admin-cell-muted { color: var(--fs-ink-3); margin: 0; }
 .fs-admin-feat-pill { margin-left: 8px; font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: var(--fs-radius-pill); background: #fef3c7; color: #92400e; vertical-align: middle; }

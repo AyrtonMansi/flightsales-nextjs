@@ -1,14 +1,17 @@
 'use client';
-import { useState } from 'react';
+import { Fragment, useMemo, useState } from 'react';
 import { useAffiliates, useAffiliateLeads } from '../../../lib/hooks';
 import { Icons } from '../../Icons';
 import { showToast } from '../../../lib/toast';
 import StatusBadge from '../StatusBadge';
 import ConfirmDialog from '../ConfirmDialog';
+import useTableState from '../../../lib/useTableState';
+import AdminTableToolbar, { SortHeader, Pager } from '../AdminTableToolbar';
 
 // Two views in one tab — partner CRUD on the left, lead pipeline on
-// the right. Top tab-switcher keeps both reachable without a second
-// admin route.
+// the right. Top sub-tab switcher keeps both reachable without a
+// second admin route. Both lists use the same useTableState +
+// AdminTableToolbar + <table> + Pager pattern as the rest of /admin.
 
 const TYPES = [
   { value: 'finance',     label: 'Finance' },
@@ -25,6 +28,14 @@ const DELIVERY_METHODS = [
   { value: 'email',   label: 'Email — partner receives lead at lead_email' },
   { value: 'webhook', label: 'Webhook — POST JSON to lead_webhook_url' },
   { value: 'api',     label: 'API — POST to api_endpoint_url with Bearer auth' },
+];
+
+const LEAD_STATUSES = [
+  { value: 'sent',       label: 'New' },
+  { value: 'contacted',  label: 'Contacted' },
+  { value: 'quoted',     label: 'Quoted' },
+  { value: 'converted',  label: 'Converted' },
+  { value: 'dead',       label: 'Dead' },
 ];
 
 export default function AffiliatesTab() {
@@ -52,77 +63,151 @@ export default function AffiliatesTab() {
   );
 }
 
+// ── Partners list ───────────────────────────────────────────────────
+
 function PartnersList() {
   const { affiliates, loading, create, update, remove } = useAffiliates();
   const [editing, setEditing] = useState(null);   // partner row or 'new'
   const [confirmDelete, setConfirmDelete] = useState(null);
+  const [statusFilter, setStatusFilter] = useState('all');
 
-  if (loading && affiliates.length === 0) {
-    return <p style={{ padding: 24, color: 'var(--fs-ink-3)' }}>Loading affiliates…</p>;
-  }
+  // Status counts power the toolbar pill row.
+  const counts = useMemo(() => ({
+    all:        affiliates.length,
+    active:     affiliates.filter(a => a.status === 'active').length,
+    pending:    affiliates.filter(a => a.status === 'pending').length,
+    paused:     affiliates.filter(a => a.status === 'paused').length,
+    terminated: affiliates.filter(a => a.status === 'terminated').length,
+  }), [affiliates]);
+
+  const filteredByStatus = useMemo(() => {
+    if (statusFilter === 'all') return affiliates;
+    return affiliates.filter(a => a.status === statusFilter);
+  }, [affiliates, statusFilter]);
+
+  const t = useTableState(filteredByStatus, {
+    pageSize: 25,
+    searchFields: ['name', 'slug', 'type', 'contact_email'],
+    defaultSort: { field: 'display_priority', direction: 'asc' },
+  });
+
+  // Quick-toggle pause/active without opening the editor — the most
+  // common admin action on a configured partner is "turn this CTA
+  // off temporarily" or "turn it back on", so we surface it inline.
+  const quickToggleStatus = async (partner) => {
+    const next = partner.status === 'active' ? 'paused' : 'active';
+    try {
+      await update(partner.id, { status: next });
+      showToast(next === 'active' ? `${partner.name} resumed` : `${partner.name} paused`);
+    } catch (err) {
+      showToast(err?.message ? `Failed: ${err.message}` : 'Failed');
+    }
+  };
 
   return (
-    <div>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-        <p style={{ color: 'var(--fs-ink-3)', fontSize: 14, margin: 0 }}>
-          {affiliates.length} partner{affiliates.length === 1 ? '' : 's'} —
-          {' '}{affiliates.filter(a => a.status === 'active').length} active.
-        </p>
-        <button className="fs-form-submit" onClick={() => setEditing('new')}>
-          + New partner
-        </button>
-      </div>
+    <>
+      <AdminTableToolbar
+        search={t.search} onSearch={t.setSearch}
+        placeholder="Search by name, slug, type, contact email…"
+        statusOptions={[
+          { value: 'all',        label: 'All',        count: counts.all },
+          { value: 'active',     label: 'Active',     count: counts.active },
+          { value: 'pending',    label: 'Pending',    count: counts.pending },
+          { value: 'paused',     label: 'Paused',     count: counts.paused },
+          { value: 'terminated', label: 'Terminated', count: counts.terminated },
+        ]}
+        statusValue={statusFilter}
+        onStatusChange={setStatusFilter}
+        filteredCount={t.filteredCount}
+        totalCount={affiliates.length}
+        right={
+          <button className="fs-form-submit fs-confirm-btn-sm" onClick={() => setEditing('new')}>
+            + New partner
+          </button>
+        }
+      />
 
-      <div className="fs-admin-table">
-        <div className="fs-admin-table-row fs-admin-table-head">
-          <div style={{ flex: '1 1 200px' }}>Partner</div>
-          <div style={{ width: 110 }}>Type</div>
-          <div style={{ width: 90 }}>Status</div>
-          <div style={{ width: 90 }}>Method</div>
-          <div style={{ width: 80, textAlign: 'right' }}>Priority</div>
-          <div style={{ width: 60 }} />
+      {loading && affiliates.length === 0 ? (
+        <div className="fs-admin-loading">Loading partners…</div>
+      ) : t.filteredCount === 0 ? (
+        <div className="fs-admin-empty">
+          <h3>No partners {statusFilter !== 'all' ? `with status "${statusFilter}"` : 'yet'}</h3>
+          {affiliates.length === 0 && (
+            <p>Click <strong>+ New partner</strong> to add the first finance, insurance, or service partner.</p>
+          )}
         </div>
-        {affiliates.map((a) => (
-          <div key={a.id} className="fs-admin-table-row">
-            <div style={{ flex: '1 1 200px', display: 'flex', alignItems: 'center', gap: 10 }}>
-              {a.logo_url ? (
-                <img src={a.logo_url} alt="" style={{ width: 28, height: 28, borderRadius: 6, objectFit: 'contain', background: '#fff', border: '1px solid var(--fs-line)' }} />
-              ) : (
-                <div style={{ width: 28, height: 28, borderRadius: 6, background: 'var(--fs-bg-2)', display: 'grid', placeItems: 'center', fontSize: 12, fontWeight: 600, color: 'var(--fs-ink-3)' }}>
-                  {a.name?.[0]?.toUpperCase() || '?'}
-                </div>
-              )}
-              <div>
-                <div style={{ fontWeight: 600 }}>{a.name}</div>
-                <div style={{ fontSize: 12, color: 'var(--fs-ink-4)' }}>{a.slug}</div>
-              </div>
-            </div>
-            <div style={{ width: 110, fontSize: 13, color: 'var(--fs-ink-3)' }}>
-              {TYPES.find(t => t.value === a.type)?.label || a.type}
-            </div>
-            <div style={{ width: 90 }}>
-              <StatusBadge status={a.status} />
-            </div>
-            <div style={{ width: 90, fontSize: 12, color: 'var(--fs-ink-3)' }}>
-              {a.lead_capture_method}
-            </div>
-            <div style={{ width: 80, textAlign: 'right', fontVariantNumeric: 'tabular-nums', fontSize: 13 }}>
-              {a.display_priority}
-            </div>
-            <div style={{ width: 60, textAlign: 'right' }}>
-              <button
-                onClick={() => setEditing(a)}
-                style={{ background: 'none', border: 0, padding: '4px 8px', color: 'var(--fs-ink)', cursor: 'pointer', fontSize: 13 }}
-              >Edit</button>
-            </div>
-          </div>
-        ))}
-        {affiliates.length === 0 && (
-          <p style={{ padding: 24, textAlign: 'center', color: 'var(--fs-ink-3)' }}>
-            No partners yet. Click <strong>+ New partner</strong> to add your first.
-          </p>
-        )}
-      </div>
+      ) : (
+        <div className="fs-admin-tablewrap">
+          <table className="fs-admin-table">
+            <thead>
+              <tr>
+                <SortHeader field="name"             sort={t.sort} onSortChange={t.setSort}>Partner</SortHeader>
+                <SortHeader field="type"             sort={t.sort} onSortChange={t.setSort}>Type</SortHeader>
+                <SortHeader field="status"           sort={t.sort} onSortChange={t.setSort}>Status</SortHeader>
+                <th>Delivery</th>
+                <SortHeader field="display_priority" sort={t.sort} onSortChange={t.setSort} align="right">Priority</SortHeader>
+                <th style={{ textAlign: 'right' }}>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {t.pageRows.map((a) => (
+                <tr key={a.id}>
+                  <td>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                      {a.logo_url ? (
+                        <img
+                          src={a.logo_url}
+                          alt=""
+                          style={{ width: 28, height: 28, borderRadius: 6, objectFit: 'contain', background: '#fff', border: '1px solid var(--fs-line)', flexShrink: 0 }}
+                        />
+                      ) : (
+                        <div style={{ width: 28, height: 28, borderRadius: 6, background: 'var(--fs-bg-2)', display: 'grid', placeItems: 'center', fontSize: 12, fontWeight: 600, color: 'var(--fs-ink-3)', flexShrink: 0 }}>
+                          {a.name?.[0]?.toUpperCase() || '?'}
+                        </div>
+                      )}
+                      <div style={{ minWidth: 0 }}>
+                        <p className="fs-admin-cell-strong">{a.name}</p>
+                        <p className="fs-admin-cell-muted">{a.slug}</p>
+                      </div>
+                    </div>
+                  </td>
+                  <td className="fs-admin-cell-muted">
+                    {TYPES.find(t => t.value === a.type)?.label || a.type}
+                  </td>
+                  <td><StatusBadge status={a.status} /></td>
+                  <td className="fs-admin-cell-muted" style={{ fontSize: 12 }}>
+                    {a.lead_capture_method}
+                  </td>
+                  <td style={{ textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>
+                    {a.display_priority}
+                  </td>
+                  <td style={{ textAlign: 'right' }}>
+                    <div className="fs-admin-row-actions">
+                      {(a.status === 'active' || a.status === 'paused') && (
+                        <button
+                          type="button"
+                          className="fs-confirm-btn fs-confirm-btn-secondary fs-confirm-btn-sm"
+                          onClick={() => quickToggleStatus(a)}
+                        >
+                          {a.status === 'active' ? 'Pause' : 'Resume'}
+                        </button>
+                      )}
+                      <button
+                        type="button"
+                        className="fs-confirm-btn fs-confirm-btn-secondary fs-confirm-btn-sm"
+                        onClick={() => setEditing(a)}
+                      >
+                        Edit
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          <Pager page={t.page} totalPages={t.totalPages} onChange={t.setPage} />
+        </div>
+      )}
 
       {editing && (
         <PartnerEditor
@@ -146,28 +231,30 @@ function PartnersList() {
         />
       )}
 
-      {confirmDelete && (
-        <ConfirmDialog
-          title="Delete partner?"
-          message={`This will permanently remove ${confirmDelete.name} and all of their lead history.`}
-          confirmLabel="Delete"
-          danger
-          onConfirm={async () => {
-            try {
-              await remove(confirmDelete.id);
-              showToast('Partner deleted');
-              setConfirmDelete(null);
-              setEditing(null);
-            } catch (err) {
-              showToast(err.message || 'Delete failed');
-            }
-          }}
-          onCancel={() => setConfirmDelete(null)}
-        />
-      )}
-    </div>
+      <ConfirmDialog
+        open={!!confirmDelete}
+        onClose={() => setConfirmDelete(null)}
+        title="Delete partner?"
+        message={confirmDelete ? `This will permanently remove ${confirmDelete.name} and unlink every lead history row pointing at it. Existing lead rows stay (FK is SET NULL).` : ''}
+        confirmLabel="Delete partner"
+        destructive
+        onConfirm={async () => {
+          if (!confirmDelete) return;
+          try {
+            await remove(confirmDelete.id);
+            showToast('Partner deleted');
+            setConfirmDelete(null);
+            setEditing(null);
+          } catch (err) {
+            showToast(err.message || 'Delete failed');
+          }
+        }}
+      />
+    </>
   );
 }
+
+// ── Partner editor (modal) — preserved from previous implementation ──
 
 function PartnerEditor({ partner, onClose, onSave, onDelete }) {
   const [f, setF] = useState({
@@ -387,127 +474,140 @@ function Field({ label, children }) {
   );
 }
 
-// ── Lead pipeline ───────────────────────────────────────────────
-const LEAD_STATUSES = [
-  { value: 'sent',       label: 'New' },
-  { value: 'contacted',  label: 'Contacted' },
-  { value: 'quoted',     label: 'Quoted' },
-  { value: 'converted',  label: 'Converted' },
-  { value: 'dead',       label: 'Dead' },
-];
+// ── Lead pipeline ───────────────────────────────────────────────────
 
 function LeadsPipeline() {
   const { leads, loading, updateStatus } = useAffiliateLeads();
-  const [filter, setFilter] = useState('all');
+  const [statusFilter, setStatusFilter] = useState('all');
+  const [openLead, setOpenLead] = useState(null);
 
-  const filtered = filter === 'all'
-    ? leads
-    : leads.filter((l) => l.status === filter);
+  const counts = useMemo(() => {
+    const c = { all: leads.length };
+    for (const s of LEAD_STATUSES) c[s.value] = leads.filter(l => l.status === s.value).length;
+    return c;
+  }, [leads]);
 
-  if (loading && leads.length === 0) {
-    return <p style={{ padding: 24, color: 'var(--fs-ink-3)' }}>Loading leads…</p>;
-  }
+  const filteredByStatus = useMemo(() => {
+    if (statusFilter === 'all') return leads;
+    return leads.filter(l => l.status === statusFilter);
+  }, [leads, statusFilter]);
+
+  const t = useTableState(filteredByStatus, {
+    pageSize: 25,
+    searchFields: ['user_name', 'user_email', 'user_phone', 'affiliate.name', 'message'],
+    defaultSort: { field: 'created_at', direction: 'desc' },
+  });
 
   return (
-    <div>
-      <div style={{ display: 'flex', gap: 8, marginBottom: 16, flexWrap: 'wrap' }}>
-        <FilterChip active={filter === 'all'} onClick={() => setFilter('all')}>
-          All ({leads.length})
-        </FilterChip>
-        {LEAD_STATUSES.map(s => (
-          <FilterChip
-            key={s.value}
-            active={filter === s.value}
-            onClick={() => setFilter(s.value)}
-          >
-            {s.label} ({leads.filter(l => l.status === s.value).length})
-          </FilterChip>
-        ))}
-      </div>
+    <>
+      <AdminTableToolbar
+        search={t.search} onSearch={t.setSearch}
+        placeholder="Search by buyer name, email, partner, message…"
+        statusOptions={[
+          { value: 'all', label: 'All', count: counts.all },
+          ...LEAD_STATUSES.map(s => ({ value: s.value, label: s.label, count: counts[s.value] })),
+        ]}
+        statusValue={statusFilter}
+        onStatusChange={setStatusFilter}
+        filteredCount={t.filteredCount}
+        totalCount={leads.length}
+      />
 
-      <div className="fs-admin-table">
-        <div className="fs-admin-table-row fs-admin-table-head">
-          <div style={{ flex: '1 1 200px' }}>Buyer</div>
-          <div style={{ width: 140 }}>Partner</div>
-          <div style={{ width: 110 }}>Status</div>
-          <div style={{ width: 100 }}>Delivery</div>
-          <div style={{ width: 110, textAlign: 'right' }}>Submitted</div>
+      {loading && leads.length === 0 ? (
+        <div className="fs-admin-loading">Loading leads…</div>
+      ) : t.filteredCount === 0 ? (
+        <div className="fs-admin-empty">
+          <h3>No leads {statusFilter !== 'all' ? `with status "${statusFilter}"` : 'yet'}</h3>
         </div>
-        {filtered.map(lead => (
-          <div key={lead.id} className="fs-admin-table-row" style={{ flexDirection: 'column', alignItems: 'stretch', gap: 8 }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8, width: '100%' }}>
-              <div style={{ flex: '1 1 200px' }}>
-                <div style={{ fontWeight: 600 }}>{lead.user_name}</div>
-                <div style={{ fontSize: 12, color: 'var(--fs-ink-3)' }}>
-                  {lead.user_email}{lead.user_phone ? ` · ${lead.user_phone}` : ''}
-                </div>
-              </div>
-              <div style={{ width: 140, fontSize: 13 }}>
-                {lead.affiliate?.name || '—'}
-                <div style={{ fontSize: 11, color: 'var(--fs-ink-4)' }}>{lead.affiliate?.type}</div>
-              </div>
-              <div style={{ width: 110 }}>
-                <select
-                  value={lead.status}
-                  onChange={(e) => updateStatus(lead.id, { status: e.target.value })}
-                  style={{ width: '100%', padding: '4px 6px', fontSize: 12, border: '1px solid var(--fs-line)', borderRadius: 6 }}
-                >
-                  {LEAD_STATUSES.map(s => <option key={s.value} value={s.value}>{s.label}</option>)}
-                </select>
-              </div>
-              <div style={{ width: 100 }}>
-                <StatusBadge status={lead.delivery_status} />
-              </div>
-              <div style={{ width: 110, textAlign: 'right', fontSize: 12, color: 'var(--fs-ink-3)' }}>
-                {new Date(lead.created_at).toLocaleDateString('en-AU', { day: 'numeric', month: 'short' })}
-              </div>
-            </div>
-            {(lead.message || lead.delivery_error || lead.status === 'converted') && (
-              <div style={{ paddingLeft: 0, fontSize: 13 }}>
-                {lead.message && (
-                  <p style={{ margin: '2px 0', color: 'var(--fs-ink-3)' }}>
-                    <span style={{ fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.04em', color: 'var(--fs-ink-4)' }}>Message: </span>
-                    {lead.message}
-                  </p>
-                )}
-                {lead.delivery_error && (
-                  <p style={{ margin: '2px 0', color: 'var(--fs-red)' }}>
-                    Delivery error: {lead.delivery_error}
-                  </p>
-                )}
-                {lead.status === 'converted' && (
-                  <ConvertedFields lead={lead} updateStatus={updateStatus} />
-                )}
-              </div>
-            )}
-          </div>
-        ))}
-        {filtered.length === 0 && (
-          <p style={{ padding: 24, textAlign: 'center', color: 'var(--fs-ink-3)' }}>
-            No leads {filter === 'all' ? 'yet' : `with status "${filter}"`}.
-          </p>
-        )}
-      </div>
-    </div>
-  );
-}
-
-function FilterChip({ active, onClick, children }) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      style={{
-        padding: '6px 12px',
-        borderRadius: 999,
-        border: '1px solid ' + (active ? 'var(--fs-ink)' : 'var(--fs-line)'),
-        background: active ? 'var(--fs-ink)' : 'var(--fs-white)',
-        color: active ? 'var(--fs-white)' : 'var(--fs-ink)',
-        fontSize: 13,
-        fontWeight: 500,
-        cursor: 'pointer',
-      }}
-    >{children}</button>
+      ) : (
+        <div className="fs-admin-tablewrap">
+          <table className="fs-admin-table">
+            <thead>
+              <tr>
+                <SortHeader field="user_name"       sort={t.sort} onSortChange={t.setSort}>Buyer</SortHeader>
+                <SortHeader field="affiliate.name"  sort={t.sort} onSortChange={t.setSort}>Partner</SortHeader>
+                <th>Status</th>
+                <th>Delivery</th>
+                <SortHeader field="created_at"      sort={t.sort} onSortChange={t.setSort} align="right">Submitted</SortHeader>
+                <th style={{ textAlign: 'right' }}>Details</th>
+              </tr>
+            </thead>
+            <tbody>
+              {t.pageRows.map(lead => {
+                const isOpen = openLead === lead.id;
+                const hasExtra = lead.message || lead.delivery_error || lead.status === 'converted';
+                return (
+                  <Fragment key={lead.id}>
+                    <tr>
+                      <td>
+                        <p className="fs-admin-cell-strong">{lead.user_name || '—'}</p>
+                        <p className="fs-admin-cell-muted">
+                          {lead.user_email}{lead.user_phone ? ` · ${lead.user_phone}` : ''}
+                        </p>
+                      </td>
+                      <td>
+                        <p className="fs-admin-cell-strong">{lead.affiliate?.name || '—'}</p>
+                        <p className="fs-admin-cell-muted">{lead.affiliate?.type || ''}</p>
+                      </td>
+                      <td>
+                        <select
+                          value={lead.status}
+                          onChange={(e) => updateStatus(lead.id, { status: e.target.value })}
+                          style={{ padding: '4px 6px', fontSize: 12, border: '1px solid var(--fs-line)', borderRadius: 6, background: '#fff' }}
+                        >
+                          {LEAD_STATUSES.map(s => <option key={s.value} value={s.value}>{s.label}</option>)}
+                        </select>
+                      </td>
+                      <td><StatusBadge status={lead.delivery_status} /></td>
+                      <td className="fs-admin-cell-muted" style={{ textAlign: 'right' }}>
+                        {new Date(lead.created_at).toLocaleDateString('en-AU', { day: 'numeric', month: 'short', year: '2-digit' })}
+                      </td>
+                      <td style={{ textAlign: 'right' }}>
+                        {hasExtra ? (
+                          <button
+                            type="button"
+                            className="fs-confirm-btn fs-confirm-btn-secondary fs-confirm-btn-sm"
+                            onClick={() => setOpenLead(isOpen ? null : lead.id)}
+                            aria-expanded={isOpen}
+                          >
+                            {isOpen ? 'Hide' : 'Show'}
+                          </button>
+                        ) : (
+                          <span className="fs-admin-cell-muted">—</span>
+                        )}
+                      </td>
+                    </tr>
+                    {isOpen && hasExtra && (
+                      <tr className="fs-admin-row-detail">
+                        <td colSpan={6}>
+                          <div style={{ display: 'flex', flexDirection: 'column', gap: 8, padding: '6px 0' }}>
+                            {lead.message && (
+                              <p style={{ margin: 0, fontSize: 13 }}>
+                                <span style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.04em', color: 'var(--fs-ink-3)' }}>Message: </span>
+                                {lead.message}
+                              </p>
+                            )}
+                            {lead.delivery_error && (
+                              <p style={{ margin: 0, fontSize: 13, color: 'var(--fs-red)' }}>
+                                <span style={{ fontWeight: 700 }}>Delivery error: </span>{lead.delivery_error}
+                              </p>
+                            )}
+                            {lead.status === 'converted' && (
+                              <ConvertedFields lead={lead} updateStatus={updateStatus} />
+                            )}
+                          </div>
+                        </td>
+                      </tr>
+                    )}
+                  </Fragment>
+                );
+              })}
+            </tbody>
+          </table>
+          <Pager page={t.page} totalPages={t.totalPages} onChange={t.setPage} />
+        </div>
+      )}
+    </>
   );
 }
 
@@ -516,15 +616,15 @@ function ConvertedFields({ lead, updateStatus }) {
   const [comm, setComm] = useState(lead.commission_amount || '');
 
   return (
-    <div style={{ display: 'flex', gap: 8, alignItems: 'center', marginTop: 6 }}>
-      <span style={{ fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.04em', color: 'var(--fs-ink-4)' }}>Conversion</span>
+    <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+      <span style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.04em', color: 'var(--fs-ink-3)' }}>Conversion</span>
       <input
         type="number"
         placeholder="Deal $"
         value={val}
         onChange={(e) => setVal(e.target.value)}
         onBlur={() => updateStatus(lead.id, { conversion_value: val ? Number(val) : null })}
-        style={{ width: 110, padding: '4px 6px', fontSize: 12, border: '1px solid var(--fs-line)', borderRadius: 6 }}
+        style={{ width: 130, padding: '4px 6px', fontSize: 12, border: '1px solid var(--fs-line)', borderRadius: 6 }}
       />
       <input
         type="number"
@@ -532,7 +632,7 @@ function ConvertedFields({ lead, updateStatus }) {
         value={comm}
         onChange={(e) => setComm(e.target.value)}
         onBlur={() => updateStatus(lead.id, { commission_amount: comm ? Number(comm) : null })}
-        style={{ width: 110, padding: '4px 6px', fontSize: 12, border: '1px solid var(--fs-line)', borderRadius: 6 }}
+        style={{ width: 130, padding: '4px 6px', fontSize: 12, border: '1px solid var(--fs-line)', borderRadius: 6 }}
       />
     </div>
   );

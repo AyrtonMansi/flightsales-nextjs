@@ -1,5 +1,7 @@
 'use client';
-import { CATEGORIES, STATES } from '../../lib/constants';
+import { useEffect, useState } from 'react';
+import { CATEGORIES } from '../../lib/constants';
+import { orderRegionsForUser, regionKeyForCountry } from '../../lib/worldRegions';
 
 // HeroSearchPro — 2026 redraw of the hero search card.
 //
@@ -145,13 +147,9 @@ export default function HeroSearchPro({ model }) {
           />
         </div>
         <div className="fs-h-stack">
-          <SelectField
-            stacked
-            label="Location"
+          <LocationField
             value={searchState}
             onChange={setSearchState}
-            placeholder="Anywhere in Australia"
-            options={STATES.map((s) => ({ value: s, label: s }))}
           />
         </div>
       </div>{/* /fs-h-cards-group */}
@@ -318,5 +316,133 @@ function SelectRangeField({
         </span>
       </div>
     </div>
+  );
+}
+
+// LocationField — region-grouped Location select. The user's home
+// country (detected via /api/geo, which reads the Vercel IP-country
+// header) sits at the top of the dropdown with every sub-division
+// (state/province) underneath. Other regions follow as <optgroup>s
+// so the dropdown reads as: "Australia → AU states → North America →
+// US, Canada, Mexico → Europe → … → etc."
+//
+// Encoded values match the model expected by HomePage.handleManualSearch:
+//   ''             → no location filter
+//   'state:NSW'    → state filter only (legacy AU shape preserved)
+//   'country:AU'   → country filter (whole country)
+//   'country:US'   → country filter
+//   'state:CA'     → state filter (US California — same shape as AU)
+//
+// The downstream BuyPage seed already supports `country` + `state`
+// fields via toQueryFilters, so the routing just needs to set both.
+function LocationField({ value, onChange }) {
+  const [userCountry, setUserCountry] = useState(null);
+
+  useEffect(() => {
+    fetch('/api/geo', { cache: 'force-cache' })
+      .then((r) => r.json())
+      .then((j) => { if (j?.country) setUserCountry(j.country); })
+      .catch(() => { /* leave null — natural region order */ });
+  }, []);
+
+  // Home country resolves from the geo header; falls back to AU
+  // (this is an Australian marketplace, the default audience is here).
+  const homeCountryCode = userCountry || 'AU';
+  const userRegionKey = regionKeyForCountry(homeCountryCode);
+  const orderedRegions = orderRegionsForUser(userRegionKey);
+
+  // The home country is rendered as its own top-level optgroup with
+  // all of its sub-divisions inline (clicking is a one-step pick for
+  // local buyers). Then every other region is rendered as a sibling
+  // optgroup whose options are the countries (no state-level detail
+  // — that's available on the Buy page's filter rail).
+  const homeRegion = orderedRegions.find((r) =>
+    r.countries.some((c) => c.code === homeCountryCode)
+  ) || orderedRegions[0];
+  const homeCountry = homeRegion?.countries.find((c) => c.code === homeCountryCode);
+  const homeSubs = homeCountry?.subdivisions || [];
+
+  // Display label for the chip in the closed select.
+  const labelFor = () => {
+    if (!value) return `Anywhere${homeCountry ? ` in ${homeCountry.name}` : ''}`;
+    if (value.startsWith('state:')) {
+      const code = value.slice(6);
+      const sub = homeSubs.find((s) => s.code === code);
+      if (sub) return sub.name;
+      // Foreign state — find anywhere
+      for (const r of orderedRegions) {
+        for (const c of r.countries) {
+          const s = (c.subdivisions || []).find((x) => x.code === code);
+          if (s) return `${s.name}, ${c.name}`;
+        }
+      }
+      return code;
+    }
+    if (value.startsWith('country:')) {
+      const code = value.slice(8);
+      for (const r of orderedRegions) {
+        const c = r.countries.find((c) => c.code === code);
+        if (c) return c.name;
+      }
+      return code;
+    }
+    return value;
+  };
+
+  const isEmpty = !value;
+
+  return (
+    <label className="fs-h-stack-row">
+      <span className="fs-h-stack-pin" aria-hidden="true" />
+      <span className="fs-h-stack-label">Location</span>
+      <span className={`fs-h-stack-value${isEmpty ? ' muted' : ''}`}>{labelFor()}</span>
+      <span className="fs-h-stack-chevron" aria-hidden="true">▾</span>
+      <select
+        className="fs-h-field-native"
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        aria-label="Location"
+      >
+        <option value="">Anywhere worldwide</option>
+
+        {/* Home country group — full sub-division list inline */}
+        {homeCountry && (
+          <optgroup label={homeCountry.name}>
+            <option value={`country:${homeCountry.code}`}>
+              Anywhere in {homeCountry.name}
+            </option>
+            {homeSubs.map((s) => (
+              <option key={`state:${s.code}`} value={`state:${s.code}`}>
+                {s.name}
+              </option>
+            ))}
+          </optgroup>
+        )}
+
+        {/* Other regions — country-level only. State/province granularity
+            is available on the Buy page's filter rail; the hero keeps
+            it concise. */}
+        {orderedRegions.map((r) => {
+          // Skip the home region (already rendered above as its own
+          // group). For the home region's other countries, render them
+          // under a "Rest of <region>" optgroup so the home country
+          // doesn't disappear from the dropdown logic.
+          const otherCountries = r.key === homeRegion?.key
+            ? r.countries.filter((c) => c.code !== homeCountryCode)
+            : r.countries;
+          if (otherCountries.length === 0) return null;
+          const label = r.key === homeRegion?.key ? `Rest of ${r.name}` : r.name;
+          return (
+            <optgroup key={r.key} label={label}>
+              {otherCountries.map((c) => (
+                <option key={`country:${c.code}`} value={`country:${c.code}`}>
+                  {c.name}
+                </option>
+              ))}
+            </optgroup>
+          );
+        })}
+      </select>
+    </label>
   );
 }
