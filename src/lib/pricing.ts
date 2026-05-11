@@ -118,7 +118,7 @@ export function fmtAud(n: number): string {
 // ─── Dealer subscription plans ──────────────────────────────────────
 
 export interface DealerPlan {
-  key: 'dealer_lite' | 'pro' | 'enterprise';
+  key: 'dealer_lite' | 'pro';
   name: string;
   priceLabel: string;       // shown in the plan card
   priceMonthlyAud: number;  // for Stripe metadata + comparisons
@@ -133,10 +133,10 @@ export const DEALER_PLANS: DealerPlan[] = [
     name: 'Dealer Lite',
     priceLabel: '$49/mo',
     priceMonthlyAud: 49,
-    listingLimit: 5,
-    desc: 'Up to 5 active listings, verified badge, lead alerts',
+    listingLimit: 3,
+    desc: 'Up to 3 active listings, verified badge, lead alerts',
     features: [
-      'Up to 5 active listings',
+      'Up to 3 active listings',
       'Verified business badge',
       'Real-time lead alerts',
       'ABR auto-verification',
@@ -145,29 +145,16 @@ export const DEALER_PLANS: DealerPlan[] = [
   {
     key: 'pro',
     name: 'Pro',
-    priceLabel: '$399/mo',
-    priceMonthlyAud: 399,
+    priceLabel: '$199/mo',
+    priceMonthlyAud: 199,
     listingLimit: 'unlimited',
-    desc: 'Unlimited listings, featured slots, market position, team (3 seats)',
+    desc: 'Unlimited listings, featured slots, bulk import, team access',
     features: [
       'Unlimited active listings',
       'Featured listing slots',
-      'Market-position analytics',
+      'Bulk CSV import',
       'Team access (3 seats)',
-    ],
-  },
-  {
-    key: 'enterprise',
-    name: 'Enterprise',
-    priceLabel: 'From $999/mo',
-    priceMonthlyAud: 999,
-    listingLimit: 'unlimited',
-    desc: 'Bulk import, white-label dealer page, custom integrations',
-    features: [
-      'Bulk CSV import (200 rows/upload)',
-      'White-label /dealers/[id] page',
-      'Custom API integrations',
-      'Priority support',
+      'Market-position analytics',
     ],
   },
 ];

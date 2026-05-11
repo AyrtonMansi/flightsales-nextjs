@@ -72,7 +72,6 @@ const BusinessDashboardPage = ({ user, setPage, signOut, onSelectListing }) => {
     switch (user?.subscription_plan) {
       case 'dealer_lite':       return 'Dealer Lite';
       case 'pro':               return 'Pro';
-      case 'enterprise':        return 'Enterprise';
       case 'private_premium':   return 'Premium Private';
       default:                  return 'Free';
     }

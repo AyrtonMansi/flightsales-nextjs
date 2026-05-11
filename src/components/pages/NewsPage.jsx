@@ -1,11 +1,12 @@
 'use client';
 import { useState } from 'react';
 import { useNews } from '../../lib/hooks';
-import { NEWS_ARTICLES } from '../../lib/constants';
 
 const NewsPage = () => {
   const { articles: dbArticles, loading } = useNews(20);
-  const articles = dbArticles.length > 0 ? dbArticles : NEWS_ARTICLES;
+  // Real DB articles only — the placeholder NEWS_ARTICLES seed was
+  // retired pre-launch. Empty state below covers the no-articles case.
+  const articles = dbArticles;
   const [activeCategory, setActiveCategory] = useState('All');
   const categories = ['All', 'Market', 'Regulation', 'Industry', 'Technology', 'Reviews'];
   const filteredArticles = activeCategory === 'All' ? articles : articles.filter(a => a.category === activeCategory);
@@ -33,6 +34,20 @@ const NewsPage = () => {
           </div>
           {loading ? (
             [1,2,3].map(i => <div key={i} className="fs-news-card" style={{ marginBottom: 16, height: 120, background: "var(--fs-gray-100)", borderRadius: "var(--fs-radius)", animation: "fs-pulse 1.5s ease-in-out infinite" }} />)
+          ) : filteredArticles.length === 0 ? (
+            <div style={{
+              padding: '48px 32px',
+              textAlign: 'center',
+              border: '1px solid var(--fs-line)',
+              borderRadius: 'var(--fs-radius-lg)',
+              background: 'var(--fs-bg-2)',
+            }}>
+              <h3 style={{ fontSize: 18, fontWeight: 700, marginBottom: 8 }}>No articles yet</h3>
+              <p style={{ fontSize: 14, color: 'var(--fs-ink-3)', maxWidth: 480, margin: '0 auto', lineHeight: 1.5 }}>
+                We&apos;re lining up the first wave of aviation news. Check back
+                soon for market reports, regulatory updates, and industry stories.
+              </p>
+            </div>
           ) : filteredArticles.map(a => (
             <div key={a.id} className="fs-news-card" style={{ marginBottom: 16 }}>
               <span className={`fs-news-tag ${a.category.toLowerCase()}`}>{a.category}</span>

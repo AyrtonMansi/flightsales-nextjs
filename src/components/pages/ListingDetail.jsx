@@ -8,7 +8,6 @@ import AffiliateCTA from '../affiliates/AffiliateCTA';
 import ReportListingModal from '../ReportListingModal';
 import { useAircraft } from '../../lib/hooks';
 import { formatPriceFull, formatHours, timeAgo, isJustListed } from '../../lib/format';
-import { DEALERS } from '../../lib/constants';
 
 const ListingDetail = ({ listing, onBack, savedIds, onSave, user, onSelectDealer }) => {
   const [showEnquiry, setShowEnquiry] = useState(false);
@@ -32,10 +31,13 @@ const ListingDetail = ({ listing, onBack, savedIds, onSave, user, onSelectDealer
   const l = listing;
   const rawDealer = l.dealer;
   const dealerName = (rawDealer && typeof rawDealer === 'object') ? rawDealer.name : (typeof rawDealer === 'string' ? rawDealer : null);
-  // Resolve a navigable dealer object: prefer joined object, else fall back to DEALERS lookup by id/name
+  // Resolve a navigable dealer object: when the listing query joined
+  // dealers we get the full row; otherwise we only have whatever the
+  // listing carries (name string at best). The DEALERS placeholder
+  // fallback was retired pre-launch.
   const dealerObj = (rawDealer && typeof rawDealer === 'object')
     ? rawDealer
-    : (DEALERS.find(d => d.id === l.dealer_id) || DEALERS.find(d => d.name === dealerName) || (dealerName ? { name: dealerName } : {}));
+    : (dealerName ? { name: dealerName } : {});
   const canOpenDealer = !!(onSelectDealer && (dealerObj.id || dealerObj.name));
   const isSaved = savedIds.has(l.id);
   // monthlyEst removed — was a naive l.price * 0.008 multiplier, not real amortisation

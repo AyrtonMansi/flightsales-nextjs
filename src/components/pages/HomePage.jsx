@@ -7,7 +7,8 @@ import HomeTypeRow from '../HomeTypeRow';
 import HeroSearchPro from '../hero/HeroSearchPro';
 import HeroIllustration from '../hero/HeroIllustration';
 import { useAircraft, useFeaturedAircraft, useLatestAircraft, useDealers, useNews } from '../../lib/hooks';
-import { DEALERS, NEWS_ARTICLES } from '../../lib/constants';
+// DEALERS + NEWS_ARTICLES placeholder seeds were retired pre-launch.
+// Surfaces below render real DB rows only via useDealers / useNews.
 import { useRotatingPlaceholder, AI_SEARCH_EXAMPLES } from '../../lib/useRotatingPlaceholder';
 import { parseAiQuery } from '../../lib/parseAiQuery';
 
@@ -35,8 +36,11 @@ const HomePage = ({ setPage, setSelectedListing, savedIds, onSave, setSearchFilt
   const featured = hasServerData ? initialHomeData.featured : featuredFromDB;
   const latest = hasServerData ? initialHomeData.latest : latestFromDB;
   const totalListings = hasServerData ? initialHomeData.totalListings : clientTotal;
-  const displayDealers = dealersFromDB.length > 0 ? dealersFromDB : DEALERS;
-  const displayNews = newsFromDB.length > 0 ? newsFromDB : NEWS_ARTICLES;
+  // Render real DB rows only. The placeholder fallbacks (DEALERS,
+  // NEWS_ARTICLES) were removed pre-launch so the live homepage shows
+  // genuine empty states rather than fake dealers and stub news.
+  const displayDealers = dealersFromDB;
+  const displayNews = newsFromDB;
   // Skeleton flag — server data is never loading
   void featuredLoading; void latestLoading;
 
@@ -112,8 +116,12 @@ const HomePage = ({ setPage, setSelectedListing, savedIds, onSave, setSearchFilt
           {totalListings > 0 && (
             <div className="fs-stats">
               <div className="fs-stat"><div className="fs-stat-num">{totalListings.toLocaleString()}</div><div className="fs-stat-label">Listings</div></div>
-              <div className="fs-stat"><div className="fs-stat-num">{displayDealers.length}</div><div className="fs-stat-label">Dealers</div></div>
-              <div className="fs-stat"><div className="fs-stat-num">{new Set(displayDealers.map(d => (d.location || '').split(',').pop().trim())).size}</div><div className="fs-stat-label">States</div></div>
+              {displayDealers.length > 0 && (
+                <>
+                  <div className="fs-stat"><div className="fs-stat-num">{displayDealers.length}</div><div className="fs-stat-label">Dealers</div></div>
+                  <div className="fs-stat"><div className="fs-stat-num">{new Set(displayDealers.map(d => (d.location || '').split(',').pop().trim())).size}</div><div className="fs-stat-label">States</div></div>
+                </>
+              )}
             </div>
           )}
         </div>
@@ -175,59 +183,67 @@ const HomePage = ({ setPage, setSelectedListing, savedIds, onSave, setSearchFilt
         </div>
       </section>
 
-      {/* DEALERS */}
-      <section className="fs-section">
-        <div className="fs-container">
-          <div className="fs-section-header">
-            <div>
-              <h2 className="fs-section-title">Verified dealers</h2>
-              <p className="fs-section-sub">Trusted aviation specialists across Australia.</p>
+      {/* DEALERS — hide entirely until at least one verified dealer
+          exists, otherwise the homepage shows an empty heading + grid
+          which reads worse than the section just not appearing. */}
+      {displayDealers.length > 0 && (
+        <section className="fs-section">
+          <div className="fs-container">
+            <div className="fs-section-header">
+              <div>
+                <h2 className="fs-section-title">Verified dealers</h2>
+                <p className="fs-section-sub">Trusted aviation specialists across Australia.</p>
+              </div>
+              <Link href="/dealers" className="fs-section-link">All dealers {Icons.arrowRight}</Link>
             </div>
-            <Link href="/dealers" className="fs-section-link">All dealers {Icons.arrowRight}</Link>
-          </div>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(320px, 1fr))", gap: 16 }}>
-            {displayDealers.slice(0, 6).map(d => (
-              <Link key={d.id} href="/dealers" className="fs-dealer-card" style={{ cursor: "pointer", textDecoration: 'none', color: 'inherit', display: 'flex', gap: 16, alignItems: 'center' }}>
-                <div className="fs-dealer-avatar">{d.logo}</div>
-                <div className="fs-dealer-info">
-                  <div className="fs-dealer-name">{d.name}</div>
-                  <div className="fs-dealer-loc">{Icons.location} {d.location}</div>
-                  <div className="fs-dealer-stats">
-                    <span>{d.listings} listings</span>
-                    <span className="fs-dealer-rating">{Icons.star} {d.rating}</span>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(320px, 1fr))", gap: 16 }}>
+              {displayDealers.slice(0, 6).map(d => (
+                <Link key={d.id} href="/dealers" className="fs-dealer-card" style={{ cursor: "pointer", textDecoration: 'none', color: 'inherit', display: 'flex', gap: 16, alignItems: 'center' }}>
+                  <div className="fs-dealer-avatar">{d.logo}</div>
+                  <div className="fs-dealer-info">
+                    <div className="fs-dealer-name">{d.name}</div>
+                    <div className="fs-dealer-loc">{Icons.location} {d.location}</div>
+                    <div className="fs-dealer-stats">
+                      <span>{d.listings} listings</span>
+                      <span className="fs-dealer-rating">{Icons.star} {d.rating}</span>
+                    </div>
                   </div>
-                </div>
-              </Link>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* NEWS */}
-      <section className="fs-section fs-section-alt">
-        <div className="fs-container">
-          <div className="fs-section-header">
-            <div>
-              <h2 className="fs-section-title">Aviation news</h2>
-              <p className="fs-section-sub">Industry updates, market trends, and regulatory news.</p>
+                </Link>
+              ))}
             </div>
-            <Link href="/news" className="fs-section-link">All articles {Icons.arrowRight}</Link>
           </div>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: 20 }}>
-            {displayNews.slice(0, 3).map(a => (
-              <Link key={a.id} href="/news" className="fs-news-card" style={{ textDecoration: 'none', color: 'inherit', display: 'block' }}>
-                <span className={`fs-news-tag ${a.category.toLowerCase()}`}>{a.category}</span>
-                <div className="fs-news-title">{a.title}</div>
-                <div className="fs-news-excerpt">{a.excerpt}</div>
-                <div className="fs-news-footer">
-                  <span>{a.date}</span>
-                  <span>{a.read_time} min read</span>
-                </div>
-              </Link>
-            ))}
+        </section>
+      )}
+
+      {/* NEWS — same pattern: hide the section until at least one
+          real article is published, so we don't ship an empty "news"
+          shell on the homepage. */}
+      {displayNews.length > 0 && (
+        <section className="fs-section fs-section-alt">
+          <div className="fs-container">
+            <div className="fs-section-header">
+              <div>
+                <h2 className="fs-section-title">Aviation news</h2>
+                <p className="fs-section-sub">Industry updates, market trends, and regulatory news.</p>
+              </div>
+              <Link href="/news" className="fs-section-link">All articles {Icons.arrowRight}</Link>
+            </div>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: 20 }}>
+              {displayNews.slice(0, 3).map(a => (
+                <Link key={a.id} href="/news" className="fs-news-card" style={{ textDecoration: 'none', color: 'inherit', display: 'block' }}>
+                  <span className={`fs-news-tag ${a.category.toLowerCase()}`}>{a.category}</span>
+                  <div className="fs-news-title">{a.title}</div>
+                  <div className="fs-news-excerpt">{a.excerpt}</div>
+                  <div className="fs-news-footer">
+                    <span>{a.date}</span>
+                    <span>{a.read_time} min read</span>
+                  </div>
+                </Link>
+              ))}
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
     </>
   );
 };
