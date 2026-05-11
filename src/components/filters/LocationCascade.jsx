@@ -55,24 +55,11 @@ export default function LocationCascade({
 
   const userRegionKey = regionKeyForCountry(userCountry);
 
-  // Auto-open the user's region + country once the geo resolves.
-  useEffect(() => {
-    if (!userRegionKey) return;
-    setOpenRegions((prev) => {
-      if (prev.has(userRegionKey)) return prev;
-      const next = new Set(prev);
-      next.add(userRegionKey);
-      return next;
-    });
-    if (userCountry) {
-      setOpenCountries((prev) => {
-        if (prev.has(userCountry)) return prev;
-        const next = new Set(prev);
-        next.add(userCountry);
-        return next;
-      });
-    }
-  }, [userRegionKey, userCountry]);
+  // Location starts fully collapsed on landing — only region rows are
+  // visible, click to expand. The home region is still ordered first
+  // (via orderRegionsForUser below) so it's the easiest one to find,
+  // but auto-expanding it polluted the rail with eight AU state rows
+  // on every page-load for a buyer who often hadn't asked for them.
 
   // Helpers for count lookups — accept Map or plain object.
   const countFor = (map, key) => {
