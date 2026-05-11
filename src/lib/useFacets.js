@@ -28,6 +28,7 @@ function listingMatches(listing, filters, excludeField) {
   const makes       = excludeField === 'manufacturers' ? [] : (filters.manufacturers ?? []);
   const models      = excludeField === 'models'        ? [] : (filters.models        ?? []);
   const states      = excludeField === 'states'        ? [] : (filters.states        ?? []);
+  const countries   = excludeField === 'countries'     ? [] : (filters.countries     ?? []);
   const conditions  = excludeField === 'conditions'    ? [] : (filters.conditions    ?? []);
   const engineCounts = excludeField === 'engineCounts' ? [] : (filters.engineCounts  ?? []);
   const engineTypes  = excludeField === 'engineTypes'  ? [] : (filters.engineTypes   ?? []);
@@ -40,6 +41,7 @@ function listingMatches(listing, filters, excludeField) {
   if (makes.length       && !makes.includes(listing.manufacturer)) return false;
   if (models.length      && !models.includes(listing.model)) return false;
   if (states.length      && !states.includes(listing.state)) return false;
+  if (countries.length   && !countries.includes(listing.country)) return false;
   if (conditions.length  && !conditions.includes(listing.condition)) return false;
   if (engineCounts.length && !engineCounts.includes(listing.engine_count)) return false;
   if (engineTypes.length  && !engineTypes.includes(listing.engine_type_category)) return false;
@@ -107,6 +109,7 @@ export function useFacets(filterState) {
         modelCounts:       new Map(),
         categoryCounts:    new Map(),
         stateCounts:       new Map(),
+        countryCounts:     new Map(),
         conditionCounts:   new Map(),
         engineCountCounts: new Map(),
         engineTypeCounts:  new Map(),
@@ -128,6 +131,7 @@ export function useFacets(filterState) {
       makeCounts:        tallyBy(subsetExcluding('manufacturers'), 'manufacturer'),
       modelCounts:       tallyBy(subsetExcluding('models'),        'model'),
       stateCounts:       tallyBy(subsetExcluding('states'),        'state'),
+      countryCounts:     tallyBy(subsetExcluding('countries'),     'country'),
       conditionCounts:   tallyBy(subsetExcluding('conditions'),    'condition'),
       engineCountCounts: tallyBy(subsetExcluding('engineCounts'),  'engine_count'),
       engineTypeCounts:  tallyBy(subsetExcluding('engineTypes'),   'engine_type_category'),

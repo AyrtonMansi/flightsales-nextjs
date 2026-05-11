@@ -276,6 +276,8 @@ export default function FilterColumn({ state, dispatch, total, user }) {
             selectedStates={state.states}
             onToggleCountry={v => toggle('countries', v)}
             onToggleState={v => toggle('states', v)}
+            countryCounts={facets.countryCounts}
+            stateCounts={facets.stateCounts}
           />
         </div>
 
