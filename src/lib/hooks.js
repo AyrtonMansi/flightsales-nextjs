@@ -238,9 +238,11 @@ export function useFeaturedAircraft() {
       }
     }
     fetch();
-    // Timeout: stop loading after 5s if Supabase is unresponsive
-    const timer = setTimeout(() => setLoading(false), 5000);
-    return () => clearTimeout(timer);
+    // No safety-net timeout: the previous setTimeout(setLoading(false), 5000)
+    // fired unconditionally and caused a flicker — at t=5s we flipped to
+    // "loaded" with no data, then at t=6s the real query landed and
+    // re-rendered with data. The `finally` block above already covers
+    // both resolve and reject paths.
   }, []);
 
   return { aircraft, loading, error };
@@ -267,9 +269,7 @@ export function useLatestAircraft() {
       }
     }
     fetch();
-    // Timeout: stop loading after 5s if Supabase is unresponsive
-    const timer = setTimeout(() => setLoading(false), 5000);
-    return () => clearTimeout(timer);
+    // No 5s timeout — same flicker fix as useFeaturedAircraft.
   }, []);
 
   return { aircraft, loading };

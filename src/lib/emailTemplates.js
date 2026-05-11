@@ -265,6 +265,53 @@ const TEMPLATES = {
     }),
     text: `Hi ${v.userName} — we've forwarded your details to ${v.partnerName}. They'll typically reach out within 24 hours.`,
   }),
+
+  // 13. Onboarding nudge — Day 2 (no listing yet).
+  // Different subject + body from auth.welcome so the user doesn't see
+  // the same email three times across signup → Day 2 → Day 7. Each
+  // step has a distinct ask + CTA.
+  'onboarding.day2': (v) => ({
+    subject: 'Quick start: list your aircraft in 4 steps',
+    html: shell({
+      preheader: "It takes about 5 minutes — we'll guide you.",
+      body: `
+        <h2 style="font-size:18px;margin:0 0 12px;">Hi${v.firstName ? `, ${escape(v.firstName)}` : ''} — ready to list?</h2>
+        <p style="margin:0 0 14px;">You signed up 2 days ago. The fastest sellers list within their first week and reach hundreds of buyers in days.</p>
+        <p style="margin:0 0 12px;font-weight:600;">The 4 steps:</p>
+        <ol style="margin:0 0 18px;padding-left:18px;font-size:14px;line-height:1.7;color:#27272a;">
+          <li>Aircraft details (we auto-fill from your VH rego)</li>
+          <li>Specs &amp; condition</li>
+          <li>Photos (drag-to-reorder)</li>
+          <li>Review &amp; submit</li>
+        </ol>
+        <p style="margin:0 0 20px;">${btn(`${SITE}/sell`, 'Start listing')}</p>
+        <p style="margin:0;color:#71717a;font-size:13px;">Just browsing? Save aircraft to your dashboard and we'll alert you on price drops.</p>
+      `,
+    }),
+    text: `Ready to list your aircraft? It takes ~5 minutes. Start: ${SITE}/sell`,
+  }),
+
+  // 14. Onboarding nudge — Day 7 (final, no listing yet).
+  // Last touch — softer, asks if there's a blocker rather than nudging.
+  'onboarding.day7': (v) => ({
+    subject: 'Need a hand listing your aircraft?',
+    html: shell({
+      preheader: "We're here if you got stuck.",
+      body: `
+        <h2 style="font-size:18px;margin:0 0 12px;">Hi${v.firstName ? `, ${escape(v.firstName)}` : ''} — anything we can help with?</h2>
+        <p style="margin:0 0 14px;">You signed up a week ago but haven't listed yet. That's completely fine — but if you got stuck on something (photos, pricing, specs), just reply to this email and we'll sort it out.</p>
+        <p style="margin:0 0 14px;">Common holdups we can help with:</p>
+        <ul style="margin:0 0 18px;padding-left:18px;font-size:14px;line-height:1.7;color:#27272a;">
+          <li>What's a fair asking price for your make/model</li>
+          <li>Which photos make the biggest difference</li>
+          <li>Specs you can leave blank without losing buyer interest</li>
+        </ul>
+        <p style="margin:0 0 20px;">${btn(`${SITE}/sell`, 'Pick up where I left off')}</p>
+        <p style="margin:0;color:#71717a;font-size:13px;">Not selling after all? You can ignore this — we won't email about listing again.</p>
+      `,
+    }),
+    text: `Need help listing your aircraft? Reply to this email or pick up at ${SITE}/sell`,
+  }),
 };
 
 function escape(s) {

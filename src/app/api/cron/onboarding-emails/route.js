@@ -71,8 +71,8 @@ export async function GET(req) {
     if (!u.email) continue;
     await sendEmail({
       to: u.email,
-      template: 'auth.welcome',  // re-uses welcome shell w/ different vars
-      vars: { firstName: u.full_name?.split(' ')[0], step: 'day2' },
+      template: 'onboarding.day2',
+      vars: { firstName: u.full_name?.split(' ')[0] },
     });
     await supabase.from('profiles').update({ onboarding_step_sent: 'day2' }).eq('id', u.id);
     day2Sent += 1;
@@ -90,8 +90,8 @@ export async function GET(req) {
     if (!u.email) continue;
     await sendEmail({
       to: u.email,
-      template: 'auth.welcome',
-      vars: { firstName: u.full_name?.split(' ')[0], step: 'day7' },
+      template: 'onboarding.day7',
+      vars: { firstName: u.full_name?.split(' ')[0] },
     });
     await supabase.from('profiles').update({ onboarding_step_sent: 'day7' }).eq('id', u.id);
     day7Sent += 1;

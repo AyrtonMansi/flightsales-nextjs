@@ -66,6 +66,22 @@ export async function POST(req) {
   const supabase = adminClient();
   if (!supabase) return NextResponse.json({ ok: false, error: 'no_db' }, { status: 500 });
 
+  // Validate the listing exists AND is active. Without this an attacker
+  // can spam enquiries against arbitrary UUIDs (filling up enquiries +
+  // triggering seller notifications + admin emails). Also catches
+  // typos in the client form before we send an email.
+  const { data: targetListing } = await supabase
+    .from('aircraft')
+    .select('id, status, user_id')
+    .eq('id', aircraftId)
+    .maybeSingle();
+  if (!targetListing) {
+    return NextResponse.json({ ok: false, error: 'listing_not_found' }, { status: 404 });
+  }
+  if (targetListing.status !== 'active') {
+    return NextResponse.json({ ok: false, error: 'listing_not_available' }, { status: 410 });
+  }
+
   // 1) Persist the enquiry.
   const { data: enquiry, error: enquiryErr } = await supabase
     .from('enquiries')

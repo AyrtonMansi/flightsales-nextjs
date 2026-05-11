@@ -13,6 +13,7 @@ import { NextResponse, type NextRequest } from 'next/server';
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 import { sendEmail } from '../../../lib/email';
 import { rateLimit, callerIp } from '../../../lib/ratelimit';
+import { assertSafeOutboundUrl } from '../../../lib/ssrfGuard';
 
 export const runtime = 'nodejs';
 
@@ -152,39 +153,53 @@ export async function POST(req: NextRequest) {
       deliveryStatus = r.ok ? 'delivered' : 'failed';
       deliveryError = r.ok ? null : (r.reason || 'send_failed');
     } else if (partner.lead_capture_method === 'webhook' && partner.lead_webhook_url) {
-      const res = await fetch(partner.lead_webhook_url, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          source: 'flightsales.com.au',
-          lead_id: lead.id,
-          ...dispatchVars,
-        }),
-      });
-      deliveryStatus = res.ok ? 'delivered' : 'failed';
-      let parsed = null;
-      try { parsed = await res.json(); } catch { /* not json — fine */ }
-      deliveryResponse = parsed;
-      if (!res.ok) deliveryError = `webhook_${res.status}`;
+      // SSRF guard — admin-configured URL is trusted, but defense-in-depth
+      // rejects any private/loopback/link-local resolution (e.g. AWS
+      // metadata at 169.254.169.254) and non-HTTPS schemes.
+      const ssrf = await assertSafeOutboundUrl(partner.lead_webhook_url);
+      if (ssrf) {
+        deliveryError = `unsafe_webhook_url:${ssrf}`;
+      } else {
+        const res = await fetch(partner.lead_webhook_url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            source: 'flightsales.com.au',
+            lead_id: lead.id,
+            ...dispatchVars,
+          }),
+          // Cap delivery latency so a slow partner can't tie up our function.
+          signal: AbortSignal.timeout(8000),
+        });
+        deliveryStatus = res.ok ? 'delivered' : 'failed';
+        let parsed = null;
+        try { parsed = await res.json(); } catch { /* not json — fine */ }
+        deliveryResponse = parsed;
+        if (!res.ok) deliveryError = `webhook_${res.status}`;
+      }
     } else if (partner.lead_capture_method === 'api' && partner.api_endpoint_url) {
-      // Generic API delivery — partners that want this share an endpoint
-      // and we send a Bearer-auth POST. Each partner's exact contract
-      // can extend this later via a per-partner adapter.
-      const res = await fetch(partner.api_endpoint_url, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          ...(partner.api_credential_secret
-            ? { 'Authorization': `Bearer ${partner.api_credential_secret}` }
-            : {}),
-        },
-        body: JSON.stringify({ source: 'flightsales.com.au', lead_id: lead.id, ...dispatchVars }),
-      });
-      deliveryStatus = res.ok ? 'delivered' : 'failed';
-      let parsed = null;
-      try { parsed = await res.json(); } catch { /* not json */ }
-      deliveryResponse = parsed;
-      if (!res.ok) deliveryError = `api_${res.status}`;
+      // Generic API delivery — same SSRF guard + timeout as webhook.
+      const ssrf = await assertSafeOutboundUrl(partner.api_endpoint_url);
+      if (ssrf) {
+        deliveryError = `unsafe_api_url:${ssrf}`;
+      } else {
+        const res = await fetch(partner.api_endpoint_url, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            ...(partner.api_credential_secret
+              ? { 'Authorization': `Bearer ${partner.api_credential_secret}` }
+              : {}),
+          },
+          body: JSON.stringify({ source: 'flightsales.com.au', lead_id: lead.id, ...dispatchVars }),
+          signal: AbortSignal.timeout(8000),
+        });
+        deliveryStatus = res.ok ? 'delivered' : 'failed';
+        let parsed = null;
+        try { parsed = await res.json(); } catch { /* not json */ }
+        deliveryResponse = parsed;
+        if (!res.ok) deliveryError = `api_${res.status}`;
+      }
     } else {
       deliveryError = 'no_delivery_method_configured';
     }

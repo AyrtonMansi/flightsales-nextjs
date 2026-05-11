@@ -1037,3 +1037,54 @@ CREATE TRIGGER block_seller_status_flip_trigger
   BEFORE UPDATE ON aircraft
   FOR EACH ROW
   EXECUTE FUNCTION block_seller_status_flip();
+
+-- ============================================================
+-- 4) Storage policy hardening — tie listingId-folder uploads to
+--    listing ownership. The previous policies let any authenticated
+--    user upload/update/delete into ANY listingId/ prefix. With the
+--    path pattern "<listing_id>/<timestamp>.<ext>", we check that
+--    the first folder segment is a listing owned by auth.uid().
+-- ============================================================
+
+DROP POLICY IF EXISTS "Authenticated users can upload aircraft images" ON storage.objects;
+DROP POLICY IF EXISTS "Authenticated users can update aircraft images" ON storage.objects;
+DROP POLICY IF EXISTS "Authenticated users can delete aircraft images" ON storage.objects;
+
+-- INSERT: must own the listing the path is under.
+CREATE POLICY "Owners can upload aircraft images"
+  ON storage.objects FOR INSERT
+  TO authenticated
+  WITH CHECK (
+    bucket_id = 'aircraft-images'
+    AND EXISTS (
+      SELECT 1 FROM aircraft
+      WHERE id::text = (storage.foldername(name))[1]
+        AND user_id = auth.uid()
+    )
+  );
+
+-- UPDATE: same ownership test.
+CREATE POLICY "Owners can update aircraft images"
+  ON storage.objects FOR UPDATE
+  TO authenticated
+  USING (
+    bucket_id = 'aircraft-images'
+    AND EXISTS (
+      SELECT 1 FROM aircraft
+      WHERE id::text = (storage.foldername(name))[1]
+        AND user_id = auth.uid()
+    )
+  );
+
+-- DELETE: same ownership test.
+CREATE POLICY "Owners can delete aircraft images"
+  ON storage.objects FOR DELETE
+  TO authenticated
+  USING (
+    bucket_id = 'aircraft-images'
+    AND EXISTS (
+      SELECT 1 FROM aircraft
+      WHERE id::text = (storage.foldername(name))[1]
+        AND user_id = auth.uid()
+    )
+  );

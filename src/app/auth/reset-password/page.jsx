@@ -12,6 +12,11 @@ export default function ResetPasswordPage() {
   const [error, setError] = useState(null);
   const [done, setDone] = useState(false);
   const [sessionReady, setSessionReady] = useState(false);
+  // After 8s without a session arriving, surface a recovery CTA so the
+  // user isn't stuck on "Verifying reset link..." indefinitely (happens
+  // when the link is expired, already-used, or Supabase URL config is
+  // wrong and the redirect didn't actually hand off a session).
+  const [sessionTimedOut, setSessionTimedOut] = useState(false);
 
   useEffect(() => {
     // Supabase puts the session in URL hash on redirect — ensure we have a session
@@ -21,7 +26,11 @@ export default function ResetPasswordPage() {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setSessionReady(!!session);
     });
-    return () => subscription?.unsubscribe();
+    const timer = setTimeout(() => setSessionTimedOut(true), 8000);
+    return () => {
+      subscription?.unsubscribe();
+      clearTimeout(timer);
+    };
   }, []);
 
   const handleSubmit = async (e) => {
@@ -48,9 +57,36 @@ export default function ResetPasswordPage() {
         <h1 style={{ fontSize: 28, fontWeight: 700, letterSpacing: '-0.04em', marginBottom: 8, color: '#000' }}>Set a new password</h1>
         <p style={{ fontSize: 14, color: '#545454', marginBottom: 24, lineHeight: 1.5 }}>Choose a secure password — at least 8 characters.</p>
 
-        {!sessionReady && !done && (
+        {!sessionReady && !done && !sessionTimedOut && (
           <div style={{ padding: 16, background: '#F6F6F6', borderRadius: 8, fontSize: 14, color: '#545454', marginBottom: 16 }}>
             Verifying reset link...
+          </div>
+        )}
+
+        {!sessionReady && !done && sessionTimedOut && (
+          <div style={{ padding: 16, background: '#FFF7ED', border: '1px solid #FED7AA', borderRadius: 8, fontSize: 14, color: '#9A3412', marginBottom: 16, lineHeight: 1.5 }}>
+            <div style={{ fontWeight: 600, marginBottom: 4, color: '#7C2D12' }}>This reset link didn&apos;t work</div>
+            <p style={{ margin: '0 0 12px' }}>
+              The link may have expired or already been used. Request a fresh
+              link and try again.
+            </p>
+            <button
+              type="button"
+              onClick={() => router.push('/login?reset=1')}
+              style={{
+                padding: '10px 18px',
+                background: '#000',
+                color: 'white',
+                border: 'none',
+                borderRadius: 8,
+                fontSize: 14,
+                fontWeight: 600,
+                cursor: 'pointer',
+                fontFamily: 'inherit',
+              }}
+            >
+              Request a new reset link →
+            </button>
           </div>
         )}
 
