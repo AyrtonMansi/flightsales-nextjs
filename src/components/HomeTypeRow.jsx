@@ -3,179 +3,197 @@
 // Aircraft type icon row — horizontal scroll of black silhouettes that
 // pre-fill the Type dropdown in the hero search when clicked.
 //
-// Icons are inline SVGs at currentColor so the active-state colour
-// inversion (white-on-ink) works without per-icon variants. Each
-// silhouette is a clean iconic representation, not a literal photo
-// rendering — recognisable shape at small sizes.
+// Design rules enforced across all 9:
+//   - 40x24 viewBox, plane heading LEFT (nose on the left)
+//   - 3-5 geometric primitives per icon (rect, ellipse, circle, or
+//     polygon path with L-segments only). No freehand Bezier
+//     curves — that's what made the previous pass read as
+//     "slightly off".
+//   - Whole or half-pixel coordinates so paths render crisp at 1x/2x/3x
+//   - Shared horizontal centerline (y=12) for top-down views so the
+//     row reads as a cohesive family at a glance
+//   - Top-down planform for fixed-wing where wingspan is the defining
+//     silhouette; side view for helicopter/gyrocopter where the
+//     rotor is the defining feature
 //
-// Design pass: redrawn with simpler primitive geometry. The previous
-// versions read as "weird jet" shapes because they had too many
-// overlapping micro-shapes; these pare back to 3-5 clean elements per
-// icon. Top-down for fixed-wing (clearer wingspan), side-view for
-// helicopters / gliders / quadcopters where the rotors / wings define
-// the silhouette.
+// Type reference points (real aircraft used for proportions):
+//   Cessna 172   - single piston   - high wing, big spinner
+//   Beech Baron  - multi piston    - low wing twin, wing-mounted props
+//   Pilatus PC-12 / King Air - turboprop - low wing, large prop nacelles
+//   Citation Mustang - light jet   - swept wing, rear-mount engines
+//   Robinson R44 - helicopter      - side view, main + tail rotor + skids
+//   Sling 2 / Tecnam P92 - LSA     - low wing, slim, bubble canopy
+//   ASW 28       - glider          - very long thin wings
+//   Magni M16    - gyrocopter      - top rotor disc + pusher prop pod
+//   Generic quad - drone & eVTOL   - top-down quad
 //
-// Categories match the values in src/lib/constants.js CATEGORIES so
-// clicking pre-fills the dropdown correctly.
+// Inline SVGs use currentColor so the active-state colour inversion
+// (white-on-ink) works without per-icon variants. Categories match
+// CATEGORIES in lib/constants.js so clicking pre-fills correctly.
 
 const TYPES = [
   {
-    // Top-down Cessna 172: nose spinner + slim fuselage + a single
-    // wide perpendicular wing (high-wing aircraft read as one
-    // continuous wing block from above).
+    // Cessna 172 from above. Long fuselage running x=4..32, full-width
+    // high wing perpendicular at the cabin, small horizontal stab at
+    // the tail, prop spinner on the nose.
     value: 'Single Engine Piston',
     label: 'Single piston',
     icon: (
       <svg viewBox="0 0 40 24" fill="currentColor" aria-hidden="true">
-        <rect x="14" y="3" width="6" height="18" rx="1.6" />
-        <rect x="3" y="11" width="28" height="2" rx="1" />
-        <circle cx="3.5" cy="12" r="1.8" />
-        <rect x="29" y="8.5" width="3" height="7" rx="0.7" />
-        <rect x="32" y="11" width="2" height="2" rx="0.4" />
+        <circle cx="4" cy="12" r="1.6" />
+        <rect x="4" y="11" width="28" height="2" rx="1" />
+        <rect x="13" y="2" width="6" height="20" rx="1" />
+        <rect x="28" y="8" width="4" height="8" rx="0.7" />
       </svg>
     ),
   },
   {
-    // Top-down Beech Baron / Piper Seneca: same straight-wing
-    // GA airframe, but two engine pods on the wings (each hinted
-    // with a prop blade ahead of the nacelle) and no nose engine.
+    // Beech Baron from above. Pointed nose (no engine in nose), low-wing
+    // monoplane with TWO engine nacelles on the wings; small prop disc
+    // hint ahead of each nacelle.
     value: 'Multi Engine Piston',
     label: 'Twin piston',
     icon: (
       <svg viewBox="0 0 40 24" fill="currentColor" aria-hidden="true">
-        <rect x="14" y="3" width="6" height="18" rx="1.6" />
-        <ellipse cx="15" cy="5.5" rx="2.4" ry="1.6" />
-        <ellipse cx="15" cy="18.5" rx="2.4" ry="1.6" />
-        <rect x="13" y="2.2" width="4" height="0.9" rx="0.4" />
-        <rect x="13" y="20.9" width="4" height="0.9" rx="0.4" />
-        <rect x="3" y="11" width="28" height="2" rx="1" />
-        <ellipse cx="3.5" cy="12" rx="2" ry="1.4" />
-        <rect x="29" y="8.5" width="3" height="7" rx="0.7" />
-        <rect x="32" y="11" width="2" height="2" rx="0.4" />
+        <path d="M 3 11 L 6 10 L 6 14 L 3 13 Z" />
+        <rect x="6" y="11" width="26" height="2" rx="1" />
+        <rect x="13" y="2" width="6" height="20" rx="1" />
+        <ellipse cx="15" cy="5" rx="1.9" ry="1.2" />
+        <ellipse cx="15" cy="19" rx="1.9" ry="1.2" />
+        <rect x="13" y="2.3" width="4" height="0.9" rx="0.3" />
+        <rect x="13" y="20.8" width="4" height="0.9" rx="0.3" />
+        <rect x="28" y="8" width="4" height="8" rx="0.7" />
       </svg>
     ),
   },
   {
-    // King Air / PC-12 turboprop: slightly tapered wings, larger
-    // engine pods further outboard, bigger props, T-tail at rear.
+    // Pilatus PC-12 / King Air from above. Larger plane than the Baron
+    // and the wing has slight forward sweep (leading edge straight,
+    // trailing edge tapers inward toward the tail). Wider prop discs
+    // sized for 4/5-blade props.
     value: 'Turboprop',
     label: 'Turboprop',
     icon: (
       <svg viewBox="0 0 40 24" fill="currentColor" aria-hidden="true">
-        <path d="M 11 3 L 19 3 L 21 11 L 13 11 Z" />
-        <path d="M 11 21 L 19 21 L 21 13 L 13 13 Z" />
-        <ellipse cx="14" cy="5.5" rx="2.6" ry="2" />
-        <ellipse cx="14" cy="18.5" rx="2.6" ry="2" />
-        <rect x="11.5" y="1.6" width="5" height="1" rx="0.4" />
-        <rect x="11.5" y="21.4" width="5" height="1" rx="0.4" />
-        <rect x="3" y="10.6" width="27" height="2.8" rx="1.3" />
-        <path d="M 1.5 12 Q 2 10.4, 4 10.4 L 4 13.6 Q 2 13.6, 1.5 12 Z" />
-        <rect x="28" y="6.5" width="3" height="11" rx="0.7" />
-        <rect x="31" y="11" width="2.5" height="2" rx="0.4" />
+        <path d="M 3 11 L 6 10 L 6 14 L 3 13 Z" />
+        <rect x="6" y="10.5" width="24" height="3" rx="1.4" />
+        <path d="M 11 2 L 18 2 L 19 11 L 13 11 Z" />
+        <path d="M 11 22 L 18 22 L 19 13 L 13 13 Z" />
+        <ellipse cx="14" cy="5" rx="2.4" ry="1.6" />
+        <ellipse cx="14" cy="19" rx="2.4" ry="1.6" />
+        <rect x="11" y="2.3" width="6" height="1" rx="0.4" />
+        <rect x="11" y="20.7" width="6" height="1" rx="0.4" />
+        <rect x="28" y="7.5" width="3" height="9" rx="0.6" />
       </svg>
     ),
   },
   {
-    // Citation / Phenom business jet, top-down: more sweep on the
-    // wings, rear-mounted engine pods alongside the fuselage, T-tail.
-    // Rounded nose — not a fighter.
+    // Citation Mustang from above. Two distinguishing features:
+    // significant wing sweep (leading edges angle back from the wing
+    // root) and engine pods on the back fuselage sides instead of on
+    // the wings. T-tail at the rear.
     value: 'Light Jet',
     label: 'Jet',
     icon: (
       <svg viewBox="0 0 40 24" fill="currentColor" aria-hidden="true">
-        <path d="M 13 3 L 18 3 L 25 11 L 14 11 Z" />
-        <path d="M 13 21 L 18 21 L 25 13 L 14 13 Z" />
-        <path d="M 1.5 12 Q 2 10, 4.5 10 L 28 10 L 28 14 L 4.5 14 Q 2 14, 1.5 12 Z" />
-        <ellipse cx="29.5" cy="9" rx="3" ry="1.5" />
-        <ellipse cx="29.5" cy="15" rx="3" ry="1.5" />
-        <rect x="32" y="9" width="2.5" height="6" rx="0.6" />
-        <path d="M 34 11 L 38 11.5 L 38 12.5 L 34 13 Z" />
+        <path d="M 4 10 L 6 10 L 6 14 L 4 14 L 2 12 Z" />
+        <rect x="6" y="10" width="20" height="4" rx="1.8" />
+        <path d="M 14 2 L 18 2 L 26 10 L 14 10 Z" />
+        <path d="M 14 22 L 18 22 L 26 14 L 14 14 Z" />
+        <ellipse cx="29" cy="8.5" rx="3" ry="1.5" />
+        <ellipse cx="29" cy="15.5" rx="3" ry="1.5" />
+        <rect x="30" y="8" width="3" height="8" rx="0.6" />
+        <path d="M 33 11 L 37 11.6 L 37 12.4 L 33 13 Z" />
       </svg>
     ),
   },
   {
-    // Side-view Robinson R44 / Bell JetRanger: long horizontal main
-    // rotor, mast, rounded nose-forward body, tail boom, tail rotor,
-    // skids underneath.
+    // Robinson R44 / Bell JetRanger from the side. Long main-rotor
+    // disc at top, short mast, rounded forward cabin, slim tail boom,
+    // vertical tail rotor, skids underneath with two struts.
     value: 'Helicopter',
     label: 'Helicopter',
     icon: (
       <svg viewBox="0 0 40 24" fill="currentColor" aria-hidden="true">
-        <rect x="5" y="5" width="22" height="1.5" rx="0.7" />
-        <rect x="15" y="3" width="2" height="4" rx="0.3" />
-        <path d="M 6 12 Q 6 8.5, 10 8.5 L 22 8.5 Q 26 8.5, 28 12 L 26 15 L 8 15 Q 6 14, 6 12 Z" />
-        <rect x="24" y="11.2" width="11" height="1.6" rx="0.5" />
-        <rect x="34" y="9" width="1.2" height="6" rx="0.3" />
-        <rect x="32.6" y="11" width="3.5" height="0.9" rx="0.3" />
-        <rect x="9" y="17.5" width="18" height="1" rx="0.4" />
-        <rect x="11" y="15" width="0.8" height="3" />
-        <rect x="24.2" y="15" width="0.8" height="3" />
+        <rect x="5" y="4.5" width="22" height="1.4" rx="0.6" />
+        <rect x="15.4" y="5.9" width="1.6" height="2.6" rx="0.4" />
+        <path d="M 6 9 L 20 9 L 24 9 L 27 12 L 27 14 L 20 16 L 9 16 L 6 14 Z" />
+        <rect x="26" y="11.6" width="11" height="1.6" rx="0.6" />
+        <rect x="35" y="9.5" width="1.4" height="6" rx="0.4" />
+        <rect x="33.5" y="11.8" width="4" height="0.9" rx="0.3" />
+        <rect x="9" y="18" width="18" height="1" rx="0.4" />
+        <rect x="11" y="15.5" width="0.9" height="3" />
+        <rect x="24" y="15.5" width="0.9" height="3" />
       </svg>
     ),
   },
   {
-    // Light sport aircraft (Tecnam / Sling style): low-wing sport
-    // profile to differentiate from the high-wing Cessna single.
-    // Bubble canopy hint, slimmer overall.
+    // Sling 2 / Tecnam P92 from above. Low-wing sport profile to
+    // differentiate from the high-wing 172 — slimmer fuselage, smaller
+    // wing chord, bubble-canopy bulge mid-fuselage. Same small
+    // horizontal stab as a piston single.
     value: 'LSA',
     label: 'LSA',
     icon: (
       <svg viewBox="0 0 40 24" fill="currentColor" aria-hidden="true">
-        <rect x="13" y="6" width="4.5" height="12" rx="1.2" />
-        <rect x="6" y="11" width="22" height="2" rx="1" />
+        <circle cx="5" cy="12" r="1.4" />
+        <rect x="5" y="11.2" width="25" height="1.6" rx="0.8" />
         <ellipse cx="13" cy="12" rx="3" ry="1.6" />
-        <circle cx="6.5" cy="12" r="1.4" />
-        <rect x="26" y="9.5" width="2.5" height="5" rx="0.5" />
-        <rect x="28.5" y="11" width="1.5" height="2" rx="0.3" />
+        <rect x="13" y="5" width="5" height="14" rx="0.8" />
+        <rect x="26" y="9.5" width="3" height="5" rx="0.5" />
       </svg>
     ),
   },
   {
-    // Long thin glider wings dominate the silhouette. Slim
-    // teardrop body, tiny T-tail.
+    // ASW 28 from above. Wingspan dominates the silhouette — long thin
+    // wings span the full viewBox width. Teardrop fuselage tapered
+    // both ends, tiny T-tail at the back.
     value: 'Glider',
     label: 'Glider',
     icon: (
       <svg viewBox="0 0 40 24" fill="currentColor" aria-hidden="true">
-        <rect x="2" y="11.2" width="36" height="1.6" rx="0.8" />
-        <ellipse cx="19" cy="12" rx="7" ry="2.2" />
-        <rect x="25" y="9" width="1.4" height="6" rx="0.3" />
-        <rect x="23.5" y="9" width="4" height="1" rx="0.3" />
+        <rect x="2" y="11.3" width="36" height="1.4" rx="0.7" />
+        <path d="M 5 12 L 12 10 L 26 10 L 31 12 L 26 14 L 12 14 Z" />
+        <rect x="24" y="8.5" width="3" height="7" rx="0.5" />
+        <rect x="22.5" y="8.5" width="6" height="1" rx="0.3" />
       </svg>
     ),
   },
   {
-    // Gyrocopter (Magni / AutoGyro): unpowered top rotor + small
-    // pod cabin + pusher prop at the rear.
+    // Magni M16 from the side. Unpowered main rotor disc on top,
+    // central pod cabin, pusher-prop at the rear, two wheels.
+    // Top-down would just look like a helicopter — side view
+    // disambiguates via the pusher prop.
     value: 'Gyrocopter',
     label: 'Gyro',
     icon: (
       <svg viewBox="0 0 40 24" fill="currentColor" aria-hidden="true">
-        <rect x="3" y="5" width="32" height="1.5" rx="0.7" />
-        <rect x="19" y="3" width="2" height="4" rx="0.3" />
-        <ellipse cx="19" cy="14" rx="6.5" ry="3" />
-        <rect x="26" y="10" width="1.2" height="8" rx="0.3" />
-        <rect x="24.5" y="11.5" width="3.5" height="0.9" rx="0.3" />
-        <circle cx="14" cy="20" r="1.5" />
-        <circle cx="24" cy="20" r="1.5" />
+        <rect x="4" y="4.5" width="32" height="1.4" rx="0.6" />
+        <rect x="19.2" y="5.9" width="1.6" height="2.6" rx="0.4" />
+        <ellipse cx="19" cy="14" rx="6" ry="2.8" />
+        <rect x="25.5" y="10.5" width="1.4" height="7" rx="0.4" />
+        <rect x="24" y="13.6" width="4" height="0.9" rx="0.3" />
+        <circle cx="14" cy="20" r="1.4" />
+        <circle cx="24" cy="20" r="1.4" />
       </svg>
     ),
   },
   {
-    // Quadcopter / eVTOL from above — most recognisable drone
-    // silhouette. Covers commercial drones AND manned eVTOLs
-    // (Joby, Lilium, Wisk) under one umbrella.
+    // Generic quadcopter from above — cross arms at right angles,
+    // central body, four propeller discs at the arm ends. Covers
+    // commercial drones AND manned eVTOLs (Joby, Lilium, Wisk)
+    // under one umbrella.
     value: 'Drone & eVTOL',
     label: 'Drone',
     icon: (
       <svg viewBox="0 0 40 24" fill="currentColor" aria-hidden="true">
-        <rect x="6" y="11" width="28" height="2" rx="1" />
-        <rect x="19" y="3" width="2" height="18" rx="1" />
+        <rect x="6" y="11.2" width="28" height="1.6" rx="0.8" />
+        <rect x="19.2" y="3" width="1.6" height="18" rx="0.8" />
         <rect x="15" y="9" width="10" height="6" rx="1.5" />
         <circle cx="6" cy="12" r="3" />
         <circle cx="34" cy="12" r="3" />
-        <circle cx="20" cy="3" r="2.5" />
-        <circle cx="20" cy="21" r="2.5" />
+        <circle cx="20" cy="3" r="2.6" />
+        <circle cx="20" cy="21" r="2.6" />
       </svg>
     ),
   },
