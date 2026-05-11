@@ -1,10 +1,14 @@
 'use client';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { Icons } from './Icons';
 import Turnstile from './Turnstile';
 import { formatPriceFull } from '../lib/format';
+import { useDialog } from '../lib/useDialog';
 
 const EnquiryModal = ({ listing, onClose, user }) => {
+  const dialogRef = useRef(null);
+  useDialog({ open: true, onClose, containerRef: dialogRef });
+
   const [sent, setSent] = useState(false);
   const [sending, setSending] = useState(false);
   const [sendError, setSendError] = useState(null);
@@ -20,27 +24,27 @@ const EnquiryModal = ({ listing, onClose, user }) => {
 
   if (sent) return (
     <div className="fs-modal-overlay" onClick={onClose}>
-      <div className="fs-modal" onClick={e => e.stopPropagation()}>
+      <div className="fs-modal" onClick={e => e.stopPropagation()} ref={dialogRef} role="dialog" aria-modal="true" aria-labelledby="fs-enquiry-sent-title">
         <div style={{ padding: "48px 24px", textAlign: "center" }}>
           <div style={{ width: 56, height: 56, borderRadius: "50%", background: "#d1fae5", color: "#059669", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 16px", fontSize: 28 }}>
             {Icons.check}
           </div>
-          <h2 style={{ fontSize: 20, fontWeight: 700, marginBottom: 8 }}>Enquiry Sent</h2>
+          <h2 id="fs-enquiry-sent-title" style={{ fontSize: 20, fontWeight: 700, marginBottom: 8 }}>Enquiry Sent</h2>
           <p style={{ fontSize: 14, color: "var(--fs-gray-500)", marginBottom: 24 }}>
             Your enquiry about the {listing.title} has been sent to the seller. They should respond within 24 hours.
           </p>
-          <button className="fs-detail-cta fs-detail-cta-primary" style={{ maxWidth: 200, margin: "0 auto" }} onClick={onClose}>Done</button>
+          <button data-autofocus className="fs-detail-cta fs-detail-cta-primary" style={{ maxWidth: 200, margin: "0 auto" }} onClick={onClose}>Done</button>
         </div>
       </div>
     </div>
   );
-  
+
   return (
     <div className="fs-modal-overlay" onClick={onClose}>
-      <div className="fs-modal" onClick={e => e.stopPropagation()} style={{ maxWidth: 520 }}>
+      <div className="fs-modal" onClick={e => e.stopPropagation()} ref={dialogRef} role="dialog" aria-modal="true" aria-labelledby="fs-enquiry-title" style={{ maxWidth: 520 }}>
         <div className="fs-modal-header">
           <div>
-            <h2>Contact Seller</h2>
+            <h2 id="fs-enquiry-title">Contact Seller</h2>
             <p style={{ fontSize: 13, color: "var(--fs-gray-500)", marginTop: 4 }}>{listing.title} — {formatPriceFull(listing.price)}</p>
           </div>
           <button className="fs-modal-close" onClick={onClose}>{Icons.x}</button>

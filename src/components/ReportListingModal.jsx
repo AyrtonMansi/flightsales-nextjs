@@ -1,5 +1,6 @@
 'use client';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
+import { useDialog } from '../lib/useDialog';
 
 // Small modal opened from the listing detail's "Report listing" link.
 // Sends the report to /api/reports which persists + emails admin.
@@ -16,6 +17,9 @@ const REASONS = [
 ];
 
 export default function ReportListingModal({ aircraftId, user, onClose }) {
+  const dialogRef = useRef(null);
+  useDialog({ open: true, onClose, containerRef: dialogRef });
+
   const [reason, setReason] = useState('fake_listing');
   const [details, setDetails] = useState('');
   const [reporterEmail, setReporterEmail] = useState(user?.email || '');
@@ -52,13 +56,11 @@ export default function ReportListingModal({ aircraftId, user, onClose }) {
     <div
       className="fs-confirm-overlay"
       onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
-      role="dialog"
-      aria-modal="true"
     >
-      <div className="fs-confirm-card" style={{ maxWidth: 460 }}>
+      <div className="fs-confirm-card" style={{ maxWidth: 460 }} ref={dialogRef} role="dialog" aria-modal="true" aria-labelledby="fs-report-title">
         {done ? (
           <>
-            <h3 className="fs-confirm-title">Report submitted</h3>
+            <h3 id="fs-report-title" className="fs-confirm-title">Report submitted</h3>
             <p className="fs-confirm-message">
               Thanks. Our team reviews every report within 24 hours and will follow up by email if needed.
             </p>
@@ -68,7 +70,7 @@ export default function ReportListingModal({ aircraftId, user, onClose }) {
           </>
         ) : (
           <form onSubmit={submit}>
-            <h3 className="fs-confirm-title">Report this listing</h3>
+            <h3 id="fs-report-title" className="fs-confirm-title">Report this listing</h3>
             <p className="fs-confirm-message">
               Help us keep FlightSales clean. Reports are anonymous to the seller; admin reviews each within 24 hours.
             </p>

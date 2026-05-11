@@ -1,9 +1,14 @@
 'use client';
+import { useRef } from 'react';
 import AircraftImage from './AircraftImage';
 import { Icons } from './Icons';
 import { formatPriceFull, formatHours } from '../lib/format';
+import { useDialog } from '../lib/useDialog';
 
 const QuickLookModal = ({ listing, onClose, onViewFull, onSave, saved, onEnquire }) => {
+  const dialogRef = useRef(null);
+  useDialog({ open: !!listing, onClose, containerRef: dialogRef });
+
   if (!listing) return null;
   const dealerName = listing.dealer?.name || (typeof listing.dealer === 'string' ? listing.dealer : null);
   const location = [listing.city, listing.state].filter(Boolean).join(', ');
@@ -19,6 +24,10 @@ const QuickLookModal = ({ listing, onClose, onViewFull, onSave, saved, onEnquire
       <div
         className="fs-modal"
         onClick={e => e.stopPropagation()}
+        ref={dialogRef}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="fs-quicklook-title"
         style={{ maxWidth: 880, padding: 0, overflow: "hidden" }}
       >
         <div className="fs-grid-aside" style={{ minHeight: 480, gap: 0 }}>
@@ -36,7 +45,7 @@ const QuickLookModal = ({ listing, onClose, onViewFull, onSave, saved, onEnquire
                 {Icons.shield}<span>{dealerName}</span>
               </div>
             )}
-            <h2 style={{ fontSize: 22, fontWeight: 700, letterSpacing: "-0.03em", lineHeight: 1.2 }}>{listing.title}</h2>
+            <h2 id="fs-quicklook-title" style={{ fontSize: 22, fontWeight: 700, letterSpacing: "-0.03em", lineHeight: 1.2 }}>{listing.title}</h2>
             <div style={{ fontSize: 28, fontWeight: 700, letterSpacing: "-0.04em", color: "var(--fs-ink)" }}>{formatPriceFull(listing.price)}</div>
             {location && (
               <div style={{ fontSize: 14, color: "var(--fs-ink-3)", display: "flex", alignItems: "center", gap: 4, fontWeight: 500 }}>

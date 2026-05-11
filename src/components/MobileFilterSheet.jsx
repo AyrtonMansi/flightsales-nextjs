@@ -1,7 +1,12 @@
 'use client';
+import { useRef } from 'react';
 import { Icons } from './Icons';
+import { useDialog } from '../lib/useDialog';
 
 const MobileFilterSheet = ({ isOpen, onClose, children, filteredCount, onClear }) => {
+  const sheetRef = useRef(null);
+  useDialog({ open: isOpen, onClose, containerRef: sheetRef });
+
   if (!isOpen) return null;
 
   return (
@@ -18,18 +23,24 @@ const MobileFilterSheet = ({ isOpen, onClose, children, filteredCount, onClear }
       />
 
       {/* Sheet */}
-      <div style={{
-        position: 'fixed',
-        bottom: 0,
-        left: 0,
-        right: 0,
-        height: '85vh',
-        background: 'var(--fs-white)',
-        borderRadius: '16px 16px 0 0',
-        zIndex: 1000,
-        display: 'flex',
-        flexDirection: 'column'
-      }}>
+      <div
+        ref={sheetRef}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="fs-mfs-title"
+        style={{
+          position: 'fixed',
+          bottom: 0,
+          left: 0,
+          right: 0,
+          height: '85vh',
+          background: 'var(--fs-white)',
+          borderRadius: '16px 16px 0 0',
+          zIndex: 1000,
+          display: 'flex',
+          flexDirection: 'column'
+        }}
+      >
         {/* Sticky header */}
         <div style={{
           display: 'flex',
@@ -39,7 +50,7 @@ const MobileFilterSheet = ({ isOpen, onClose, children, filteredCount, onClear }
           borderBottom: '1px solid var(--fs-line)',
           flexShrink: 0
         }}>
-          <span style={{ fontSize: 18, fontWeight: 700, letterSpacing: '-0.02em' }}>Filters</span>
+          <span id="fs-mfs-title" style={{ fontSize: 18, fontWeight: 700, letterSpacing: '-0.02em' }}>Filters</span>
           <button
             onClick={onClose}
             style={{

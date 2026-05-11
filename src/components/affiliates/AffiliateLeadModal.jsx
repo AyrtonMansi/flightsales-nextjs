@@ -1,7 +1,8 @@
 'use client';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { Icons } from '../Icons';
 import { showToast } from '../../lib/toast';
+import { useDialog } from '../../lib/useDialog';
 
 // Lead-capture modal opened when the user clicks a partner CTA. Pre-
 // fills name + email if they're signed in. Discloses what's being
@@ -13,6 +14,9 @@ import { showToast } from '../../lib/toast';
 // close when ready.
 
 export default function AffiliateLeadModal({ partner, listing, user, onClose }) {
+  const dialogRef = useRef(null);
+  useDialog({ open: true, onClose, containerRef: dialogRef });
+
   const [name, setName] = useState(user?.full_name || '');
   const [email, setEmail] = useState(user?.email || '');
   const [phone, setPhone] = useState(user?.phone || '');
@@ -62,14 +66,22 @@ export default function AffiliateLeadModal({ partner, listing, user, onClose }) 
 
   return (
     <div className="fs-modal-backdrop" onClick={onClose}>
-      <div className="fs-modal" onClick={(e) => e.stopPropagation()} style={{ maxWidth: 520 }}>
+      <div
+        className="fs-modal"
+        onClick={(e) => e.stopPropagation()}
+        ref={dialogRef}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="fs-aff-lead-title"
+        style={{ maxWidth: 520 }}
+      >
         <div className="fs-modal-header">
           <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
             {partner.logo_url && (
               <img src={partner.logo_url} alt="" style={{ width: 32, height: 32, objectFit: 'contain', borderRadius: 6, background: '#fff', border: '1px solid var(--fs-line)' }} />
             )}
             <div>
-              <h3 style={{ margin: 0 }}>{partner.cta_text || 'Get a quote'}</h3>
+              <h3 id="fs-aff-lead-title" style={{ margin: 0 }}>{partner.cta_text || 'Get a quote'}</h3>
               <p style={{ margin: '2px 0 0', fontSize: 13, color: 'var(--fs-ink-3)' }}>via {partner.name}</p>
             </div>
           </div>

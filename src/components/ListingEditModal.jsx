@@ -1,7 +1,8 @@
 'use client';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { updateListing } from '../lib/hooks';
 import { showToast } from '../lib/toast';
+import { useDialog } from '../lib/useDialog';
 
 // Focused edit modal for the seller's dashboard. Surfaces the fields
 // sellers actually change post-creation: title, price, description,
@@ -24,6 +25,9 @@ const FIELDS = [
 ];
 
 export default function ListingEditModal({ listing, onClose, onSaved }) {
+  const dialogRef = useRef(null);
+  useDialog({ open: !!listing, onClose, containerRef: dialogRef });
+
   const [form, setForm] = useState(() => {
     const base = {};
     for (const f of FIELDS) base[f.key] = listing?.[f.key] ?? '';
@@ -60,11 +64,15 @@ export default function ListingEditModal({ listing, onClose, onSaved }) {
     <div
       className="fs-confirm-overlay"
       onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="listing-edit-title"
     >
-      <div className="fs-confirm-card" style={{ maxWidth: 560, maxHeight: '90vh', overflowY: 'auto' }}>
+      <div
+        ref={dialogRef}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="listing-edit-title"
+        className="fs-confirm-card"
+        style={{ maxWidth: 560, maxHeight: '90vh', overflowY: 'auto' }}
+      >
         <h3 id="listing-edit-title" className="fs-confirm-title">Edit listing</h3>
         <p className="fs-confirm-message">
           Changes here are visible immediately. Status changes (mark sold,
