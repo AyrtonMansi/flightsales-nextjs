@@ -73,19 +73,19 @@ const Nav = ({ page, setPage, setMobileOpen, mobileOpen, user, signOut, setDashb
       <nav className="fs-nav">
         <div className="fs-container fs-nav-inner">
           <div className="fs-nav-logo" onClick={go('home')}>
-            {/* Brand mark — Lucide React's `plane` icon, MIT licensed,
-                drawn by Lucide's designers and used in production at
-                very large scale (Vercel, Linear, Notion etc.). Took
-                the official Lucide path verbatim and inverted the
-                draw style from stroke to fill for our context. This
-                replaces the various hand-drawn glyphs that kept
-                looking "AI distorted" — I don't have a visual preview
-                while drawing, so freehand SVG paths kept reproducing
-                the same approximation errors. Vetted icon = problem
-                solved at source.
-                Reference: https://lucide.dev/icons/plane */}
-            <svg className="fs-nav-logo-mark" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-              <path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z" />
+            {/* Brand mark — Bootstrap Icons `airplane-fill`, MIT
+                licensed, drawn by the Bootstrap design team. This is
+                a CLASSIC commercial-airliner planform silhouette
+                viewed from below: symmetric wings, swept-back stab,
+                pointed nose. Unlike Lucide's `plane` (which is a
+                stylized paper-airplane / sent-message icon and reads
+                as "send" rather than "aircraft"), this is what
+                actually looks like a real airplane.
+                Filled rather than stroked so it has visual weight
+                next to the "FlightSales" wordmark.
+                Source: https://icons.getbootstrap.com/icons/airplane-fill/ */}
+            <svg className="fs-nav-logo-mark" width="20" height="20" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+              <path d="M6.428 1.151C6.708.591 7.213 0 8 0s1.292.592 1.572 1.151C9.861 1.73 10 2.431 10 3v3.691l5.17 2.585a1.5 1.5 0 0 1 .83 1.342V12a.5.5 0 0 1-.582.493l-5.507-.918-.375 2.253 1.318 1.318A.5.5 0 0 1 10.5 16h-5a.5.5 0 0 1-.354-.854l1.319-1.318-.376-2.253-5.507.918A.5.5 0 0 1 0 12v-1.382a1.5 1.5 0 0 1 .83-1.342L6 6.691V3c0-.568.14-1.271.428-1.849Z" />
             </svg>
             <span className="fs-nav-logo-text">
               FlightSales<span className="fs-nav-logo-tld">.com.au</span>
