@@ -1088,3 +1088,15 @@ CREATE POLICY "Owners can delete aircraft images"
         AND user_id = auth.uid()
     )
   );
+
+-- ============================================================
+-- 5) Worldwide location support — adds aircraft.country (ISO 3166-1
+--    alpha-2). Defaults to 'AU' so every existing listing remains
+--    valid and continues showing up under Oceania > Australia in
+--    the new Location cascade. Set NOT NULL once the backfill is
+--    confirmed; left nullable for safety on the initial migration.
+-- ============================================================
+
+ALTER TABLE aircraft ADD COLUMN IF NOT EXISTS country TEXT DEFAULT 'AU';
+UPDATE aircraft SET country = 'AU' WHERE country IS NULL;
+CREATE INDEX IF NOT EXISTS idx_aircraft_country ON aircraft(country);

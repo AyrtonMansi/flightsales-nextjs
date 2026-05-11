@@ -26,7 +26,7 @@ export function useAircraft(filters = {}) {
     // pass scalars (useFeaturedAircraft, dealer detail page, etc.)
     category, manufacturer, state, condition, dealerId,
     // new array-shaped multi-select fields used by BuyPage
-    categories, manufacturers, models, states, conditions,
+    categories, manufacturers, models, countries, states, conditions,
     engineCounts, engineTypes, engineMakes,
     avionicsSuites, autopilots, damageHistory,
     minPrice, maxPrice, maxHours, ifrOnly, glassOnly,
@@ -44,6 +44,7 @@ export function useAircraft(filters = {}) {
   const catKey = (categories || []).join('|');
   const makeKey = (manufacturers || []).join('|');
   const modelKey = (models || []).join('|');
+  const countryKey = (countries || []).join('|');
   const stateKey = (states || []).join('|');
   const condKey = (conditions || []).join('|');
   const engCountKey = (engineCounts || []).join('|');
@@ -81,6 +82,11 @@ export function useAircraft(filters = {}) {
       if (categories && categories.length) query = query.in('category', categories);
       if (manufacturers && manufacturers.length) query = query.in('manufacturer', manufacturers);
       if (models && models.length) query = query.in('model', models);
+      // Country filter (ISO 3166-1 alpha-2) — checks the aircraft.country
+      // column. State filter is the sub-division code (AU state, US state,
+      // CA province). Both arrays can be present together; combined with
+      // .in() they form an OR within each field and AND across them.
+      if (countries && countries.length) query = query.in('country', countries);
       if (states && states.length) query = query.in('state', states);
       if (conditions && conditions.length) query = query.in('condition', conditions);
 
@@ -189,7 +195,7 @@ export function useAircraft(filters = {}) {
     }
   }, [
     category, manufacturer, state, condition, dealerId,
-    catKey, makeKey, modelKey, stateKey, condKey,
+    catKey, makeKey, modelKey, countryKey, stateKey, condKey,
     engCountKey, engTypeKey, engMakeKey,
     avSuiteKey, apKey, damageKey,
     minPrice, maxPrice, maxHours, ifrOnly, glassOnly,

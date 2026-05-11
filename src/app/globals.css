@@ -3885,3 +3885,97 @@ html, body { overflow-x: hidden; max-width: 100%; }
   .fs-abn-row     { flex-direction: column; }
   .fs-abn-result dl { grid-template-columns: 1fr; gap: 8px; }
 }
+
+/* ================================================================
+ * Location cascade (filter rail)
+ * Region -> Country -> Sub-division (state/province). Mirrors the
+ * Make -> Model tree visually but with three levels.
+ * ================================================================ */
+.fs-loc-cascade { display: flex; flex-direction: column; gap: 2px; }
+
+.fs-loc-row {
+  display: flex; align-items: center; gap: 8px;
+  width: 100%;
+  padding: 6px 0;
+  background: none; border: none;
+  cursor: pointer; text-align: left;
+  font: inherit; color: var(--fs-ink);
+}
+.fs-loc-region-row {
+  font-weight: 700; font-size: 13px;
+  letter-spacing: -0.005em;
+}
+.fs-loc-region-row .fs-loc-name { flex: 1; }
+.fs-loc-caret {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 14px; flex-shrink: 0;
+  color: var(--fs-ink-3);
+  font-size: 11px;
+  transition: transform 120ms ease;
+}
+.fs-loc-region-row:hover .fs-loc-caret { color: var(--fs-ink); }
+
+.fs-loc-children {
+  margin: 2px 0 8px 14px;
+  padding-left: 8px;
+  border-left: 1px solid var(--fs-line);
+  display: flex; flex-direction: column; gap: 2px;
+}
+
+.fs-loc-country-row {
+  display: flex; align-items: center; gap: 6px;
+  padding: 4px 0;
+}
+.fs-loc-checkrow {
+  display: flex; align-items: center; gap: 10px;
+  flex: 1; min-width: 0;
+  cursor: pointer; user-select: none;
+  font-size: 13px;
+}
+.fs-loc-checkrow input[type="checkbox"] {
+  width: 14px; height: 14px;
+  accent-color: var(--fs-ink);
+  flex-shrink: 0;
+}
+.fs-loc-expand {
+  background: none; border: none;
+  display: inline-flex; align-items: center; gap: 4px;
+  cursor: pointer;
+  color: var(--fs-ink-3);
+  font-size: 12px;
+  padding: 4px 6px;
+  border-radius: 4px;
+}
+.fs-loc-expand:hover { color: var(--fs-ink); background: var(--fs-bg-2); }
+
+.fs-loc-subs {
+  margin: 2px 0 6px 22px;
+  padding-left: 8px;
+  border-left: 1px solid var(--fs-line);
+  display: flex; flex-direction: column; gap: 2px;
+}
+.fs-loc-sub { font-size: 12.5px; color: var(--fs-ink-2); padding: 3px 0; }
+
+.fs-loc-badge {
+  display: inline-flex; align-items: center; justify-content: center;
+  min-width: 18px; height: 18px;
+  padding: 0 5px;
+  background: var(--fs-ink);
+  color: var(--fs-white);
+  border-radius: 999px;
+  font-size: 10.5px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+.fs-loc-badge-sm { min-width: 16px; height: 16px; font-size: 10px; }
+
+.fs-loc-more {
+  margin-top: 6px;
+  background: none; border: none;
+  font-size: 12px; font-weight: 600;
+  color: var(--fs-ink-3);
+  cursor: pointer;
+  padding: 6px 0;
+  text-align: left;
+}
+.fs-loc-more:hover { color: var(--fs-ink); text-decoration: underline; }

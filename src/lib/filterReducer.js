@@ -13,7 +13,8 @@ export const initialFilters = {
   categories: [],
   manufacturers: [],
   models: [],          // free-text model strings (matches aircraft.model column)
-  states: [],
+  countries: [],       // ISO 3166-1 alpha-2 codes (matches aircraft.country)
+  states: [],          // sub-division codes (matches aircraft.state)
   conditions: [],
   minPrice: '',
   maxPrice: '',
@@ -137,6 +138,7 @@ export function toQueryFilters(state) {
     categories: state.categories,
     manufacturers: state.manufacturers,
     models: state.models,
+    countries: state.countries,
     states: state.states,
     conditions: state.conditions,
     minPrice: state.minPrice || undefined,

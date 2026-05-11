@@ -6,7 +6,8 @@ import CheckboxList from './CheckboxList';
 import MakeModelTree from './MakeModelTree';
 import NumberField from './NumberField';
 import RangeSlider from './RangeSlider';
-import { CATEGORIES, MANUFACTURERS, STATES, CONDITIONS } from '../../lib/constants';
+import { CATEGORIES, MANUFACTURERS, CONDITIONS } from '../../lib/constants';
+import LocationCascade from './LocationCascade';
 import { useAircraftCatalogue, makesForCategories, modelsForMakesAndCategories } from '../../lib/aircraftCatalogue';
 import { SECTION_FIELDS, countActiveInSection, countActiveTotal, initialFilters } from '../../lib/filterReducer';
 import { useFacets, decorateAndSortByCount } from '../../lib/useFacets';
@@ -265,19 +266,16 @@ export default function FilterColumn({ state, dispatch, total, user }) {
           />
         </div>
 
-        {/* Location */}
+        {/* Location — worldwide cascade: region -> country -> sub-division.
+            The user's home region is floated to the top via /api/geo
+            (Vercel IP-country header). Defaults to showing 3 regions. */}
         <div className="fs-fc-field">
           <span className="fs-fc-label">Location</span>
-          <CheckboxList
-            options={decorateAndSortByCount(
-              STATES.map(s => ({ value: s, label: s })),
-              facets.stateCounts,
-              state.states,
-            )}
-            selected={state.states}
-            onToggle={v => toggle('states', v)}
-            maxVisible={5}
-            collapseZero
+          <LocationCascade
+            selectedCountries={state.countries}
+            selectedStates={state.states}
+            onToggleCountry={v => toggle('countries', v)}
+            onToggleState={v => toggle('states', v)}
           />
         </div>
 
