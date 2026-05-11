@@ -5,6 +5,7 @@ import ListingCard from '../ListingCard';
 import BulkImportTab from '../dealer/BulkImportTab';
 import AbnVerifyCard from '../dealer/AbnVerifyCard';
 import { useMyListings, useMyEnquiries } from '../../lib/hooks';
+import { DEALER_PLANS } from '../../lib/pricing';
 
 // Verified-dealer dashboard. Differs from the private DashboardPage in
 // what the user is here to do: businesses sell + run a pipeline, they
@@ -254,14 +255,10 @@ const BusinessDashboardPage = ({ user, setPage, signOut, onSelectListing }) => {
                   Current plan: <strong>{planLabel}</strong> · Status: <strong>{user?.subscription_status || 'inactive'}</strong>
                 </p>
                 <div className="fs-dash-plans">
-                  {[
-                    { key: 'dealer_lite', name: 'Dealer Lite', price: '$149/mo', desc: 'Up to 5 active listings, verified badge, lead alerts' },
-                    { key: 'pro',         name: 'Pro',         price: '$399/mo', desc: 'Unlimited listings, featured slots, market position, team (3 seats)' },
-                    { key: 'enterprise',  name: 'Enterprise',  price: 'From $999/mo', desc: 'Bulk import, white-label dealer page, custom integrations' },
-                  ].map(p => (
+                  {DEALER_PLANS.map(p => (
                     <div key={p.key} className={`fs-dash-plan${user?.subscription_plan === p.key ? ' on' : ''}`}>
                       <h4>{p.name}</h4>
-                      <p className="fs-dash-plan-price">{p.price}</p>
+                      <p className="fs-dash-plan-price">{p.priceLabel}</p>
                       <p className="fs-dash-plan-desc">{p.desc}</p>
                       <button type="button" className="fs-form-submit" disabled>
                         {user?.subscription_plan === p.key ? 'Current plan' : 'Stripe coming soon'}

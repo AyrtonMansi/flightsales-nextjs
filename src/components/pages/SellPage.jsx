@@ -9,6 +9,7 @@ import MakeModelPicker from '../sell/MakeModelPicker';
 import { modelToFormFields, getSeedCatalogue } from '../../lib/aircraftCatalogue';
 import AbnVerifyCard from '../dealer/AbnVerifyCard';
 import { showToast } from '../../lib/toast';
+import { calculateListingFee, fmtAud } from '../../lib/pricing';
 
 const SellPage = ({ user, setPage }) => {
   // Hooks first — must run on every render in the same order regardless of
@@ -671,11 +672,58 @@ const SellPage = ({ user, setPage }) => {
                           {uploadingImages ? "Uploading..." : `Choose Files${uploadedImages.length > 0 ? ` (${uploadedImages.length} added)` : ''}`}
                         </button>
                       </div>
-                      {/* Listing Plan selector hidden until Stripe is wired.
-                          Showing Featured/Premium plans without a working payment flow
-                          would be a broken UX (paid radio that goes nowhere).
-                          When Stripe is integrated, restore the plan list and wire
-                          submit → Stripe Checkout. Until then every listing is Basic. */}
+                      {/* Listing fee summary. Computed from category + price + rego —
+                          experimental / LSA / ultralight / RAAus-registered list free,
+                          certified <$500k flat $99, certified ≥$500k $99 + 0.025% of
+                          the amount above $500k. Stripe checkout will plug in at the
+                          submit handler once payments are wired; until then the fee
+                          is shown for transparency and the submit goes straight
+                          through. */}
+                      {(() => {
+                        const fee = calculateListingFee({
+                          category: formData.category,
+                          price: Number(formData.price) || 0,
+                          rego: formData.rego,
+                        });
+                        return (
+                          <div style={{
+                            margin: '0 0 16px',
+                            padding: '14px 18px',
+                            background: fee.free ? '#f3faf5' : '#f8fafc',
+                            border: `1px solid ${fee.free ? '#b6dfc1' : 'var(--fs-line)'}`,
+                            borderRadius: 'var(--fs-radius)',
+                          }}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
+                              <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--fs-ink)' }}>
+                                Listing fee
+                              </span>
+                              <span style={{
+                                fontSize: 18, fontWeight: 700,
+                                color: fee.free ? '#1a7f37' : 'var(--fs-ink)',
+                                fontVariantNumeric: 'tabular-nums',
+                              }}>
+                                {fmtAud(fee.feeAud)}
+                              </span>
+                            </div>
+                            <p style={{ margin: '4px 0 0', fontSize: 12, color: 'var(--fs-ink-3)' }}>
+                              {fee.reason}
+                            </p>
+                            {fee.breakdown.length > 1 && (
+                              <ul style={{ margin: '8px 0 0', padding: 0, listStyle: 'none' }}>
+                                {fee.breakdown.map((b, i) => (
+                                  <li key={i} style={{
+                                    display: 'flex', justifyContent: 'space-between',
+                                    fontSize: 12, color: 'var(--fs-ink-3)', padding: '2px 0',
+                                  }}>
+                                    <span>{b.label}</span>
+                                    <span style={{ fontVariantNumeric: 'tabular-nums' }}>{fmtAud(b.amount)}</span>
+                                  </li>
+                                ))}
+                              </ul>
+                            )}
+                          </div>
+                        );
+                      })()}
                       {submitError && (
                         <div style={{ padding: "10px 14px", background: "#fef2f2", border: "1px solid #fecaca", borderRadius: "var(--fs-radius-sm)", marginBottom: 12, fontSize: 13, color: "#dc2626" }}>{submitError}</div>
                       )}
