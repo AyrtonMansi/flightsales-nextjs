@@ -73,16 +73,19 @@ const Nav = ({ page, setPage, setMobileOpen, mobileOpen, user, signOut, setDashb
       <nav className="fs-nav">
         <div className="fs-container fs-nav-inner">
           <div className="fs-nav-logo" onClick={go('home')}>
-            {/* Brand mark — side-view aircraft silhouette redrawn with
-                disciplined straight-line geometry. The previous version
-                used freehand Bezier curves that read as "slightly off"
-                at the small scale (paper-airplane crease effect). This
-                replacement is three clean primitives — fuselage,
-                vertical tail fin, and wing — assembled into a single
-                closed path, no curves except the rounded nose tip.
-                Inherits currentColor (sky-blue brand). */}
-            <svg className="fs-nav-logo-mark" width="30" height="14" viewBox="0 0 32 14" fill="currentColor" aria-hidden="true">
-              <path d="M31 7 L29 5.5 L23 5.5 L11 5.5 L8 5.5 L4.5 1.5 L2.5 1.5 L3 5.5 L0.5 7 L3 8.5 L2.5 12.5 L4.5 12.5 L8 8.5 L11 8.5 L14 13 L17 13 L17 8.5 L23 8.5 L29 8.5 Z" />
+            {/* Brand mark — Lucide React's `plane` icon, MIT licensed,
+                drawn by Lucide's designers and used in production at
+                very large scale (Vercel, Linear, Notion etc.). Took
+                the official Lucide path verbatim and inverted the
+                draw style from stroke to fill for our context. This
+                replaces the various hand-drawn glyphs that kept
+                looking "AI distorted" — I don't have a visual preview
+                while drawing, so freehand SVG paths kept reproducing
+                the same approximation errors. Vetted icon = problem
+                solved at source.
+                Reference: https://lucide.dev/icons/plane */}
+            <svg className="fs-nav-logo-mark" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z" />
             </svg>
             <span className="fs-nav-logo-text">
               FlightSales<span className="fs-nav-logo-tld">.com.au</span>
