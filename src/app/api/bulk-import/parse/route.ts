@@ -10,15 +10,26 @@
 // Verified server-side via supabase auth cookie. Bulk import is a
 // dealer-only feature gated this way both here and in the UI.
 
-import { NextResponse } from 'next/server';
-import { createClient } from '@supabase/supabase-js';
-import { parseCsv, rowsToListings } from '../../../../lib/csv';
-import { MAKES_SEED, MODELS_SEED } from '../../../../lib/aircraftCatalogueSeed';
+import { NextResponse, type NextRequest } from 'next/server';
+import { createClient, type User } from '@supabase/supabase-js';
+import { parseCsv, rowsToListings, type PreviewListingRow } from '../../../../lib/csv';
+import { MODELS_SEED } from '../../../../lib/aircraftCatalogueSeed';
+
+interface CatalogueModel {
+  slug: string;
+  full_name?: string;
+  family?: string;
+  category?: string;
+  type_designator?: string;
+  aliases?: string[];
+}
+
+interface SeedIndex { aliasIndex: Map<string, CatalogueModel>; }
 
 // Pure-JS catalogue match — re-implemented inline so this server route
 // doesn't pull in aircraftCatalogue.js (which imports React hooks at
 // module load and so flags as client-only under the Next.js compiler).
-function normalize(text) {
+function normalize(text: unknown): string {
   if (!text) return '';
   return String(text)
     .toLowerCase()
@@ -26,16 +37,16 @@ function normalize(text) {
     .replace(/[^a-z0-9]+/g, '');
 }
 
-let SEED_INDEX = null;
-function getSeedIndex() {
+let SEED_INDEX: SeedIndex | null = null;
+function getSeedIndex(): SeedIndex {
   if (SEED_INDEX) return SEED_INDEX;
-  const aliasIndex = new Map();
-  const add = (key, model) => {
+  const aliasIndex = new Map<string, CatalogueModel>();
+  const add = (key: string | undefined, model: CatalogueModel) => {
     const k = normalize(key);
     if (!k || aliasIndex.has(k)) return;
     aliasIndex.set(k, model);
   };
-  for (const m of MODELS_SEED) {
+  for (const m of MODELS_SEED as CatalogueModel[]) {
     add(m.full_name, m);
     add(m.slug, m);
     if (m.type_designator) add(m.type_designator, m);
@@ -45,14 +56,16 @@ function getSeedIndex() {
   return SEED_INDEX;
 }
 
-function findModel(idx, text) {
+function findModel(idx: SeedIndex, text: string): CatalogueModel | null {
   if (!text) return null;
   return idx.aliasIndex.get(normalize(text)) ?? null;
 }
 
 export const runtime = 'nodejs';
 
-async function authoriseDealer(req) {
+interface AuthContext { user: User; profile: { id: string; role: string; is_dealer: boolean }; }
+
+async function authoriseDealer(req: NextRequest): Promise<AuthContext | null> {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const anon = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
   if (!url || !anon) return null;
@@ -79,13 +92,21 @@ async function authoriseDealer(req) {
   return null;
 }
 
-export async function POST(req) {
+type DecoratedRow = PreviewListingRow & {
+  model_slug: string | null;
+  category: string | null;
+  _matchedFamily: string | null;
+  _flags: string[];
+  _ai?: boolean;
+};
+
+export async function POST(req: NextRequest) {
   const auth = await authoriseDealer(req);
   if (!auth) {
     return NextResponse.json({ ok: false, error: 'forbidden' }, { status: 403 });
   }
 
-  let body;
+  let body: { csv?: unknown };
   try { body = await req.json(); } catch { return NextResponse.json({ ok: false, error: 'invalid_json' }, { status: 400 }); }
   const csv = typeof body?.csv === 'string' ? body.csv : '';
   if (!csv.trim()) return NextResponse.json({ ok: false, error: 'empty_csv' }, { status: 400 });
@@ -102,16 +123,15 @@ export async function POST(req) {
   const listings = rowsToListings(headerRow, dataRows);
 
   // Catalogue match — for each row, try to resolve the make+model to a
-  // canonical slug. This runs locally, no AI cost. Adds `model_slug`,
-  // `_catalogueMatch`, and validation flags.
+  // canonical slug. This runs locally, no AI cost.
   const idx = getSeedIndex();
-  const decorated = listings.map((row) => {
-    const flags = [];
+  const decorated: DecoratedRow[] = listings.map((row) => {
+    const flags: string[] = [];
     if (!row.manufacturer && !row.model) flags.push('missing_make_model');
     if (!row.year)  flags.push('missing_year');
     if (!row.price) flags.push('missing_price');
 
-    let modelMatch = null;
+    let modelMatch: CatalogueModel | null = null;
     if (row.manufacturer && row.model) {
       modelMatch = findModel(idx, `${row.manufacturer} ${row.model}`);
     }
@@ -127,24 +147,21 @@ export async function POST(req) {
     };
   });
 
-  // AI normalisation pass — only run on rows with flags or unmatched
-  // catalogue entries, and only if Anthropic key is configured.
   const ai = await maybeAiNormalise(decorated);
   return NextResponse.json({ ok: true, listings: ai });
 }
 
+interface AiFix { i: number; manufacturer?: string; model?: string; category?: string; }
+
 // AI helper — calls Claude Haiku once per BATCH of unmatched rows
 // rather than once per row to stay cheap. Falls back to the
 // pre-AI rows if the API call fails for any reason.
-async function maybeAiNormalise(rows) {
+async function maybeAiNormalise(rows: DecoratedRow[]): Promise<DecoratedRow[]> {
   const key = process.env.ANTHROPIC_API_KEY;
   if (!key) return rows;
-  const needsAi = rows.filter(
-    (r) => !r.model_slug || r._flags.length > 0
-  );
+  const needsAi = rows.filter((r) => !r.model_slug || r._flags.length > 0);
   if (needsAi.length === 0) return rows;
 
-  // Build a tight payload — just the fields the model needs to clean up.
   const compact = needsAi.map((r, i) => ({
     i,
     manufacturer: r.manufacturer,
@@ -182,15 +199,14 @@ async function maybeAiNormalise(rows) {
     });
     if (!res.ok) return rows;
     const data = await res.json();
-    const text = data.content?.[0]?.text || '';
+    const text: string = data.content?.[0]?.text || '';
     const match = text.match(/\[[\s\S]*\]/);
     if (!match) return rows;
-    const fixes = JSON.parse(match[0]);
+    const fixes: AiFix[] = JSON.parse(match[0]);
     if (!Array.isArray(fixes)) return rows;
 
     const byIndex = new Map(fixes.map((f) => [f.i, f]));
-    return rows.map((r, idx) => {
-      // Find the index in `needsAi` for this row, then look up its fix.
+    return rows.map((r) => {
       const aiIdx = needsAi.indexOf(r);
       if (aiIdx < 0) return r;
       const fix = byIndex.get(aiIdx);
@@ -204,6 +220,6 @@ async function maybeAiNormalise(rows) {
       };
     });
   } catch {
-    return rows;   // any error → pre-AI version is the safe fallback
+    return rows;
   }
 }

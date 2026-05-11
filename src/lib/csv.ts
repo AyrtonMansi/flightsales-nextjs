@@ -4,10 +4,10 @@
 // supports. If a file fails this parser, the user can still paste
 // the data row-by-row through the manual /sell form.
 
-export function parseCsv(text) {
+export function parseCsv(text: string): string[][] {
   if (typeof text !== 'string' || !text.trim()) return [];
-  const out = [];
-  let row = [];
+  const out: string[][] = [];
+  let row: string[] = [];
   let field = '';
   let inQuotes = false;
   for (let i = 0; i < text.length; i++) {
@@ -37,13 +37,18 @@ export function parseCsv(text) {
   return out;
 }
 
+export type ListingField =
+  | 'manufacturer' | 'model' | 'year' | 'price' | 'rego' | 'category'
+  | 'condition' | 'state' | 'city' | 'ttaf' | 'eng_hours' | 'eng_tbo'
+  | 'engineType' | 'avionics' | 'description';
+
+export type HeaderMap = Partial<Record<ListingField, number>>;
+
 // Heuristic header → field-name mapping. Maps common spreadsheet
 // headers that PlaneSales / Controller / Excel exports use to our
-// listing schema. Returns { manufacturer: 0, model: 1, … } for the
-// columns we recognise; unknown columns get omitted (user can
-// remap manually in the preview UI).
-export function inferHeaderMap(headerRow) {
-  const m = {};
+// listing schema.
+export function inferHeaderMap(headerRow: string[]): HeaderMap {
+  const m: HeaderMap = {};
   headerRow.forEach((raw, idx) => {
     const h = String(raw || '').toLowerCase().replace(/[^a-z0-9]+/g, '');
     if (!h) return;
@@ -66,13 +71,32 @@ export function inferHeaderMap(headerRow) {
   return m;
 }
 
+export interface PreviewListingRow {
+  _row: number;
+  manufacturer: string | null;
+  model: string | null;
+  year: number | null;
+  price: number | null;
+  rego: string | null;
+  category: string | null;
+  condition: string;
+  state: string | null;
+  city: string | null;
+  ttaf: number | null;
+  eng_hours: number | null;
+  eng_tbo: number | null;
+  engineType: string | null;
+  avionics: string | null;
+  description: string | null;
+}
+
 // Apply the header-map to each data row and produce typed listing-
 // shaped objects ready for the preview grid.
-export function rowsToListings(headerRow, dataRows) {
+export function rowsToListings(headerRow: string[], dataRows: string[][]): PreviewListingRow[] {
   const map = inferHeaderMap(headerRow);
   return dataRows.map((row, i) => {
-    const get = (k) => map[k] != null ? String(row[map[k]] ?? '').trim() : '';
-    const numeric = (k) => {
+    const get = (k: ListingField): string => map[k] != null ? String(row[map[k] as number] ?? '').trim() : '';
+    const numeric = (k: ListingField): number | null => {
       const raw = get(k);
       if (!raw) return null;
       const cleaned = raw.replace(/[^0-9.\-]/g, '');
@@ -80,7 +104,7 @@ export function rowsToListings(headerRow, dataRows) {
       return Number.isFinite(n) ? n : null;
     };
     return {
-      _row: i + 2,                            // 1-based + header row
+      _row: i + 2,
       manufacturer: get('manufacturer') || null,
       model:        get('model')        || null,
       year:         numeric('year'),

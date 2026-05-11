@@ -9,31 +9,31 @@
 // abuse. The actual lead row is written via service-role since RLS
 // locks affiliate_leads to admins + the lead's owner.
 
-import { NextResponse } from 'next/server';
-import { createClient } from '@supabase/supabase-js';
+import { NextResponse, type NextRequest } from 'next/server';
+import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 import { sendEmail } from '../../../lib/email';
 import { rateLimit, callerIp } from '../../../lib/ratelimit';
 
 export const runtime = 'nodejs';
 
-function adminClient() {
+function adminClient(): SupabaseClient | null {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
   if (!url || !key) return null;
   return createClient(url, key, { auth: { persistSession: false } });
 }
 
-function clean(s, max = 1000) {
+function clean(s: unknown, max = 1000): string | null {
   if (typeof s !== 'string') return null;
   const trimmed = s.trim().slice(0, max);
   return trimmed.length ? trimmed : null;
 }
 
-function isEmail(s) {
+function isEmail(s: unknown): s is string {
   return typeof s === 'string' && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(s);
 }
 
-export async function POST(req) {
+export async function POST(req: NextRequest) {
   // Rate-limit (10 leads per IP per hour — the form has spam protection
   // via Turnstile, this is the second line of defence).
   const ip = callerIp(req);
@@ -45,7 +45,7 @@ export async function POST(req) {
     );
   }
 
-  let body;
+  let body: Record<string, unknown>;
   try { body = await req.json(); } catch { return NextResponse.json({ ok: false, error: 'invalid_json' }, { status: 400 }); }
 
   const affiliateId = clean(body.affiliateId, 64);
@@ -54,11 +54,13 @@ export async function POST(req) {
   const userPhone   = clean(body.userPhone, 50);
   const message     = clean(body.message, 2000);
   const userId      = clean(body.userId, 64) || null;
-  const listingId   = body.listingId != null ? Number(body.listingId) : null;
+  // listingId is a UUID string (matches the schema fix that made
+  // affiliate_leads.listing_id a UUID, not an INTEGER).
+  const listingId   = clean(body.listingId, 64);
 
   if (!affiliateId)              return NextResponse.json({ ok: false, error: 'missing_affiliate' }, { status: 400 });
   if (!userName)                 return NextResponse.json({ ok: false, error: 'missing_name' }, { status: 400 });
-  if (!isEmail(userEmail))       return NextResponse.json({ ok: false, error: 'invalid_email' }, { status: 400 });
+  if (!userEmail || !isEmail(userEmail)) return NextResponse.json({ ok: false, error: 'invalid_email' }, { status: 400 });
 
   const supabase = adminClient();
   if (!supabase) return NextResponse.json({ ok: false, error: 'no_db' }, { status: 500 });
@@ -75,8 +77,9 @@ export async function POST(req) {
   }
 
   // Optional listing context — skip if missing or invalid (still capture the lead).
-  let listing = null;
-  if (Number.isInteger(listingId) && listingId > 0) {
+  // listingId is a UUID string; sanity-check via clean() above already.
+  let listing: { id: string; title: string; price: number } | null = null;
+  if (listingId) {
     const { data } = await supabase
       .from('aircraft')
       .select('id, title, price')
@@ -118,9 +121,9 @@ export async function POST(req) {
     listingUrl,
   };
 
-  let deliveryStatus = 'failed';
-  let deliveryResponse = null;
-  let deliveryError = null;
+  let deliveryStatus: 'delivered' | 'failed' = 'failed';
+  let deliveryResponse: unknown = null;
+  let deliveryError: string | null = null;
 
   try {
     if (partner.lead_capture_method === 'email' && partner.lead_email) {
@@ -170,7 +173,7 @@ export async function POST(req) {
       deliveryError = 'no_delivery_method_configured';
     }
   } catch (err) {
-    deliveryError = err?.message || String(err);
+    deliveryError = err instanceof Error ? err.message : String(err);
   }
 
   // Update the lead with delivery state.
@@ -186,6 +189,7 @@ export async function POST(req) {
     to: userEmail,
     template: 'affiliate.lead_confirmation',
     vars: dispatchVars,
+    replyTo: undefined,
   }).catch(() => { /* non-fatal */ });
 
   return NextResponse.json({ ok: true, leadId: lead.id, delivery: deliveryStatus });
