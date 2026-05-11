@@ -201,13 +201,13 @@ export default function FilterColumn({ state, dispatch, total, user }) {
 
   return (
     <div className="fs-fc">
-      {/* Sticky header: live count + reset all */}
-      <div className="fs-fc-head">
-        <div className="fs-fc-count">
-          <span className="fs-fc-count-num">{total.toLocaleString()}</span>
-          <span className="fs-fc-count-label">aircraft</span>
-        </div>
-        {activeTotal > 0 && (
+      {/* Sticky header — only renders when there's something
+          actionable (a Reset button when filters are active). The
+          static "0 aircraft" count that lived here previously was
+          redundant with the same count already shown in the main
+          column header, and read as noise at the top of the rail. */}
+      {activeTotal > 0 && (
+        <div className="fs-fc-head fs-fc-head-reset-only">
           <button
             type="button"
             className="fs-fc-reset"
@@ -215,8 +215,8 @@ export default function FilterColumn({ state, dispatch, total, user }) {
           >
             Reset all
           </button>
-        )}
-      </div>
+        </div>
+      )}
 
       {/* BASIC — always visible, no header label */}
       <div className="fs-fc-basic">

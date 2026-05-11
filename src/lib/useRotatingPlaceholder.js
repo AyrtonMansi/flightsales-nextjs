@@ -3,15 +3,19 @@ import { useEffect, useState } from 'react';
 
 // Rotating typewriter placeholder for the AI search input. Types out one
 // character at a time, holds, deletes, and rotates to the next phrase —
-// like an IDE demo. Three concrete query shapes plus a meta
-// "AI quick search" label so users see what the field is for even before
-// the rotation kicks in.
+// like an IDE demo.
+//
+// Previously the first phrase was a meta label ('AI quick search') which
+// the user reported reading as a random flicker between concrete examples.
+// Dropped — only real example queries now rotate, and the input's static
+// fallback was also removed in HeroSearchPro so the user only ever sees
+// real-shape queries or a clean empty box.
 
 export const AI_SEARCH_EXAMPLES = [
-  'AI quick search',
   'Cirrus SR22 under $700k',
   'Low-hours Robinson R44',
   'IFR turboprop in QLD',
+  'Cessna 172 in NSW',
 ];
 
 const TYPING_MS = 55;

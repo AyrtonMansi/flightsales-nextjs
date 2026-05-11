@@ -2127,6 +2127,9 @@ html, body { overflow-x: hidden; max-width: 100%; }
   .fs-fc-head { padding: 14px 0 12px; margin: 0 0 4px; background: var(--fs-bg); }
   .fs-fc-head::before { background: var(--fs-bg); }
 }
+/* When the header only carries the Reset button (no count), right-align
+   it so the button sits flush to the rail's right edge. */
+.fs-fc-head-reset-only { justify-content: flex-end; }
 .fs-fc-count { display: flex; align-items: baseline; gap: 6px; }
 .fs-fc-count-num {
   font-size: 22px; font-weight: 700; letter-spacing: -0.02em;
@@ -2906,8 +2909,8 @@ html, body { overflow-x: hidden; max-width: 100%; }
   display: block;
   min-width: 0;
 }
-.fs-h-range-cell:first-child .fs-h-range-text { text-align: right; padding-right: 2px; }
-.fs-h-range-cell:last-child  .fs-h-range-text { text-align: left;  padding-left: 2px; }
+.fs-h-range-cell:first-child .fs-h-range-text { text-align: left; }
+.fs-h-range-cell:last-child  .fs-h-range-text { text-align: right; }
 .fs-h-range-text {
   display: block;
   font: 600 15px/1.2 -apple-system, system-ui, sans-serif;
@@ -3501,16 +3504,19 @@ html, body { overflow-x: hidden; max-width: 100%; }
   flex-shrink: 0;
 }
 
-/* Range row — From — To inline. Values bookend the dash so a short
-   "1995 — 2024" reads cleanly without one cell drifting left while the
-   other floats away. Min cell text aligns right, max cell aligns left,
-   dash sits centred between. */
+/* Range row — From — To inline. The earlier version bookended the
+   CENTRAL DASH (min text-align: right + max text-align: left), which
+   clustered both values in the middle of the row and read as "too
+   far right" because the 80px label pushed the cluster off-centre.
+   Now bookends the ROW EDGES instead: From sits left, To sits right,
+   dash floats in the middle of the gap. Reads like two distinct
+   fields rather than one centred range string. */
 .fs-h-stack-row-range .fs-h-stack-range {
   flex: 1;
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
   align-items: center;
-  column-gap: 10px;
+  column-gap: 12px;
   min-width: 0;
 }
 .fs-h-stack-row-range .fs-h-range-cell {
@@ -3521,13 +3527,14 @@ html, body { overflow-x: hidden; max-width: 100%; }
   display: block;          /* override the flex from non-range rows */
   font-variant-numeric: tabular-nums;
 }
+/* From cell anchors LEFT (sits near the label) — feels like the
+   "start of the range". To cell anchors RIGHT (sits near the row's
+   right edge) — feels like the "end of the range". */
 .fs-h-stack-row-range .fs-h-range-cell:first-child .fs-h-stack-value {
-  text-align: right;
-  padding-right: 2px;
+  text-align: left;
 }
 .fs-h-stack-row-range .fs-h-range-cell:last-child .fs-h-stack-value {
-  text-align: left;
-  padding-left: 2px;
+  text-align: right;
 }
 .fs-h-stack-row-range .fs-h-range-sep {
   color: var(--fs-ink-4);

@@ -7,7 +7,7 @@ export default function PrivacyPage() {
   return (
     <div className="fs-container" style={{ maxWidth: 800, margin: '48px auto', padding: '0 24px' }}>
       <h1 style={{ fontSize: '32px', fontWeight: 800, marginBottom: '24px' }}>Privacy Policy</h1>
-      <p style={{ color: 'var(--fs-gray-500)', marginBottom: '32px' }}>Last updated: March 22, 2026</p>
+      <p style={{ color: 'var(--fs-gray-500)', marginBottom: '32px' }}>Last updated: May 2026</p>
       
       <div style={{ lineHeight: 1.7, color: 'var(--fs-gray-700)' }}>
         <h2 style={{ fontSize: '20px', fontWeight: 700, marginTop: '32px', marginBottom: '16px' }}>1. Introduction</h2>
@@ -27,6 +27,20 @@ export default function PrivacyPage() {
           <li>Enquiry and communication history</li>
           <li>Payment information (processed securely via Stripe)</li>
           <li>Usage data and analytics</li>
+          <li>
+            For dealer accounts: <strong>Australian Business Number (ABN)</strong>{' '}
+            and the corresponding public details we retrieve from the Australian
+            Business Register (registered legal name, entity type, ABN status,
+            GST registration status, registered state and postcode). We only
+            ever store the public information ABR publishes on its free ABN
+            Lookup service — we do not see or store Tax File Numbers, financial
+            details, or anything else.
+          </li>
+          <li>
+            Approximate country derived from your IP address (Vercel&apos;s
+            edge geolocation header) to surface relevant listings first.
+            We don&apos;t store this — it&apos;s used at request time only.
+          </li>
         </ul>
 
         <h2 style={{ fontSize: '20px', fontWeight: 700, marginTop: '32px', marginBottom: '16px' }}>3. How We Collect Information</h2>

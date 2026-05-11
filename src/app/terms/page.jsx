@@ -38,8 +38,13 @@ export default function TermsPage() {
 
         <h2 style={{ fontSize: '20px', fontWeight: 700, marginTop: '32px', marginBottom: '16px' }}>5. Fees and Payments</h2>
         <p style={{ marginBottom: '16px' }}>
-          Listing fees are as specified on the Platform at the time of listing. All fees are in Australian Dollars (AUD) 
-          and are non-refundable unless otherwise stated.
+          Listing fees are as specified on the Platform at the time of listing.
+          Current fee structure is published at <a href="/pricing">flightsales.com.au/pricing</a> —
+          recreational aircraft (experimental, LSA, ultralight, RAAus-registered) list free; certified aircraft
+          under $500,000 pay a flat AUD$99; certified aircraft at or above $500,000 pay AUD$99 plus 0.025%
+          of the amount above $500,000. Dealer subscriptions (Dealer Lite, Pro) are billed monthly.
+          All fees are in Australian Dollars (AUD) and are non-refundable unless otherwise stated. Refund
+          and cancellation specifics are at <a href="/refunds">flightsales.com.au/refunds</a>.
         </p>
 
         <h2 style={{ fontSize: '20px', fontWeight: 700, marginTop: '32px', marginBottom: '16px' }}>6. Prohibited Activities</h2>

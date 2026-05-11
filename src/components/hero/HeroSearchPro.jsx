@@ -86,7 +86,13 @@ export default function HeroSearchPro({ model }) {
         </span>
         <input
           className="fs-h-ai-input"
-          placeholder={rotatingPlaceholder || 'Try our AI Quick Search'}
+          /* Placeholder is purely the rotating typewriter — no static
+             fallback. The previous "Try our AI Quick Search" string
+             flashed between rotations and read as a meta label that
+             contradicted the actual example queries. Empty input
+             during the brief rotation gap is part of the typewriter
+             feel and is far less distracting. */
+          placeholder={rotatingPlaceholder}
           value={aiQuery}
           onChange={(e) => setAiQuery(e.target.value)}
           onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); onAiSearch(e.target.value); } }}
