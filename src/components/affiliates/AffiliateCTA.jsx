@@ -41,7 +41,17 @@ export function AffiliateCard({ partner, listing, user }) {
     <>
       <div className="fs-affiliate-card">
         {partner.logo_url ? (
-          <img className="fs-affiliate-card-logo" src={partner.logo_url} alt={partner.name} />
+          /* Partner logos are admin-supplied URLs from arbitrary
+             domains — kept as <img> rather than next/image so we
+             don't need a wildcard remotePatterns. loading=lazy +
+             decoding=async cover the perf bit. */
+          <img
+            className="fs-affiliate-card-logo"
+            src={partner.logo_url}
+            alt={partner.name}
+            loading="lazy"
+            decoding="async"
+          />
         ) : (
           <div className="fs-affiliate-card-logo fs-affiliate-card-logo-fallback">
             {partner.name?.[0]?.toUpperCase() || '?'}

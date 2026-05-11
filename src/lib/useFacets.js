@@ -1,6 +1,6 @@
 'use client';
 import { useMemo } from 'react';
-import { useAircraft } from './hooks';
+import { useFacetUniverse } from './hooks/facetUniverse';
 
 // Faceted-search counts for the buy-page filter rail. For every
 // multi-pick filter (Make, Model, State, Condition, plus the advanced
@@ -96,9 +96,13 @@ function tallyBy(listings, field) {
  * the UI shows option labels without counts, never blocks selection.
  */
 export function useFacets(filterState) {
-  // Universe: every listing the user could possibly see, ignoring all
-  // their current filters. Cached at the page level, free re-render.
-  const { aircraft: universe = [], loading } = useAircraft({});
+  // Universe: every active listing's facetable columns only. Switched
+  // from useAircraft({}) to useFacetUniverse() — same row set, ~7x
+  // smaller payload (12 indexed columns vs full row + dealer + seller
+  // joins). Past 5,000 active listings, swap to a Postgres
+  // aircraft_facet_counts(jsonb) RPC that returns aggregated counts
+  // only and never sends row data over the wire.
+  const { rows: universe = [], loading } = useFacetUniverse();
 
   return useMemo(() => {
     if (loading || universe.length === 0) {

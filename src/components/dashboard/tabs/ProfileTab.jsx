@@ -23,7 +23,20 @@ export default function ProfileTab({
         {!editProfile ? (
           <>
             <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 24 }}>
-              <img src={user.avatar} alt={user.full_name} style={{ width: 80, height: 80, borderRadius: '50%' }} />
+              {/* Avatar can be from any auth-provider URL (Google,
+                  Gravatar, Microsoft) so we keep it as <img> rather
+                  than next/image to avoid maintaining a remotePatterns
+                  allowlist of every OAuth provider. lazy/async covers
+                  the perf bit. */}
+              <img
+                src={user.avatar}
+                alt={user.full_name}
+                width="80"
+                height="80"
+                loading="lazy"
+                decoding="async"
+                style={{ borderRadius: '50%' }}
+              />
               <div>
                 <h4 style={{ fontSize: 18, fontWeight: 600 }}>{profileData.full_name}</h4>
                 <p style={{ fontSize: 14, color: 'var(--fs-gray-500)' }}>{profileData.email}</p>

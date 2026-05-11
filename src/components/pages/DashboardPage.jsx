@@ -1,5 +1,6 @@
 'use client';
 import { useState, useMemo } from 'react';
+import Image from 'next/image';
 import { Icons } from '../Icons';
 import ListingCard from '../ListingCard';
 import { useMyListings, useMyEnquiries, useProfile } from '../../lib/hooks';
@@ -579,7 +580,14 @@ const DashboardPage = ({ user, setPage, signOut, savedIds, savedListings, onSave
                               <td style={{ padding: "16px" }}>
                                 <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
                                   {listing.image ? (
-                                    <img src={listing.image} alt={listing.title} style={{ width: 60, height: 40, objectFit: 'cover', borderRadius: 6 }} />
+                                    <Image
+                                      src={listing.image}
+                                      alt={listing.title}
+                                      width={60}
+                                      height={40}
+                                      style={{ objectFit: 'cover', borderRadius: 6 }}
+                                      sizes="60px"
+                                    />
                                   ) : (
                                     <div style={{ width: 60, height: 40, borderRadius: 6, background: 'var(--fs-gray-100)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--fs-gray-400)', fontSize: 16 }}>{Icons.plane}</div>
                                   )}

@@ -41,7 +41,7 @@ export default function PhotoReorder({ urls = [], onChange, onRemove }) {
           onDragOver={(e) => { e.preventDefault(); overIndexRef.current = i; }}
           onDrop={(e) => { e.preventDefault(); reorder(draggingIndex, i); }}
         >
-          <img src={url} alt={`Photo ${i + 1}`} />
+          <img src={url} alt={`Photo ${i + 1}`} loading="lazy" decoding="async" />
           {i === 0 && <span className="fs-photo-tile-hero">Hero</span>}
           <div className="fs-photo-tile-actions">
             <button

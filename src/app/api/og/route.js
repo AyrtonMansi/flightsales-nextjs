@@ -84,6 +84,16 @@ export async function GET(request) {
         </div>
       </div>
     ),
-    { width: 1200, height: 630 }
+    {
+      width: 1200,
+      height: 630,
+      // OG images are deterministic per request URL — same params
+      // always produce the same image. Cache aggressively at the
+      // edge so we never re-render the same card twice. SWR keeps
+      // it fresh in the background if the listing data changes.
+      headers: {
+        'Cache-Control': 'public, s-maxage=86400, stale-while-revalidate=604800',
+      },
+    },
   );
 }

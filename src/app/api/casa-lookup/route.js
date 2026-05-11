@@ -48,11 +48,22 @@ export async function GET(request) {
       .single();
 
     if (cached) {
-      return Response.json({
-        ...cached.data,
-        _source: 'cache',
-        _cached_at: cached.cached_at
-      });
+      // Success response — cache at the edge for 24h, SWR for a week.
+      // The DB cache hits already, so the edge cache means a recurring
+      // visitor with the same rego skips both Supabase AND the slow
+      // Playwright scrape entirely.
+      return Response.json(
+        {
+          ...cached.data,
+          _source: 'cache',
+          _cached_at: cached.cached_at,
+        },
+        {
+          headers: {
+            'Cache-Control': 'public, s-maxage=86400, stale-while-revalidate=604800',
+          },
+        },
+      );
     }
 
     // Live scrape uses headless Chromium, which doesn't ship on Vercel
@@ -97,11 +108,18 @@ export async function GET(request) {
       cached_at: new Date().toISOString()
     });
 
-    return Response.json({
-      ...data,
-      _source: 'casa',
-      _cached_at: new Date().toISOString()
-    });
+    return Response.json(
+      {
+        ...data,
+        _source: 'casa',
+        _cached_at: new Date().toISOString(),
+      },
+      {
+        headers: {
+          'Cache-Control': 'public, s-maxage=86400, stale-while-revalidate=604800',
+        },
+      },
+    );
 
   } catch (error) {
     console.error('CASA lookup error:', error);

@@ -78,7 +78,15 @@ export default function AffiliateLeadModal({ partner, listing, user, onClose }) 
         <div className="fs-modal-header">
           <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
             {partner.logo_url && (
-              <img src={partner.logo_url} alt="" style={{ width: 32, height: 32, objectFit: 'contain', borderRadius: 6, background: '#fff', border: '1px solid var(--fs-line)' }} />
+              <img
+                src={partner.logo_url}
+                alt=""
+                width="32"
+                height="32"
+                loading="lazy"
+                decoding="async"
+                style={{ objectFit: 'contain', borderRadius: 6, background: '#fff', border: '1px solid var(--fs-line)' }}
+              />
             )}
             <div>
               <h3 id="fs-aff-lead-title" style={{ margin: 0 }}>{partner.cta_text || 'Get a quote'}</h3>
