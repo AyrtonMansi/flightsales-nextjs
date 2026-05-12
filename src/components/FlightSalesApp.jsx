@@ -211,8 +211,10 @@ export default function FlightSalesApp({
     // Hardcoded admin email check has been removed — admins must be flagged via profiles.role = 'admin' in the DB.
     role: profile?.role === 'admin' ? 'admin' : (profile?.is_dealer ? 'dealer' : 'private'),
     // Business-account state — drives onboarding redirect + pending banner.
-    account_type: profile?.account_type || 'private',
-    pending_dealer: !!profile?.pending_dealer,
+    // Fall back to auth metadata if profile hasn't been created yet (race on signup).
+    account_type: profile?.account_type || authUser.user_metadata?.account_type || 'private',
+    // Fall back to auth metadata if profile hasn't been created yet (race on signup).
+    pending_dealer: !!profile?.pending_dealer || authUser.user_metadata?.account_type === 'business',
     // ABN verification — required for business accounts to be granted
     // dealer role. Surfaced here so SellPage / BusinessDashboardPage gate
     // unverified business accounts before any listing or bulk-import path.

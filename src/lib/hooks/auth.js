@@ -45,7 +45,7 @@ export function useAuth() {
     // production (left as localhost or a stale Vercel preview), bouncing every
     // new user to a broken page.
     const emailRedirectTo =
-      typeof window !== 'undefined' ? `${window.location.origin}/auth/callback` : undefined;
+      typeof window !== 'undefined' ? `${window.location.origin}/auth/callback?next=/dashboard` : undefined;
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
@@ -70,7 +70,7 @@ export function useAuth() {
     }
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
-      options: { redirectTo: `${window.location.origin}/auth/callback` }
+      options: { redirectTo: `${window.location.origin}/auth/callback?next=/dashboard` }
     });
     if (error) throw error;
     return data;

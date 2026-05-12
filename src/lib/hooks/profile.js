@@ -14,12 +14,20 @@ export function useProfile(userId) {
   const fetchProfile = useCallback(async () => {
     if (!userId) { setProfile(null); setLoading(false); return; }
     try {
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from('profiles')
         .select('*')
         .eq('id', userId)
         .single();
-      setProfile(data || null);
+      if (error) {
+        console.warn('[useProfile] Failed to fetch profile:', error.message);
+        setProfile(null);
+      } else {
+        setProfile(data || null);
+      }
+    } catch (err) {
+      console.warn('[useProfile] Exception fetching profile:', err.message);
+      setProfile(null);
     } finally {
       setLoading(false);
     }
