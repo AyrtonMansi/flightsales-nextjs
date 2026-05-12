@@ -10,6 +10,8 @@ import { modelToFormFields, getSeedCatalogue } from '../../lib/aircraftCatalogue
 import AbnVerifyCard from '../dealer/AbnVerifyCard';
 import { showToast } from '../../lib/toast';
 import { calculateListingFee, fmtAud } from '../../lib/pricing';
+import { processImages } from '../../lib/imageProcessing';
+import HeroCropper from '../sell/HeroCropper';
 
 const SellPage = ({ user, setPage }) => {
   // Hooks first — must run on every render in the same order regardless of
@@ -21,6 +23,12 @@ const SellPage = ({ user, setPage }) => {
   const [submitError, setSubmitError] = useState(null);
   const [uploadedImages, setUploadedImages] = useState([]);
   const [uploadingImages, setUploadingImages] = useState(false);
+  // Hero-crop modal — opens when the user clicks "Crop hero" on the
+  // first uploaded photo. We re-upload the cropped result and swap
+  // it into position 0; original is discarded from the in-memory
+  // state but its storage blob lingers until the listing is created
+  // (cheap; we don't need to garbage-collect aggressively).
+  const [croppingUrl, setCroppingUrl] = useState(null);
   const fileInputRef = useRef(null);
   // When the user opens the catalogue picker, hide the legacy free-text
   // make/model selects. They can still bail back via "enter manually".
@@ -638,18 +646,27 @@ const SellPage = ({ user, setPage }) => {
                   ) : (
                     <>
                       <h3 style={{ fontSize: 18 }}>Photos & Submit</h3>
-                      <input ref={fileInputRef} type="file" accept="image/*" multiple style={{ display: "none" }} onChange={async (e) => {
+                      {/* Accept HEIC in the file picker too — iPhones default to it.
+                          processImages converts HEIC -> JPG in the browser before
+                          upload, plus compresses every file to <= 1.5 MB and strips
+                          EXIF. Without this step Vercel's 4.5 MB body limit + the
+                          Supabase 5 MB-per-file cap would reject typical iPhone
+                          shots. */}
+                      <input ref={fileInputRef} type="file" accept="image/*,.heic,.heif" multiple style={{ display: "none" }} onChange={async (e) => {
                         const files = Array.from(e.target.files);
                         if (!files.length) return;
                         setUploadingImages(true);
                         try {
                           const tempId = `temp-${Date.now()}`;
-                          const urls = await Promise.all(files.map(f => uploadImage(f, tempId)));
+                          const prepared = await processImages(files);
+                          const urls = await Promise.all(prepared.map(f => uploadImage(f, tempId)));
                           setUploadedImages(prev => [...prev, ...urls]);
                         } catch (err) {
                           setSubmitError('Image upload failed: ' + err.message);
                         } finally {
                           setUploadingImages(false);
+                          // Reset the input so re-selecting the same file fires onChange again.
+                          if (e.target) e.target.value = '';
                         }
                       }} />
                       <div style={{ border: "2px dashed var(--fs-gray-200)", borderRadius: "var(--fs-radius)", padding: 32, textAlign: "center", marginBottom: 20 }}>
@@ -663,9 +680,20 @@ const SellPage = ({ user, setPage }) => {
                               onChange={setUploadedImages}
                               onRemove={(url) => setUploadedImages(prev => prev.filter(u => u !== url))}
                             />
-                            <p style={{ fontSize: 11, color: 'var(--fs-ink-3)', marginTop: 8, textAlign: 'center' }}>
-                              First photo is your hero — drag to reorder.
-                            </p>
+                            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 12, marginTop: 8, flexWrap: 'wrap' }}>
+                              <p style={{ fontSize: 11, color: 'var(--fs-ink-3)', margin: 0 }}>
+                                First photo is your hero — drag to reorder.
+                              </p>
+                              <button
+                                type="button"
+                                className="fs-detail-cta fs-detail-cta-secondary"
+                                style={{ padding: '6px 12px', fontSize: 12, margin: 0 }}
+                                onClick={() => setCroppingUrl(uploadedImages[0])}
+                                disabled={!uploadedImages[0] || uploadingImages}
+                              >
+                                Crop hero
+                              </button>
+                            </div>
                           </div>
                         )}
                         <button className="fs-detail-cta fs-detail-cta-secondary" style={{ maxWidth: 200, margin: "16px auto 0" }} onClick={() => fileInputRef.current?.click()} disabled={uploadingImages}>
@@ -783,6 +811,30 @@ const SellPage = ({ user, setPage }) => {
           )}
         </div>
       </section>
+      {croppingUrl && (
+        <HeroCropper
+          srcUrl={croppingUrl}
+          onClose={() => setCroppingUrl(null)}
+          onSave={async (croppedFile) => {
+            // Re-upload the cropped File using the same path scheme
+            // (the original blob stays in storage but is no longer
+            // referenced by listing.images — cheap, no GC needed).
+            const tempId = `temp-${Date.now()}`;
+            try {
+              const url = await uploadImage(croppedFile, tempId);
+              setUploadedImages((prev) => {
+                if (!prev.length) return [url];
+                // Replace the first photo with the cropped version.
+                return [url, ...prev.slice(1)];
+              });
+              setCroppingUrl(null);
+            } catch (err) {
+              setSubmitError('Crop upload failed: ' + err.message);
+              setCroppingUrl(null);
+            }
+          }}
+        />
+      )}
     </>
   );
 };
