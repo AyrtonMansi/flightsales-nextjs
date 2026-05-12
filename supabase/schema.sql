@@ -473,15 +473,28 @@ CREATE OR REPLACE TRIGGER update_profiles_updated_at
   FOR EACH ROW
   EXECUTE FUNCTION update_updated_at_column();
 
--- Auto-create profile on user signup
+-- Auto-create profile on user signup. The LoginPage register form passes
+-- full_name, phone, and account_type via auth.signUp's options.data; without
+-- pulling them through here, business signups would silently land as
+-- 'private' accounts and never reach the dealer-application admin queue.
 CREATE OR REPLACE FUNCTION handle_new_user()
 RETURNS TRIGGER AS $$
+DECLARE
+  meta_account_type TEXT;
 BEGIN
-  INSERT INTO profiles (id, email, full_name)
+  meta_account_type := CASE
+    WHEN NEW.raw_user_meta_data->>'account_type' = 'business' THEN 'business'
+    ELSE 'private'
+  END;
+
+  INSERT INTO profiles (id, email, full_name, phone, account_type, pending_dealer)
   VALUES (
     NEW.id,
     NEW.email,
-    COALESCE(NEW.raw_user_meta_data->>'full_name', split_part(NEW.email, '@', 1))
+    COALESCE(NEW.raw_user_meta_data->>'full_name', split_part(NEW.email, '@', 1)),
+    NULLIF(NEW.raw_user_meta_data->>'phone', ''),
+    meta_account_type,
+    meta_account_type = 'business'
   )
   ON CONFLICT (id) DO NOTHING;
   RETURN NEW;

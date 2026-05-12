@@ -40,10 +40,16 @@ export function useAuth() {
     if (!isSupabaseConfigured()) {
       throw new Error('Authentication not available - Supabase not configured');
     }
+    // Anchor the confirmation link to the live origin. Without this Supabase
+    // falls back to the project's Site URL, which has previously been wrong in
+    // production (left as localhost or a stale Vercel preview), bouncing every
+    // new user to a broken page.
+    const emailRedirectTo =
+      typeof window !== 'undefined' ? `${window.location.origin}/auth/callback` : undefined;
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
-      options: { data: metadata }
+      options: { data: metadata, emailRedirectTo }
     });
     if (error) throw error;
     return data;

@@ -46,7 +46,7 @@ export default defineConfig({
     // by `npm run build` in the deploy pipeline. Smoke tests are about
     // catching runtime regressions (broken imports, hooks-rules violations,
     // ErrorBoundary trips). PORT lets us run alongside a live dev server.
-    command: `PORT=${PORT} npm run dev`,
+    command: `PORT=${PORT} NEXT_PUBLIC_SITE_PASSWORD_PROTECTED=false npm run dev`,
     url: BASE_URL,
     timeout: 120_000,
     reuseExistingServer: !process.env.CI,
