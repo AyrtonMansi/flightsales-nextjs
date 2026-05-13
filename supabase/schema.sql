@@ -477,8 +477,16 @@ CREATE OR REPLACE TRIGGER update_profiles_updated_at
 -- full_name, phone, and account_type via auth.signUp's options.data; without
 -- pulling them through here, business signups would silently land as
 -- 'private' accounts and never reach the dealer-application admin queue.
+--
+-- Wrapped in EXCEPTION so a profile insert failure (RLS misconfig, missing
+-- column on a stale DB, etc.) never blocks signup itself — the React app
+-- will backfill the profile on first sign-in via ensureProfile().
 CREATE OR REPLACE FUNCTION handle_new_user()
-RETURNS TRIGGER AS $$
+RETURNS TRIGGER
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
 DECLARE
   meta_account_type TEXT;
 BEGIN
@@ -487,19 +495,24 @@ BEGIN
     ELSE 'private'
   END;
 
-  INSERT INTO profiles (id, email, full_name, phone, account_type, pending_dealer)
-  VALUES (
-    NEW.id,
-    NEW.email,
-    COALESCE(NEW.raw_user_meta_data->>'full_name', split_part(NEW.email, '@', 1)),
-    NULLIF(NEW.raw_user_meta_data->>'phone', ''),
-    meta_account_type,
-    meta_account_type = 'business'
-  )
-  ON CONFLICT (id) DO NOTHING;
+  BEGIN
+    INSERT INTO profiles (id, email, full_name, phone, account_type, pending_dealer)
+    VALUES (
+      NEW.id,
+      NEW.email,
+      COALESCE(NEW.raw_user_meta_data->>'full_name', split_part(NEW.email, '@', 1)),
+      NULLIF(NEW.raw_user_meta_data->>'phone', ''),
+      meta_account_type,
+      meta_account_type = 'business'
+    )
+    ON CONFLICT (id) DO NOTHING;
+  EXCEPTION WHEN OTHERS THEN
+    RAISE WARNING 'handle_new_user: profile insert failed for %: %', NEW.id, SQLERRM;
+  END;
+
   RETURN NEW;
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
+$$;
 
 CREATE OR REPLACE TRIGGER on_auth_user_created
   AFTER INSERT ON auth.users
