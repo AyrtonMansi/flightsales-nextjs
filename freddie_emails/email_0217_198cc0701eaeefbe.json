@@ -1,0 +1,165 @@
+{
+  "id": "198cc0701eaeefbe",
+  "subject": "You signed: \"LOT 10 - Contract of Sale - Nineteen First Avenue - Mabprop - Ayrton to sign\"",
+  "from": "Contracard via Adobe Acrobat Sign <adobesign@adobesign.com>",
+  "date": "Thu, 21 Aug 2025 02:47:00 -0700 (PDT)",
+  "snippet": "You&#39;re all done. Attached is the final agreement for your reference. You&#39;re done signing LOT 10 - Contract of Sale - Nineteen First Avenue - Mabprop - Ayrton to sign Open agreement Attached is",
+  "payload": {
+    "partId": "",
+    "mimeType": "multipart/mixed",
+    "filename": "",
+    "headers": [
+      {
+        "name": "Delivered-To",
+        "value": "ayrton@amansi.com.au"
+      },
+      {
+        "name": "Received",
+        "value": "by 2002:a05:6000:460b:b0:3c3:a9da:f6e8 with SMTP id gv11csp591302wrb;        Thu, 21 Aug 2025 02:47:51 -0700 (PDT)"
+      },
+      {
+        "name": "X-Google-Smtp-Source",
+        "value": "AGHT+IGNgRPtrrQ0uYYUIJn86OW0RIteW1lgsj6L6sZSTg+0C4rq+bZlvIXoqWnFD8APxm05nb8l"
+      },
+      {
+        "name": "X-Received",
+        "value": "by 2002:a05:6a20:7d9d:b0:240:1d4f:720b with SMTP id adf61e73a8af0-243309b5e68mr2476488637.23.1755769668257;        Thu, 21 Aug 2025 02:47:48 -0700 (PDT)"
+      },
+      {
+        "name": "ARC-Seal",
+        "value": "i=1; a=rsa-sha256; t=1755769667; cv=none;        d=google.com; s=arc-20240605;        b=VPb84+Lexx/KAhLEeEzM3uI3zM73ZXklkp8gqqm719jGDj1aMILM1aYAXIL5m7w14h         h9qBrXq1SVfewd6B1iYJIbSy3VBsZtZXXegEIe0DiXeC2AZbDYz1hKS4hm6ECMBpCKeX         EZJkCIo6RvkJD5igOxY5ioGJS2ZP5dXL+Xz66b4UvNHWG9/nAKYwpxcrVGpvn5xwqG0q         cHVOSrai57Kqk6Is+Xt0dG1oXCofXv4VY8DKWC6OpYj441+gT6EPyV9bFBEzd0z6ZyBE         iWipY/kz2YtPIHKwcVXptV2zSC3HMC7G7ldzvO7JzpQeKf6BgKdC6CM+PvKowEXynSLL         umrg=="
+      },
+      {
+        "name": "ARC-Message-Signature",
+        "value": "i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;        h=mime-version:subject:message-id:to:reply-to:from:dkim-signature         :date;        bh=P0Up/ECQtLkjKsNYBNiQlsh/b7wAlbuOlYWzUBO4qaA=;        fh=lCRvleIDQfDhF13JW8A/wRK/spncrp2OuNStC79Maco=;        b=HxVGyicem+ya+yF/BSKgDUcVoZobG/bNoUS4VoWKid80GYq/BSOpILEhZzjjCfQsdP         D+51gz1Q2bOEwWXewhzCMkhTlcyfXJckZw1zEjSHgSrxJriRlkNPaKRaGX78RTinhSNX         AbTmpuyN61PLRycoSUHsAdfXuakF8VLWVeKpws2UuxgLHfBJOedalvxhjVpjZ4V6DNXC         jO9OfwJutG4O0r36bUAuKyrUBE8Fu/3bfhFAm2LNAZa7osCwQVzII5/+Ox1twcaT6hIX         IjZ+Y1SOYt8aNrrqH76ul5mh0EdOe7FFQBqP+YmKccBw3w8TSEn6L4CQqktAj3yn3qOS         wetw==;        dara=google.com"
+      },
+      {
+        "name": "ARC-Authentication-Results",
+        "value": "i=1; mx.google.com;       dkim=pass header.i=@adobesign.com header.s=mailv2 header.b=CoVlbZkd;       spf=pass (google.com: domain of bounces@mail.au1.adobesign.com designates 52.65.63.250 as permitted sender) smtp.mailfrom=bounces@mail.au1.adobesign.com;       dmarc=pass (p=REJECT sp=REJECT dis=NONE) header.from=adobesign.com"
+      },
+      {
+        "name": "Return-Path",
+        "value": "<bounces@mail.au1.adobesign.com>"
+      },
+      {
+        "name": "Received",
+        "value": "from relay.apsoutheast2.utility.echosign.com (relay.apsoutheast2.utility.echosign.com. [52.65.63.250])        by mx.google.com with ESMTPS id d2e1a72fcca58-76e8d972e48si2731945b3a.872.2025.08.21.02.47.04        for <ayrton@amansi.com.au>        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);        Thu, 21 Aug 2025 02:47:47 -0700 (PDT)"
+      },
+      {
+        "name": "Received-SPF",
+        "value": "pass (google.com: domain of bounces@mail.au1.adobesign.com designates 52.65.63.250 as permitted sender) client-ip=52.65.63.250;"
+      },
+      {
+        "name": "Authentication-Results",
+        "value": "mx.google.com;       dkim=pass header.i=@adobesign.com header.s=mailv2 header.b=CoVlbZkd;       spf=pass (google.com: domain of bounces@mail.au1.adobesign.com designates 52.65.63.250 as permitted sender) smtp.mailfrom=bounces@mail.au1.adobesign.com;       dmarc=pass (p=REJECT sp=REJECT dis=NONE) header.from=adobesign.com"
+      },
+      {
+        "name": "Date",
+        "value": "Thu, 21 Aug 2025 02:47:00 -0700 (PDT)"
+      },
+      {
+        "name": "DKIM-Signature",
+        "value": "v=1; a=rsa-sha256; c=relaxed/simple; d=adobesign.com; s=mailv2; t=1755769622; bh=3P4eIk4Wu8dvPN3dU00SDGPPz9sCkY6Zp8GNu6t3v30=; h=Date:From:Reply-To:To:Subject; b=CoVlbZkdYRJkNaBXJ2uVg6cI9smXLc6hlyO5zrQIF9OL6AJqoKhLd6JK7KfpMPDRy\t C2mmgcPJPOlAGSKXjrBT3hreN0D1VqXn3JLkXMWdGbNC1crS1gXgPeTS1u6vq3N9FR\t OHrsyq94ambiBasw6LwrrO40GcmObQ+govUKSRlS9wTMCiLFCUtCek6lxYQ0OTXo81\t 3rYyPngq6oaR3iSm2DODEbLoQpOgO79VPi0WBZPUBsCQb4vzWV5JE/eXouanh+GhyO\t qIREIG6BZ2ZNAPHUiyfVR4xpo2P/U8sqoLhaoVdg61BTWnFh3OWdYpSlJNmeD8Nmno\t +qlx9a3KxRGpQ=="
+      },
+      {
+        "name": "From",
+        "value": "Contracard via Adobe Acrobat Sign <adobesign@adobesign.com>"
+      },
+      {
+        "name": "Reply-To",
+        "value": "Jose Perez <josepcontracard@gmail.com>"
+      },
+      {
+        "name": "To",
+        "value": "ayrton mansi <ayrton@amansi.com.au>, Jose Perez <josepcontracard@gmail.com>"
+      },
+      {
+        "name": "Message-Id",
+        "value": "<533701252.3236437.1755769620362@webapp-prod-b-3.webapp-prod-b.ns-team-sign-core-prod.svc.cluster.local>"
+      },
+      {
+        "name": "Subject",
+        "value": "You signed: \"LOT 10 - Contract of Sale - Nineteen First Avenue - Mabprop - Ayrton to sign\""
+      },
+      {
+        "name": "MIME-Version",
+        "value": "1.0"
+      },
+      {
+        "name": "Content-Type",
+        "value": "multipart/mixed; boundary=\"----=_Part_3236370_751976011.1755769618871\""
+      },
+      {
+        "name": "X-EchoSign-Bounce",
+        "value": "CBJCHBCAABAAvxIxbbwKn9q5dp0p14aFI5tQC6la3N4K"
+      },
+      {
+        "name": "X-EchoSign-Template",
+        "value": "agreement/progress/signedToSignerOrObserver.vm:en_US:20000001236212479"
+      }
+    ],
+    "body": {
+      "size": 0
+    },
+    "parts": [
+      {
+        "partId": "0",
+        "mimeType": "multipart/related",
+        "filename": "",
+        "headers": [
+          {
+            "name": "Content-Type",
+            "value": "multipart/related; boundary=\"----=_Part_3236371_1187421743.1755769618871\""
+          }
+        ],
+        "body": {
+          "size": 0
+        },
+        "parts": [
+          {
+            "partId": "0.0",
+            "mimeType": "text/html",
+            "filename": "",
+            "headers": [
+              {
+                "name": "Content-Type",
+                "value": "text/html;charset=UTF-8"
+              },
+              {
+                "name": "Content-Transfer-Encoding",
+                "value": "7bit"
+              }
+            ],
+            "body": {
+              "size": 8348,
+              "data": "ICANCg0KPCFET0NUWVBFIGh0bWwgUFVCTElDICItLy9XM0MvL0RURCBYSFRNTCAxLjAgVHJhbnNpdGlvbmFsLy9FTiINCiAgImh0dHA6Ly93d3cudzMub3JnL1RSL3hodG1sMS9EVEQveGh0bWwxLXRyYW5zaXRpb25hbC5kdGQiPg0KDQo8aHRtbCB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94aHRtbCIgbGFuZz0iZW5fVVMiPg0KPGhlYWQ-DQogIDx0aXRsZT48L3RpdGxlPg0KICA8c3R5bGUgdHlwZT0idGV4dC9jc3MiPg0KDQogICAgDQoNCiAgICBib2R5LCB0YWJsZSwgZGl2LCB0ZCwgcCB7DQogICAgZm9udC1mYW1pbHk6IGFkb2JlLCBhZG9iZS1jbGVhbiwgIlNvdXJjZSBTYW5zIFBybyIsIC1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgIlNlZ29lIFVJIiwgUm9ib3RvLCBzYW5zLXNlcmlmOw0KICAgIGNvbG9yOiAjMkMyQzJDOw0KICAgIGZvbnQtd2VpZ2h0OiAzMDA7DQogIH0NCg0KICAgIHAgew0KICAgIG1hcmdpbjogMDsNCiAgICBwYWRkaW5nOiAwOw0KICB9DQoNCiAgICBhIHsNCiAgICBib3JkZXI6IG5vbmU7DQogIH0NCg0KICAgIGEsIGE6bGluaywgYTp2aXNpdGVkLCBhOmhvdmVyLCBhOmFjdGl2ZSB7DQogICAgY29sb3I6ICMxNDczZTY7DQogICAgdGV4dC1kZWNvcmF0aW9uOiBub25lOw0KICAgIGZvbnQtd2VpZ2h0OiBib2xkOw0KICB9DQoNCiAgICAuc2VwYXJhdG9yIHsNCiAgICBtYXJnaW46IDA7DQogICAgYm9yZGVyOiAxcHggc29saWQgI0NBQ0FDQTsNCiAgfQ0KDQogICAgaW1nIHsNCiAgICBib3JkZXI6MDsNCiAgfQ0KDQogICAgc3Bhbi5lX2hlYWRpbmcgew0KICAgIGZvbnQtc2l6ZTogMTJweDsNCiAgICBmb250LXdlaWdodDogYm9sZDsNCiAgfQ0KDQogICAgaDEgew0KICAgIGZvbnQtc2l6ZTogMjhweDsNCiAgICBmb250LXdlaWdodDogMzAwOw0KICAgIGNvbG9yOiAjNkU2RTZFOw0KICAgIHBhZGRpbmctYm90dG9tOiA1cHg7DQogIH0NCg0KICAgICAgLmJvZHlIZWFkaW5nIHsNCiAgICBtYXJnaW46IDA7DQogICAgZm9udC1zaXplOiAyMnB4Ow0KICAgIGNvbG9yOiAjNDU0NTQ1Ow0KICAgIHRleHQtYWxpZ246IGNlbnRlcjsNCiAgfQ0KDQogIC5mb290ZXJDb250YWluZXIgew0KICAgIG1hcmdpbi10b3A6IDE2cHg7DQogICAgZm9udC1zaXplOiAxMnB4Ow0KICAgIGNvbG9yOiAjNGI0YjRiDQogIH0NCg0KICB1bCB7DQogICAgZm9udC1zaXplOiAxN3B4Ow0KICB9DQoNCiAgLmZvb3RlckNvbnRhaW5lciBwIHsNCiAgICBtYXJnaW4tYm90dG9tOiAxZW07DQogIH0NCiAgDQo8L3N0eWxlPg0KPC9oZWFkPg0KDQo8Ym9keT4NCiAgPGNlbnRlcj4NCiAgICAgICAgPHRhYmxlIGNlbGxzcGFjaW5nPSIxNiIgY2VsbHBhZGRpbmc9IjAiIGJvcmRlcj0iMCIgc3R5bGU9Im1heC13aWR0aDogNjAwcHg7IGJhY2tncm91bmQtY29sb3I6ICNmMGYwZjA7Ym9yZGVyLWNvbGxhcHNlOiBzZXBhcmF0ZSI-DQogICAgICA8dHIgc3R5bGU9ImJhY2tncm91bmQtY29sb3I6ICNmZmZmZmYiPg0KICAgICAgICA8dGQ-DQogICAgICAgICAgICAgICAgDQogIA0KICA8dGFibGUgc3R5bGU9ImJhY2tncm91bmQtY29sb3I6ICNmZmY7d2lkdGg6MTAwJTsgcGFkZGluZy1ib3R0b206IDIwcHg7IiBib3JkZXI9IjAiIGNlbGxzcGFjaW5nPSIwIiBjZWxscGFkZGluZz0iMCIgYWxpZ249ImNlbnRlciI-DQogICAgPHRib2R5Pg0KICAgIDx0cj4NCiAgICAgIDx0ZCB2YWxpZ249ImJvdHRvbSI-DQogICAgICAgIDx0YWJsZSBjbGFzcz0iIiBib3JkZXI9IjAiIGNlbGxzcGFjaW5nPSIwIiBjZWxscGFkZGluZz0iMCI-DQogICAgICAgICAgPHRib2R5Pg0KICAgICAgICAgICAgPHRyPg0KICAgICAgICAgICAgICA8dGQ-DQogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIDx0YWJsZSBib3JkZXI9IjAiIGNlbGxwYWRkaW5nPSIwIiBjZWxsc3BhY2luZz0iMCI-DQogICAgICAgICAgICAgICAgICAgICAgPHRyPg0KICAgICAgICAgICAgICAgICAgICAgICAgPHRkIHN0eWxlPSJ3aWR0aDoxNnB4OyI-Jm5ic3A7PC90ZD4NCiAgICAgICAgICAgICAgICAgICAgICAgIDx0ZD4NCiAgICAgICAgICAgICAgICAgICAgICAgICAgPGltZyBzcmM9Imh0dHBzOi8vYXUxLmRvY3VtZW50cy5hZG9iZS5jb20vaW1hZ2VzL2VtYWlsTmV4dEdlbi9lbWFpbC1hZG9iZS1zaWduLWxvZ28uM0AyeC5wbmciIHdpZHRoPSIxNjUiIGFsdD0iQWRvYmUgQWNyb2JhdCBTaWduIExvZ28iLz4NCiAgICAgICAgICAgICAgICAgICAgICAgIDwvdGQ-DQogICAgICAgICAgICAgICAgICAgICAgPC90cj4NCiAgICAgICAgICAgICAgICAgICAgPC90YWJsZT4NCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA8L3RkPg0KICAgICAgICAgICAgPC90cj4NCiAgICAgICAgICA8L3Rib2R5Pg0KICAgICAgICA8L3RhYmxlPg0KICAgICAgPC90ZD4NCg0KICAgICAgICAgICAgICAgICAgICA8dGQgc3R5bGU9ImNvbG9yOiNmZmZmZmY7Zm9udC1mYW1pbHk6QXJpYWwsSGVsdmV0aWNhLHNhbnMtc2VyaWY7Zm9udC1zaXplOjEycHg7bGluZS1oZWlnaHQ6MThweCIgd2lkdGg9IjM5IiBhbGlnbj0icmlnaHQiIHZhbGlnbj0idG9wIj4NCiAgICAgICAgICAgICAgICAgICAgPGltZyBzdHlsZT0iYmFja2dyb3VuZC1jb2xvcjojZmYwMDAwO2Rpc3BsYXk6aW5saW5lLWJsb2NrIiBzcmM9Imh0dHBzOi8vYXUxLmRvY3VtZW50cy5hZG9iZS5jb20vaW1hZ2VzL2VtYWlsTmV4dEdlbi9lbWFpbC1hZG9iZS10YWctY2xhc3NpY0AyeC5wbmciIGJvcmRlcj0iMCIgYWx0PSJBZG9iZSBMb2dvIiB3aWR0aD0iMzkiIGhlaWdodD0iNjQiPg0KICAgICAgICA8L3RkPg0KICAgICAgICA8dGQgc3R5bGU9IndpZHRoOjE2cHg7Ij4mbmJzcDs8L3RkPg0KICAgICAgICAgIDwvdHI-DQogICAgPC90Ym9keT4NCiAgPC90YWJsZT4NCiAgICAgICAgICA8dGFibGUgaWQ9Im1haW4iIGNlbGxwYWRkaW5nPSIyMCIgY2VsbHNwYWNpbmc9IjAiIHN0eWxlPSJ3aWR0aDogMTAwJSI-DQogICAgICAgICAgICA8dHI-DQogICAgICAgICAgICAgIDx0ZD4NCiAgICAgDQo8Y2VudGVyPg0KPGltZyBzcmM9Imh0dHBzOi8vYXUxLmRvY3VtZW50cy5hZG9iZS5jb20vaW1hZ2VzL2VtYWlsTmV4dEdlbi9jaGVja21hcmtDaXJjbGVAMngucG5nIiBzdHlsZT0icGFkZGluZy1ib3R0b206IDI4cHg7IGhlaWdodDogNTBweDsgd2lkdGg6IDUwcHg7IGRpc3BsYXk6IGJsb2NrOyBtYXJnaW4tbGVmdDogYXV0bzsgbWFyZ2luLXJpZ2h0OiBhdXRvOyIgYWx0PSJCaWcgQ2lyY2xlIENoZWNrbWFyayIvPg0KPC9jZW50ZXI-DQoNCiAgPHAgc3R5bGU9ImRpc3BsYXk6IG5vbmUgIWltcG9ydGFudDsgdmlzaWJpbGl0eTogaGlkZGVuOyBtc28taGlkZTogYWxsOyBmb250LXNpemU6IDFweDsgY29sb3I6ICNmZmZmZmY7IGxpbmUtaGVpZ2h0OiAxcHg7DQogIG1heC1oZWlnaHQ6IDBweDsgbWF4LXdpZHRoOiAwcHg7IG9wYWNpdHk6IDA7IG92ZXJmbG93OiBoaWRkZW47Ij4NCiAgICBZb3UmcnNxdW87cmUgYWxsIGRvbmUuIEF0dGFjaGVkIGlzIHRoZSBmaW5hbCBhZ3JlZW1lbnQgZm9yIHlvdXIgcmVmZXJlbmNlLg0KICA8L3A-DQoNCjxwIGNsYXNzPSJib2R5SGVhZGluZyIgc3R5bGU9Im1hcmdpbjogMDsgZm9udC1zaXplOiAyMnB4OyBjb2xvcjogIzQ1NDU0NTsgdGV4dC1hbGlnbjogY2VudGVyOyB3b3JkLWJyZWFrOmJyZWFrLXdvcmQiPg0KIFlvdSdyZSBkb25lIHNpZ25pbmcgPGJyIC8-IDxiPkxPVCAxMCAtIENvbnRyYWN0IG9mIFNhbGUgLSBOaW5ldGVlbiBGaXJzdCBBdmVudWUgLSBNYWJwcm9wIC0gQXlydG9uIHRvIHNpZ248L2I-DQo8L3A-DQoNCiAgICAgICAgPGNlbnRlcj4NCiAgICAgICAgDQogICAgICAgICAgICAgICAgICAgICAgICANCiAgICAgICAgICAgICAgICANCiAgICAgICAgDQogICAgICAgIA0KICAgICAgICA8IS0tW2lmIG1zb10-DQogICAgICAgICAgPHRhYmxlIGFsaWduPSJjZW50ZXIiIGJvcmRlcj0iMCIgY2VsbHBhZGRpbmc9IjAiIGNlbGxzcGFjaW5nPSIwIj4NCiAgICAgICAgICAgICAgPHRyPg0KICA8dGQgaGVpZ2h0PSIyOHB4Ij4NCiAgICAmbmJzcDsNCiAgPC90ZD4NCjwvdHI-DQogICAgICAgICAgICA8dHI-DQogICAgICAgICAgICAgIDx0ZCB2YWxpZ249Im1pZGRsZSI-DQogICAgICAgICAgICAgICAgPGNlbnRlcj4NCiAgICAgICAgICAgICAgICAgIDxoMT4NCiAgICAgICAgICAgICAgICAgICAgPGEgaHJlZj0iaHR0cHM6Ly9hdTEuZG9jdW1lbnRzLmFkb2JlLmNvbS9wdWJsaWMvdmlld0FncmVlbWVudD90c2lkPUNCRkNJQkFBQ0JTQ1RCQUJEVUFBQUJBQ0FBQkFBZkpKdVd2OWhKeUZXMmpESlBSaGg0RHBfdkpHZVB2WnZiSUJ2cjJJZURWazRGZFFBZk9OQWF4eU1xcnEyTjZyRWtCdzdWVGZBMzg5bHBzQ09ScHhURTluV2tpc0ZiRy11bDdzN09HU21ZSjVQYkh6bV85bVZUVEJ6bjFPZFlZVkEmIj4NCiAgICAgICAgICAgICAgICAgICAgICBPcGVuIGFncmVlbWVudA0KICAgICAgICAgICAgICAgICAgICA8L2E-DQogICAgICAgICAgICAgICAgICA8L2gxPg0KICAgICAgICAgICAgICAgIDwvY2VudGVyPg0KICAgICAgICAgICAgICA8L3RkPg0KICAgICAgICAgICAgPC90cj4NCiAgICAgICAgICAgICAgPHRyPg0KICA8dGQgaGVpZ2h0PSIyOHB4Ij4NCiAgICAmbmJzcDsNCiAgPC90ZD4NCjwvdHI-DQogICAgICAgICAgPC90YWJsZT4NCiAgICAgICAgPCFbZW5kaWZdLS0-DQoNCiAgICAgICAgPCEtLVtpZiAhbXNvXT4gPCEtLS0tPg0KICAgICAgICAgIDxkaXYgc3R5bGU9InRleHQtYWxpZ246IGNlbnRlcjsgbWFyZ2luOiAzMXB4IDA7Ij4NCiAgICAgICAgICAgIDxhIGhyZWY9Imh0dHBzOi8vYXUxLmRvY3VtZW50cy5hZG9iZS5jb20vcHVibGljL3ZpZXdBZ3JlZW1lbnQ_dHNpZD1DQkZDSUJBQUNCU0NUQkFCRFVBQUFCQUNBQUJBQWZKSnVXdjloSnlGVzJqREpQUmhoNERwX3ZKR2VQdlp2YklCdnIySWVEVms0RmRRQWZPTkFheHlNcXJxMk42ckVrQnc3VlRmQTM4OWxwc0NPUnB4VEU5bldraXNGYkctdWw3czdPR1NtWUo1UGJIem1fOW1WVFRCem4xT2RZWVZBJiIgc3R5bGU9ImJhY2tncm91bmQtY29sb3I6ICMxNDczZTY7IGJvcmRlci1jb2xvcjogIzE0NzNlNjsgY29sb3I6ICNmZmZmZmYhaW1wb3J0YW50OyBib3JkZXItd2lkdGg6IDJweDsgYm9yZGVyLXN0eWxlOiBzb2xpZDsNCiAgICAgICAgICAgICAgYm9yZGVyLXJhZGl1czogMjBweDsgZGlzcGxheTogaW5saW5lLWJsb2NrOyBoZWlnaHQ6IGF1dG87IG1pbi13aWR0aDogNzJweDsgcGFkZGluZzogOHB4IDE0cHg7IGZvbnQtc2l6ZTogMTVweDsgZm9udC13ZWlnaHQ6IDcwMCAhaW1wb3J0YW50Ow0KICAgICAgICAgICAgICB0ZXh0LWRlY29yYXRpb246IG5vbmU7IG1hcmdpbjogMDsganVzdGlmeS1jb250ZW50OiBjZW50ZXI7Ij4NCiAgICAgICAgICAgICAgT3BlbiBhZ3JlZW1lbnQNCiAgICAgICAgICAgIDwvYT4NCiAgICAgICAgICA8L2Rpdj4NCiAgICAgICAgPCEtLSA8IVtlbmRpZl0tLT4NCiAgICA8L2NlbnRlcj4NCiAgDQo8aHIgY2xhc3M9InNlcGFyYXRvciIgLz4NCg0KPHRhYmxlIGJvcmRlcj0iMCIgY2VsbHBhZGRpbmc9IjAiIGNlbGxzcGFjaW5nPSIwIj4NCiAgICA8dHI-DQogIDx0ZCBoZWlnaHQ9IjI4cHgiPg0KICAgICZuYnNwOw0KICA8L3RkPg0KPC90cj4NCiAgPHRyPg0KICAgIDx0ZD4NCiAgICAgIDxwPg0KICAgICAgICAgICAgPHAgc3R5bGU9ImZvbnQtc2l6ZTogMTdweDsiPg0KICAgICAgQXR0YWNoZWQgaXMgdGhlIGZpbmFsIGFncmVlbWVudCBmb3IgeW91ciByZWZlcmVuY2UuDQogICAgICAgIFJlYWQgaXQgd2l0aCA8YSBocmVmPSJodHRwczovL3d3dy5hZG9iZS5jb20vZ28vc2lnbl9lbWFpbF9yZGMiPjxiPkFjcm9iYXQgUmVhZGVyPC9iPjwvYT4uDQogICAgICANCiAgPHNwYW4gc3R5bGU9ImZvbnQtc2l6ZTogMTdweDsiPg0KICAgICAgICAgICAgICAgIFlvdSBjYW4gYWxzbyA8YSBocmVmPSJodHRwczovL2F1MS5kb2N1bWVudHMuYWRvYmUuY29tL3B1YmxpYy92aWV3QWdyZWVtZW50P3RzaWQ9Q0JGQ0lCQUFDQlNDVEJBQkRVQUFBQkFDQUFCQUFmSkp1V3Y5aEp5RlcyakRKUFJoaDREcF92SkdlUHZadmJJQnZyMkllRFZrNEZkUUFmT05BYXh5TXFycTJONnJFa0J3N1ZUZkEzODlscHNDT1JweFRFOW5Xa2lzRmJHLXVsN3M3T0dTbVlKNVBiSHptXzltVlRUQnpuMU9kWVlWQSYiPjxiPm9wZW4gaXQgb25saW5lPC9iPjwvYT4gdG8gcmV2aWV3IGl0cyBhY3Rpdml0eSBoaXN0b3J5Lg0KICAgICAgICAgICAgPC9zcGFuPg0KICA8L3A-DQoNCiAgDQo8YnIgLz4NCg0KDQogICAgICA8L3A-DQogICAgPC90ZD4NCiAgPC90cj4NCjwvdGFibGU-DQoNCiAgICAgICAgICAgICAgICAgICAgICA8L3RkPg0KICAgICAgICAgICAgICAgIDwvdHI-DQogICAgICAgICAgICAgICAgICAgICAgICAgICAgPC90YWJsZT4NCiAgICAgICAgICAgIDwvdGQ-DQogICAgICAgIDwvdHI-DQogICAgICAgIDx0cj4NCiAgICAgICAgICA8dGQ-DQogICAgICAgICAgICA8dGFibGUgc3R5bGU9ImZvbnQtc2l6ZTogMTJweDsgY29sb3I6ICM0YjRiNGIiPg0KICAgICAgICAgICAgICA8dHI-DQogICAgICAgICAgICAgICAgPHRkPg0KICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA8Y2VudGVyPg0KICAgICAgICAgICAgICAgICAgICAgIDx0YWJsZSBib3JkZXI9IjAiIGNlbGxwYWRkaW5nPSIwIiBjZWxsc3BhY2luZz0iMCI-DQogICAgICAgICAgICAgICAgICAgICAgICA8dHI-DQogICAgICAgICAgICAgICAgICAgICAgICAgIDx0ZD4NCiAgICAgICAgICAgICAgICAgICAgICAgICAgICA8aW1nIHNyYz0iaHR0cHM6Ly9hdTEuZG9jdW1lbnRzLmFkb2JlLmNvbS9pbWFnZXMvZW1haWxOZXh0R2VuL2VtYWlsLXBvd2VyZWQtYnktYWRvYmUtc2lnbi1sb2dvLjNAMngucG5nIiB3aWR0aD0iMTM2IiBoc3BhY2U9IjIiIGFsdD0iUG93ZXJlZCBieSBBZG9iZSBBY3JvYmF0IFNpZ24iPg0KICAgICAgICAgICAgICAgICAgICAgICAgICA8L3RkPg0KICAgICAgICAgICAgICAgICAgICAgICAgPC90cj4NCiAgICAgICAgICAgICAgICAgICAgICAgIDx0cj4NCiAgPHRkIGhlaWdodD0iMTZweCI-DQogICAgJm5ic3A7DQogIDwvdGQ-DQo8L3RyPg0KICAgICAgICAgICAgICAgICAgICAgIDwvdGFibGU-DQogICAgICAgICAgICAgICAgICAgIDwvY2VudGVyPg0KICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICANCiAgICAgICAgICAgICAgICAgICAgICA8cCBzdHlsZT0ibWFyZ2luLWJvdHRvbTogMThweCI-DQogICAgICAgICAgICAgICAgICBUbyBlbnN1cmUgdGhhdCB5b3UgY29udGludWUgcmVjZWl2aW5nIG91ciBlbWFpbHMsIHBsZWFzZSBhZGQgYWRvYmVzaWduQGFkb2Jlc2lnbi5jb20gdG8geW91ciBhZGRyZXNzIGJvb2sgb3Igc2FmZSBsaXN0Lg0KICAgICAgICAgICAgPC9wPg0KICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgPHAgc3R5bGU9ImZvbnQtc2l6ZTogODAlOyB0ZXh0LWFsaWduOiBjZW50ZXI7IG1hcmdpbi1ib3R0b206IDE4cHg7Ij4NCiAgICAgIDxzcGFuPjxhIHRhcmdldD0iX2JsYW5rIiBocmVmPSJodHRwczovL3d3dy5hZG9iZS5jb20vZ28vdGVybXMiPjxzdHJvbmc-VGVybXMgb2YgVXNlPC9zdHJvbmc-PC9hPiB8IDxhIHRhcmdldD0iX2JsYW5rIiBocmVmPSJodHRwczovL2F1MS5kb2N1bWVudHMuYWRvYmUuY29tL3B1YmxpYy9yZXBvcnRBYnVzZUZvcm0_dHNpZD1DQkZDSUJBQUNCU0NUQkFCRFVBQUFCQUNBQUJBQWZKSnVXdjloSnlGVzJqREpQUmhoNERwX3ZKR2VQdlp2YklCdnIySWVEVms0RmRRQWZPTkFheHlNcXJxMk42ckVrQnc3VlRmQTM4OWxwc0NPUnB4VEU5bldraXNGYkctdWw3czdPR1NtWUo1UGJIem1fOW1WVFRCem4xT2RZWVZBJiZyZXBvcnRBYnVzZT10cnVlIj48c3Ryb25nPlJlcG9ydCBBYnVzZTwvc3Ryb25nPjwvYT48L3NwYW4-DQogICAgPC9wPg0KICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA8cCBzdHlsZT0ibWFyZ2luLWJvdHRvbTogMThweCI-JmNvcHk7IDIwMjUgQWRvYmUuIEFsbCByaWdodHMgcmVzZXJ2ZWQuPC9wPg0KDQogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgPC90ZD4NCiAgICAgICAgICAgICAgPC90cj4NCiAgICAgICAgICAgIDwvdGFibGU-DQogICAgICAgICAgPC90ZD4NCiAgICAgICAgPC90cj4NCiAgICAgICAgICAgIDwvdGFibGU-DQogICAgPC9jZW50ZXI-DQogICAgICAgIDwvYm9keT4NCjwvaHRtbD4NCg0KDQo="
+            }
+          }
+        ]
+      },
+      {
+        "partId": "1",
+        "mimeType": "application/pdf",
+        "filename": "LOT 10 - Contract of Sale - Nineteen First Avenue - Mabprop - Ayrton to sign - signed.pdf",
+        "headers": [
+          {
+            "name": "Content-Type",
+            "value": "application/pdf; name=\"LOT 10 - Contract of Sale - Nineteen First Avenue - Mabprop - Ayrton to sign - signed.pdf\""
+          },
+          {
+            "name": "Content-Transfer-Encoding",
+            "value": "base64"
+          },
+          {
+            "name": "Content-Disposition",
+            "value": "attachment; filename=\"LOT 10 - Contract of Sale - Nineteen First Avenue - Mabprop - Ayrton to sign - signed.pdf\""
+          }
+        ],
+        "body": {
+          "attachmentId": "ANGjdJ8ISxdKlKxTHPbop8LffnAcNGsstk2WrQcXRJxXzrJMHZeVPlidwc57v-mhaFYKRA30JgGue6KQ-vgyZg0OnDXJGIFMPHj_rx5GAPRTPyuhz2UjSmxKw0NqSy88salQw7d6Ga72APYJYqn0W7NlxVQR8C0OeI6C5Z2R9j1t4yqf14_sZSBjzVPN-k3F5E6hZJ0ZzA19un6j6jWqGMaQKXRSxWFpNAr-wQ-N8O_lbJpSQEHabWB7zpw0YomA9-VwFim0DcdE2nR0wksQmf8UVhm9gX8AB9Gg2bEyT1rYiSYlZSOqpaoYwGwWP_Xs2U3IKFSEQ-XjxvtgWu9DwCiiFWuE4vYfm-2dXOLpwW_11R8Ds1-uyPpI8eJJ6GhZ6BmHpVLcpUeXYUsUchKrFo1mIncHrfXmiyzv2Gys3g",
+          "size": 7384779
+        }
+      }
+    ]
+  }
+}

@@ -1,0 +1,28 @@
+[2026-02-23 19:35:28] Watchdog started
+[2026-03-02 15:22:55] Gateway not running. Restart attempt 1/10
+[2026-03-02 15:22:55] ERROR: openclaw-gateway command not found
+[2026-03-06 13:41:21] Gateway not running. Restart attempt 1/10
+[2026-03-06 13:41:21] ERROR: openclaw-gateway command not found
+[2026-03-06 13:41:32] Gateway not running. Restart attempt 2/10
+[2026-03-06 13:41:32] ERROR: openclaw-gateway command not found
+[2026-03-13 14:58:11] Gateway not running. Restart attempt 1/10
+[2026-03-13 14:58:11] ERROR: openclaw-gateway command not found
+[2026-03-13 14:58:21] Gateway not running. Restart attempt 2/10
+[2026-03-13 14:58:21] ERROR: openclaw-gateway command not found
+[2026-03-13 14:58:31] Gateway not running. Restart attempt 3/10
+[2026-03-13 14:58:31] ERROR: openclaw-gateway command not found
+[2026-03-13 14:58:41] Gateway not running. Restart attempt 4/10
+[2026-03-13 14:58:41] ERROR: openclaw-gateway command not found
+[2026-03-13 14:58:51] Gateway not running. Restart attempt 5/10
+[2026-03-13 14:58:51] ERROR: openclaw-gateway command not found
+[2026-03-13 14:59:01] Gateway not running. Restart attempt 6/10
+[2026-03-13 14:59:01] ERROR: openclaw-gateway command not found
+[2026-03-13 14:59:11] Gateway not running. Restart attempt 7/10
+[2026-03-13 14:59:11] ERROR: openclaw-gateway command not found
+[2026-03-13 14:59:21] Gateway not running. Restart attempt 8/10
+[2026-03-13 14:59:21] ERROR: openclaw-gateway command not found
+[2026-03-13 14:59:31] Gateway not running. Restart attempt 9/10
+[2026-03-13 14:59:31] ERROR: openclaw-gateway command not found
+[2026-03-13 14:59:42] Gateway not running. Restart attempt 10/10
+[2026-03-13 14:59:42] ERROR: openclaw-gateway command not found
+[2026-03-13 14:59:52] CRITICAL: Max restarts (10) exceeded. Manual intervention required.

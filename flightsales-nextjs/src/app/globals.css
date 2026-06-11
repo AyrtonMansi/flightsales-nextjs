@@ -1,36 +1,5 @@
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
-
-:root {
-  --fs-navy: #000000;
-  --fs-navy-light: #0a0a0a;
-  --fs-blue: #000000;
-  --fs-blue-light: #262626;
-  --fs-sky: #000000;
-  --fs-amber: #000000;
-  --fs-green: #10b981;
-  --fs-red: #ef4444;
-  --fs-bg: #fafafa;
-  --fs-white: #ffffff;
-  --fs-gray-50: #fafafa;
-  --fs-gray-100: #f5f5f5;
-  --fs-gray-200: #e5e5e5;
-  --fs-gray-300: #d4d4d4;
-  --fs-gray-400: #a3a3a3;
-  --fs-gray-500: #737373;
-  --fs-gray-600: #525252;
-  --fs-gray-700: #404040;
-  --fs-gray-800: #262626;
-  --fs-gray-900: #0a0a0a;
-  --fs-radius: 12px;
-  --fs-radius-sm: 8px;
-  --fs-radius-lg: 16px;
-  --fs-shadow: 0 1px 2px rgba(0,0,0,0.04);
-  --fs-shadow-md: 0 4px 16px rgba(0,0,0,0.06);
-  --fs-shadow-lg: 0 8px 30px rgba(0,0,0,0.08);
-  --fs-font: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
-  --fs-font-serif: 'Plus Jakarta Sans', system-ui, sans-serif;
-  --fs-max-w: 1280px;
-}
+/* Note: design tokens (:root) live in the marketplace-styles block below.
+ * Inter is loaded via the <link> tag in src/app/layout.jsx. */
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -46,3 +15,3868 @@ body {
 
 a { color: inherit; text-decoration: none; }
 ::selection { background: var(--fs-gray-900); color: var(--fs-white); }
+
+/* Spinner Animation */
+@keyframes fs-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Form Input Focus States — sky-blue accent ring */
+.fs-form-input:focus,
+.fs-form-select:focus,
+.fs-form-textarea:focus {
+  outline: none;
+  border-color: var(--fs-accent) !important;
+  box-shadow: 0 0 0 3px var(--fs-accent-ring);
+  transition: all 0.15s ease;
+}
+
+/* Form Input Placeholder */
+.fs-form-input::placeholder,
+.fs-form-textarea::placeholder {
+  color: var(--fs-gray-400);
+}
+
+/* Button Hover Transitions */
+.fs-form-submit {
+  transition: all 0.15s ease;
+}
+
+.fs-form-submit:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.fs-form-submit:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+/* Account Type Card Hover */
+.fs-account-type-card {
+  transition: all 0.15s ease;
+}
+
+.fs-account-type-card:hover {
+  border-color: var(--fs-gray-400);
+}
+
+/* Error State Shake Animation */
+@keyframes fs-shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-4px); }
+  75% { transform: translateX(4px); }
+}
+
+.fs-form-error {
+  animation: fs-shake 0.3s ease;
+}
+
+/* Form Element Base Styles */
+.fs-form-group {
+  margin-bottom: 20px;
+}
+
+.fs-form-label {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--fs-gray-700);
+  margin-bottom: 8px;
+}
+
+.fs-form-input,
+.fs-form-select,
+.fs-form-textarea {
+  width: 100%;
+  padding: 12px 16px;
+  border: 1px solid var(--fs-gray-200);
+  border-radius: var(--fs-radius-sm);
+  font-family: var(--fs-font);
+  font-size: 16px; /* Prevents iOS zoom on focus */
+  background: white;
+  color: var(--fs-gray-900);
+  transition: all 0.15s ease;
+}
+
+.fs-form-input:hover,
+.fs-form-select:hover,
+.fs-form-textarea:hover {
+  border-color: var(--fs-gray-300);
+}
+
+.fs-form-select {
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23737373' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  padding-right: 40px;
+}
+
+.fs-form-textarea {
+  resize: vertical;
+  min-height: 100px;
+}
+
+.fs-form-submit {
+  width: 100%;
+  padding: 14px 24px;
+  background: var(--fs-gray-900);
+  color: white;
+  border: none;
+  border-radius: var(--fs-radius-sm);
+  font-family: var(--fs-font);
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ============================================================
+ * Marketplace styles — extracted from FlightSalesApp.jsx STYLES
+ * Note: some CSS-variable values below intentionally override
+ * the earlier :root block in this file (Inter > Plus Jakarta,
+ * monochrome palette > the older blue/amber tokens).
+ * ============================================================ */
+
+
+:root {
+  /* Monochrome palette — Uber-style */
+  --fs-navy: #000000;
+  --fs-black: #000000;
+  --fs-ink: #000000;
+  --fs-ink-2: #1F1F1F;
+  --fs-ink-3: #545454;
+  --fs-ink-4: #757575;
+  --fs-line: #EEEEEE;
+  --fs-line-2: #DCDCDC;
+  --fs-bg: #FFFFFF;
+  --fs-bg-2: #F6F6F6;
+  --fs-bg-3: #F0F0F0;
+  --fs-white: #FFFFFF;
+  /* Legacy aliases — kept for backward compat, map to monochrome */
+  --fs-navy-light: #1F1F1F;
+  --fs-amber: #F5A623;
+  --fs-green: #06C167;
+  --fs-red: #E11900;
+  --fs-gray-50: #FAFAFA;
+  --fs-gray-100: #F6F6F6;
+  --fs-gray-200: #EEEEEE;
+  --fs-gray-300: #DCDCDC;
+  --fs-gray-400: #AFAFAF;
+  --fs-gray-500: #757575;
+  --fs-gray-600: #545454;
+  --fs-gray-700: #2F2F2F;
+  --fs-gray-800: #1F1F1F;
+  --fs-gray-900: #000000;
+  /* Accent — subtle sky-blue used sparingly for signals (links, focus
+     rings, active filter ticks, AI input wash, the .com.au TLD glyph,
+     loading spinners). Never on primary CTAs (those stay ink). */
+  --fs-accent:      #53aae2;
+  --fs-accent-50:   #eef6fc;
+  --fs-accent-100:  #d6e9f6;
+  --fs-accent-700:  #3a92cb;
+  --fs-accent-ring: rgba(83, 170, 226, 0.20);
+  /* Geometry — sharp, minimal */
+  --fs-radius: 8px;
+  --fs-radius-sm: 4px;
+  --fs-radius-lg: 12px;
+  --fs-radius-xl: 16px;
+  --fs-radius-pill: 999px;
+  /* No real shadows — Uber uses hairlines */
+  --fs-shadow-xs: none;
+  --fs-shadow: none;
+  --fs-shadow-md: 0 2px 8px rgba(0,0,0,0.04);
+  --fs-shadow-lg: 0 8px 24px rgba(0,0,0,0.08);
+  --fs-shadow-xl: 0 16px 48px rgba(0,0,0,0.12);
+  --fs-font: 'Inter', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', system-ui, sans-serif;
+  --fs-max-w: 1360px;
+  --fs-section-y: 96px;
+  --fs-section-y-mobile: 56px;
+  /* Easings */
+  --fs-ease-out: cubic-bezier(0.2, 0, 0, 1);
+  --fs-ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* Body links — accent colour for prose / linkified text. The footer
+   has a dark background and its links inherit a light treatment from
+   the footer's own styles, so we deliberately exclude footer here.
+   The .fs-link class is the explicit opt-in for any custom anchor
+   that wants the accent treatment. */
+.fs-prose a,
+.fs-link {
+  color: var(--fs-accent);
+  text-decoration: none;
+  transition: color 120ms ease;
+}
+.fs-prose a:hover,
+.fs-link:hover {
+  color: var(--fs-accent-700);
+  text-decoration: underline;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+*::selection { background: #000; color: #fff; }
+
+html { scroll-behavior: smooth; }
+
+body, #root {
+  font-family: var(--fs-font);
+  color: var(--fs-ink);
+  background: var(--fs-bg);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  line-height: 1.5;
+  font-feature-settings: 'ss01', 'cv11';
+  letter-spacing: -0.005em;
+}
+
+a { color: inherit; text-decoration: none; }
+
+.fs-container { max-width: var(--fs-max-w); margin: 0 auto; padding: 0 40px; }
+@media (max-width: 480px) { .fs-container { padding: 0 20px; } }
+
+/* Scroll-in animations */
+@keyframes fs-fade-up {
+  from { opacity: 0; transform: translateY(24px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes fs-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes fs-scale-in {
+  from { opacity: 0; transform: scale(0.96); }
+  to { opacity: 1; transform: scale(1); }
+}
+@keyframes fs-slide-up {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+.fs-anim-fade-up { animation: fs-fade-up 0.7s var(--fs-ease-out) backwards; }
+.fs-anim-fade-in { animation: fs-fade-in 0.8s var(--fs-ease-out) backwards; }
+.fs-anim-scale-in { animation: fs-scale-in 0.6s var(--fs-ease-out) backwards; }
+
+/* Skeleton loading states */
+@keyframes fs-shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+.fs-skeleton-shimmer {
+  background: linear-gradient(90deg, var(--fs-bg-2) 25%, var(--fs-gray-100) 50%, var(--fs-bg-2) 75%);
+  background-size: 200% 100%;
+  animation: fs-shimmer 1.5s ease-in-out infinite;
+}
+.fs-skeleton-line {
+  background: var(--fs-bg-2);
+  border-radius: var(--fs-radius-sm);
+  position: relative;
+  overflow: hidden;
+}
+.fs-skeleton-line::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent 25%, var(--fs-gray-100) 50%, transparent 75%);
+  background-size: 200% 100%;
+  animation: fs-shimmer 1.5s ease-in-out infinite;
+}
+
+/* NAV — solid white, hairline */
+.fs-nav {
+  background: var(--fs-white);
+  position: sticky; top: 0; z-index: 100;
+  border-bottom: 1px solid var(--fs-line);
+}
+.fs-nav-inner {
+  display: flex; align-items: center; justify-content: space-between;
+  height: 72px; gap: 32px;
+}
+.fs-nav-logo {
+  display: flex; align-items: center; gap: 8px;
+  cursor: pointer; flex-shrink: 0;
+}
+/* Full logo in the brand sky-blue — wordmark + glyph + TLD all
+   accent. Lifts the page chrome out of pure black/white and gives
+   the brand its single coherent splash of colour. */
+.fs-nav-logo-mark {
+  color: var(--fs-accent);
+  flex-shrink: 0;
+}
+.fs-nav-logo-text {
+  font-family: var(--fs-font);
+  font-size: 20px; color: var(--fs-accent); letter-spacing: -0.04em; font-weight: 700;
+}
+.fs-nav-logo-tld {
+  font-weight: 500;
+  color: var(--fs-accent);
+  letter-spacing: -0.02em;
+  margin-left: 1px;
+}
+.fs-nav-links { display: flex; gap: 4px; align-items: center; }
+.fs-nav-link {
+  color: var(--fs-ink); font-size: 15px; font-weight: 500;
+  padding: 8px 14px; border-radius: var(--fs-radius-pill);
+  cursor: pointer; border: none; background: none;
+  white-space: nowrap; font-family: var(--fs-font);
+  letter-spacing: -0.01em;
+  transition: background-color 0.2s ease, transform 0.15s var(--fs-ease-spring);
+  will-change: transform;
+}
+.fs-nav-link:hover { background: var(--fs-bg-2); transform: translateY(-1px); }
+.fs-nav-link:active { transform: translateY(0) scale(0.98); }
+.fs-nav-link.active { background: var(--fs-bg-2); font-weight: 600; }
+.fs-nav-actions { display: flex; gap: 8px; align-items: center; flex-shrink: 0; }
+.fs-nav-btn {
+  padding: 11px 22px; border-radius: var(--fs-radius-pill);
+  font-size: 14.5px; font-weight: 600; cursor: pointer;
+  transition: background-color 0.15s var(--fs-ease-out); border: none; font-family: var(--fs-font);
+  letter-spacing: -0.01em;
+}
+.fs-nav-btn-ghost { background: transparent; color: var(--fs-ink); }
+.fs-nav-btn-ghost:hover { background: var(--fs-bg-2); }
+/* Primary nav CTA — brand sky-blue. White text explicitly to defeat
+   any inherited ink colour. Pairs with the full-blue logo so the
+   button reads as a deliberate brand action. */
+.fs-nav-btn-primary {
+  background: var(--fs-accent) !important;
+  color: #ffffff !important;
+  transition: background 160ms ease, box-shadow 160ms ease;
+}
+.fs-nav-btn-primary:hover {
+  background: var(--fs-accent-700) !important;
+  color: #ffffff !important;
+  box-shadow: 0 0 0 3px var(--fs-accent-ring);
+}
+
+/* Rego lookup button — sits next to the rego input on /sell. The previous
+   build used .fs-nav-btn-primary which only set background/color; no
+   padding meant the "Lookup" label got squeezed into a black square on
+   mobile when flex:1 took most of the row. Explicit sizing here. */
+.fs-rego-lookup-btn {
+  flex-shrink: 0;
+  min-width: 96px;
+  padding: 0 18px;
+  background: var(--fs-ink);
+  color: var(--fs-white);
+  border: none;
+  border-radius: var(--fs-radius-sm);
+  font-family: var(--fs-font);
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: -0.005em;
+  cursor: pointer;
+  white-space: nowrap;
+  /* Match the input field height the form uses (~44px). The input has
+     padding from .fs-form-input; we hard-code the height so the two
+     elements align on the same row regardless of viewport. */
+  height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.fs-rego-lookup-btn:hover:not(:disabled) { background: var(--fs-ink-2); }
+.fs-rego-lookup-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+/* Sell hero — same .fs-about-hero base, but trimmed on mobile so the
+   form shows above the fold. The hero is informational; no need to
+   eat 50% of a phone viewport. */
+@media (max-width: 768px) {
+  .fs-sell-hero { padding: 28px 0; }
+  .fs-sell-hero h1 { font-size: 28px; }
+  .fs-sell-hero p { font-size: 14px; margin-top: 6px; }
+}
+
+/* Sell page progress — segments + step labels. Replaces the 3 unlabeled
+   grey bars with a labeled "1. Details / 2. Specs / 3. Photos" sequence
+   so users see the journey ahead of them. */
+.fs-sell-progress {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-bottom: 32px;
+}
+.fs-sell-progress-step { display: flex; flex-direction: column; gap: 8px; }
+.fs-sell-progress-bar {
+  height: 4px; border-radius: 2px;
+  background: var(--fs-gray-200);
+  transition: background 0.25s var(--fs-ease-out);
+}
+.fs-sell-progress-step.done .fs-sell-progress-bar,
+.fs-sell-progress-step.active .fs-sell-progress-bar {
+  /* Active + completed steps fill with accent — gives the listing
+     wizard a visible progress signal. Step labels stay ink black. */
+  background: var(--fs-accent);
+}
+.fs-sell-progress-label {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--fs-ink-3);
+  letter-spacing: -0.005em;
+}
+.fs-sell-progress-step.active .fs-sell-progress-label,
+.fs-sell-progress-step.done .fs-sell-progress-label {
+  color: var(--fs-ink);
+  font-weight: 600;
+}
+.fs-sell-progress-num { color: var(--fs-ink-4); font-weight: 600; margin-right: 2px; }
+.fs-sell-progress-step.active .fs-sell-progress-num,
+.fs-sell-progress-step.done .fs-sell-progress-num { color: var(--fs-ink); }
+@media (max-width: 480px) {
+  .fs-sell-progress-label { font-size: 11px; }
+}
+.fs-nav-mobile-toggle {
+  display: none; background: none; border: none; color: var(--fs-ink); cursor: pointer;
+  padding: 8px; border-radius: var(--fs-radius-sm);
+}
+/* Mobile sub-header bar — sits directly below the main Nav on
+   phones. Houses secondary quick actions (Sell aircraft today;
+   Saved / Compare can join later). Right-aligned so the action is
+   under the hamburger spatially. Hidden on desktop. */
+.fs-mobile-subbar {
+  display: none;
+  padding: 8px 20px;
+  background: var(--fs-white);
+  text-align: right;
+}
+.fs-mobile-subbar-link {
+  background: none; border: none;
+  color: var(--fs-ink);
+  font-family: var(--fs-font);
+  font-size: 13px; font-weight: 600;
+  letter-spacing: -0.005em;
+  cursor: pointer; padding: 4px 0;
+  text-decoration: none;
+}
+.fs-mobile-subbar-link:hover { color: var(--fs-ink-2); }
+@media (max-width: 768px) {
+  .fs-mobile-subbar { display: block; }
+}
+.fs-nav-mobile-toggle:hover { background: var(--fs-bg-2); }
+
+/* Mobile shortcut row — bell + profile, sit to the LEFT of the burger
+   so the user can hit them without opening the drawer. Hidden on
+   desktop where the regular nav already carries them. */
+.fs-nav-mobile-shortcuts {
+  display: none;
+  align-items: center;
+  gap: 0;
+}
+.fs-nav-mobile-profile {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px; height: 36px;
+  padding: 0;
+  border-radius: 999px;
+  background: none;
+  border: 0;
+  color: var(--fs-ink);
+  cursor: pointer;
+  transition: background 120ms ease;
+}
+.fs-nav-mobile-profile:hover { background: var(--fs-bg-2); }
+.fs-nav-mobile-profile img {
+  width: 28px; height: 28px;
+  border-radius: 999px;
+  object-fit: cover;
+  display: block;
+}
+
+@media (max-width: 768px) {
+  .fs-nav-inner { height: 64px; }
+  /* The desktop links + actions both fully hide on mobile — the drawer
+     below replaces them. (Old rules made `.open` versions absolute-stack
+     on top of each other, which is why "Buy" was hidden under "Sell".) */
+  .fs-nav-links, .fs-nav-actions { display: none; }
+  .fs-nav-mobile-toggle { display: flex; }
+  .fs-nav-mobile-shortcuts { display: inline-flex; margin-left: auto; margin-right: 0; }
+  /* Kill the desktop 32px flex gap so the shortcuts cluster sits flush
+     against the burger on mobile. */
+  .fs-nav-inner { gap: 0; }
+}
+
+/* Desktop avatar dropdown — used to be inline-styled per-element;
+   centralised here so all four buttons + the divider share rules. */
+.fs-nav-avatar-btn {
+  display: flex; align-items: center; gap: 8px;
+  background: none; border: none; cursor: pointer;
+  padding: 4px 8px; border-radius: var(--fs-radius-sm);
+  font-family: var(--fs-font); color: var(--fs-ink);
+  font-size: 14px; font-weight: 500;
+}
+.fs-nav-avatar-btn:hover { background: var(--fs-bg-2); }
+.fs-nav-avatar-btn img { width: 32px; height: 32px; border-radius: 50%; }
+.fs-nav-dropdown {
+  position: absolute; top: 100%; right: 0; margin-top: 8px;
+  background: var(--fs-white);
+  border: 1px solid var(--fs-line); border-radius: var(--fs-radius);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  min-width: 180px; z-index: 100; padding: 8px 0;
+}
+.fs-nav-dropdown button {
+  width: 100%; text-align: left; padding: 10px 16px;
+  background: none; border: none; cursor: pointer;
+  font-family: var(--fs-font); font-size: 14px; color: var(--fs-ink);
+}
+.fs-nav-dropdown button:hover { background: var(--fs-bg-2); }
+.fs-nav-dropdown button.danger { color: var(--fs-red); }
+.fs-nav-dropdown-sep { border-top: 1px solid var(--fs-line); margin: 4px 0; }
+
+/* Notification bell — sits left of the avatar. Red dot badge with the
+   unread count; click opens a dropdown with the latest 12. */
+.fs-bell {
+  position: relative;
+  width: 36px; height: 36px;
+  border: none; background: none; border-radius: 50%;
+  display: inline-flex; align-items: center; justify-content: center;
+  color: var(--fs-ink); cursor: pointer;
+}
+.fs-bell:hover { background: var(--fs-bg-2); }
+.fs-bell-dot {
+  position: absolute; top: 4px; right: 4px;
+  min-width: 16px; height: 16px; padding: 0 4px;
+  background: #dc2626; color: #fff;
+  border-radius: 8px;
+  font-size: 10px; font-weight: 700; line-height: 16px;
+  display: inline-flex; align-items: center; justify-content: center;
+}
+.fs-bell-panel {
+  position: absolute; top: 100%; right: 0; margin-top: 8px;
+  width: 360px; max-width: 90vw;
+  background: var(--fs-white);
+  border: 1px solid var(--fs-line); border-radius: var(--fs-radius);
+  box-shadow: 0 4px 18px rgba(0,0,0,0.08);
+  z-index: 100;
+  overflow: hidden;
+}
+.fs-bell-head {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 16px; border-bottom: 1px solid var(--fs-line);
+  font-size: 13px; font-weight: 600;
+}
+.fs-bell-head button {
+  background: none; border: none; padding: 0;
+  font-size: 12px; color: var(--fs-ink-3); cursor: pointer;
+  text-decoration: underline; text-underline-offset: 2px;
+  font-family: var(--fs-font);
+}
+.fs-bell-head button:hover { color: var(--fs-ink); }
+.fs-bell-empty { padding: 32px 16px; text-align: center; color: var(--fs-ink-3); font-size: 13px; }
+.fs-bell-list { max-height: 420px; overflow-y: auto; }
+.fs-bell-row {
+  display: block; width: 100%;
+  text-align: left; background: none; border: none;
+  padding: 12px 16px; cursor: pointer;
+  border-bottom: 1px solid var(--fs-bg-2);
+  font-family: var(--fs-font);
+}
+.fs-bell-row:last-child { border-bottom: none; }
+.fs-bell-row:hover { background: var(--fs-bg); }
+.fs-bell-row.unread { background: rgba(59,130,246,0.04); }
+.fs-bell-row.unread::before {
+  content: ''; display: inline-block;
+  width: 6px; height: 6px; border-radius: 50%;
+  background: #3b82f6; margin-right: 6px; vertical-align: middle;
+}
+.fs-bell-row-title { font-size: 13px; font-weight: 600; color: var(--fs-ink); margin: 0 0 2px; }
+.fs-bell-row-body { font-size: 12px; color: var(--fs-ink-3); margin: 0 0 4px; line-height: 1.4; }
+.fs-bell-row-time { font-size: 11px; color: var(--fs-ink-4); margin: 0; }
+
+/* Aircraft type icon row — horizontal scrollable strip under the hero
+   search. Each tile = ink-black silhouette + tiny label. Clicking
+   pre-fills the Type dropdown above. Centred when the row fits the
+   viewport, scrolls horizontally when it doesn't. The wrap below
+   contains the row + the static scroll-hint pill — only the inner
+   .fs-type-row scrolls, so the hint stays put. */
+.fs-type-row-wrap {
+  margin-top: 24px;
+  width: 100%;
+}
+.fs-type-row {
+  width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+  padding: 4px 0;
+}
+.fs-type-row::-webkit-scrollbar { display: none; }
+.fs-type-row-inner {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  width: max-content;
+  margin: 0 auto;
+  padding: 0 4px;
+}
+@media (max-width: 768px) {
+  /* Mobile: keep it centred too — even if the row overflows, the
+     center alignment puts the most popular types front-and-centre,
+     and the horizontal scroll still works for the long tail. */
+  .fs-type-row-inner { padding: 0 16px; }
+}
+.fs-type-tile {
+  flex-shrink: 0;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center; gap: 6px;
+  width: 80px;
+  padding: 12px 8px;
+  background: transparent;
+  border: 0;
+  border-radius: var(--fs-radius);
+  cursor: pointer;
+  font-family: var(--fs-font);
+  color: var(--fs-ink);
+  transition: background 0.12s, color 0.12s, transform 0.12s;
+}
+.fs-type-tile:hover { background: rgba(10, 10, 10, 0.04); }
+.fs-type-tile:active { transform: scale(0.97); }
+.fs-type-tile.on {
+  background: var(--fs-ink);
+  color: var(--fs-white);
+}
+
+/* Scroll hint — a small centred hairline pill under the type row.
+   Visual cue that the row scrolls horizontally without adding any
+   chrome. Pure CSS, decorative, hidden from screen readers. */
+.fs-type-row-scrollhint {
+  margin: 14px auto 0;
+  width: 56px;
+  height: 3px;
+  border-radius: 999px;
+  background: rgba(10, 10, 10, 0.12);
+}
+.fs-type-tile-icon {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 40px; height: 24px;
+}
+.fs-type-tile-icon svg {
+  width: 100%; height: 100%;
+  display: block;
+}
+.fs-type-tile-label {
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: -0.005em;
+  white-space: nowrap;
+}
+
+/* Photo reorder grid — drag-to-rearrange tiles for the listing photos
+   on Sell + Edit. HTML5 DnD; arrow buttons fall back for touch. */
+.fs-photo-reorder {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
+  gap: 8px;
+}
+.fs-photo-tile {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  border-radius: var(--fs-radius-sm);
+  overflow: hidden;
+  border: 2px solid var(--fs-line);
+  cursor: grab;
+  background: var(--fs-bg-2);
+  transition: opacity 0.15s, transform 0.15s;
+}
+.fs-photo-tile:active { cursor: grabbing; }
+.fs-photo-tile.dragging { opacity: 0.5; transform: scale(0.96); }
+.fs-photo-tile img { width: 100%; height: 100%; object-fit: cover; pointer-events: none; }
+.fs-photo-tile-hero {
+  position: absolute; top: 4px; left: 4px;
+  background: var(--fs-ink); color: var(--fs-white);
+  font-size: 10px; font-weight: 600;
+  padding: 2px 6px; border-radius: 4px;
+  letter-spacing: 0.04em;
+}
+.fs-photo-tile-actions {
+  position: absolute; bottom: 4px; right: 4px;
+  display: flex; gap: 2px;
+  background: rgba(0,0,0,0.55);
+  border-radius: 4px;
+  padding: 2px;
+}
+.fs-photo-tile-actions button {
+  background: none; border: none;
+  color: white;
+  width: 22px; height: 22px;
+  font-size: 14px; line-height: 1;
+  cursor: pointer; padding: 0;
+  display: flex; align-items: center; justify-content: center;
+}
+.fs-photo-tile-actions button:disabled { opacity: 0.3; cursor: default; }
+.fs-photo-tile-remove { color: #fca5a5 !important; }
+
+/* Email verify gate — wraps a child surface (sell form, etc.) with a
+   "verify your email first" prompt when the signed-in user hasn't
+   confirmed their address yet. */
+.fs-verify-gate {
+  background: #fef3c7; border: 1px solid #fde68a;
+  border-radius: var(--fs-radius);
+  padding: 20px 24px;
+  color: #78350f;
+  margin: 24px auto;
+  max-width: 560px;
+}
+.fs-verify-gate h3 { font-size: 15px; font-weight: 700; margin: 0 0 6px; color: #92400e; }
+.fs-verify-gate p { font-size: 13px; margin: 0 0 6px; line-height: 1.5; }
+.fs-verify-gate-sub { font-size: 12px; color: #92400e; margin-top: 4px; }
+.fs-verify-gate-sub button {
+  background: none; border: none; padding: 0;
+  color: #92400e; text-decoration: underline; text-underline-offset: 2px;
+  font: inherit; cursor: pointer;
+}
+
+/* Enquiries tab header — h2 + subtitle on the left, filter pills on
+   the right. Stacks vertically on mobile so the subtitle doesn't get
+   squashed into 14-character lines and the pills don't overflow off
+   the right edge. */
+.fs-enq-head {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 16px; margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+.fs-enq-filters {
+  display: flex; gap: 8px;
+  flex-wrap: wrap;
+}
+.fs-enq-filter {
+  padding: 8px 16px;
+  background: var(--fs-bg-2);
+  color: var(--fs-ink);             /* explicit — kills iOS Safari default-blue */
+  border: 1px solid transparent;
+  border-radius: 6px;
+  font-size: 13px; font-weight: 500;
+  font-family: var(--fs-font);
+  cursor: pointer;
+  text-transform: capitalize;
+}
+.fs-enq-filter:hover { background: var(--fs-line); }
+.fs-enq-filter.on {
+  background: var(--fs-ink);
+  color: var(--fs-white);
+}
+@media (max-width: 640px) {
+  .fs-enq-head { flex-direction: column; align-items: stretch; }
+}
+
+/* Cloudflare Turnstile — tiny wrapper to keep the widget's box from
+   stretching the form layout. The widget renders ~300x65px. */
+.fs-turnstile { margin: 4px 0 0; min-height: 65px; }
+
+/* Admin 2FA enrol prompt — sits above the stats row on the admin page
+   when the admin doesn't have a TOTP factor enrolled yet. */
+.fs-2fa-prompt {
+  margin-bottom: 20px;
+  background: #fef9c3;
+  border: 1px solid #fde047;
+  border-radius: var(--fs-radius);
+  padding: 14px 18px;
+  color: #713f12;
+}
+.fs-2fa-prompt-row {
+  display: flex; align-items: center; justify-content: space-between; gap: 16px;
+}
+.fs-2fa-prompt-row p { font-size: 12px; color: #854d0e; margin: 2px 0 0; }
+.fs-2fa-prompt-row button {
+  background: var(--fs-ink); color: white; border: none;
+  padding: 8px 16px; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer;
+  font-family: var(--fs-font); flex-shrink: 0;
+}
+.fs-2fa-prompt-enrol-grid {
+  display: grid; grid-template-columns: 160px 1fr; gap: 16px; align-items: start;
+}
+@media (max-width: 540px) {
+  .fs-2fa-prompt-row { flex-direction: column; align-items: flex-start; }
+  .fs-2fa-prompt-enrol-grid { grid-template-columns: 1fr; }
+}
+
+/* ─────────────────────────────────────────────────────────────────────
+   MOBILE NAV DRAWER (.fs-mnav)
+   Full-viewport panel + dimmed backdrop. Slides in from the right with
+   a 200ms transform, body scroll locks while open, ESC + backdrop-tap +
+   item-click all close. Replaces the prior approach of two stacked
+   absolute panels that didn't cover the page below.
+   ───────────────────────────────────────────────────────────────────── */
+
+.fs-mnav-backdrop {
+  position: fixed; inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 90;
+  opacity: 0; pointer-events: none;
+  transition: opacity 200ms var(--fs-ease-out);
+}
+.fs-mnav-backdrop.open { opacity: 1; pointer-events: auto; }
+@media (min-width: 769px) {
+  .fs-mnav-backdrop, .fs-mnav { display: none; }
+}
+
+/* Without this, the drawer's translateX(100%) closed state pushes a
+   360px-wide off-canvas zone past the viewport's right edge, and the
+   user can horizontally scroll into it. Every page on mobile shows the
+   "right half cut off" symptom because of it. Locking horizontal scroll
+   at the document level keeps the off-canvas drawer truly off-canvas
+   without affecting vertical scrolling. */
+html, body { overflow-x: hidden; max-width: 100%; }
+
+.fs-mnav {
+  position: fixed; top: 0; right: 0; bottom: 0;
+  width: min(360px, 88vw);
+  background: var(--fs-white);
+  z-index: 100;
+  transform: translateX(100%);
+  transition: transform 220ms var(--fs-ease-out);
+  display: flex; flex-direction: column;
+  padding: 76px 0 0;     /* leave room for the top nav bar */
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  box-shadow: -8px 0 24px rgba(0,0,0,0.08);
+}
+.fs-mnav.open { transform: translateX(0); }
+
+.fs-mnav-id {
+  display: flex; align-items: center; gap: 14px;
+  padding: 4px 24px 20px;
+  border-bottom: 1px solid var(--fs-line);
+}
+.fs-mnav-avatar {
+  width: 48px; height: 48px; border-radius: 50%;
+  background: var(--fs-bg-2);
+}
+.fs-mnav-id-text { min-width: 0; flex: 1; }
+.fs-mnav-name {
+  font-size: 15px; font-weight: 600;
+  color: var(--fs-ink);
+  margin: 0; line-height: 1.25;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.fs-mnav-sub {
+  font-size: 12px; color: var(--fs-ink-3);
+  margin: 2px 0 0;
+}
+
+.fs-mnav-anon {
+  padding: 8px 24px 20px;
+  border-bottom: 1px solid var(--fs-line);
+}
+.fs-mnav-anon-title {
+  font-size: 18px; font-weight: 700; letter-spacing: -0.02em;
+  color: var(--fs-ink); margin: 0 0 4px;
+}
+.fs-mnav-anon-sub {
+  font-size: 13px; color: var(--fs-ink-3);
+  margin: 0 0 14px; line-height: 1.4;
+}
+.fs-mnav-anon-btn {
+  width: 100%; padding: 12px 16px;
+  background: var(--fs-ink); color: var(--fs-white);
+  border: none; border-radius: var(--fs-radius-sm);
+  font-family: var(--fs-font); font-size: 14px; font-weight: 600;
+  cursor: pointer;
+}
+.fs-mnav-anon-btn:hover { background: var(--fs-ink-2); }
+
+.fs-mnav-section {
+  padding: 16px 12px 8px;
+  border-bottom: 1px solid var(--fs-line);
+}
+.fs-mnav-section:last-of-type { border-bottom: none; }
+.fs-mnav-section-label {
+  font-size: 11px; font-weight: 600;
+  color: var(--fs-ink-3);
+  letter-spacing: 0.06em; text-transform: uppercase;
+  margin: 0 0 6px;
+  padding: 0 12px;
+}
+
+.fs-mnav-item {
+  display: flex; align-items: center; gap: 14px;
+  width: 100%;
+  padding: 12px 12px;
+  background: none; border: none;
+  border-radius: var(--fs-radius-sm);
+  cursor: pointer;
+  font-family: var(--fs-font);
+  font-size: 15px; font-weight: 500;
+  color: var(--fs-ink);
+  text-align: left;
+  min-height: 44px;
+}
+.fs-mnav-item:hover { background: var(--fs-bg-2); }
+.fs-mnav-item.active { background: var(--fs-bg-2); font-weight: 600; }
+.fs-mnav-item.danger { color: var(--fs-red); }
+.fs-mnav-item-icon {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 22px; height: 22px;
+  color: var(--fs-ink-3); flex-shrink: 0;
+}
+.fs-mnav-item.active .fs-mnav-item-icon,
+.fs-mnav-item:hover .fs-mnav-item-icon { color: var(--fs-ink); }
+.fs-mnav-item.danger .fs-mnav-item-icon { color: var(--fs-red); }
+.fs-mnav-item-label { flex: 1; line-height: 1.2; }
+
+.fs-mnav-cta {
+  margin-top: auto;
+  padding: 16px 24px 24px;
+  border-top: 1px solid var(--fs-line);
+  background: var(--fs-white);
+  position: sticky; bottom: 0;
+}
+.fs-mnav-cta button { width: 100%; }
+
+/* HERO — centered, refined */
+.fs-hero {
+  background: var(--fs-white);
+  /* Vertical-centered look: tall enough that h1+search sit comfortably
+     in the middle, with extra padding-bottom so the next section
+     ("Featured aircraft") gets visible breathing room instead of butting
+     up against the hero. */
+  min-height: min(72vh, 680px);
+  padding: 96px 0 96px;
+  position: relative; text-align: center;
+  display: flex; align-items: center;
+}
+@media (max-width: 768px) {
+  .fs-hero {
+    min-height: auto;
+    /* Pulled the top padding down so the h1 + search card sit higher in
+       the viewport — search now lands near the upper third instead of
+       half-screen down. Bottom padding kept at 80 so Featured aircraft
+       still gets breathing room before it. */
+    padding: 88px 0 80px;
+    display: block;
+  }
+}
+.fs-hero-content { position: relative; z-index: 1; max-width: 768px; margin: 0 auto; width: 100%; }
+.fs-hero-eyebrow {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: var(--fs-bg-2);
+  padding: 6px 14px; border-radius: var(--fs-radius-pill);
+  font-size: 13px; font-weight: 600; color: var(--fs-ink);
+  margin-bottom: 24px;
+  letter-spacing: -0.01em;
+}
+.fs-hero-eyebrow-dot {
+  width: 6px; height: 6px; border-radius: 50%; background: var(--fs-green);
+}
+.fs-hero h1 {
+  font-family: var(--fs-font);
+  font-size: clamp(36px, 5vw, 56px);
+  color: var(--fs-ink);
+  line-height: 1.05; margin-bottom: 18px; font-weight: 700;
+  letter-spacing: -0.035em;
+}
+.fs-hero h1 em {
+  font-style: normal; font-weight: 700; color: var(--fs-ink);
+}
+.fs-hero-sub {
+  color: var(--fs-ink-3); font-size: 17px; margin: 0 auto 36px;
+  max-width: 480px;
+  font-weight: 400; line-height: 1.45; letter-spacing: -0.01em;
+}
+.fs-hero .fs-search-bar { margin: 0 auto; }
+.fs-hero .fs-categories { justify-content: center; }
+.fs-hero .fs-stats { justify-content: center; margin-left: auto; margin-right: auto; max-width: 480px; }
+@media (max-width: 480px) {
+  /* Padding intentionally NOT set here — the <768px rule above
+     (140 / 240) is the source of truth for the mobile hero spacing.
+     This block only adjusts type sizes for the smallest viewports. */
+  .fs-hero h1 { font-size: 32px; line-height: 1.08; margin-bottom: 14px; letter-spacing: -0.03em; }
+  .fs-hero-sub { font-size: 15px; margin-bottom: 24px; }
+  .fs-hero-eyebrow { margin-bottom: 18px; font-size: 12px; }
+}
+
+/* SEARCH BAR — Uber-style pill row */
+.fs-search-bar {
+  background: var(--fs-bg-2); border-radius: var(--fs-radius);
+  display: flex; flex-direction: column; padding: 16px;
+  max-width: 768px; gap: 12px;
+}
+.fs-search-ai {
+  display: flex; align-items: center; gap: 12px; padding: 14px 18px;
+  background: var(--fs-white); border-radius: var(--fs-radius);
+}
+.fs-search-ai-icon {
+  width: 28px; height: 28px; border-radius: 50%;
+  background: var(--fs-ink);
+  color: white; display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  font-size: 11px; font-weight: 700; letter-spacing: 0.02em;
+}
+/* Inline magic-wand glyph that lives flush with the search text rather
+   than in a separate badge — uses currentColor so it inherits the
+   placeholder/text color of the input. Replaces the previous black
+   "AI" pill on the left of the hero search. */
+.fs-search-ai-wand {
+  display: inline-flex; align-items: center; justify-content: center;
+  flex-shrink: 0; color: var(--fs-ink-3);
+  width: 24px; height: 24px;
+}
+.fs-search-ai-wand svg { display: block; }
+.fs-search-ai-input {
+  flex: 1; border: none; outline: none; font-size: 15px; font-weight: 500;
+  color: var(--fs-ink); background: transparent; font-family: var(--fs-font);
+  letter-spacing: -0.01em;
+}
+.fs-search-ai-input::placeholder { color: var(--fs-ink-4); font-weight: 400; }
+.fs-search-fields-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+@media (max-width: 768px) { 
+  .fs-search-fields-row { grid-template-columns: 1fr; }
+  .fs-search-fields-row + div[style*="gridTemplateColumns: \"1fr 1fr\""] { grid-template-columns: 1fr !important; }
+}
+.fs-search-field {
+  display: flex; flex-direction: column; padding: 12px 16px;
+  background: var(--fs-white); border-radius: var(--fs-radius);
+  min-width: 0; cursor: pointer;
+  transition: background-color 0.15s;
+}
+.fs-search-field:hover { background: #FAFAFA; }
+.fs-search-label {
+  font-size: 11px; font-weight: 600;
+  color: var(--fs-ink-3); margin-bottom: 2px;
+  letter-spacing: -0.005em;
+}
+.fs-search-input, .fs-search-select {
+  border: none; outline: none; font-size: 14px; font-weight: 500;
+  color: var(--fs-ink); background: transparent;
+  font-family: var(--fs-font); width: 100%; cursor: pointer;
+  letter-spacing: -0.01em; padding: 0;
+  text-overflow: ellipsis; white-space: nowrap; overflow: hidden;
+}
+.fs-search-select { appearance: none; padding-right: 14px; }
+.fs-search-btn {
+  background: var(--fs-ink); color: white; border: none;
+  padding: 16px 28px; cursor: pointer; display: flex;
+  align-items: center; justify-content: center; gap: 8px;
+  font-size: 15px; font-weight: 600; font-family: var(--fs-font);
+  transition: background-color 0.15s var(--fs-ease-out); flex-shrink: 0;
+  border-radius: var(--fs-radius);
+  letter-spacing: -0.01em; width: 100%;
+  margin: 0;
+}
+.fs-search-btn:hover { background: var(--fs-ink-2); }
+@media (max-width: 768px) {
+  .fs-search-fields-row { grid-template-columns: 1fr; }
+}
+
+/* STATS BAR — Uber-style: clean, left-aligned */
+.fs-stats {
+  display: flex; gap: 64px;
+  margin-top: 56px; flex-wrap: wrap;
+  padding-top: 32px; border-top: 1px solid var(--fs-line);
+}
+.fs-stat { text-align: left; }
+.fs-stat-num {
+  color: var(--fs-ink); font-size: 36px; font-weight: 700;
+  line-height: 1; letter-spacing: -0.04em;
+  font-family: var(--fs-font);
+}
+.fs-stat-label {
+  color: var(--fs-ink-3); font-size: 13px; font-weight: 500;
+  margin-top: 8px; letter-spacing: -0.005em;
+}
+@media (max-width: 480px) {
+  .fs-stats { gap: 24px; margin-top: 40px; }
+  .fs-stat-num { font-size: 28px; }
+  .fs-stat-label { font-size: 12px; white-space: nowrap; }
+}
+
+/* SECTION — Uber rhythm */
+.fs-section { padding: var(--fs-section-y) 0; }
+.fs-section-alt { background: var(--fs-bg-2); }
+@media (max-width: 768px) { .fs-section { padding: var(--fs-section-y-mobile) 0; } }
+
+.fs-section-header {
+  display: flex; justify-content: space-between; align-items: end;
+  margin-bottom: 40px; flex-wrap: wrap; gap: 16px;
+}
+.fs-section-title {
+  font-family: var(--fs-font);
+  font-size: clamp(28px, 4vw, 44px); font-weight: 700;
+  line-height: 1.05; letter-spacing: -0.04em; color: var(--fs-ink);
+}
+.fs-section-title em { font-style: normal; font-weight: 700; }
+.fs-section-sub {
+  color: var(--fs-ink-3); font-size: 16px; margin-top: 10px;
+  font-weight: 400; max-width: 480px; line-height: 1.45;
+  letter-spacing: -0.01em;
+}
+.fs-section-link {
+  font-size: 14px; font-weight: 600; color: var(--fs-ink);
+  cursor: pointer; display: inline-flex; align-items: center; gap: 6px;
+  transition: background-color 0.15s var(--fs-ease-out); padding: 10px 18px;
+  border-radius: var(--fs-radius-pill);
+  background: var(--fs-bg-2);
+  border: none;
+  text-decoration: none;
+}
+.fs-section-link:hover {
+  background: var(--fs-ink); color: var(--fs-white);
+  text-decoration: none;
+}
+@media (max-width: 480px) { .fs-section-header { margin-bottom: 28px; } }
+
+/* LISTING CARD — Uber: hairline, no shadow, tight */
+.fs-card {
+  background: var(--fs-white); border-radius: var(--fs-radius);
+  overflow: hidden;
+  transition: transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1),
+              box-shadow 0.22s ease,
+              border-color 0.15s ease;
+  cursor: pointer;
+  border: 1px solid var(--fs-line);
+  display: flex; flex-direction: column;
+}
+.fs-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 16px 32px rgba(0,0,0,0.08);
+  border-color: var(--fs-line-2);
+}
+.fs-card:hover {
+  border-color: var(--fs-line-2);
+  box-shadow: 0 12px 28px rgba(0,0,0,0.08);
+  transform: translateY(-3px);
+}
+.fs-card:active { transform: translateY(-1px); }
+@media (prefers-reduced-motion: reduce) {
+  .fs-card,
+  .fs-card:hover,
+  .fs-card:active { transform: none; transition: border-color 0.15s ease; }
+  .fs-card:hover img { transform: none; }
+}
+.fs-card:hover img { transform: scale(1.02); }
+/* Featured tier: subtle gold inner-glow border so it reads premium but not loud */
+.fs-card-featured {
+  box-shadow: inset 0 0 0 1px rgba(201, 168, 91, 0.35);
+}
+.fs-card-featured:hover {
+  box-shadow: 0 6px 20px rgba(0,0,0,0.06), inset 0 0 0 1px rgba(201, 168, 91, 0.55);
+}
+.fs-card:hover .fs-card-quicklook { opacity: 1 !important; }
+@media (hover: none) {
+  .fs-card-quicklook { display: none !important; }
+}
+.fs-card-body { padding: 16px 18px 16px; flex: 1; display: flex; flex-direction: column; }
+.fs-card-eyebrow {
+  font-size: 12px; font-weight: 500; color: var(--fs-ink-3);
+  letter-spacing: -0.005em;
+  margin-bottom: 2px;
+}
+.fs-card-title {
+  font-family: var(--fs-font);
+  font-size: 16px; font-weight: 600; line-height: 1.25;
+  letter-spacing: -0.015em; color: var(--fs-ink);
+  display: -webkit-box; -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical; overflow: hidden;
+  margin-bottom: 6px;
+}
+.fs-card-price {
+  font-family: var(--fs-font);
+  font-size: 22px; font-weight: 700; color: var(--fs-ink);
+  letter-spacing: -0.025em; line-height: 1.1;
+  font-feature-settings: "tnum";
+  margin-bottom: 10px;
+}
+.fs-card-meta {
+  font-size: 12.5px; color: var(--fs-ink-3); font-weight: 500;
+  letter-spacing: -0.005em; line-height: 1.4;
+  margin-bottom: 12px;
+}
+.fs-card-meta-sep { color: var(--fs-ink-4); margin: 0 6px; }
+
+/* Card spec list — clean two-column rows: label left, value right */
+.fs-card-specs {
+  margin: 0 0 12px;
+  padding: 10px 0 2px;
+  border-top: 1px solid var(--fs-line);
+  display: flex; flex-direction: column; gap: 4px;
+}
+.fs-card-specs-row {
+  display: flex; justify-content: space-between; align-items: baseline;
+  font-size: 12.5px; line-height: 1.4;
+}
+.fs-card-specs-row dt {
+  color: var(--fs-ink-3); font-weight: 500;
+  letter-spacing: -0.005em;
+}
+.fs-card-specs-row dd {
+  color: var(--fs-ink); font-weight: 600;
+  margin: 0; letter-spacing: -0.005em;
+  font-feature-settings: "tnum";
+}
+.fs-card-specs-row dd.fs-card-specs-empty {
+  color: var(--fs-ink-4); font-weight: 500;
+}
+.fs-card-dealer {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 12px; color: var(--fs-ink-2); font-weight: 500;
+  letter-spacing: -0.005em;
+  margin-top: auto; padding-top: 10px;
+  border-top: 1px solid var(--fs-line);
+}
+.fs-card-dealer svg { width: 12px; height: 12px; color: var(--fs-ink-3); flex-shrink: 0; }
+.fs-card-dealer-sep { color: var(--fs-ink-4); }
+/* ABR-verified pill — small badge that sits next to the dealer name.
+   Uses the same green semantics as the dashboard verification card
+   so buyers see a consistent trust signal across every surface. */
+.fs-card-abn-pill {
+  font-size: 10px; font-weight: 700;
+  letter-spacing: 0.04em;
+  padding: 1px 6px;
+  border-radius: 999px;
+  background: #e8f6ec;
+  color: #1a7f37;
+  flex-shrink: 0;
+}
+.fs-card-dealer-loc { color: var(--fs-ink-3); }
+.fs-card-footer {
+  display: none; /* footer info now lives inside card body */
+}
+.fs-card-location {
+  display: flex; align-items: center; gap: 4px;
+  color: var(--fs-ink-2); font-weight: 500;
+}
+.fs-card-location svg { color: var(--fs-ink-4); width: 13px; height: 13px; }
+
+/* LISTING GRID — fixed 3 columns at desktop */
+.fs-grid {
+  display: grid; gap: 24px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+@media (max-width: 1024px) {
+  .fs-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; }
+}
+@media (max-width: 480px) {
+  .fs-grid { grid-template-columns: 1fr; gap: 16px; }
+}
+
+/* CATEGORY PILLS — Uber: filled bg-2 default */
+.fs-categories {
+  display: flex; gap: 8px; flex-wrap: wrap;
+  margin-top: 32px;
+  max-width: 100%;
+  justify-content: center;
+}
+@media (max-width: 480px) {
+  .fs-categories {
+    flex-wrap: nowrap; overflow-x: auto;
+    justify-content: flex-start;
+    padding-bottom: 4px;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .fs-categories::-webkit-scrollbar { display: none; }
+}
+.fs-cat-pill {
+  background: var(--fs-bg-2); border: none;
+  color: var(--fs-ink); border-radius: var(--fs-radius-pill);
+  padding: 10px 18px; font-size: 14px; font-weight: 500;
+  cursor: pointer; transition: background-color 0.15s var(--fs-ease-out);
+  font-family: var(--fs-font); letter-spacing: -0.005em;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.fs-cat-pill:hover { background: var(--fs-line); }
+.fs-cat-pill.active { background: var(--fs-ink); color: white; }
+
+/* DEALER CARD — Uber: hairline, tight */
+.fs-dealer-card {
+  background: var(--fs-white); border-radius: var(--fs-radius);
+  padding: 24px;
+  transition: border-color 0.15s var(--fs-ease-out); cursor: pointer;
+  display: flex; gap: 16px; align-items: center;
+  border: 1px solid var(--fs-line);
+}
+.fs-dealer-card:hover { border-color: var(--fs-ink); }
+.fs-dealer-avatar {
+  width: 48px; height: 48px; border-radius: 50%;
+  background: var(--fs-ink);
+  color: white;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px; font-weight: 700; flex-shrink: 0;
+  letter-spacing: -0.02em;
+}
+.fs-dealer-info { flex: 1; min-width: 0; }
+.fs-dealer-name {
+  font-family: var(--fs-font);
+  font-size: 16px; font-weight: 600; margin-bottom: 2px; letter-spacing: -0.02em;
+  color: var(--fs-ink);
+}
+.fs-dealer-loc { font-size: 13px; color: var(--fs-ink-3); display: flex; align-items: center; gap: 4px; letter-spacing: -0.005em; }
+.fs-dealer-stats { display: flex; gap: 16px; margin-top: 8px; font-size: 13px; color: var(--fs-ink-3); font-weight: 500; }
+.fs-dealer-rating { color: var(--fs-ink); display: flex; align-items: center; gap: 4px; font-weight: 600; }
+
+/* NEWS — Uber: image-led editorial */
+.fs-news-card {
+  background: var(--fs-white); border-radius: var(--fs-radius);
+  padding: 24px; cursor: pointer;
+  transition: border-color 0.15s var(--fs-ease-out);
+  border: 1px solid var(--fs-line);
+}
+.fs-news-card:hover { border-color: var(--fs-ink); }
+.fs-news-tag {
+  display: inline-block; font-size: 12px; font-weight: 600;
+  padding: 4px 10px; border-radius: var(--fs-radius-sm);
+  margin-bottom: 14px; letter-spacing: -0.005em;
+  background: var(--fs-bg-2); color: var(--fs-ink);
+}
+.fs-news-tag.regulation,
+.fs-news-tag.market,
+.fs-news-tag.industry,
+.fs-news-tag.infrastructure { background: var(--fs-bg-2); color: var(--fs-ink); }
+.fs-news-title {
+  font-family: var(--fs-font);
+  font-size: 18px; font-weight: 600; margin-bottom: 8px;
+  line-height: 1.3; color: var(--fs-ink); letter-spacing: -0.02em;
+}
+.fs-news-excerpt {
+  font-size: 14px; color: var(--fs-ink-3);
+  line-height: 1.5; margin-bottom: 16px;
+  letter-spacing: -0.005em;
+  display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;
+}
+.fs-news-footer {
+  font-size: 13px; color: var(--fs-ink-4);
+  display: flex; gap: 14px; padding-top: 14px;
+  border-top: 1px solid var(--fs-line);
+  letter-spacing: -0.005em;
+}
+
+/* LISTING DETAIL — Uber */
+.fs-detail-header {
+  background: var(--fs-white); padding: 20px 0; color: var(--fs-ink);
+  border-bottom: 1px solid var(--fs-line);
+}
+.fs-detail-breadcrumb {
+  font-size: 13px; color: var(--fs-ink-3);
+  display: flex; align-items: center; gap: 6px; margin-bottom: 12px;
+  font-weight: 500; letter-spacing: -0.005em;
+}
+.fs-detail-breadcrumb span { cursor: pointer; }
+.fs-detail-breadcrumb span:hover { color: var(--fs-ink); }
+.fs-detail-layout {
+  display: grid; grid-template-columns: 1fr 380px; gap: 32px;
+  padding: 32px 0 64px;
+}
+.fs-dealer-layout {
+  display: grid; grid-template-columns: 1fr 360px; gap: 32px;
+}
+@media (max-width: 768px) {
+  .fs-detail-layout { grid-template-columns: 1fr; gap: 24px; padding: 24px 0 48px; }
+  .fs-dealer-layout { grid-template-columns: 1fr; gap: 24px; }
+}
+.fs-detail-sidebar {
+  display: flex; flex-direction: column; gap: 20px;
+}
+.fs-detail-sticky {
+  position: sticky; top: 88px; z-index: 10;
+}
+@media (max-width: 768px) {
+  .fs-detail-sticky { position: static; }
+}
+.fs-detail-price-card {
+  background: var(--fs-white); border-radius: var(--fs-radius);
+  padding: 24px; border: 1px solid var(--fs-line);
+}
+.fs-detail-price {
+  font-size: 32px; font-weight: 700; color: var(--fs-ink);
+  margin-bottom: 4px; letter-spacing: -0.04em;
+}
+.fs-detail-rego {
+  font-size: 13px; color: var(--fs-ink-3); margin-bottom: 20px;
+  font-weight: 500; letter-spacing: -0.005em;
+}
+.fs-detail-cta {
+  width: 100%; padding: 14px; border-radius: var(--fs-radius);
+  font-size: 15px; font-weight: 600; cursor: pointer;
+  font-family: var(--fs-font); transition: background-color 0.15s; border: none;
+  letter-spacing: -0.01em;
+}
+.fs-detail-cta-primary {
+  background: var(--fs-ink); color: white; margin-bottom: 10px;
+}
+.fs-detail-cta-primary:hover { background: var(--fs-ink-2); }
+.fs-detail-cta-secondary {
+  background: var(--fs-bg-2); color: var(--fs-ink);
+}
+.fs-detail-cta-secondary:hover { background: var(--fs-line); }
+
+.fs-detail-specs {
+  background: var(--fs-white); border-radius: var(--fs-radius);
+  padding: 24px; border: 1px solid var(--fs-line);
+  /* Hard guard: card can never exceed its container width on mobile
+     even if a child has long unbroken text. word-break: break-word
+     also forces wrapping on URLs / regos / spec strings. */
+  max-width: 100%;
+  min-width: 0;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+.fs-detail-specs h3 {
+  font-size: 16px; font-weight: 700; margin-bottom: 16px;
+  padding-bottom: 14px; border-bottom: 1px solid var(--fs-line);
+  letter-spacing: -0.02em;
+}
+.fs-detail-spec-row {
+  display: flex; justify-content: space-between;
+  padding: 10px 0; font-size: 14px;
+  border-bottom: 1px solid var(--fs-line);
+}
+.fs-detail-spec-row:last-child { border-bottom: none; padding-bottom: 0; }
+.fs-detail-spec-label { color: var(--fs-ink-3); font-weight: 500; letter-spacing: -0.005em; }
+.fs-detail-spec-value { font-weight: 600; text-align: right; color: var(--fs-ink); letter-spacing: -0.01em; }
+
+.fs-detail-desc {
+  background: var(--fs-white); border-radius: var(--fs-radius);
+  padding: 24px; border: 1px solid var(--fs-line); margin-bottom: 20px;
+}
+.fs-detail-desc h3 {
+  font-size: 16px; font-weight: 700; margin-bottom: 12px;
+  letter-spacing: -0.02em;
+}
+.fs-detail-desc p {
+  font-size: 15px; color: var(--fs-ink-2); line-height: 1.6;
+  letter-spacing: -0.005em;
+}
+
+/* BUY PAGE — Sidebar inset to match header container, content right */
+.fs-buy-shell {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 32px;
+  align-items: start;
+  min-height: calc(100vh - 72px);
+}
+@media (max-width: 768px) {
+  .fs-buy-shell { grid-template-columns: 1fr; gap: 0; }
+  .fs-buy-sidebar { display: none; }
+  .fs-buy-sidebar.open { display: block; position: fixed; inset: 72px 0 0 0; z-index: 100; height: auto; background: var(--fs-white); }
+}
+.fs-buy-sidebar {
+  position: sticky;
+  top: 88px;
+  align-self: start;
+  max-height: calc(100vh - 96px);
+  overflow-y: auto;
+  scrollbar-width: thin;
+  padding-right: 4px;
+}
+.fs-buy-sidebar::-webkit-scrollbar { width: 6px; }
+.fs-buy-sidebar::-webkit-scrollbar-thumb { background: var(--fs-line); border-radius: 3px; }
+.fs-buy-sidebar::-webkit-scrollbar-thumb:hover { background: var(--fs-ink-4); }
+.fs-buy-sidebar-inner {
+  padding: 16px 0 32px;
+  display: flex; flex-direction: column;
+}
+.fs-buy-main {
+  min-width: 0;
+  padding: 0 0 64px;
+}
+@media (max-width: 480px) {
+  .fs-buy-main { padding: 0 16px 48px; }
+}
+
+/* In-main hero (sits at top of content column) */
+.fs-buy-main-hero {
+  padding: 28px 0 16px;
+  /* No border — flows directly into the search bar below for one connected header */
+}
+.fs-buy-hero-eyebrow {
+  font-size: 11px; font-weight: 600; letter-spacing: 0.14em;
+  text-transform: uppercase; color: var(--fs-ink-3);
+  margin-bottom: 8px;
+}
+.fs-buy-hero-title {
+  font-family: var(--fs-font);
+  font-size: 30px; font-weight: 700; line-height: 1.1;
+  letter-spacing: -0.035em; color: var(--fs-ink);
+  margin: 0 0 6px;
+}
+.fs-buy-hero-sub {
+  font-size: 14px; color: var(--fs-ink-3); font-weight: 500;
+  letter-spacing: -0.005em; max-width: 480px; line-height: 1.5;
+  margin: 0;
+}
+@media (max-width: 480px) {
+  .fs-buy-main-hero { padding: 20px 0 12px; }
+  .fs-buy-hero-title { font-size: 26px; }
+}
+
+/* In-main sticky search (inside content column) */
+.fs-buy-main-search {
+  display: flex; gap: 10px; align-items: center;
+  background: var(--fs-white);
+  padding: 8px 0 10px;
+  position: sticky; top: 72px; z-index: 40;
+  /* No border below — flows into the toolbar */
+}
+
+/* In-main toolbar — sits directly under search, one combined header strip */
+.fs-buy-main-toolbar {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 12px 0 14px;
+  margin-bottom: 20px;
+  border-bottom: 1px solid var(--fs-line);
+  flex-wrap: wrap; gap: 12px;
+}
+
+/* Old aliases kept for safety in case anything else references them */
+.fs-search-page-bar {
+  background: var(--fs-white); padding: 14px 0;
+  border-bottom: 1px solid var(--fs-line);
+}
+.fs-buy-search-input-wrap {
+  position: relative; flex: 1; min-width: 240px;
+  display: flex; align-items: center;
+}
+.fs-buy-search-icon {
+  position: absolute; left: 16px; top: 50%; transform: translateY(-50%);
+  color: var(--fs-ink-3); pointer-events: none; display: flex;
+}
+.fs-buy-search-hint {
+  position: absolute; right: 14px; top: 50%; transform: translateY(-50%);
+  font-size: 11.5px; color: var(--fs-ink-4); font-weight: 600;
+  letter-spacing: 0.04em; padding: 3px 8px;
+  border: 1px solid var(--fs-line); border-radius: 4px;
+  background: var(--fs-bg-2); pointer-events: none;
+}
+/* On phones, the "↵ Search" hint takes ~80px the placeholder needs to
+   render its rotating example. Hide the hint and reclaim that room so
+   "Low-hours Robinson R44" stops getting clipped to "Low-hours Robin…" */
+@media (max-width: 480px) {
+  .fs-buy-search-hint { display: none; }
+  .fs-buy-search-input-wrap .fs-search-inline-input { padding-right: 16px; }
+}
+.fs-buy-search-input-wrap .fs-search-inline-input {
+  padding: 14px 80px 14px 44px;
+  font-size: 15px; font-weight: 500;
+}
+.fs-search-page-inner {
+  display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+}
+.fs-search-inline-input {
+  flex: 1; min-width: 220px; padding: 12px 16px 12px 40px;
+  border: 1px solid var(--fs-line); border-radius: var(--fs-radius);
+  font-size: 14.5px; font-family: var(--fs-font); outline: none;
+  transition: border-color 0.15s; background: var(--fs-white);
+  font-weight: 500; letter-spacing: -0.01em;
+}
+.fs-search-inline-input:focus { border-color: var(--fs-ink); }
+.fs-filter-chip {
+  display: flex; align-items: center; gap: 6px;
+  padding: 10px 16px; border-radius: var(--fs-radius-pill);
+  border: none; font-size: 14px;
+  font-weight: 500; cursor: pointer; background: var(--fs-bg-2);
+  color: var(--fs-ink);
+  font-family: var(--fs-font); transition: background-color 0.15s;
+  letter-spacing: -0.005em;
+}
+.fs-filter-chip:hover { background: var(--fs-line); }
+.fs-filter-chip.active { background: var(--fs-ink); color: white; }
+.fs-results-bar {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 24px; flex-wrap: wrap; gap: 12px;
+  padding-bottom: 16px; border-bottom: 1px solid var(--fs-line);
+}
+.fs-results-count {
+  font-size: 14px; color: var(--fs-ink-2); font-weight: 500;
+  letter-spacing: -0.005em;
+  display: flex; align-items: baseline;
+}
+.fs-results-sort {
+  display: flex; align-items: center; gap: 8px;
+}
+.fs-results-sort-label {
+  font-size: 12px; color: var(--fs-ink-3); font-weight: 500;
+  text-transform: uppercase; letter-spacing: 0.04em;
+}
+.fs-sort-select {
+  padding: 8px 30px 8px 14px;
+  border: 1px solid var(--fs-line);
+  border-radius: var(--fs-radius);
+  font-size: 13.5px;
+  font-family: var(--fs-font); outline: none; cursor: pointer;
+  background: var(--fs-white);
+  font-weight: 500; color: var(--fs-ink); letter-spacing: -0.005em;
+  appearance: none;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6' fill='none'><path d='M1 1l4 4 4-4' stroke='%23666' stroke-width='1.5' stroke-linecap='round'/></svg>");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  transition: border-color 0.15s;
+}
+.fs-sort-select:hover { border-color: var(--fs-ink-3); }
+.fs-sort-select:focus { border-color: var(--fs-ink); }
+/* SIDEBAR — header / livecount / preset chips */
+.fs-sidebar-header {
+  display: flex; justify-content: space-between; align-items: baseline;
+  margin-bottom: 8px;
+}
+
+/* Preset chip rows inside sections */
+.fs-sidebar-presets {
+  display: flex; flex-wrap: wrap; gap: 8px;
+  margin-bottom: 10px;
+}
+.fs-sidebar-preset {
+  background: var(--fs-white);
+  border: 1px solid var(--fs-line);
+  color: var(--fs-ink-2);
+  font-family: var(--fs-font);
+  font-size: 13px; font-weight: 500;
+  padding: 10px 16px;
+  min-height: 40px;
+  border-radius: var(--fs-radius-pill);
+  cursor: pointer;
+  letter-spacing: -0.005em;
+  transition: all 0.12s var(--fs-ease-out);
+  white-space: nowrap;
+}
+.fs-sidebar-preset:hover {
+  border-color: var(--fs-ink-3);
+  color: var(--fs-ink);
+}
+.fs-sidebar-preset.active {
+  background: var(--fs-ink);
+  border-color: var(--fs-ink);
+  color: white;
+}
+
+/* Category-aware "soon" rows are slightly muted */
+.fs-sidebar-check-cat { opacity: 0.75; }
+
+/* Search clear button — sits in input on right when query present */
+.fs-buy-search-clear {
+  position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
+  width: 24px; height: 24px; border-radius: 50%;
+  background: var(--fs-bg-2); border: none;
+  color: var(--fs-ink-3); cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: background 0.12s, color 0.12s;
+}
+.fs-buy-search-clear:hover {
+  background: var(--fs-line); color: var(--fs-ink);
+}
+.fs-sidebar-title {
+  font-family: var(--fs-font);
+  font-size: 16px; font-weight: 700; color: var(--fs-ink);
+  letter-spacing: -0.02em;
+}
+.fs-sidebar-clear {
+  background: none; border: none; cursor: pointer;
+  font-size: 12.5px; font-weight: 500; color: var(--fs-ink-3);
+  text-decoration: underline; padding: 0;
+  font-family: var(--fs-font);
+}
+.fs-sidebar-clear:hover { color: var(--fs-ink); }
+
+/* Active filter chips at top of sidebar */
+.fs-sidebar-active {
+  display: flex; flex-wrap: wrap; gap: 6px;
+  padding: 12px 0; margin-bottom: 8px;
+  border-bottom: 1px solid var(--fs-line);
+}
+.fs-sidebar-active-chip {
+  display: inline-flex; align-items: center; gap: 5px;
+  background: var(--fs-ink); color: white;
+  border: none; padding: 5px 6px 5px 10px;
+  border-radius: var(--fs-radius-pill);
+  font-size: 12px; font-weight: 500; cursor: pointer;
+  font-family: var(--fs-font); letter-spacing: -0.005em;
+}
+.fs-sidebar-active-chip:hover { background: var(--fs-ink-2); }
+
+/* Sidebar sections — minimal, label-driven */
+.fs-sidebar-section {
+  padding: 12px 0;
+  border-top: 1px solid var(--fs-line);
+}
+.fs-sidebar-section:first-of-type { border-top: none; padding-top: 4px; }
+.fs-sidebar-section-title {
+  font-size: 13px; font-weight: 600; color: var(--fs-ink);
+  letter-spacing: -0.01em;
+  margin-bottom: 10px;
+}
+
+.fs-sidebar-group { margin-bottom: 8px; }
+.fs-sidebar-group:last-child { margin-bottom: 0; }
+.fs-sidebar-label {
+  font-size: 13px; font-weight: 600; color: var(--fs-ink);
+  margin-bottom: 10px; display: block; letter-spacing: -0.005em;
+}
+.fs-year-range {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: 8px;
+  align-items: center;
+}
+.fs-year-arrow {
+  color: var(--fs-ink-4);
+  font-size: 12px;
+}
+@media (max-width: 480px) {
+  .fs-year-range {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+  .fs-year-arrow {
+    display: none;
+  }
+}
+.fs-sidebar-select {
+  width: 100%; padding: 9px 12px; border: 1px solid var(--fs-line);
+  border-radius: var(--fs-radius); font-size: 13.5px;
+  font-family: var(--fs-font); outline: none; cursor: pointer;
+  background: var(--fs-white); color: var(--fs-ink); font-weight: 500;
+  transition: border-color 0.15s; letter-spacing: -0.005em;
+}
+.fs-sidebar-select:hover { border-color: var(--fs-ink-3); }
+.fs-sidebar-select:focus { border-color: var(--fs-ink); }
+.fs-sidebar-range {
+  display: flex; gap: 6px; align-items: center;
+}
+.fs-sidebar-range input {
+  flex: 1; padding: 9px 10px; border: 1px solid var(--fs-line);
+  border-radius: var(--fs-radius); font-size: 13.5px;
+  font-family: var(--fs-font); outline: none; width: 100%;
+  font-weight: 500; color: var(--fs-ink); background: var(--fs-white);
+  letter-spacing: -0.005em;
+}
+.fs-sidebar-range input:focus { border-color: var(--fs-ink); }
+.fs-sidebar-range span { color: var(--fs-ink-4); font-size: 13px; }
+.fs-sidebar-check {
+  display: flex; align-items: center; gap: 10px; padding: 6px 0;
+  font-size: 13.5px; color: var(--fs-ink); cursor: pointer; font-weight: 500;
+  letter-spacing: -0.005em;
+}
+.fs-sidebar-check input { width: 16px; height: 16px; accent-color: var(--fs-ink); cursor: pointer; }
+.fs-sidebar-check input:disabled + * { color: var(--fs-ink-4); }
+
+/* Advanced collapsible */
+.fs-sidebar-advanced {
+  margin-top: 8px;
+  border-top: 1px solid var(--fs-line);
+  padding-top: 14px;
+}
+.fs-sidebar-advanced > summary {
+  list-style: none; cursor: pointer;
+  display: flex; justify-content: space-between; align-items: center;
+  font-size: 12.5px; font-weight: 600; color: var(--fs-ink-2);
+  letter-spacing: -0.005em;
+  padding: 4px 0;
+}
+.fs-sidebar-advanced > summary::-webkit-details-marker { display: none; }
+.fs-sidebar-advanced[open] > summary .fs-sidebar-advanced-chev { transform: rotate(180deg); }
+.fs-sidebar-advanced-chev { transition: transform 0.2s var(--fs-ease-out); color: var(--fs-ink-3); }
+.fs-sidebar-advanced-body { padding-top: 10px; }
+.fs-sidebar-advanced-note {
+  font-size: 12px; color: var(--fs-ink-3); line-height: 1.5;
+  margin: 0 0 10px;
+}
+.fs-sidebar-soon {
+  font-size: 10px; font-weight: 600; color: var(--fs-ink-4);
+  letter-spacing: 0.06em; text-transform: uppercase;
+  margin-left: 4px;
+}
+
+/* Sidebar info-flow cards — separated from filter rail by gap */
+.fs-sidebar-info-card {
+  background: var(--fs-ink); color: white;
+  border-radius: var(--fs-radius); padding: 18px;
+  position: relative;
+  margin-top: 24px;
+}
+.fs-sidebar-info-icon {
+  width: 36px; height: 36px; border-radius: 8px;
+  background: rgba(255,255,255,0.08);
+  display: flex; align-items: center; justify-content: center;
+  margin-bottom: 12px; color: white;
+}
+.fs-sidebar-info-title {
+  font-size: 14.5px; font-weight: 600; letter-spacing: -0.015em;
+  margin-bottom: 4px;
+}
+.fs-sidebar-info-text {
+  font-size: 12.5px; color: rgba(255,255,255,0.7);
+  line-height: 1.5; margin: 0 0 14px;
+  letter-spacing: -0.005em;
+}
+.fs-sidebar-info-cta {
+  width: 100%; padding: 10px;
+  background: white; color: var(--fs-ink);
+  border: none; border-radius: var(--fs-radius);
+  font-size: 13px; font-weight: 600; cursor: pointer;
+  font-family: var(--fs-font); letter-spacing: -0.01em;
+  transition: opacity 0.15s;
+}
+.fs-sidebar-info-cta:hover { opacity: 0.9; }
+
+/* Trust signals */
+.fs-sidebar-trust {
+  background: var(--fs-bg-2);
+  border-radius: var(--fs-radius); padding: 16px 18px;
+  display: flex; flex-direction: column; gap: 8px;
+  margin-top: 12px;
+}
+.fs-sidebar-trust-row {
+  display: flex; align-items: center; gap: 10px;
+  font-size: 12.5px; color: var(--fs-ink-2); font-weight: 500;
+  letter-spacing: -0.005em;
+}
+.fs-sidebar-trust-row span:first-child {
+  color: var(--fs-green); font-weight: 700;
+  width: 14px; flex-shrink: 0;
+}
+
+/* Help card */
+.fs-sidebar-help {
+  background: var(--fs-white); border: 1px solid var(--fs-line);
+  border-radius: var(--fs-radius); padding: 18px;
+  margin-top: 12px;
+}
+.fs-sidebar-help-title {
+  font-size: 13px; font-weight: 700; color: var(--fs-ink);
+  letter-spacing: -0.01em; margin-bottom: 4px;
+}
+.fs-sidebar-help-text {
+  font-size: 12.5px; color: var(--fs-ink-3); line-height: 1.5;
+  margin: 0 0 10px;
+}
+.fs-sidebar-help-link {
+  font-size: 13px; font-weight: 600; color: var(--fs-ink);
+  text-decoration: none; letter-spacing: -0.005em;
+}
+.fs-sidebar-help-link:hover { text-decoration: underline; }
+.fs-mobile-filter-btn {
+  display: none; padding: 10px 18px; background: var(--fs-ink);
+  color: white; border: none; border-radius: var(--fs-radius-pill);
+  font-size: 14px; font-weight: 600; cursor: pointer; font-family: var(--fs-font);
+  letter-spacing: -0.01em;
+}
+@media (max-width: 768px) {
+  .fs-mobile-filter-btn { display: flex; align-items: center; gap: 6px; }
+}
+
+/* MODAL — Uber */
+.fs-modal-overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.5);
+  z-index: 200; display: flex; align-items: center; justify-content: center;
+  padding: 20px;
+}
+.fs-modal {
+  background: var(--fs-white); border-radius: var(--fs-radius-lg);
+  width: 100%; max-width: 480px; max-height: 90vh;
+  overflow-y: auto;
+}
+.fs-modal-header {
+  padding: 28px 28px 0; display: flex; justify-content: space-between;
+  align-items: flex-start;
+}
+.fs-modal-header h2 { font-size: 24px; font-weight: 700; letter-spacing: -0.03em; }
+.fs-modal-close {
+  background: var(--fs-bg-2); border: none; cursor: pointer;
+  color: var(--fs-ink); padding: 8px; border-radius: 50%;
+  transition: background-color 0.15s;
+}
+.fs-modal-close:hover { background: var(--fs-line); }
+.fs-modal-body { padding: 20px 28px 28px; }
+.fs-form-group { margin-bottom: 16px; }
+.fs-form-label {
+  display: block; font-size: 14px; font-weight: 600;
+  margin-bottom: 6px; color: var(--fs-ink); letter-spacing: -0.01em;
+}
+.fs-form-input, .fs-form-textarea, .fs-form-select {
+  width: 100%; padding: 12px 16px; border: 1px solid var(--fs-line);
+  border-radius: var(--fs-radius); font-size: 14.5px;
+  font-family: var(--fs-font); outline: none; transition: border-color 0.15s;
+  font-weight: 500; color: var(--fs-ink); background: var(--fs-white);
+  letter-spacing: -0.005em;
+}
+.fs-form-input:focus, .fs-form-textarea:focus, .fs-form-select:focus {
+  border-color: var(--fs-accent);
+  box-shadow: 0 0 0 3px var(--fs-accent-ring), 0 2px 8px rgba(0,0,0,0.04);
+  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  transform: translateY(-1px);
+}
+.fs-form-textarea { resize: vertical; min-height: 100px; }
+.fs-form-submit {
+  width: 100%; padding: 14px; background: var(--fs-ink);
+  color: white; border: none; border-radius: var(--fs-radius);
+  font-size: 15px; font-weight: 600; cursor: pointer;
+  font-family: var(--fs-font); transition: background-color 0.15s;
+  margin-top: 8px; letter-spacing: -0.01em;
+}
+.fs-form-submit:hover { background: var(--fs-ink-2); }
+
+/* FINANCE — kept minimal (page hidden, retained for safety) */
+.fs-finance-hero {
+  background: var(--fs-bg-2);
+  padding: 64px 0; color: var(--fs-ink); text-align: center;
+}
+.fs-finance-grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 20px; margin-top: 32px;
+}
+.fs-finance-card {
+  background: var(--fs-white); border-radius: var(--fs-radius);
+  padding: 28px; border: 1px solid var(--fs-line); text-align: center;
+}
+.fs-finance-card-icon {
+  width: 48px; height: 48px; border-radius: var(--fs-radius);
+  background: var(--fs-bg-2); color: var(--fs-ink);
+  display: flex; align-items: center; justify-content: center;
+  margin: 0 auto 16px;
+}
+.fs-finance-card h3 { font-size: 17px; font-weight: 600; margin-bottom: 8px; letter-spacing: -0.02em; }
+.fs-finance-card p { font-size: 14px; color: var(--fs-ink-3); line-height: 1.5; letter-spacing: -0.005em; }
+
+.fs-calc-wrap {
+  background: var(--fs-white); border-radius: var(--fs-radius);
+  padding: 32px; border: 1px solid var(--fs-line);
+  max-width: 480px; margin: 32px auto 0;
+}
+.fs-calc-row { display: flex; gap: 16px; margin-bottom: 16px; }
+.fs-calc-row > * { flex: 1; }
+.fs-calc-result {
+  background: var(--fs-bg-2); border-radius: var(--fs-radius);
+  padding: 24px; text-align: center; margin-top: 20px;
+}
+.fs-calc-result-label { font-size: 14px; color: var(--fs-ink-3); margin-bottom: 4px; font-weight: 500; letter-spacing: -0.005em; }
+.fs-calc-result-value { font-size: 40px; font-weight: 700; color: var(--fs-ink); letter-spacing: -0.04em; }
+.fs-calc-result-sub { font-size: 13px; color: var(--fs-ink-4); margin-top: 4px; letter-spacing: -0.005em; }
+
+/* FOOTER — Uber: massive, simple */
+.fs-footer {
+  background: var(--fs-ink); color: rgba(255,255,255,0.6);
+  padding: 80px 0 32px;
+}
+.fs-footer-grid {
+  display: grid; grid-template-columns: 2fr 1fr 1fr 1fr;
+  gap: 48px; margin-bottom: 64px;
+}
+@media (max-width: 768px) {
+  .fs-footer-grid { grid-template-columns: 1fr 1fr; gap: 32px; }
+}
+@media (max-width: 480px) {
+  .fs-footer-grid { grid-template-columns: 1fr; }
+}
+.fs-footer-brand { font-family: var(--fs-font); font-size: 22px; color: white; margin-bottom: 16px; font-weight: 800; letter-spacing: -0.04em; }
+.fs-footer-brand span { color: rgba(255,255,255,0.5); font-weight: 400; }
+.fs-footer-desc { font-size: 14px; line-height: 1.5; margin-bottom: 20px; letter-spacing: -0.005em; }
+.fs-footer-heading { color: white; font-size: 15px; font-weight: 600; margin-bottom: 16px; letter-spacing: -0.01em; }
+.fs-footer-link { display: block; font-size: 14px; margin-bottom: 10px; cursor: pointer; transition: color 0.2s ease, transform 0.15s ease; letter-spacing: -0.005em; position: relative; }
+.fs-footer-link:hover { color: white; transform: translateX(2px); }
+.fs-footer-bottom {
+  border-top: 1px solid rgba(255,255,255,0.1);
+  padding-top: 28px; display: flex; justify-content: space-between;
+  font-size: 13px; flex-wrap: wrap; gap: 12px; letter-spacing: -0.005em;
+}
+
+/* TOAST */
+.fs-toast {
+  position: fixed; bottom: 24px; right: 24px; z-index: 300;
+  background: var(--fs-ink); color: white; padding: 14px 20px;
+  border-radius: var(--fs-radius); font-size: 14px; font-weight: 500;
+  display: flex; align-items: center; gap: 8px;
+  animation: fs-slide-up 0.3s ease; letter-spacing: -0.005em;
+}
+@keyframes fs-slide-up {
+  from { transform: translateY(20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+@keyframes fs-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+@keyframes fs-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* EMPTY STATE */
+.fs-empty {
+  text-align: center; padding: 48px 24px; color: var(--fs-gray-400);
+}
+.fs-empty p { margin-top: 8px; font-size: 14px; }
+
+/* TAGS — Uber */
+.fs-tag {
+  display: inline-flex; align-items: center; gap: 4px;
+  font-size: 12px; font-weight: 600; padding: 4px 10px;
+  border-radius: var(--fs-radius-sm); letter-spacing: -0.005em;
+  background: var(--fs-bg-2); color: var(--fs-ink);
+}
+/* Tag variants — all monochrome in this design system */
+
+/* ABOUT PAGE */
+.fs-about-hero {
+  background: var(--fs-bg-2);
+  padding: 80px 0; color: var(--fs-ink);
+}
+.fs-about-grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 20px; margin-top: 32px;
+}
+.fs-about-card {
+  background: var(--fs-white); border-radius: var(--fs-radius);
+  padding: 28px; border: 1px solid var(--fs-line);
+}
+.fs-about-card h3 { font-size: 17px; font-weight: 600; margin-bottom: 8px; letter-spacing: -0.02em; }
+.fs-about-card p { font-size: 14px; color: var(--fs-ink-3); line-height: 1.5; letter-spacing: -0.005em; }
+
+/* CONTACT */
+.fs-contact-layout {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 32px;
+  margin-top: 32px;
+}
+@media (max-width: 768px) { .fs-contact-layout { grid-template-columns: 1fr; } }
+.fs-contact-info-card {
+  background: var(--fs-white); border-radius: var(--fs-radius);
+  padding: 24px; border: 1px solid var(--fs-line);
+  display: flex; gap: 16px; align-items: flex-start;
+}
+.fs-contact-icon {
+  width: 44px; height: 44px; border-radius: var(--fs-radius);
+  background: var(--fs-bg-2); color: var(--fs-ink);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+
+/* Btn primitive — Uber pill with micro-interactions */
+.fs-btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  padding: 14px 28px; border-radius: var(--fs-radius-pill);
+  font-size: 15px; font-weight: 600; cursor: pointer; border: none;
+  font-family: var(--fs-font);
+  letter-spacing: -0.01em;
+  transition: transform 0.15s var(--fs-ease-spring), 
+              background-color 0.15s var(--fs-ease-out),
+              box-shadow 0.2s ease;
+  will-change: transform;
+}
+.fs-btn:active {
+  transform: scale(0.96);
+}
+.fs-btn-primary { 
+  background: var(--fs-ink); 
+  color: white;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+}
+.fs-btn-primary:hover { 
+  background: var(--fs-ink-2);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+.fs-btn-primary:active {
+  box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+}
+.fs-btn-secondary { 
+  background: var(--fs-bg-2); 
+  color: var(--fs-ink);
+  border: 1px solid transparent;
+}
+.fs-btn-secondary:hover {
+  background: var(--fs-white);
+  border-color: var(--fs-line);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+}
+
+/* ─────────────────────────────────────────────────────────────────────
+   FILTER COLUMN — /buy left rail
+   Container chrome lives on .fs-buy-sidebar (already sticky+scrollable).
+   These rules style the rail's inner content (the FilterColumn component).
+   Visual treatment notes:
+     - same column from top to bottom; basic above the divider, advanced below
+     - all multi-pick fields read as one rhythm (vertical checkbox lists)
+     - section headers: 13px, uppercase weight, with active-count dot badge
+     - field labels: 12px, ink-3, 600 weight
+     - sticky inner header: count + reset all
+   ───────────────────────────────────────────────────────────────────── */
+
+.fs-fc { display: flex; flex-direction: column; gap: 0; font-family: var(--fs-font); }
+
+.fs-fc-head {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  display: flex; align-items: baseline; justify-content: space-between;
+  /* Extend bg horizontally past the column padding (mobile sheet has 20px
+     side padding on its scroll body) AND vertically with a top -1px so a
+     1px sub-pixel gap during scroll can't show content underneath. */
+  padding: 14px 20px 12px;
+  margin: -1px -20px 4px;
+  background: var(--fs-white);
+  border-bottom: 1px solid var(--fs-line);
+  /* Pseudo-element to extend bg another 16px above the sticky head so
+     scrolled content slides cleanly behind it instead of peeking through
+     the gap above when the user flicks fast. */
+}
+.fs-fc-head::before {
+  content: '';
+  position: absolute;
+  left: 0; right: 0; bottom: 100%;
+  height: 16px;
+  background: var(--fs-white);
+}
+@media (min-width: 769px) {
+  /* Desktop sidebar has no inner side padding, so reset the negative
+     margins. Page bg used here so the sticky blends with the column bg. */
+  .fs-fc-head { padding: 14px 0 12px; margin: 0 0 4px; background: var(--fs-bg); }
+  .fs-fc-head::before { background: var(--fs-bg); }
+}
+.fs-fc-count { display: flex; align-items: baseline; gap: 6px; }
+.fs-fc-count-num {
+  font-size: 22px; font-weight: 700; letter-spacing: -0.02em;
+  color: var(--fs-ink);
+}
+.fs-fc-count-label { font-size: 13px; color: var(--fs-ink-3); }
+.fs-fc-reset {
+  background: none; border: none; padding: 2px 0;
+  color: var(--fs-ink-3); font-size: 12px; font-weight: 500;
+  cursor: pointer; text-decoration: underline; text-underline-offset: 2px;
+}
+.fs-fc-reset:hover { color: var(--fs-ink); }
+
+.fs-fc-basic { display: flex; flex-direction: column; gap: 20px; padding: 12px 0 4px; }
+
+.fs-fc-field { display: flex; flex-direction: column; gap: 8px; }
+.fs-fc-label {
+  font-size: 13.5px; font-weight: 800;
+  color: var(--fs-ink);
+  letter-spacing: -0.005em;
+}
+.fs-fc-sublabel {
+  font-size: 12px; font-weight: 500;
+  color: var(--fs-ink-3);
+}
+.fs-fc-input {
+  border: 1px solid var(--fs-line); background: var(--fs-white);
+  border-radius: var(--fs-radius-sm);
+  padding: 8px 10px; font-size: 13px;
+  color: var(--fs-ink); font-family: var(--fs-font);
+  outline: none;
+}
+.fs-fc-input:focus { border-color: var(--fs-ink); }
+
+.fs-fc-divider {
+  height: 1px;
+  background: var(--fs-line);
+  margin: 24px 0;
+  /* dotted variant — subtle differentiation from in-section border */
+  background-image: linear-gradient(to right, var(--fs-line) 50%, transparent 0);
+  background-size: 4px 1px;
+  background-repeat: repeat-x;
+  background-color: transparent;
+}
+
+/* Checkbox list */
+.fs-fc-checklist { display: flex; flex-direction: column; gap: 2px; }
+.fs-fc-checklist-search { margin-bottom: 6px; }
+.fs-fc-checklist-search input {
+  width: 100%; border: 1px solid var(--fs-line);
+  background: var(--fs-white); border-radius: var(--fs-radius-sm);
+  padding: 6px 10px; font-size: 12px; color: var(--fs-ink);
+  font-family: var(--fs-font); outline: none;
+}
+.fs-fc-checklist-search input:focus { border-color: var(--fs-ink); }
+.fs-fc-checkrow {
+  display: flex; align-items: center; gap: 10px;
+  padding: 6px 0;
+  font-size: 13px; color: var(--fs-ink);
+  cursor: pointer; user-select: none;
+}
+.fs-fc-checkrow input[type="checkbox"] {
+  appearance: none; -webkit-appearance: none;
+  width: 14px; height: 14px;
+  border: 1.5px solid var(--fs-ink-4);
+  border-radius: 3px;
+  background: var(--fs-white);
+  cursor: pointer;
+  flex-shrink: 0;
+  position: relative;
+  transition: border-color 0.12s, background 0.12s;
+}
+.fs-fc-checkrow input[type="checkbox"]:checked {
+  background: var(--fs-ink); border-color: var(--fs-ink);
+}
+.fs-fc-checkrow input[type="checkbox"]:checked::after {
+  content: ''; position: absolute;
+  left: 3px; top: 0px;
+  width: 4px; height: 8px;
+  border-right: 2px solid white; border-bottom: 2px solid white;
+  transform: rotate(45deg);
+}
+.fs-fc-checkrow:hover input[type="checkbox"] { border-color: var(--fs-ink); }
+.fs-fc-checkrow.on .fs-fc-checkrow-label { color: var(--fs-ink); font-weight: 500; }
+.fs-fc-checkrow-label { flex: 1; line-height: 1.3; }
+.fs-fc-checkrow-count {
+  font-size: 12px; color: var(--fs-ink-4);
+  font-variant-numeric: tabular-nums;
+  margin-left: auto;
+  flex-shrink: 0;
+  font-weight: 500;
+}
+/* Zero-count options sink visually so the eye lands on what's actually
+   listable. Selected options never get this treatment (the user needs
+   to find them to uncheck). */
+.fs-fc-checkrow.zero { opacity: 0.55; }
+.fs-fc-checkrow.zero .fs-fc-checkrow-label { color: var(--fs-ink-4); font-weight: 400; }
+.fs-fc-checkrow.zero .fs-fc-checkrow-count  { color: var(--fs-ink-4); }
+.fs-fc-empty { font-size: 12px; color: var(--fs-ink-4); margin: 6px 0; }
+.fs-fc-more {
+  background: none; border: none; padding: 4px 0;
+  color: var(--fs-ink-3); font-size: 12px; font-weight: 500;
+  cursor: pointer; text-align: left;
+  font-family: var(--fs-font);
+}
+.fs-fc-more:hover { color: var(--fs-ink); }
+
+/* Number field */
+.fs-fc-numfield {
+  display: flex; align-items: center; gap: 8px;
+  border: 1px solid var(--fs-line); background: var(--fs-white);
+  border-radius: var(--fs-radius-sm);
+  padding: 6px 10px;
+}
+.fs-fc-numfield:focus-within { border-color: var(--fs-ink); }
+.fs-fc-numfield-prefix {
+  font-size: 11px; font-weight: 600; color: var(--fs-ink-4);
+  text-transform: uppercase; letter-spacing: 0.04em;
+}
+.fs-fc-numfield input {
+  flex: 1; min-width: 0;
+  border: none; outline: none; background: transparent;
+  font-size: 13px; color: var(--fs-ink);
+  font-family: var(--fs-font);
+  /* hide spinner */
+  -moz-appearance: textfield;
+}
+.fs-fc-numfield input::-webkit-outer-spin-button,
+.fs-fc-numfield input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+.fs-fc-numfield-unit { font-size: 12px; color: var(--fs-ink-3); }
+
+.fs-fc-row { display: flex; flex-direction: column; gap: 6px; margin-bottom: 14px; }
+.fs-fc-row:last-child { margin-bottom: 0; }
+
+/* Range slider */
+.fs-fc-range { display: flex; flex-direction: column; gap: 8px; }
+.fs-fc-range-track {
+  position: relative;
+  height: 16px;
+}
+.fs-fc-range-track::before {
+  content: ''; position: absolute;
+  left: 0; right: 0; top: 50%;
+  height: 2px; transform: translateY(-50%);
+  background: var(--fs-line); border-radius: 1px;
+}
+.fs-fc-range-fill {
+  position: absolute; top: 50%;
+  height: 2px; transform: translateY(-50%);
+  background: var(--fs-ink); border-radius: 1px;
+  pointer-events: none;
+}
+.fs-fc-range input[type="range"] {
+  position: absolute; left: 0; right: 0; top: 0; bottom: 0;
+  width: 100%; height: 16px;
+  -webkit-appearance: none; appearance: none;
+  background: transparent; pointer-events: none;
+  margin: 0;
+}
+.fs-fc-range input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none; appearance: none;
+  width: 14px; height: 14px;
+  border-radius: 50%;
+  background: var(--fs-white); border: 1.5px solid var(--fs-ink);
+  cursor: pointer; pointer-events: auto;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.08);
+}
+.fs-fc-range input[type="range"]::-moz-range-thumb {
+  width: 14px; height: 14px;
+  border-radius: 50%;
+  background: var(--fs-white); border: 1.5px solid var(--fs-ink);
+  cursor: pointer; pointer-events: auto;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.08);
+}
+.fs-fc-range-readout {
+  font-size: 12px; color: var(--fs-ink); font-weight: 500;
+  font-variant-numeric: tabular-nums;
+}
+.fs-fc-range-sep { color: var(--fs-ink-4); padding: 0 4px; }
+
+/* Section (collapsible) */
+.fs-fc-section { border-top: 1px solid var(--fs-line); }
+.fs-fc-section:first-child { border-top: none; }
+.fs-fc-section-head {
+  display: flex; align-items: center; gap: 10px;
+  width: 100%; padding: 14px 0;
+  background: none; border: none;
+  text-align: left; cursor: pointer;
+  font-family: var(--fs-font);
+  color: var(--fs-ink);
+}
+.fs-fc-section-head:hover .fs-fc-section-title { color: var(--fs-ink); }
+.fs-fc-section-head:disabled { cursor: default; }
+.fs-fc-chev {
+  font-size: 10px; color: var(--fs-ink-3);
+  width: 12px; flex-shrink: 0; line-height: 1;
+}
+.fs-fc-section-title {
+  flex: 1;
+  font-size: 13.5px; font-weight: 800; letter-spacing: -0.005em;
+  color: var(--fs-ink);
+}
+.fs-fc-section-badge {
+  display: inline-flex; align-items: center; gap: 4px;
+  font-size: 11px; color: var(--fs-ink-3);
+  font-variant-numeric: tabular-nums;
+}
+.fs-fc-badge-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--fs-ink); display: inline-block;
+}
+.fs-fc-section-body {
+  padding: 4px 0 18px;
+  display: flex; flex-direction: column; gap: 14px;
+}
+.fs-fc-section-reset {
+  align-self: flex-start;
+  background: none; border: none; padding: 0;
+  color: var(--fs-ink-3); font-size: 12px;
+  cursor: pointer; text-decoration: underline; text-underline-offset: 2px;
+  font-family: var(--fs-font);
+  margin-top: 4px;
+}
+.fs-fc-section-reset:hover { color: var(--fs-ink); }
+
+/* Auth gate (logged-out users) */
+.fs-fc-gate {
+  border: 1px dashed var(--fs-line);
+  border-radius: var(--fs-radius);
+  padding: 20px 18px;
+  background: var(--fs-bg-2);
+  text-align: left;
+  display: flex; flex-direction: column; gap: 10px;
+}
+.fs-fc-gate h3 {
+  font-size: 13px; font-weight: 600; margin: 0;
+  color: var(--fs-ink); letter-spacing: -0.005em;
+}
+.fs-fc-gate p {
+  font-size: 12px; color: var(--fs-ink-3); line-height: 1.5; margin: 0;
+}
+.fs-fc-gate-cta {
+  display: inline-block; align-self: stretch;
+  background: var(--fs-ink); color: white;
+  padding: 10px 14px; border-radius: var(--fs-radius-sm);
+  font-size: 13px; font-weight: 600; text-align: center;
+  text-decoration: none;
+  margin-top: 4px;
+}
+.fs-fc-gate-cta:hover { background: var(--fs-ink-2); color: white; text-decoration: none; }
+.fs-fc-gate-sub { font-size: 11px; color: var(--fs-ink-4); margin-top: 4px; }
+.fs-fc-gate-sub a { color: var(--fs-ink); text-decoration: underline; text-underline-offset: 2px; }
+
+/* ─────────────────────────────────────────────────────────────────────
+   ADMIN DASHBOARD — table chrome, drawer, dialog, news editor
+   ───────────────────────────────────────────────────────────────────── */
+
+.fs-admin-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 32px; }
+.fs-admin-stat { background: var(--fs-white); border: 1px solid var(--fs-line); border-radius: var(--fs-radius); padding: 20px; }
+.fs-admin-stat-num { font-size: 28px; font-weight: 800; color: var(--fs-ink); margin: 0 0 4px; letter-spacing: -0.02em; }
+.fs-admin-stat-label { font-size: 12px; color: var(--fs-ink-3); margin: 0; }
+@media (max-width: 768px) { .fs-admin-stats { grid-template-columns: repeat(2, 1fr); } }
+
+.fs-admin-tabs { display: flex; gap: 4px; margin-bottom: 24px; border-bottom: 1px solid var(--fs-line); flex-wrap: wrap; }
+.fs-admin-tab { padding: 12px 18px; border: none; border-bottom: 2px solid transparent; background: none; cursor: pointer; font-size: 14px; color: var(--fs-ink-3); display: flex; align-items: center; gap: 8px; font-family: var(--fs-font); }
+.fs-admin-tab.on { color: var(--fs-ink); border-bottom-color: var(--fs-ink); font-weight: 600; }
+.fs-admin-tab-badge { background: var(--fs-ink); color: white; font-size: 11px; padding: 2px 8px; border-radius: var(--fs-radius-pill); font-weight: 600; }
+.fs-admin-tab:not(.on) .fs-admin-tab-badge { background: var(--fs-bg-2); color: var(--fs-ink); }
+
+.fs-admin-tabbody { background: var(--fs-white); border: 1px solid var(--fs-line); border-radius: var(--fs-radius); overflow: hidden; }
+
+/* Toolbar */
+.fs-admin-toolbar { padding: 14px 16px; border-bottom: 1px solid var(--fs-line); background: var(--fs-bg); display: flex; flex-direction: column; gap: 10px; }
+.fs-admin-toolbar-row { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.fs-admin-search { flex: 1; min-width: 200px; padding: 8px 12px; font-size: 13px; border: 1px solid var(--fs-line); border-radius: var(--fs-radius-sm); font-family: var(--fs-font); outline: none; background: var(--fs-white); }
+.fs-admin-search:focus { border-color: var(--fs-ink); }
+.fs-admin-result-count { font-size: 13px; color: var(--fs-ink-3); white-space: nowrap; }
+.fs-admin-result-count strong { color: var(--fs-ink); font-weight: 700; }
+.fs-admin-toolbar-right { display: flex; align-items: center; gap: 8px; margin-left: auto; }
+.fs-admin-status-row { display: flex; gap: 6px; flex-wrap: wrap; }
+.fs-admin-status-pill { padding: 6px 12px; font-size: 12px; font-weight: 500; background: var(--fs-bg-2); color: var(--fs-ink); border: none; border-radius: var(--fs-radius-pill); cursor: pointer; display: inline-flex; align-items: center; gap: 6px; font-family: var(--fs-font); }
+.fs-admin-status-pill.on { background: var(--fs-ink); color: white; }
+.fs-admin-status-pill-count { font-size: 11px; opacity: 0.7; font-variant-numeric: tabular-nums; }
+
+/* Bulk action bar */
+.fs-admin-bulkbar { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; background: #f8fafc; border-bottom: 1px solid var(--fs-line); font-size: 13px; }
+.fs-admin-bulkbar-actions { display: flex; gap: 8px; }
+
+/* Tables */
+.fs-admin-tablewrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+.fs-admin-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.fs-admin-table thead tr { border-bottom: 1px solid var(--fs-line); background: var(--fs-bg); }
+.fs-admin-table th { padding: 12px 16px; text-align: left; font-size: 11px; font-weight: 600; color: var(--fs-ink-3); text-transform: uppercase; letter-spacing: 0.04em; white-space: nowrap; }
+.fs-admin-table td { padding: 14px 16px; border-bottom: 1px solid var(--fs-bg-2); vertical-align: middle; }
+.fs-admin-table tbody tr:hover { background: var(--fs-bg); }
+.fs-admin-table tbody tr.fs-admin-row-suspended { opacity: 0.55; }
+.fs-admin-cell-strong { font-weight: 500; color: var(--fs-ink); margin: 0; }
+.fs-admin-cell-muted { color: var(--fs-ink-3); margin: 0; }
+.fs-admin-feat-pill { margin-left: 8px; font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: var(--fs-radius-pill); background: #fef3c7; color: #92400e; vertical-align: middle; }
+.fs-admin-row-actions { display: flex; gap: 6px; justify-content: flex-end; flex-wrap: wrap; }
+.fs-admin-link-btn { background: none; border: none; padding: 4px 8px; font-size: 12px; color: var(--fs-ink); cursor: pointer; font-family: var(--fs-font); }
+.fs-admin-link-btn:hover { text-decoration: underline; }
+.fs-admin-role { padding: 3px 10px; border-radius: 4px; font-size: 11px; text-transform: capitalize; background: var(--fs-bg-2); color: var(--fs-ink-3); }
+.fs-admin-role.role-admin { background: #fee2e2; color: #991b1b; }
+.fs-admin-role.role-dealer { background: #dbeafe; color: #1e40af; }
+.fs-admin-suspended-tag { padding: 3px 10px; font-size: 11px; background: #fee2e2; color: #991b1b; border-radius: 4px; cursor: help; }
+.fs-admin-pub { padding: 3px 10px; font-size: 11px; border-radius: 4px; background: var(--fs-bg-2); color: var(--fs-ink-3); }
+.fs-admin-pub.on { background: #dcfce7; color: #166534; }
+.fs-admin-select { padding: 6px 8px; font-size: 12px; border: 1px solid var(--fs-line); background: var(--fs-white); border-radius: 4px; font-family: var(--fs-font); cursor: pointer; }
+.fs-admin-select-sm { font-size: 11px; padding: 4px 6px; }
+
+/* Sortable header buttons */
+.fs-admin-sortbtn { background: none; border: none; padding: 0; font-size: 11px; font-weight: 600; color: var(--fs-ink-3); text-transform: uppercase; letter-spacing: 0.04em; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; font-family: var(--fs-font); }
+.fs-admin-sortbtn.on { color: var(--fs-ink); }
+.fs-admin-sort-indicator { font-size: 9px; opacity: 0.5; }
+.fs-admin-sortbtn.on .fs-admin-sort-indicator { opacity: 1; }
+
+/* Pager */
+.fs-admin-pager { display: flex; align-items: center; gap: 4px; justify-content: center; padding: 16px; border-top: 1px solid var(--fs-line); }
+.fs-admin-pager-btn { width: 32px; height: 32px; border-radius: 50%; border: 1px solid var(--fs-line); background: var(--fs-white); cursor: pointer; font-family: var(--fs-font); font-size: 13px; color: var(--fs-ink); }
+.fs-admin-pager-btn.on { background: var(--fs-ink); color: white; border-color: var(--fs-ink); font-weight: 600; }
+.fs-admin-pager-btn:disabled { opacity: 0.4; cursor: default; }
+
+/* Loading / empty */
+.fs-admin-loading, .fs-admin-empty { padding: 48px 24px; text-align: center; color: var(--fs-ink-3); }
+.fs-admin-empty h3 { font-size: 16px; font-weight: 700; color: var(--fs-ink); margin: 0 0 6px; }
+.fs-admin-empty p { font-size: 14px; margin: 0; }
+
+/* Confirm dialog */
+.fs-confirm-overlay { position: fixed; inset: 0; background: rgba(15,23,42,0.5); display: flex; align-items: center; justify-content: center; z-index: 200; padding: 16px; backdrop-filter: blur(2px); }
+.fs-confirm-card { background: var(--fs-white); border-radius: var(--fs-radius); padding: 24px; max-width: 420px; width: 100%; box-shadow: 0 20px 50px rgba(0,0,0,0.2); }
+.fs-confirm-title { font-size: 16px; font-weight: 700; margin: 0 0 8px; letter-spacing: -0.01em; }
+.fs-confirm-message { font-size: 13px; color: var(--fs-ink-3); margin: 0 0 16px; line-height: 1.5; }
+.fs-confirm-reason { width: 100%; padding: 10px 12px; font-size: 13px; border: 1px solid var(--fs-line); border-radius: var(--fs-radius-sm); font-family: var(--fs-font); resize: vertical; outline: none; margin-bottom: 16px; }
+.fs-confirm-reason:focus { border-color: var(--fs-ink); }
+.fs-confirm-actions { display: flex; gap: 8px; justify-content: flex-end; }
+.fs-confirm-btn { padding: 8px 16px; font-size: 13px; font-weight: 500; border: 1px solid transparent; border-radius: var(--fs-radius-sm); cursor: pointer; font-family: var(--fs-font); }
+.fs-confirm-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.fs-confirm-btn-sm { padding: 6px 10px; font-size: 12px; }
+.fs-confirm-btn-secondary { background: var(--fs-white); color: var(--fs-ink); border-color: var(--fs-line); }
+.fs-confirm-btn-secondary:hover { background: var(--fs-bg); }
+.fs-confirm-btn-primary { background: var(--fs-ink); color: white; }
+.fs-confirm-btn-primary:hover:not(:disabled) { background: var(--fs-ink-2); }
+.fs-confirm-btn-destructive { background: #dc2626; color: white; }
+.fs-confirm-btn-destructive:hover:not(:disabled) { background: #b91c1c; }
+.fs-confirm-btn-feature { background: var(--fs-bg-2); color: var(--fs-ink); border-color: var(--fs-line); }
+
+/* Listing detail drawer */
+.fs-drawer-overlay { position: fixed; inset: 0; background: rgba(15,23,42,0.4); z-index: 150; display: flex; justify-content: flex-end; }
+.fs-drawer { width: 560px; max-width: 95vw; background: var(--fs-white); height: 100vh; display: flex; flex-direction: column; box-shadow: -8px 0 24px rgba(0,0,0,0.1); }
+.fs-drawer-head { display: flex; align-items: center; justify-content: space-between; padding: 20px 24px; border-bottom: 1px solid var(--fs-line); }
+.fs-drawer-eyebrow { font-size: 11px; color: var(--fs-ink-4); text-transform: uppercase; letter-spacing: 0.04em; margin: 0 0 4px; }
+.fs-drawer-title { font-size: 18px; font-weight: 700; margin: 0; letter-spacing: -0.01em; }
+.fs-drawer-close { background: none; border: none; font-size: 28px; color: var(--fs-ink-3); cursor: pointer; line-height: 1; padding: 0 8px; }
+.fs-drawer-body { flex: 1; overflow-y: auto; padding: 20px 24px; display: flex; flex-direction: column; gap: 18px; }
+.fs-drawer-row { display: flex; align-items: center; gap: 8px; }
+.fs-drawer-feat-pill { font-size: 11px; padding: 3px 10px; border-radius: var(--fs-radius-pill); background: #fef3c7; color: #92400e; font-weight: 600; }
+.fs-drawer-photos { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+.fs-drawer-photo { position: relative; aspect-ratio: 4 / 3; border-radius: var(--fs-radius-sm); overflow: hidden; background: var(--fs-bg-2); }
+.fs-drawer-no-photos { padding: 32px; text-align: center; color: var(--fs-ink-4); font-size: 13px; background: var(--fs-bg); border-radius: var(--fs-radius-sm); }
+.fs-drawer-specs { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin: 0; }
+.fs-drawer-specs > div { display: flex; flex-direction: column; gap: 2px; }
+.fs-drawer-specs dt { font-size: 11px; color: var(--fs-ink-4); text-transform: uppercase; letter-spacing: 0.04em; margin: 0; }
+.fs-drawer-specs dd { font-size: 13px; color: var(--fs-ink); margin: 0; }
+.fs-drawer-section h4 { font-size: 12px; color: var(--fs-ink-3); text-transform: uppercase; letter-spacing: 0.04em; margin: 0 0 6px; }
+.fs-drawer-section p { font-size: 13px; color: var(--fs-ink); margin: 0; line-height: 1.6; white-space: pre-wrap; }
+.fs-drawer-rejection { background: #fef2f2; border: 1px solid #fecaca; border-radius: var(--fs-radius-sm); padding: 12px 14px; }
+.fs-drawer-rejection h4 { font-size: 11px; color: #991b1b; text-transform: uppercase; letter-spacing: 0.04em; margin: 0 0 4px; }
+.fs-drawer-rejection p { font-size: 13px; color: #991b1b; margin: 0; }
+.fs-drawer-actions { padding: 16px 24px; border-top: 1px solid var(--fs-line); display: flex; gap: 8px; flex-wrap: wrap; background: var(--fs-bg); }
+.fs-drawer-btn { padding: 8px 16px; font-size: 13px; font-weight: 500; border: 1px solid transparent; border-radius: var(--fs-radius-sm); cursor: pointer; font-family: var(--fs-font); }
+.fs-drawer-btn-primary { background: var(--fs-ink); color: white; }
+.fs-drawer-btn-secondary { background: var(--fs-white); color: var(--fs-ink); border-color: var(--fs-line); }
+.fs-drawer-btn-destructive { background: #dc2626; color: white; }
+.fs-drawer-btn-feature { background: var(--fs-bg-2); color: var(--fs-ink); border-color: var(--fs-line); margin-right: auto; }
+.fs-drawer-reject { width: 100%; }
+.fs-drawer-reject textarea { width: 100%; padding: 10px 12px; font-size: 13px; border: 1px solid var(--fs-line); border-radius: var(--fs-radius-sm); font-family: var(--fs-font); resize: vertical; outline: none; margin-bottom: 8px; }
+.fs-drawer-reject-actions { display: flex; gap: 8px; justify-content: flex-end; }
+
+/* News editor */
+.fs-news-editor { padding: 24px; display: flex; flex-direction: column; gap: 14px; }
+.fs-news-editor-head { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
+.fs-news-editor-head h3 { font-size: 16px; font-weight: 700; margin: 0; }
+.fs-news-editor-actions { display: flex; gap: 8px; }
+.fs-news-editor-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+.fs-news-editor-grid label { display: flex; flex-direction: column; gap: 4px; }
+.fs-news-editor-publish { display: flex; align-items: center; gap: 8px; font-size: 13px; }
+
+/* Dealer apply form */
+.fs-dealer-apply { padding: 20px; max-width: 480px; display: flex; flex-direction: column; gap: 10px; }
+.fs-dealer-apply h3 { font-size: 16px; font-weight: 700; margin: 0 0 4px; }
+.fs-dealer-apply-sub { font-size: 12px; color: var(--fs-ink-3); margin: 0 0 8px; line-height: 1.5; }
+.fs-dealer-apply.done { padding: 32px 20px; text-align: center; background: #dcfce7; border-radius: var(--fs-radius); }
+.fs-dealer-apply.done h3 { color: #166534; margin-bottom: 6px; }
+.fs-dealer-apply.done p { font-size: 13px; color: #065f46; margin: 0; line-height: 1.5; }
+
+/* ─────────────────────────────────────────────────────────────────────
+   LOGIN LAYOUT — split-screen (brand left, form right) on desktop;
+   form-only on mobile. Adds the .fs-login-* classes the JSX has been
+   referencing without any CSS backing — pre-existing bug that left the
+   page rendering as orphan text on mobile (and bare on desktop).
+   ───────────────────────────────────────────────────────────────────── */
+
+.fs-login-shell {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  min-height: calc(100vh - 64px);
+  background: var(--fs-bg);
+}
+.fs-login-brand {
+  background: var(--fs-ink);
+  color: var(--fs-white);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 56px 48px;
+}
+.fs-login-brand-inner { max-width: 360px; }
+.fs-login-brand-wordmark {
+  font-size: 32px; font-weight: 800;
+  letter-spacing: -0.03em;
+  margin-bottom: 14px;
+  color: var(--fs-white);
+}
+.fs-login-brand-tagline {
+  font-size: 16px;
+  color: rgba(255, 255, 255, 0.72);
+  line-height: 1.45;
+  letter-spacing: -0.01em;
+  margin: 0;
+}
+.fs-login-form-col {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 48px 32px;
+}
+.fs-login-form-inner {
+  width: 100%;
+  max-width: 440px;
+}
+
+/* Mobile: brand panel hides; form takes full width. The visual hero on
+   mobile is the page nav + the "Welcome back" h1 already inside the form
+   panel — the brand panel's "FlightSales / Australia's marketplace" line
+   is decorative redundancy on a small screen. */
+@media (max-width: 768px) {
+  .fs-login-shell { grid-template-columns: 1fr; min-height: auto; }
+  .fs-login-brand { display: none; }
+  .fs-login-form-col { padding: 24px 20px 48px; }
+}
+
+/* ─────────────────────────────────────────────────────────────────────
+   DASHBOARD HERO + SHELL
+   The hero used to inherit .fs-about-hero (light bg) while its inline
+   styles assumed a dark bg — so "Member since 2026" and the Logout
+   button rendered as white-on-light. New rules paint the hero ink-dark
+   and stack hero + actions on mobile so the two CTAs don't collide.
+   The desktop sidebar collapses to a horizontal tab strip below 768px
+   so the main column doesn't get squashed off-screen.
+   ───────────────────────────────────────────────────────────────────── */
+
+.fs-dash-hero {
+  background: var(--fs-ink);
+  color: var(--fs-white);
+  padding: 40px 0;
+}
+.fs-dash-hero h1 { color: var(--fs-white); margin-bottom: 6px; font-size: 28px; letter-spacing: -0.02em; }
+.fs-dash-hero p { color: rgba(255,255,255,0.72); font-size: 15px; margin: 0; line-height: 1.4; }
+.fs-dash-hero-row {
+  display: flex; align-items: center; justify-content: space-between; gap: 24px;
+}
+.fs-dash-hero-id { display: flex; align-items: center; gap: 20px; min-width: 0; }
+.fs-dash-hero-id img { width: 72px; height: 72px; border-radius: 50%; border: 3px solid var(--fs-white); flex-shrink: 0; }
+.fs-dash-hero-actions { display: flex; gap: 12px; flex-shrink: 0; }
+.fs-dash-hero-btn {
+  padding: 12px 20px; border-radius: var(--fs-radius-sm);
+  font-size: 14px; font-weight: 600; cursor: pointer;
+  font-family: var(--fs-font); border: 1px solid transparent;
+  white-space: nowrap;
+}
+.fs-dash-hero-btn.primary { background: var(--fs-white); color: var(--fs-ink); }
+.fs-dash-hero-btn.primary:hover { background: var(--fs-bg-2); }
+.fs-dash-hero-btn.ghost {
+  background: rgba(255,255,255,0.08);
+  border-color: rgba(255,255,255,0.2);
+  color: var(--fs-white);
+}
+.fs-dash-hero-btn.ghost:hover { background: rgba(255,255,255,0.16); }
+
+@media (max-width: 768px) {
+  .fs-dash-hero { padding: 24px 0; }
+  .fs-dash-hero-row { flex-direction: column; align-items: stretch; gap: 16px; }
+  .fs-dash-hero-id img { width: 56px; height: 56px; }
+  .fs-dash-hero h1 { font-size: 22px; }
+  .fs-dash-hero-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .fs-dash-hero-btn { padding: 10px 14px; text-align: center; justify-content: center; display: flex; align-items: center; }
+}
+
+/* Shell — sidebar + main content. minmax(0, 1fr) on the main cell so
+   long content (tables, etc.) can't push the column wider than its
+   slice; > * { min-width: 0 } enforces the same on whatever wrapper
+   the JSX puts in the cell. */
+.fs-dash-shell {
+  display: grid;
+  grid-template-columns: 260px minmax(0, 1fr);
+  gap: 32px;
+  align-items: start;
+}
+.fs-dash-shell > * { min-width: 0; }
+
+/* Overview tab grids — minmax(0, …) so any long-text card content can't
+   blow the column wider than its share of the parent. Without it, a
+   "1fr" column can still grow past its slice if a child has implicit
+   min-width: auto (default for grid items). The min-width: 0 on direct
+   children is the same defence one layer down. */
+.fs-dash-overview-stats {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px; margin-bottom: 24px;
+}
+.fs-dash-overview-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+  gap: 24px;
+}
+.fs-dash-overview-stats > *,
+.fs-dash-overview-grid > * { min-width: 0; }
+@media (max-width: 768px) {
+  .fs-dash-overview-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+  .fs-dash-overview-grid { grid-template-columns: minmax(0, 1fr); gap: 16px; }
+}
+@media (max-width: 420px) {
+  .fs-dash-overview-stats { grid-template-columns: minmax(0, 1fr); }
+}
+
+/* Generic responsive grid utilities — for the dozens of "1fr 1fr form
+   pair" and "main + sidebar" layouts scattered across DashboardPage /
+   SellPage / LoginPage / EnquiryModal / QuickLookModal. All collapse to
+   a single column at <768px. minmax(0, …) and min-width: 0 on children
+   prevent content from pushing columns past their share. */
+.fs-grid-2 {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 12px;
+}
+.fs-grid-2 > * { min-width: 0; }
+.fs-grid-aside {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 320px;
+  gap: 24px;
+  align-items: start;
+}
+.fs-grid-aside > * { min-width: 0; }
+@media (max-width: 768px) {
+  .fs-grid-2 { grid-template-columns: minmax(0, 1fr); }
+  .fs-grid-aside { grid-template-columns: minmax(0, 1fr); gap: 16px; }
+}
+
+/* Mobile: sidebar becomes a horizontal scrolling tab strip; main below. */
+@media (max-width: 768px) {
+  .fs-dash-shell { grid-template-columns: minmax(0, 1fr); gap: 16px; }
+  .fs-dash-sidebar { position: relative; }
+  .fs-dash-sidebar > .fs-detail-specs { padding: 0 !important; }
+  /* Hide the "Account Type" header card on mobile — info is duplicated in
+     the hero below the welcome line, and the sidebar is a tab strip now. */
+  .fs-dash-sidebar > .fs-detail-specs > div:first-child { display: none; }
+  /* Nav becomes a horizontal scrolling row */
+  .fs-dash-sidebar nav {
+    display: flex;
+    flex-direction: row;
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    padding: 8px 4px;
+    gap: 4px;
+    border-bottom: 1px solid var(--fs-line);
+  }
+  .fs-dash-sidebar nav::-webkit-scrollbar { display: none; }
+  /* Each section group sits inline */
+  .fs-dash-sidebar nav > div { display: flex; flex-direction: row; gap: 4px; flex-shrink: 0; }
+  /* Section headers ("MY SELLING", "MY BUYING") are hidden on mobile —
+     the tab labels alone are enough at this breakpoint. */
+  .fs-dash-sidebar nav > div > p { display: none; }
+  /* Item buttons become horizontal tab pills */
+  .fs-dash-sidebar nav button {
+    flex-shrink: 0;
+    white-space: nowrap;
+    /* Inline `width: 100%` from the JSX won at desktop spec but breaks the
+       horizontal tab strip — each button was trying to fill 100% of the
+       parent, so only one fit per viewport. Force auto width here. */
+    width: auto !important;
+    border-left: none !important;
+    border-radius: var(--fs-radius-pill) !important;
+    padding: 8px 14px !important;
+    background: var(--fs-bg-2) !important;
+    border: 1px solid transparent !important;
+    font-size: 13px !important;
+  }
+  /* The inner label span has flex: 1 inline — release it so the pill
+     hugs its content instead of stretching arbitrarily. */
+  .fs-dash-sidebar nav button > span:nth-child(2) { flex: 0 0 auto !important; }
+  .fs-dash-sidebar nav button[style*="3px solid"] {
+    background: var(--fs-ink) !important;
+    color: var(--fs-white) !important;
+  }
+  .fs-dash-sidebar nav button[style*="3px solid"] span { color: var(--fs-white) !important; }
+}
+
+/* ============================================================
+   HERO SEARCH — PRO VARIANT (the 2026 redraw)
+   Sits side-by-side with the Classic card; HeroVariantToggle
+   flips between them via localStorage. Self-contained block —
+   nothing here leaks into Classic styles.
+   ============================================================ */
+
+/* The fused glass card */
+.fs-h-card {
+  width: 100%;
+  max-width: 720px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 8px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.78);
+  backdrop-filter: blur(24px) saturate(140%);
+  -webkit-backdrop-filter: blur(24px) saturate(140%);
+  border: 1px solid rgba(10, 10, 10, 0.06);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.6),
+    0 1px 2px rgba(10, 10, 10, 0.04),
+    0 12px 40px -16px rgba(10, 10, 10, 0.12);
+  text-align: left;
+}
+
+/* AI input — sky-blue wash + sparkle + ⌘K hint */
+.fs-h-ai {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  border-radius: 14px;
+  background:
+    linear-gradient(90deg,
+      rgba(83, 170, 226, 0.07) 0%,
+      rgba(83, 170, 226, 0.03) 50%,
+      rgba(255, 255, 255, 0) 90%);
+  border: 1px solid rgba(83, 170, 226, 0.18);
+  transition: border-color 160ms ease, box-shadow 160ms ease;
+  cursor: text;
+}
+.fs-h-ai:focus-within {
+  border-color: var(--fs-accent);
+  box-shadow: 0 0 0 4px var(--fs-accent-ring);
+}
+.fs-h-ai-spark {
+  width: 20px;
+  height: 20px;
+  color: var(--fs-accent);
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+.fs-h-ai-input {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  background: transparent;
+  font: 500 15px/1.2 inherit;
+  color: var(--fs-ink, #0a0a0a);
+  outline: none;
+}
+.fs-h-ai-input::placeholder {
+  color: #6b7280;
+  font-weight: 400;
+}
+.fs-h-kbd {
+  font: 500 11px/1 ui-monospace, SFMono-Regular, monospace;
+  color: #6b7280;
+  background: rgba(10, 10, 10, 0.04);
+  border: 1px solid rgba(10, 10, 10, 0.08);
+  border-radius: 6px;
+  padding: 3px 6px;
+  flex-shrink: 0;
+}
+
+/* Field rows — one surface, hairline dividers */
+.fs-h-row {
+  display: grid;
+  background: #fff;
+  border: 1px solid rgba(10, 10, 10, 0.06);
+  border-radius: 14px;
+  overflow: hidden;
+}
+.fs-h-row-3 { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr); }
+.fs-h-row-2 { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+.fs-h-row > * + * {
+  border-left: 1px solid rgba(10, 10, 10, 0.06);
+}
+
+.fs-h-field {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 12px 16px;
+  background: transparent;
+  border: 0;
+  text-align: left;
+  cursor: pointer;
+  min-width: 0;
+  transition: background 120ms ease;
+}
+.fs-h-field:hover { background: rgba(10, 10, 10, 0.025); }
+.fs-h-field:focus-within { background: rgba(10, 10, 10, 0.035); }
+
+.fs-h-field-label {
+  font: 600 10px/1 -apple-system, system-ui, sans-serif;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #6b7280;
+}
+.fs-h-field-value {
+  font: 600 15px/1.2 -apple-system, system-ui, sans-serif;
+  color: var(--fs-ink, #0a0a0a);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.fs-h-field-value.muted {
+  color: #9ca3af;
+  font-weight: 500;
+}
+.fs-h-field-icon {
+  width: 14px;
+  height: 14px;
+  color: #6b7280;
+  flex-shrink: 0;
+  display: inline-flex;
+}
+
+/* Native select sits transparent over the rendered label/value so
+   the platform picker still drives the field. */
+.fs-h-field-native {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  border: 0;
+  background: transparent;
+}
+
+/* Range field — From — To selects */
+.fs-h-field-range { cursor: pointer; }
+.fs-h-range {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: center;
+  column-gap: 10px;
+}
+/* Each side of the range owns its own transparent native select so a tap
+   on the From cell only opens the From picker (not To). Text aligns
+   inward toward the dash so values bookend it evenly. */
+.fs-h-range-cell {
+  position: relative;
+  display: block;
+  min-width: 0;
+}
+.fs-h-range-cell:first-child .fs-h-range-text { text-align: right; padding-right: 2px; }
+.fs-h-range-cell:last-child  .fs-h-range-text { text-align: left;  padding-left: 2px; }
+.fs-h-range-text {
+  display: block;
+  font: 600 15px/1.2 -apple-system, system-ui, sans-serif;
+  color: var(--fs-ink, #0a0a0a);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.fs-h-range-text.muted {
+  color: #9ca3af;
+  font-weight: 500;
+}
+.fs-h-range-sep {
+  color: #d1d5db;
+  font-weight: 500;
+  font-size: 13px;
+}
+
+/* CTA row — Uber pattern: a snug solid-black "See prices" button on
+   the LEFT, with a small text-link to its right ("Log in to see your
+   recent activity"). Button hugs its content; no full-width fill. */
+.fs-h-cta-row {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  margin-top: 8px;
+  flex-wrap: wrap;
+}
+.fs-h-cta {
+  /* Snug pill-square: hugs content, no max-width sprawl */
+  width: auto;
+  padding: 0 22px;
+  height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  border: 0;
+  border-radius: 8px;          /* harder edges than the v2 pill */
+  background: var(--fs-ink);
+  color: #fff !important;
+  font: 600 14px/1 -apple-system, system-ui, sans-serif;
+  letter-spacing: -0.005em;
+  cursor: pointer;
+  transition: background 160ms ease;
+}
+.fs-h-cta:hover { background: #1a1a1a; }
+.fs-h-cta-count {
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+/* Side text-link — underlined, ink colour, no button chrome */
+.fs-h-cta-side {
+  font: 500 14px/1.3 -apple-system, system-ui, sans-serif;
+  color: var(--fs-ink);
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  text-decoration-thickness: 1px;
+  cursor: pointer;
+  transition: color 120ms ease;
+}
+.fs-h-cta-side:hover { color: var(--fs-ink-2); }
+
+/* Mobile — stack the 3-up row, keep 2-up for ranges, smaller padding */
+@media (max-width: 640px) {
+  .fs-h-card { padding: 6px; gap: 6px; border-radius: 18px; }
+  .fs-h-ai { padding: 13px 14px; }
+  .fs-h-row-3 { grid-template-columns: minmax(0, 1fr); }
+  .fs-h-row-3 > * + * {
+    border-left: 0;
+    border-top: 1px solid rgba(10, 10, 10, 0.06);
+  }
+  .fs-h-field { padding: 11px 14px; }
+  .fs-h-kbd { display: none; }
+}
+
+
+/* ============================================================
+   AIRCRAFT MAKE/MODEL PICKER — used on /sell
+   Two-stage typeahead (Make then Model). Each input has a
+   suggestion popup; picking a model surfaces a spec preview
+   row so the user knows the catalogue auto-filled the form.
+   ============================================================ */
+
+.fs-mmp { display: flex; flex-direction: column; gap: 12px; }
+
+.fs-mmp-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr);
+  gap: 12px;
+}
+@media (max-width: 640px) {
+  .fs-mmp-row { grid-template-columns: minmax(0, 1fr); }
+}
+
+.fs-mmp-field {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.fs-mmp-label {
+  font: 600 11px/1 -apple-system, system-ui, sans-serif;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--fs-ink-3, #6b7280);
+}
+.fs-mmp-input {
+  width: 100%;
+  height: 42px;
+  padding: 0 12px;
+  border: 1px solid var(--fs-line, #e5e7eb);
+  border-radius: 10px;
+  background: #fff;
+  font: 500 15px/1.2 -apple-system, system-ui, sans-serif;
+  color: var(--fs-ink, #0a0a0a);
+  outline: 0;
+  transition: border-color 120ms ease, box-shadow 120ms ease;
+}
+.fs-mmp-input:focus {
+  border-color: var(--fs-accent);
+  box-shadow: 0 0 0 3px var(--fs-accent-ring);
+}
+.fs-mmp-input::placeholder { color: #9ca3af; font-weight: 400; }
+
+.fs-mmp-pop {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  z-index: 30;
+  margin: 0;
+  padding: 4px;
+  list-style: none;
+  background: #fff;
+  border: 1px solid var(--fs-line, #e5e7eb);
+  border-radius: 10px;
+  box-shadow:
+    0 10px 30px -12px rgba(10, 10, 10, 0.18),
+    0 4px 8px -4px rgba(10, 10, 10, 0.06);
+  max-height: 320px;
+  overflow-y: auto;
+}
+.fs-mmp-opt {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 12px;
+  border: 0;
+  background: transparent;
+  border-radius: 8px;
+  text-align: left;
+  cursor: pointer;
+  transition: background 100ms ease;
+}
+.fs-mmp-opt:hover, .fs-mmp-opt:focus-visible {
+  background: rgba(10, 10, 10, 0.04);
+  outline: 0;
+}
+.fs-mmp-opt-name {
+  font: 500 14px/1.2 -apple-system, system-ui, sans-serif;
+  color: var(--fs-ink, #0a0a0a);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.fs-mmp-opt-meta {
+  font: 500 12px/1 -apple-system, system-ui, sans-serif;
+  color: var(--fs-ink-3, #6b7280);
+  font-variant-numeric: tabular-nums;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+.fs-mmp-opt-meta code {
+  font: 500 11px/1 ui-monospace, SFMono-Regular, monospace;
+  background: rgba(10, 10, 10, 0.05);
+  padding: 2px 5px;
+  border-radius: 4px;
+  color: var(--fs-ink, #0a0a0a);
+}
+
+.fs-mmp-specs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px 18px;
+  padding: 10px 14px;
+  background: var(--fs-bg-2, #f6f6f7);
+  border: 1px solid var(--fs-line, #e5e7eb);
+  border-radius: 10px;
+}
+.fs-mmp-spec { display: inline-flex; flex-direction: column; gap: 2px; min-width: 0; }
+.fs-mmp-spec-label {
+  font: 600 10px/1 -apple-system, system-ui, sans-serif;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--fs-ink-3, #6b7280);
+}
+.fs-mmp-spec-value {
+  font: 600 13px/1.2 -apple-system, system-ui, sans-serif;
+  color: var(--fs-ink, #0a0a0a);
+  font-variant-numeric: tabular-nums;
+}
+
+.fs-mmp-fallback {
+  align-self: flex-start;
+  padding: 6px 0;
+  border: 0;
+  background: transparent;
+  font: 500 13px/1 -apple-system, system-ui, sans-serif;
+  color: var(--fs-ink-3, #6b7280);
+  cursor: pointer;
+  transition: color 120ms ease;
+}
+.fs-mmp-fallback:hover { color: var(--fs-ink, #0a0a0a); }
+
+/* ============================================================
+   MAKE / MODEL TREE — nested filter on /buy
+   When a make is ticked, its models step out indented below it.
+   ============================================================ */
+.fs-mmt-make { display: flex; flex-direction: column; }
+.fs-mmt-models {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin: 4px 0 6px 16px;
+  padding-left: 10px;
+  border-left: 1px solid var(--fs-line);
+}
+.fs-mmt-model {
+  font-size: 13px;
+  padding-left: 4px;
+}
+.fs-mmt-model .fs-fc-checkrow-label { color: var(--fs-ink-2); }
+.fs-mmt-more { padding-left: 4px; font-size: 12px; }
+
+/* ============================================================
+   BUSINESS ONBOARDING — full-screen wizard for new business signups
+   ============================================================ */
+.fs-onboard-shell {
+  min-height: calc(100vh - 64px);
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 48px 16px;
+  background: var(--fs-bg-2);
+}
+.fs-onboard-card {
+  width: 100%;
+  max-width: 640px;
+  background: var(--fs-white);
+  border: 1px solid var(--fs-line);
+  border-radius: 16px;
+  padding: 32px 36px;
+  box-shadow: 0 1px 3px rgba(10,10,10,0.04);
+}
+.fs-onboard-header { margin-bottom: 28px; }
+.fs-onboard-eyebrow {
+  display: inline-block;
+  font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase;
+  color: var(--fs-accent); font-weight: 600;
+  margin-bottom: 8px;
+}
+.fs-onboard-header h1 {
+  font-family: var(--fs-font);
+  font-size: 26px; font-weight: 700;
+  letter-spacing: -0.025em; color: var(--fs-ink);
+  margin: 0 0 8px;
+}
+.fs-onboard-header p {
+  color: var(--fs-ink-3); font-size: 14px; line-height: 1.5;
+}
+.fs-onboard-form { display: flex; flex-direction: column; gap: 16px; }
+.fs-onboard-error {
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #991b1b;
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-size: 13px;
+}
+.fs-onboard-actions {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-top: 8px; gap: 12px;
+}
+.fs-onboard-skip {
+  background: none; border: 0;
+  color: var(--fs-ink-3); font-size: 13px;
+  cursor: pointer; padding: 0; font-weight: 500;
+}
+.fs-onboard-skip:hover { color: var(--fs-ink); }
+.fs-onboard-submit {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: var(--fs-accent); color: #fff;
+  border: 0; border-radius: 10px;
+  padding: 12px 22px;
+  font-size: 14px; font-weight: 600; letter-spacing: -0.005em;
+  cursor: pointer;
+  transition: background 160ms ease, box-shadow 160ms ease;
+}
+.fs-onboard-submit:hover:not(:disabled) {
+  background: var(--fs-accent-700);
+  box-shadow: 0 0 0 3px var(--fs-accent-ring);
+}
+.fs-onboard-submit:disabled { opacity: 0.6; cursor: not-allowed; }
+.fs-onboard-foot {
+  margin-top: 24px;
+  font-size: 12px; color: var(--fs-ink-4);
+  text-align: center;
+}
+
+/* ============================================================
+   PENDING REVIEW BANNER — global "your application is under review"
+   ============================================================ */
+.fs-pending-banner {
+  background: var(--fs-accent-50);
+  border-bottom: 1px solid var(--fs-accent-100);
+  font-size: 13px;
+}
+.fs-pending-banner-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 10px 24px;
+  display: flex; align-items: center; gap: 12px;
+}
+.fs-pending-banner-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--fs-accent);
+  animation: fs-pulse 2s infinite ease-in-out;
+  flex-shrink: 0;
+}
+@keyframes fs-pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+.fs-pending-banner-text { flex: 1; color: var(--fs-ink-2); line-height: 1.4; }
+.fs-pending-banner-text strong { color: var(--fs-ink); font-weight: 600; }
+.fs-pending-banner-action {
+  background: transparent;
+  border: 1px solid var(--fs-accent);
+  color: var(--fs-accent-700);
+  border-radius: 999px;
+  padding: 4px 12px;
+  font-size: 12px; font-weight: 600;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.fs-pending-banner-action:hover { background: var(--fs-accent); color: #fff; }
+
+/* ============================================================
+   BUSINESS DASHBOARD STUB — plans grid
+   ============================================================ */
+.fs-dash-plans {
+  display: grid; gap: 16px;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+}
+.fs-dash-plan {
+  border: 1px solid var(--fs-line);
+  border-radius: 12px;
+  padding: 20px;
+  background: var(--fs-white);
+}
+.fs-dash-plan.on { border-color: var(--fs-accent); box-shadow: 0 0 0 3px var(--fs-accent-ring); }
+.fs-dash-plan h4 {
+  font-size: 16px; font-weight: 700; margin: 0 0 4px;
+  color: var(--fs-ink);
+}
+.fs-dash-plan-price {
+  font-size: 22px; font-weight: 700;
+  color: var(--fs-ink); margin: 4px 0 8px;
+  font-variant-numeric: tabular-nums;
+}
+.fs-dash-plan-desc {
+  font-size: 13px; color: var(--fs-ink-3);
+  line-height: 1.45; margin-bottom: 14px;
+}
+
+/* ============================================================
+   HERO V3 — Uber-style two-column layout
+   Left: H1 + subtitle + search card.  Right: aircraft illustration.
+   Mobile collapses to single column; the illustration is hidden so
+   the search remains the priority on small screens.
+   ============================================================ */
+.fs-hero-v3 {
+  /* Override the fs-hero centred layout so the v3 grid lays out edge-
+     to-edge inside its container instead of centred max-width content. */
+  text-align: left;
+  display: block;
+  padding: 56px 0 64px;
+  min-height: auto;
+}
+@media (max-width: 768px) {
+  .fs-hero-v3 { padding: 24px 0 32px; }
+}
+
+.fs-hero-v3-grid {
+  display: grid;
+  /* Left column hugs content (max 500px from .fs-h-stackform); right
+     column takes the rest. Keeps the search compact, illustration
+     gets the breathing room. */
+  grid-template-columns: minmax(0, 500px) minmax(0, 1fr);
+  gap: 56px;
+  align-items: start;
+  margin-bottom: 32px;
+}
+@media (max-width: 960px) {
+  .fs-hero-v3-grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 16px;
+  }
+  /* No illustration on mobile/tablet — center the search column so it
+     doesn't sit awkwardly left-aligned with empty space on the right. */
+  .fs-hero-v3-left .fs-h-stackform { margin-left: auto; margin-right: auto; }
+}
+@media (max-width: 480px) {
+  /* Phone — drop the max-width entirely so search uses full screen. */
+  .fs-hero-v3-left .fs-h-stackform { max-width: 100%; }
+}
+
+.fs-hero-v3-left h1 {
+  font-family: var(--fs-font);
+  font-size: clamp(40px, 5.4vw, 64px);
+  font-weight: 700;
+  line-height: 1.05;
+  letter-spacing: -0.04em;
+  color: var(--fs-ink);
+  margin: 0 0 16px;
+}
+.fs-hero-v3-left .fs-hero-sub {
+  font-size: 16px;
+  color: var(--fs-ink-3);
+  margin: 0 0 24px;
+  max-width: 520px;
+  line-height: 1.5;
+}
+
+/* Right column illustration — a stylised aircraft scene rendered as an
+   inline SVG. Hidden on mobile so the search card stays priority. */
+.fs-hero-v3-right {
+  display: flex;
+  justify-content: center;
+  align-items: stretch;
+}
+.fs-hero-illust {
+  width: 100%;
+  max-width: 540px;
+  aspect-ratio: 1 / 1;
+  height: auto;
+  display: block;
+}
+@media (max-width: 960px) {
+  .fs-hero-v3-right { display: none; }
+}
+
+/* Hero card override — left-align in v3 (was centred via flex-end in v2);
+   the card is the left column itself, no max-width centring needed. */
+.fs-hero-v3 .fs-h-card {
+  margin: 0;
+  max-width: none;
+  width: 100%;
+}
+
+/* ============================================================
+   STACKED ROWS — Uber-style pickup/dropoff pattern
+   Pin column (●) on the left + dotted connector between rows.
+   ============================================================ */
+/* The hero v3 form is just a layout container — no background, no
+   border, no shadow. The AI input and the CTA float on the page bg
+   as standalone elements; only the filter rows live in gray-tinted
+   cards (.fs-h-stack). Capped width so the search column doesn't
+   sprawl on wide screens. */
+.fs-h-stackform {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+  max-width: 500px;
+}
+
+/* Cards group — five individual cards stacked with consistent gaps.
+   The connector hairline runs through every card AND every gap so
+   the pins read as one continuous trail from Type → Location. */
+.fs-h-cards-group {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;          /* uniform gap between every card */
+}
+/* The single continuous connector. Spans from the first pin (centred
+   at ~25px from the cards-group top — first card top + half its
+   ~50px height) to the last pin (~25px from the bottom). Sits behind
+   the card backgrounds — pin halos cover it where each pin sits, the
+   line passes through the gaps in between, and inside cards the line
+   is visible above + below the pin (covered only by the halo). */
+.fs-h-cards-group::before {
+  content: '';
+  position: absolute;
+  left: 24px;
+  top: 25px;
+  bottom: 25px;
+  width: 1px;
+  background: rgba(10, 10, 10, 0.30);
+  /* z-index needs to be ABOVE the cards' bg so the line is visible
+     INSIDE cards too — pins' box-shadow halos still cover it where
+     they sit, so visually the line is unbroken from pin to pin. */
+  z-index: 1;
+  pointer-events: none;
+}
+@media (max-width: 480px) {
+  .fs-h-cards-group::before { left: 20px; }
+}
+
+/* Each card — soft-grey pill, no surrounding border. */
+.fs-h-stack {
+  position: relative;
+  background: var(--fs-bg-2, #f6f6f7);
+  border: 0;
+  border-radius: 14px;
+  padding: 0;
+  overflow: visible;
+}
+.fs-h-stack-row {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px;
+  cursor: pointer;
+  transition: background 120ms ease;
+  z-index: 1;
+}
+.fs-h-stack-row:hover { background: rgba(10, 10, 10, 0.04); }
+/* No row border — Uber uses background-fill spacing alone. */
+
+/* Default pin: small solid filled black dot for the in-between
+   rows (waypoints between pickup and dropoff). The halo covers
+   the line passing behind it. */
+/* Default waypoint dot — small filled black 5px circle on every
+   middle card (Type, Make, Year, Price). Halo covers the line passing
+   behind it. */
+.fs-h-stack-pin {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--fs-ink, #0a0a0a);
+  border: 0;
+  box-shadow: 0 0 0 4px var(--fs-bg-2, #f6f6f7);
+  flex-shrink: 0;
+  margin-left: 6px;     /* centres the 5px dot on the 1px line at x=24 */
+}
+/* Last card in the group → Location → black teardrop map-pin icon
+   instead of a plain dot/square. Reads instantly as "destination /
+   place". Inline SVG via background-image so we don't need to thread
+   an icon prop through SelectField. The element's box-shadow halo
+   still covers the connector line where it sits. */
+.fs-h-cards-group > .fs-h-stack:last-child .fs-h-stack-pin {
+  width: 13px;
+  height: 17px;
+  border-radius: 0;
+  margin-left: 2px;
+  background:
+    transparent
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%230a0a0a'><path d='M12 2C8 2 5 5 5 9c0 5 7 13 7 13s7-8 7-13c0-4-3-7-7-7zm0 9.5c-1.4 0-2.5-1.1-2.5-2.5S10.6 6.5 12 6.5s2.5 1.1 2.5 2.5-1.1 2.5-2.5 2.5z'/></svg>")
+    no-repeat center / contain;
+}
+.fs-h-stack-label {
+  font: 600 11px/1 -apple-system, system-ui, sans-serif;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--fs-ink-3);
+  width: 80px;
+  flex-shrink: 0;
+}
+.fs-h-stack-value {
+  flex: 1;
+  font: 500 15px/1.2 -apple-system, system-ui, sans-serif;
+  color: var(--fs-ink);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.fs-h-stack-value.muted { color: #9ca3af; font-weight: 400; }
+.fs-h-stack-chevron {
+  color: #9ca3af;
+  font-size: 14px;
+  flex-shrink: 0;
+}
+
+/* Range row — From — To inline. Values bookend the dash so a short
+   "1995 — 2024" reads cleanly without one cell drifting left while the
+   other floats away. Min cell text aligns right, max cell aligns left,
+   dash sits centred between. */
+.fs-h-stack-row-range .fs-h-stack-range {
+  flex: 1;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: center;
+  column-gap: 10px;
+  min-width: 0;
+}
+.fs-h-stack-row-range .fs-h-range-cell {
+  position: relative;
+  min-width: 0;
+}
+.fs-h-stack-row-range .fs-h-stack-value {
+  display: block;          /* override the flex from non-range rows */
+  font-variant-numeric: tabular-nums;
+}
+.fs-h-stack-row-range .fs-h-range-cell:first-child .fs-h-stack-value {
+  text-align: right;
+  padding-right: 2px;
+}
+.fs-h-stack-row-range .fs-h-range-cell:last-child .fs-h-stack-value {
+  text-align: left;
+  padding-left: 2px;
+}
+.fs-h-stack-row-range .fs-h-range-sep {
+  color: var(--fs-ink-4);
+  font-size: 13px;
+  line-height: 1;
+  user-select: none;
+}
+
+/* Stack-row mobile — drop label width so values fit */
+@media (max-width: 480px) {
+  /* Tighten the row chrome so 5+ rows fit comfortably on a phone. */
+  .fs-h-stack-label { width: 56px; font-size: 10px; }
+  .fs-h-stack-row { padding: 12px 12px; gap: 10px; }
+  /* Card-level connector tracks the new padding. */
+  .fs-h-stack:not(.fs-h-stack-solo)::before { left: 20px; }
+  .fs-h-stack.fs-h-stack-solo::before       { left: 20px; }
+  /* Smaller AI input padding so it doesn't dominate the phone. */
+  .fs-h-ai { padding: 12px 14px; }
+  .fs-h-stackform { gap: 8px; }
+  .fs-h-cards-group { gap: 8px; }
+}
+
+/* ============================================================
+   AFFILIATE PARTNER CARDS — listing detail + /partners directory
+   ============================================================ */
+.fs-affiliate-stack {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 12px;
+}
+.fs-affiliate-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 16px;
+}
+.fs-affiliate-card {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  grid-template-areas:
+    "logo body"
+    "logo cta";
+  align-items: center;
+  gap: 14px;
+  padding: 16px 18px;
+  background: var(--fs-white);
+  border: 1px solid var(--fs-line);
+  border-radius: 14px;
+  transition: border-color 160ms ease, box-shadow 160ms ease;
+}
+.fs-affiliate-card:hover {
+  border-color: var(--fs-accent);
+  box-shadow: 0 0 0 3px var(--fs-accent-ring);
+}
+.fs-affiliate-card-logo {
+  grid-area: logo;
+  width: 44px; height: 44px;
+  object-fit: contain;
+  background: #fff;
+  border: 1px solid var(--fs-line);
+  border-radius: 8px;
+  padding: 4px;
+}
+.fs-affiliate-card-logo-fallback {
+  display: grid; place-items: center;
+  background: var(--fs-bg-2);
+  color: var(--fs-ink-3);
+  font-weight: 700;
+}
+.fs-affiliate-card-body { grid-area: body; min-width: 0; }
+.fs-affiliate-card-eyebrow {
+  margin: 0 0 2px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--fs-accent-700);
+}
+.fs-affiliate-card-name {
+  margin: 0 0 4px;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--fs-ink);
+}
+.fs-affiliate-card-desc {
+  margin: 0;
+  font-size: 13px;
+  color: var(--fs-ink-3);
+  line-height: 1.4;
+}
+.fs-affiliate-card-cta {
+  grid-area: cta;
+  justify-self: start;
+  margin-top: 8px;
+  background: var(--fs-accent);
+  color: #fff !important;
+  border: 0;
+  padding: 8px 14px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 120ms ease;
+}
+.fs-affiliate-card-cta:hover { background: var(--fs-accent-700); }
+
+/* Admin sub-tabs (used inside AffiliatesTab to switch Partners ↔ Leads) */
+.fs-admin-subtabs {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 20px;
+  border-bottom: 1px solid var(--fs-line);
+}
+.fs-admin-subtab {
+  padding: 10px 14px;
+  background: none;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  cursor: pointer;
+  font: 600 14px/1 inherit;
+  color: var(--fs-ink-3);
+  transition: color 120ms ease, border-color 120ms ease;
+}
+.fs-admin-subtab.on {
+  color: var(--fs-ink);
+  border-bottom-color: var(--fs-accent);
+}
+.fs-admin-subtab:hover { color: var(--fs-ink); }
+
+/* ================================================================
+ * Bulk import (dealer dashboard)
+ * Drop zone, AI-cleaned preview grid, status flags, result panel.
+ * ================================================================ */
+.fs-bulk-drop {
+  border: 1.5px dashed var(--fs-line, #e6e6e6);
+  border-radius: 16px;
+  padding: 32px 24px;
+  background: var(--fs-bg-soft, #fafafa);
+  text-align: center;
+}
+.fs-bulk-drop-icon {
+  width: 44px; height: 44px; line-height: 40px;
+  border-radius: 50%;
+  background: #fff;
+  border: 1px solid var(--fs-line, #e6e6e6);
+  margin: 0 auto 8px;
+  font-size: 20px;
+  color: var(--fs-ink-3, #777);
+}
+.fs-bulk-textarea {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid var(--fs-line, #e6e6e6);
+  border-radius: 10px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 12.5px;
+  background: #fff;
+  resize: vertical;
+}
+.fs-bulk-textarea:focus {
+  outline: none;
+  border-color: var(--fs-ink, #111);
+}
+.fs-bulk-error {
+  color: var(--fs-warning, #c2410c);
+  font-size: 13px;
+  margin: 12px 0 0;
+}
+.fs-bulk-btn-secondary {
+  padding: 10px 18px;
+  border: 1px solid var(--fs-line, #e6e6e6);
+  background: #fff;
+  border-radius: 10px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 120ms ease, border-color 120ms ease;
+}
+.fs-bulk-btn-secondary:hover {
+  background: var(--fs-bg-soft, #fafafa);
+  border-color: var(--fs-ink-3, #777);
+}
+.fs-bulk-btn-secondary:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.fs-bulk-summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 12px 16px;
+  background: var(--fs-bg-soft, #fafafa);
+  border: 1px solid var(--fs-line, #e6e6e6);
+  border-radius: 10px;
+  margin-bottom: 12px;
+  font-size: 13.5px;
+  flex-wrap: wrap;
+}
+.fs-bulk-grid-wrap {
+  border: 1px solid var(--fs-line, #e6e6e6);
+  border-radius: 10px;
+  overflow: auto;
+  background: #fff;
+  max-width: 100%;
+}
+.fs-bulk-grid {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+.fs-bulk-grid thead th {
+  position: sticky;
+  top: 0;
+  background: var(--fs-bg-soft, #fafafa);
+  text-align: left;
+  font-weight: 600;
+  padding: 10px 8px;
+  border-bottom: 1px solid var(--fs-line, #e6e6e6);
+  white-space: nowrap;
+  z-index: 1;
+}
+.fs-bulk-grid td {
+  padding: 6px 8px;
+  border-bottom: 1px solid #f3f3f3;
+  vertical-align: middle;
+}
+.fs-bulk-row-warn td { background: #fff8ed; }
+.fs-bulk-row-info td { background: #f3f7ff; }
+.fs-bulk-row-off  td { opacity: 0.45; }
+
+.fs-bulk-cell {
+  width: 100%;
+  min-width: 80px;
+  padding: 6px 8px;
+  border: 1px solid transparent;
+  background: transparent;
+  border-radius: 6px;
+  font-size: 13px;
+  font-family: inherit;
+}
+.fs-bulk-cell:focus,
+.fs-bulk-cell:hover {
+  outline: none;
+  border-color: var(--fs-line, #e6e6e6);
+  background: #fff;
+}
+
+.fs-bulk-status {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+.fs-bulk-status-ok   { background: #e8f6ec; color: #1a7f37; }
+.fs-bulk-status-warn { background: #fef0d8; color: #b45309; }
+.fs-bulk-status-info { background: #e6efff; color: #1d4ed8; }
+.fs-bulk-ai-tag {
+  display: inline-block;
+  margin-left: 6px;
+  padding: 1px 6px;
+  background: #111;
+  color: #fff;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+.fs-bulk-hint {
+  margin-top: 10px;
+  font-size: 12.5px;
+  color: var(--fs-ink-3, #777);
+}
+
+@media (max-width: 720px) {
+  .fs-bulk-summary { flex-direction: column; align-items: stretch; }
+  .fs-bulk-grid    { font-size: 12px; }
+}
+
+/* ================================================================
+ * ABN verification card (dealer dashboard → Business profile)
+ * Single input + verify button + result panel + green badge.
+ * ================================================================ */
+.fs-abn-card {
+  border: 1px solid var(--fs-line, #e6e6e6);
+  border-radius: 14px;
+  padding: 24px;
+  background: #fff;
+  max-width: 720px;
+}
+.fs-abn-head {
+  display: flex; align-items: flex-start; justify-content: space-between;
+  gap: 16px; margin-bottom: 18px;
+}
+.fs-abn-title { font-size: 17px; font-weight: 600; margin: 0 0 4px; }
+.fs-abn-sub   { font-size: 13.5px; color: var(--fs-ink-3, #545454); margin: 0; line-height: 1.5; }
+.fs-abn-badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 5px 12px;
+  background: #e8f6ec;
+  color: #1a7f37;
+  border-radius: 999px;
+  font-size: 12px; font-weight: 700;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.fs-abn-row {
+  display: flex; gap: 10px; align-items: stretch;
+  margin-bottom: 12px;
+}
+.fs-abn-error {
+  margin: 4px 0 16px;
+  color: #c2410c;
+  font-size: 13px;
+}
+.fs-abn-result {
+  margin-top: 8px;
+  padding: 16px 18px;
+  border-radius: 10px;
+  border: 1px solid var(--fs-line, #e6e6e6);
+  background: var(--fs-bg-soft, #fafafa);
+}
+.fs-abn-result-ok   { border-color: #b6dfc1; background: #f3faf5; }
+.fs-abn-result-warn { border-color: #f3d4a0; background: #fff8ed; }
+.fs-abn-result dl {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px 24px;
+  margin: 0 0 6px;
+}
+.fs-abn-result dl > div { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.fs-abn-result dt {
+  font-size: 11.5px; font-weight: 600;
+  color: var(--fs-ink-3, #545454);
+  letter-spacing: 0.02em; text-transform: uppercase;
+}
+.fs-abn-result dd {
+  font-size: 14px; color: var(--fs-ink, #111);
+  margin: 0; word-break: break-word;
+}
+.fs-abn-hint {
+  margin: 12px 0 0;
+  font-size: 13px; color: #92400e;
+  line-height: 1.45;
+}
+.fs-abn-foot {
+  margin: 14px 0 0;
+  font-size: 12px; color: var(--fs-ink-4, #757575);
+  line-height: 1.45;
+}
+@media (max-width: 560px) {
+  .fs-abn-head    { flex-direction: column; }
+  .fs-abn-row     { flex-direction: column; }
+  .fs-abn-result dl { grid-template-columns: 1fr; gap: 8px; }
+}

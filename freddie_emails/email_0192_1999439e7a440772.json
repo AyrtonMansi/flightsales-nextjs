@@ -1,0 +1,415 @@
+{
+  "id": "1999439e7a440772",
+  "subject": "Rostron Carlyle Rojas Invoice - September 2025 | Ayrton Marcello Mansi - Nineteen First Avenue Development (RCR 107934)",
+  "from": "PR Assistant <pr.assistant@rcrlaw.com.au>",
+  "date": "Mon, 29 Sep 2025 06:31:06 +0000",
+  "snippet": "Dear Ayrton, We attach our invoice for work performed to date. Should you have any queries, please do not hesitate to contact us. \u200bRegards, \u200b PR Assistant Administration and Marketing Assistant P: +61",
+  "payload": {
+    "partId": "",
+    "mimeType": "multipart/mixed",
+    "filename": "",
+    "headers": [
+      {
+        "name": "Delivered-To",
+        "value": "ayrton@amansi.com.au"
+      },
+      {
+        "name": "Received",
+        "value": "by 2002:a5d:4e47:0:b0:3ec:df73:bf39 with SMTP id r7csp1508411wrt;        Sun, 28 Sep 2025 23:47:27 -0700 (PDT)"
+      },
+      {
+        "name": "X-Google-Smtp-Source",
+        "value": "AGHT+IEGkWemaAUpyYP0c+fgLWoozVwlXhmA7BpW4jzP3HtKSh1eBH47ItvIRj06shfh6ZOrKh8Q"
+      },
+      {
+        "name": "X-Received",
+        "value": "by 2002:a05:690c:25ca:b0:754:ee80:db85 with SMTP id 00721157ae682-763f9aa1013mr191621027b3.19.1759128446600;        Sun, 28 Sep 2025 23:47:26 -0700 (PDT)"
+      },
+      {
+        "name": "ARC-Seal",
+        "value": "i=2; a=rsa-sha256; t=1759128446; cv=pass;        d=google.com; s=arc-20240605;        b=SDDnDef0j7L4/3T91aTVB5LgaDlE3eB/LSTFU8GKW6p66dKam4VaS7HEHQKY7qS0hH         ewnOO4oD1rIMzGzRBtRgvV42PYaAKo7Ubk2Tfryhaw8xiTL+P0CbThdVHtRSjS22PRMY         3ul6JKnNukeU8oZ/2DcZB+8GxR/hUGcCeCJSzJPquEMI2N1uRG2J7OOmepT0Q+/5QsTT         esbkSq3IUbcge5pMoVLqZJrSgVlubJeWot+WMeu4Sf+GMIDx4DuPJ/eXnoeLc73M/MQt         lUR50oouIErzc2paey8U3smeLwp+X8491C38BsjXYNd7cyxOwUlPnCbgrWqjj+8lmu+P         uM8A=="
+      },
+      {
+        "name": "ARC-Message-Signature",
+        "value": "i=2; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;        h=mime-version:authentication-results-original:content-language         :accept-language:message-id:date:thread-index:thread-topic:subject         :cc:to:from:dkim-signature;        bh=AZeo6YDDCrDpapSi6sdF72NSyeZ0HskruNaPvtcIWeM=;        fh=OSV5/W0dW3bvs7N62/uds0WB3SFWGNEjXREaDZ9pCCw=;        b=ELPnmV3hGlUxWuP/4nf/Dn8qBFpGvuGB5qK91u6RLcoLW76yFGdxCNfBZwa0sr9iEi         9OwEi1Vs19jbFceUKV7zo67xjYb0kt9HDfthLLkjKRp/xUinHhiVi8V6/ctG60rZyxo7         kp9pK54gy7rsT9cYFzGzPHgLZYJYAXSmnzAJCta+OvVhSvjW82Ah+wielH959wIn2vmk         szVSoUNV1px255pRwjpkiM/Tcy4j52CMloux1eeLtfJvHItW2i7azoa5GkVJdYHEG/Es         uBv9Fpe9QHcjDxps5aeDk8VMxFZbSaQUCXAz5erAbFIw4x8dCfQRNH8s6vDNFpNrO8KF         MttA==;        dara=google.com"
+      },
+      {
+        "name": "ARC-Authentication-Results",
+        "value": "i=2; mx.google.com;       dkim=pass header.i=@rcrlaw.com.au header.s=selector1 header.b=D4kNPSPZ;       arc=pass (i=1 spf=pass spfdomain=rcrlaw.com.au dmarc=pass fromdomain=rcrlaw.com.au);       spf=pass (google.com: domain of pr.assistant@rcrlaw.com.au designates 2a01:111:f403:c40d::2 as permitted sender) smtp.mailfrom=pr.assistant@rcrlaw.com.au;       dmarc=pass (p=NONE sp=NONE dis=NONE) header.from=rcrlaw.com.au"
+      },
+      {
+        "name": "Return-Path",
+        "value": "<pr.assistant@rcrlaw.com.au>"
+      },
+      {
+        "name": "Received",
+        "value": "from SY2PR01CU004.outbound.protection.outlook.com (mail-australiaeastazlp170110002.outbound.protection.outlook.com. [2a01:111:f403:c40d::2])        by mx.google.com with ESMTPS id 956f58d0204a3-636d5b1c88dsi2865217d50.606.2025.09.28.23.47.24        for <ayrton@amansi.com.au>        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);        Sun, 28 Sep 2025 23:47:26 -0700 (PDT)"
+      },
+      {
+        "name": "Received-SPF",
+        "value": "pass (google.com: domain of pr.assistant@rcrlaw.com.au designates 2a01:111:f403:c40d::2 as permitted sender) client-ip=2a01:111:f403:c40d::2;"
+      },
+      {
+        "name": "Authentication-Results",
+        "value": "mx.google.com;       dkim=pass header.i=@rcrlaw.com.au header.s=selector1 header.b=D4kNPSPZ;       arc=pass (i=1 spf=pass spfdomain=rcrlaw.com.au dmarc=pass fromdomain=rcrlaw.com.au);       spf=pass (google.com: domain of pr.assistant@rcrlaw.com.au designates 2a01:111:f403:c40d::2 as permitted sender) smtp.mailfrom=pr.assistant@rcrlaw.com.au;       dmarc=pass (p=NONE sp=NONE dis=NONE) header.from=rcrlaw.com.au"
+      },
+      {
+        "name": "ARC-Seal",
+        "value": "i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none; b=kqY/WSv8pWNhxSjBxSuGJkTcdbgFsO8LuG8bgR8YUkndOXcIpNQtZuv58fRectuqx9fjw3/nRj3QlROv8Cd2MvnvcNOL+EQ8+6kII+ixGZAm8eHG+jUtliuzgS/OqJPIlWGn2uhBZb+75D51wxMUMHgMjsPi79xLnD+fWuaiIABU2MjNyh7tV57ef+Wq6XKGL/DMCdbFxe53eONp7hm1r1E3nUKpI2t198uUrrC4qMtjp2IhmUX9n7XqVv1ktMyVr0Upc7zEd9BfUXg5zj7A6RZhZTw5iyo1/3dlvmOj2CzYRepHzrtCKMl9r0rJWbuZip3im8VNxO2DVLizqL9ilA=="
+      },
+      {
+        "name": "ARC-Message-Signature",
+        "value": "i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; s=arcselector10001; h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1; bh=AZeo6YDDCrDpapSi6sdF72NSyeZ0HskruNaPvtcIWeM=; b=rjmWr33tqlOsU1dDe3qR2Gql+QZFndfRbI9/+8QApK9GmfwTtbhJz6jSF3f6SBxMxdfTLdQUiYLbV8ShloEuKNcMOvcSAcx0SNYtaj4DQMi5GcMa6HulNdoxry/8hgDuUXZiKQXxl3VzddbpeffnlihBPYmnSiBxiQWzxIP9TdjwEGfemd0hloGXiKMN1VLqGemEQRA9rQQxnZrAgo4nXZ5EU9GkD5szij1mD1NvhXJBVFG6/43hOiwIRwJmA+1nDMNAmdI3PR86rgakc8nXFyHaTAf9ILj0PxYrpKUsw1RqX/Mq00f9qKOduXxwJmrZor45QqE1ZAuGt/l7BIuzwQ=="
+      },
+      {
+        "name": "ARC-Authentication-Results",
+        "value": "i=1; mx.microsoft.com 1; spf=pass (sender ip is 104.210.80.79) smtp.rcpttodomain=amansi.com.au smtp.mailfrom=rcrlaw.com.au; dmarc=pass (p=none sp=none pct=100) action=none header.from=rcrlaw.com.au; dkim=none (message not signed); arc=none (0)"
+      },
+      {
+        "name": "DKIM-Signature",
+        "value": "v=1; a=rsa-sha256; c=relaxed/relaxed; d=rcrlaw.com.au; s=selector1; h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck; bh=AZeo6YDDCrDpapSi6sdF72NSyeZ0HskruNaPvtcIWeM=; b=D4kNPSPZ3fwLnwEa3WYEUoWpzHerAWra67lfC7P8L2+8eb2k1JaNjvJfs+3TKiA8U3Z6a95FPYlUCrXsN+2hM+ib/yUwpugVrqYRIqF5gABD+PvqaVPsn67O6iRlxuosOZ+2rgTPd7NpQr8jDZbfDDg1f1C8L1M5xIYV4Pg3JgFnePJFeV70jVx3Sxubl0j9nX9zLcuWops5Ghp6xSKztEdk6n48NDT7bHQh7AOnSZst7a9glESa861RVfuqjpSOVnpUKXv7ZRHOhONVQBk+n9W4URww3WMlf++68qzA49LdqIsZ/xyLbHmcPtQzETDaM/8CNhlryok9BMfEE/zNpQ=="
+      },
+      {
+        "name": "Received",
+        "value": "from SY0PR01CA0013.ausprd01.prod.outlook.com (2603:10c6:10:1bb::18) by SY4PR01MB5753.ausprd01.prod.outlook.com (2603:10c6:10:ff::7) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9160.17; Mon, 29 Sep 2025 06:31:14 +0000"
+      },
+      {
+        "name": "Received",
+        "value": "from SY2PEPF00004FF3.ausprd01.prod.outlook.com (2603:10c6:10:1bb:cafe::46) by SY0PR01CA0013.outlook.office365.com (2603:10c6:10:1bb::18) with Microsoft SMTP Server (version=TLS1_3, cipher=TLS_AES_256_GCM_SHA384) id 15.20.9160.17 via Frontend Transport; Mon, 29 Sep 2025 06:31:10 +0000"
+      },
+      {
+        "name": "X-MS-Exchange-Authentication-Results",
+        "value": "spf=pass (sender IP is 104.210.80.79) smtp.mailfrom=rcrlaw.com.au; dkim=none (message not signed) header.d=none;dmarc=pass action=none header.from=rcrlaw.com.au;"
+      },
+      {
+        "name": "Received-SPF",
+        "value": "Pass (protection.outlook.com: domain of rcrlaw.com.au designates 104.210.80.79 as permitted sender) receiver=protection.outlook.com; client-ip=104.210.80.79; helo=au1.smtp.exclaimer.net; pr=C"
+      },
+      {
+        "name": "Received",
+        "value": "from au1.smtp.exclaimer.net (104.210.80.79) by SY2PEPF00004FF3.mail.protection.outlook.com (10.167.241.5) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9160.9 via Frontend Transport; Mon, 29 Sep 2025 06:31:13 +0000"
+      },
+      {
+        "name": "Received",
+        "value": "from SY5PR01CU010.outbound.protection.outlook.com (40.93.136.10) by\t au1.smtp.exclaimer.net (104.210.80.79) with Exclaimer Signature Manager\t ESMTP Proxy au1.smtp.exclaimer.net (tlsversion=TLS12,\t tlscipher=TLS_DIFFIEHELLMAN_WITH_AES256_NONE); Mon, 29 Sep 2025 06:31:13\t +0000"
+      },
+      {
+        "name": "X-ExclaimerHostedSignatures-MessageProcessed",
+        "value": "true"
+      },
+      {
+        "name": "X-ExclaimerProxyLatency",
+        "value": "4401610"
+      },
+      {
+        "name": "X-ExclaimerImprintLatency",
+        "value": "1978643"
+      },
+      {
+        "name": "X-ExclaimerImprintAction",
+        "value": "abb4c5119f934c7babc94198ea9f173b"
+      },
+      {
+        "name": "Received",
+        "value": "from SYZPR01MB7465.ausprd01.prod.outlook.com (2603:10c6:10:16a::13) by MEWPR01MB8910.ausprd01.prod.outlook.com (2603:10c6:220:1f7::12) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9160.17; Mon, 29 Sep 2025 06:31:06 +0000"
+      },
+      {
+        "name": "Received",
+        "value": "from SYZPR01MB7465.ausprd01.prod.outlook.com ([fe80::a423:a321:71b4:83a4]) by SYZPR01MB7465.ausprd01.prod.outlook.com ([fe80::a423:a321:71b4:83a4%6]) with mapi id 15.20.9160.015; Mon, 29 Sep 2025 06:31:06 +0000"
+      },
+      {
+        "name": "From",
+        "value": "PR Assistant <pr.assistant@rcrlaw.com.au>"
+      },
+      {
+        "name": "To",
+        "value": "\"ayrton@amansi.com.au\" <ayrton@amansi.com.au>"
+      },
+      {
+        "name": "CC",
+        "value": "Amy Webster <a.webster@rcrlaw.com.au>, Pernnellee Balu <p.balu@rcrlaw.com.au>"
+      },
+      {
+        "name": "Subject",
+        "value": "Rostron Carlyle Rojas Invoice - September 2025 | Ayrton Marcello Mansi - Nineteen First Avenue Development (RCR 107934)"
+      },
+      {
+        "name": "Thread-Topic",
+        "value": "Rostron Carlyle Rojas Invoice - September 2025 | Ayrton Marcello Mansi - Nineteen First Avenue Development (RCR 107934)"
+      },
+      {
+        "name": "Thread-Index",
+        "value": "AdwxCu3+ne/MWuzxQNGrVWxXP9GATw=="
+      },
+      {
+        "name": "Date",
+        "value": "Mon, 29 Sep 2025 06:31:06 +0000"
+      },
+      {
+        "name": "Message-ID",
+        "value": "<SYZPR01MB74651B4F31233FBED2C8D767CE1BA@SYZPR01MB7465.ausprd01.prod.outlook.com>"
+      },
+      {
+        "name": "Accept-Language",
+        "value": "en-US"
+      },
+      {
+        "name": "Content-Language",
+        "value": "en-US"
+      },
+      {
+        "name": "X-MS-Has-Attach",
+        "value": "yes"
+      },
+      {
+        "name": "X-MS-TNEF-Correlator",
+        "value": ""
+      },
+      {
+        "name": "Authentication-Results-Original",
+        "value": "dkim=none (message not signed) header.d=none;dmarc=none action=none header.from=rcrlaw.com.au;"
+      },
+      {
+        "name": "x-ms-traffictypediagnostic",
+        "value": "SYZPR01MB7465:EE_|MEWPR01MB8910:EE_|SY2PEPF00004FF3:EE_|SY4PR01MB5753:EE_"
+      },
+      {
+        "name": "X-MS-Office365-Filtering-Correlation-Id",
+        "value": "a48f94ff-00b2-42d7-da39-08ddff21c990"
+      },
+      {
+        "name": "X-MS-Exchange-SenderADCheck",
+        "value": "1"
+      },
+      {
+        "name": "X-MS-Exchange-AntiSpam-Relay",
+        "value": "0"
+      },
+      {
+        "name": "X-Microsoft-Antispam-Untrusted",
+        "value": "BCL:0;ARA:13230040|1800799024|366016|376014|8096899003|19033499003|4053099003|38070700021|3613699012;"
+      },
+      {
+        "name": "X-Microsoft-Antispam-Message-Info-Original",
+        "value": "iyzYFjuZwzdprQ2pZTcBfChwQ39ZwSbd7Tp2P+TuHpm0fub0DPXo61t8clFkLiEQKSR3Ry5L30dJJvpu8n+RQFDENbGF6gCS0vKHgf0qO0VbH4gKUaeTrgopPzyFfCfW9rbBtWgfvLUSqzU+2YLFCXMKrqtQ2e3hn26FjuxJtRdk+tayoqnsEWUjrx79aG6hs7dhY49wpNnrKdP1aEkLodrrl3KlfuytEkuNJNdsmP47zBnvuQwgR6YzpDcZL2vMg9WGIGU2NPohoMmwQTwZOKTAh5dWxu4Wk8PFRUf9uqw08dHN2Lk3OE0/nwGIcetWrKMX1+bELFTSzDISHDZfVCiqu5kejg8SQFQNaMApgGJaash5fUTpohjdoXoXEHq0Im4oDGtEJHs9I9os8YgjotzPXNzmVFlRnhCyQCNBsDUnkDou9fmBk/JNzjLUVZoIGTCZiudYv/dmF+0AKLKRwGkcIvgfswwZoj2MFZZ1NBzgKx/2OkmiZOz5ssW0gzU2F3dHw/PT/pVdSLoNCLOF6X3Ng4aTB7Zf/nHTPuiiAVAtjQbeYxFlev0307Z1K8i4I9wEInEYy4DQn9LX9tQm1YPyV29WS76oSuQOjibxOxK4+A4zhmmSf1CXs/GGDkXMMRaJ3v/ON7BJ5qoih986OfO7Pos6jFZhn4BCfJqfZTm/xgaxTFpPBzKXJdsFJJB80dcljQ4riLaI5/xoNswZtQaWZHc1e7dvijIWEiQ2mLyO6Cry8Nmz1h6RiD8onPcbKgDT9Spkm3nM9oASfgk11hrB9VK38Lc+3psxop0rxxTCkM64mg1emTzjexMW5meZxnYYTutUkCon1OTFvZqAzSpR1LOTVBM1dNuGxbT+VmsMmdfAi1TxbkKfIO7ldCDznViO5kL5c9cewsUrU8v2e9gYzU04gEq0lRhYggcm7dnPt8M047Z+em3y2h3mupADG1OKOuTcLVlWNEkef+A5mb7+vc88N97Mjk7cbditQg/JMEC18xgBsVR1tAiJ6MUAKLB7A1RX842wnPISA1kEdXZX15q4kHW2vACIa24ZxHWN+GQ1Jv8B0eyFOkGcpq49W3H9x7ESBNK/uaBiRp4E6w/mFYVX6aJVPOktM28FgCpWv8AqAvOyu9gjYxiLNERCsBUSEWwE2yHnTGi2L5jkyCMYvU/GrmB1TPqWpujB11m60jSzY2/i8B5gwbL5nMtMf7je/28EMqqWE/hIYO9tHwg+DMCrDvmewSD/kuvOoCNSvWk2YWArF7RVieQmfH+zzGeLclYYXHHDSzJekGpXAKv1EoseNeLmjfUc3NmHvyjl20U41pP0Z4d4MIu2//qdfogT0hnFPaq/tS76gTKZJfn1Nenn2mVjzk+iQAfY0p7k6leHvZ1WsN3wP9SZPeVUOBZY98QCNH2MTWKXEXZJtv5ehRE7Uu+JdHP6Yzf1hPg="
+      },
+      {
+        "name": "X-Forefront-Antispam-Report-Untrusted",
+        "value": "CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SYZPR01MB7465.ausprd01.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(366016)(376014)(8096899003)(19033499003)(4053099003)(38070700021)(3613699012);DIR:OUT;SFP:1102;"
+      },
+      {
+        "name": "Content-Type",
+        "value": "multipart/mixed; boundary=\"_004_SYZPR01MB74651B4F31233FBED2C8D767CE1BASYZPR01MB7465ausp_\""
+      },
+      {
+        "name": "MIME-Version",
+        "value": "1.0"
+      },
+      {
+        "name": "X-MS-Exchange-Transport-CrossTenantHeadersStamped",
+        "value": "MEWPR01MB8910"
+      },
+      {
+        "name": "Return-Path",
+        "value": "pr.assistant@rcrlaw.com.au"
+      },
+      {
+        "name": "X-EOPAttributedMessage",
+        "value": "0"
+      },
+      {
+        "name": "X-MS-Exchange-Transport-CrossTenantHeadersStripped",
+        "value": "SY2PEPF00004FF3.ausprd01.prod.outlook.com"
+      },
+      {
+        "name": "X-MS-PublicTrafficType",
+        "value": "Email"
+      },
+      {
+        "name": "X-MS-Office365-Filtering-Correlation-Id-Prvs",
+        "value": "3c4e0b45-a2ba-4e98-2393-08ddff21c571"
+      },
+      {
+        "name": "X-Microsoft-Antispam",
+        "value": "BCL:0;ARA:13230040|36860700013|1800799024|376014|82310400026|14060799003|35042699022|8096899003|19033499003|4053099003|3613699012;"
+      },
+      {
+        "name": "X-Microsoft-Antispam-Message-Info",
+        "value": "vVz5qtWQybLAPkXjbpwT5rv9NSfFFtVhBcrXgrOyplksLHJyLBVPRxZSO+/hczNitKHVeRpfUOwnLw+HSA5+/5FRh/XEAQCYAOazDqac+7L8Ut+vP8IuCAZeILGMdnkvw0NzYplHBw7NCjdzZPyXtG+roaupccZ1hHURN0rP1S8D4s/0pfFtpsScCDu5GkzLMUWU6yi8vFEXxsDHrM9at6SBM81lLAWEjZt6C5P1CNuG40KDMKjZg1kINMsk6AjxI3Ct/c5wLk38w31QsJDsls5ozRC+VLJUZRRw5eO/NkUw1dCE3oOnOY/WjEztBa8Poj3ao8z9KLtnNW7x2Gk0Hai2M/TpnlBGQ/swDEvry+8+7KZ8eUyqgcFm+XX5sN8yxDjv8cbug2LoKlaSLlQp/RlEimwds9vbPDXms2H0nBzQASYG0ZE+W0gdCv7hBQndaS5QXk0xMu12U9RUWFrrjI9TYHYTCNdDMQqwZVBVfsmbRTrM2/t7WR6Xqzu6VlIIrukRAO8UPk2ABb2AaOH2FdS7BsitXWI78dRtMjcIP0dBm0dshqVG+F3Ysbh2ynME/ey87UxI/Qs+U7HAtCwjsnrh61zkHxlf2KvuigsGubT39u9U3IhL2hfEmvX3xfhoanhDFJBhVLHKL57n0+NsBFm8t+tDEgcNl2G0QIA5pVCUvGRWnJBlVJNAnhttWwN4j4FBcMjVyZOkNby69pY2XWYIbIU9pyGNsW16ff5GUHCfPQVqCwWVS2TIjRWwEVIG5mr6PFpQuNNwJyuWd5JiMnNFCWUO8HVW4hf/PLIFbzvTKhFGzjVYK3KeD58oKC69kastBw8eWXrHeakBnd633cC0Ut1LeLJmNcxDOyL92QPXF0pGQ5zEYPnED/j25zmR128NCQkS9ZzOQbrPF9gQ6UH6qZXloW+igiMux1BHHDEHiqNkDmzAd+vjMocDLlc5J+orbFO75E9+wJU7eDEix+HSi7lq85D+KBQod/UsQMEFQy5IycsSk8Pc+DnsYBu2ND+Ul05USx+xf9eK06kGUiBLx7KBv0l9DSBTEPs04YOzx3WxjtV01KDM2Pu0W2FCgDO8uQaGm+bZLLnvJEr9iqlJVLNQheheveRjIBIPFIIAelO3TkeW1ml3XaJsJEZPxZ+wq2WOEgKO4ls0Ydj0B9zqJ2X8FmD/lCq62qW6WNMW29Fly2dM8nchzsAsyacS2hD8toRDRD4h5dZqMN/yvXaBXXne+DF/tKXs1QzhhD/FJ3nY5c28dwPVNe9SemX9r7uJRZK7iCud2P/x58PtHtpyfhl45OtsWwBdFD+Q8pDEDZopzxp7WogMWZaVcKCwUtvpVazO/g271pe5mbOj58nr9lemt14PNq2fnOgYL7Er9MKu8vm9J+7WZMZO4pM7M1kMjOMHM7HEvtJJLcMfokLzNOFEPLqnBWzJS556AXt4weOnXNGIWhMxcEdlpmfI2DNigY9SnL2gjScFYfbIYQ=="
+      },
+      {
+        "name": "X-Forefront-Antispam-Report",
+        "value": "CIP:104.210.80.79;CTRY:AU;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:au1.smtp.exclaimer.net;PTR:au1.smtp.exclaimer.net;CAT:NONE;SFS:(13230040)(36860700013)(1800799024)(376014)(82310400026)(14060799003)(35042699022)(8096899003)(19033499003)(4053099003)(3613699012);DIR:OUT;SFP:1102;"
+      },
+      {
+        "name": "X-OriginatorOrg",
+        "value": "rcrlaw.com.au"
+      },
+      {
+        "name": "X-MS-Exchange-CrossTenant-OriginalArrivalTime",
+        "value": "29 Sep 2025 06:31:13.4956 (UTC)"
+      },
+      {
+        "name": "X-MS-Exchange-CrossTenant-Network-Message-Id",
+        "value": "a48f94ff-00b2-42d7-da39-08ddff21c990"
+      },
+      {
+        "name": "X-MS-Exchange-CrossTenant-Id",
+        "value": "14c1ea21-5e1b-4658-a720-b9d8354a2b44"
+      },
+      {
+        "name": "X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp",
+        "value": "TenantId=14c1ea21-5e1b-4658-a720-b9d8354a2b44;Ip=[104.210.80.79];Helo=[au1.smtp.exclaimer.net]"
+      },
+      {
+        "name": "X-MS-Exchange-CrossTenant-AuthSource",
+        "value": "SY2PEPF00004FF3.ausprd01.prod.outlook.com"
+      },
+      {
+        "name": "X-MS-Exchange-CrossTenant-AuthAs",
+        "value": "Anonymous"
+      },
+      {
+        "name": "X-MS-Exchange-CrossTenant-FromEntityHeader",
+        "value": "HybridOnPrem"
+      },
+      {
+        "name": "X-MS-Exchange-Transport-CrossTenantHeadersStamped",
+        "value": "SY4PR01MB5753"
+      }
+    ],
+    "body": {
+      "size": 0
+    },
+    "parts": [
+      {
+        "partId": "0",
+        "mimeType": "multipart/alternative",
+        "filename": "",
+        "headers": [
+          {
+            "name": "Content-Type",
+            "value": "multipart/alternative; boundary=\"_000_SYZPR01MB74651B4F31233FBED2C8D767CE1BASYZPR01MB7465ausp_\""
+          }
+        ],
+        "body": {
+          "size": 0
+        },
+        "parts": [
+          {
+            "partId": "0.0",
+            "mimeType": "text/plain",
+            "filename": "",
+            "headers": [
+              {
+                "name": "Content-Type",
+                "value": "text/plain; charset=utf-8"
+              },
+              {
+                "name": "Content-Transfer-Encoding",
+                "value": "quoted-printable"
+              }
+            ],
+            "body": {
+              "size": 657,
+              "data": "RGVhciBBeXJ0b24sDQoNCldlIGF0dGFjaCBvdXIgaW52b2ljZSBmb3Igd29yayBwZXJmb3JtZWQgdG8gZGF0ZS4NCg0KU2hvdWxkIHlvdSBoYXZlIGFueSBxdWVyaWVzLCBwbGVhc2UgZG8gbm90IGhlc2l0YXRlIHRvIGNvbnRhY3QgdXMuDQoNCg0KDQrigItSZWdhcmRzLA0K4oCLDQpQUiBBc3Npc3RhbnQNCkFkbWluaXN0cmF0aW9uIGFuZCBNYXJrZXRpbmcgQXNzaXN0YW50DQpQOiAgICArNjEgNyAzMDA5IDg0NDQNCiAgICByY3JsYXcuY29tLmF1DQpEOiAgICArNjEgNyAzMDA5IDg0ODAgICAgTDE1LCAyNzAgQWRlbGFpZGUgU3QNCkU6ICAgIHByLmFzc2lzdGFudEByY3JsYXcuY29tLmF1ICAgIEJyaXNiYW5lIFFMRCA0MDAwDQoNCuKAi0lmIHlvdSByZWNlaXZlIHRoaXMgZW1haWwgYnkgbWlzdGFrZSwgcGxlYXNlIG5vdGlmeSB1cyBhbmQgZG8gbm90IG1ha2UgYW55IHVzZSBvZiB0aGUgDQplbWFpbC4gV2UgZG8gbm90IHdhaXZlIGFueSBwcml2aWxlZ2UsIGNvbmZpZGVudGlhbGl0eSBvciBjb3B5cmlnaHQgYXNzb2NpYXRlZCB3aXRoIGl0LiANCkxpYWJpbGl0eSBsaW1pdGVkIGJ5IGEgc2NoZW1lIGFwcHJvdmVkIHVuZGVyIHByb2Zlc3Npb25hbCBzdGFuZGFyZHMgbGVnaXNsYXRpb24gDQoocGVyc29uYWwgaW5qdXJ5IHdvcmsgZXhlbXB0ZWQpLg0K"
+            }
+          },
+          {
+            "partId": "0.1",
+            "mimeType": "multipart/related",
+            "filename": "",
+            "headers": [
+              {
+                "name": "Content-Type",
+                "value": "multipart/related; boundary=\"=-BvLoAtW0fxxQV19t8jekGw==\""
+              }
+            ],
+            "body": {
+              "size": 0
+            },
+            "parts": [
+              {
+                "partId": "0.1.0",
+                "mimeType": "text/html",
+                "filename": "",
+                "headers": [
+                  {
+                    "name": "Content-Type",
+                    "value": "text/html; charset=utf-8"
+                  },
+                  {
+                    "name": "Content-Transfer-Encoding",
+                    "value": "quoted-printable"
+                  }
+                ],
+                "body": {
+                  "size": 6261,
+                  "data": "PGh0bWwgeG1sbnM6bz0idXJuOnNjaGVtYXMtbWljcm9zb2Z0LWNvbTpvZmZpY2U6b2ZmaWNlIiB4bWxuczp3PSJ1cm46c2NoZW1hcy1taWNyb3NvZnQtY29tOm9mZmljZTp3b3JkIiB4bWxuczptPSJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL29mZmljZS8yMDA0LzEyL29tbWwiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy9UUi9SRUMtaHRtbDQwIj4NCjxoZWFkPg0KPG1ldGEgaHR0cC1lcXVpdj0iQ29udGVudC1UeXBlIiBjb250ZW50PSJ0ZXh0L2h0bWw7IGNoYXJzZXQ9dXRmLTgiPg0KPG1ldGEgbmFtZT0iR2VuZXJhdG9yIiBjb250ZW50PSJNaWNyb3NvZnQgV29yZCAxNSAoZmlsdGVyZWQgbWVkaXVtKSI-DQo8c3R5bGU-PCEtLQ0KLyogRm9udCBEZWZpbml0aW9ucyAqLw0KQGZvbnQtZmFjZQ0KCXtmb250LWZhbWlseToiQ2FtYnJpYSBNYXRoIjsNCglwYW5vc2UtMToyIDQgNSAzIDUgNCA2IDMgMiA0O30NCkBmb250LWZhY2UNCgl7Zm9udC1mYW1pbHk6Q2FsaWJyaTsNCglwYW5vc2UtMToyIDE1IDUgMiAyIDIgNCAzIDIgNDt9DQovKiBTdHlsZSBEZWZpbml0aW9ucyAqLw0KcC5Nc29Ob3JtYWwsIGxpLk1zb05vcm1hbCwgZGl2Lk1zb05vcm1hbA0KCXttYXJnaW46MGNtOw0KCWZvbnQtc2l6ZToxMS4wcHQ7DQoJZm9udC1mYW1pbHk6IkNhbGlicmkiLHNhbnMtc2VyaWY7DQoJbXNvLWxpZ2F0dXJlczpzdGFuZGFyZGNvbnRleHR1YWw7DQoJbXNvLWZhcmVhc3QtbGFuZ3VhZ2U6RU4tVVM7fQ0Kc3Bhbi5FbWFpbFN0eWxlMTcNCgl7bXNvLXN0eWxlLXR5cGU6cGVyc29uYWwtY29tcG9zZTsNCglmb250LWZhbWlseToiQ2FsaWJyaSIsc2Fucy1zZXJpZjsNCgljb2xvcjp3aW5kb3d0ZXh0O30NCi5Nc29DaHBEZWZhdWx0DQoJe21zby1zdHlsZS10eXBlOmV4cG9ydC1vbmx5Ow0KCWZvbnQtc2l6ZToxMS4wcHQ7DQoJbXNvLWZhcmVhc3QtbGFuZ3VhZ2U6RU4tVVM7fQ0KQHBhZ2UgV29yZFNlY3Rpb24xDQoJe3NpemU6NjEyLjBwdCA3OTIuMHB0Ow0KCW1hcmdpbjo3Mi4wcHQgNzIuMHB0IDcyLjBwdCA3Mi4wcHQ7fQ0KZGl2LldvcmRTZWN0aW9uMQ0KCXtwYWdlOldvcmRTZWN0aW9uMTt9DQotLT48L3N0eWxlPg0KPC9oZWFkPg0KPGJvZHkgbGFuZz0iSVQiIGxpbms9IiMwNTYzQzEiIHZsaW5rPSIjOTU0RjcyIiBzdHlsZT0id29yZC13cmFwOmJyZWFrLXdvcmQiPg0KPGRpdiBjbGFzcz0iV29yZFNlY3Rpb24xIj4NCjxwIGNsYXNzPSJNc29Ob3JtYWwiPjxzcGFuIGxhbmc9IkVOLUFVIj5EZWFyIEF5cnRvbiw8bzpwPjwvbzpwPjwvc3Bhbj48L3A-DQo8cCBjbGFzcz0iTXNvTm9ybWFsIj48c3BhbiBsYW5nPSJFTi1BVSI-PG86cD4mbmJzcDs8L286cD48L3NwYW4-PC9wPg0KPHAgY2xhc3M9Ik1zb05vcm1hbCI-PHNwYW4gbGFuZz0iRU4tQVUiPldlIGF0dGFjaCBvdXIgaW52b2ljZSBmb3Igd29yayBwZXJmb3JtZWQgdG8gZGF0ZS4mbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDs8bzpwPjwvbzpwPjwvc3Bhbj48L3A-DQo8cCBjbGFzcz0iTXNvTm9ybWFsIj48c3BhbiBsYW5nPSJFTi1BVSI-Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7IDxvOnA-PC9vOnA-PC9zcGFuPjwvcD4NCjxwIGNsYXNzPSJNc29Ob3JtYWwiPjxzcGFuIGxhbmc9IkVOLUFVIj5TaG91bGQgeW91IGhhdmUgYW55IHF1ZXJpZXMsIHBsZWFzZSBkbyBub3QgaGVzaXRhdGUgdG8gY29udGFjdCB1cy4NCjxvOnA-PC9vOnA-PC9zcGFuPjwvcD4NCjxwIGNsYXNzPSJNc29Ob3JtYWwiPjxzcGFuIGxhbmc9IkVOLUFVIj48bzpwPiZuYnNwOzwvbzpwPjwvc3Bhbj48L3A-DQo8L2Rpdj4NCjxkaXYgZGlyPSJsdHIiIHN0eWxlPSJtc28tbGluZS1oZWlnaHQtcnVsZTpleGFjdGx5Oy13ZWJraXQtdGV4dC1zaXplLWFkanVzdDoxMDAlO2ZvbnQtc2l6ZToxcHg7ZGlyZWN0aW9uOmx0cjsiPjx0YWJsZSBkaXI9Imx0ciIgY2VsbHBhZGRpbmc9IjAiIGNlbGxzcGFjaW5nPSIwIiBib3JkZXI9IjAiIHN0eWxlPSJ3aWR0aDoxMDAlO2RpcmVjdGlvbjpsdHI7Ym9yZGVyLWNvbGxhcHNlOmNvbGxhcHNlO2ZvbnQtc2l6ZToxcHg7Ij48dHIgc3R5bGU9ImZvbnQtc2l6ZToxNC42N3B4O2NvbG9yOiMwMDAwMDE7Zm9udC1zdHlsZTpub3JtYWw7Zm9udC13ZWlnaHQ6NDAwO3doaXRlLXNwYWNlOm5vd3JhcDsiPjx0ZCBhbGlnbj0ibGVmdCIgc3R5bGU9InZlcnRpY2FsLWFsaWduOnRvcDtmb250LWZhbWlseTpDYWxpYnJpLEFyaWFsLHNhbnMtc2VyaWY7Ij48YnIgLz4mIzgyMDM7UmVnYXJkcyw8YnIgLz4mIzgyMDM7PC90ZD48dGQgc3R5bGU9ImZvbnQtc2l6ZToxcHg7Ij48c3BhbiBzdHlsZT0iZm9udC1mYW1pbHk6cmVtaWFsY3hlc2Fucztmb250LXNpemU6MXB4O2NvbG9yOiNGRkZGRkY7bGluZS1oZWlnaHQ6MXB4OyI-JiM4MjAzOzxzcGFuIHN0eWxlPSJmb250LWZhbWlseTomIzM5O3RlbXBsYXRlLTQ3VEl4b1dGRWUyX2VxaU1QdUNqOVEmIzM5OzsiPiYjODIwMzs8L3NwYW4-PHNwYW4gc3R5bGU9ImZvbnQtZmFtaWx5OiYjMzk7em9uZS0xJiMzOTs7Ij4mIzgyMDM7PC9zcGFuPjxzcGFuIHN0eWxlPSJmb250LWZhbWlseTomIzM5O3pvbmVzLUFRJiMzOTs7Ij4mIzgyMDM7PC9zcGFuPjwvc3Bhbj48L3RkPjwvdHI-PHRyIHN0eWxlPSJmb250LXNpemU6MDsiPjx0ZCBhbGlnbj0ibGVmdCIgc3R5bGU9InZlcnRpY2FsLWFsaWduOnRvcDsiPjx0YWJsZSBjZWxscGFkZGluZz0iMCIgY2VsbHNwYWNpbmc9IjAiIGJvcmRlcj0iMCIgc3R5bGU9IndpZHRoOjEwMCU7Ym9yZGVyLWNvbGxhcHNlOmNvbGxhcHNlO2ZvbnQtc2l6ZTowO2NvbG9yOiMwMDAwMDE7Zm9udC1zdHlsZTpub3JtYWw7Zm9udC13ZWlnaHQ6NzAwO3doaXRlLXNwYWNlOm5vd3JhcDsiPjx0ciBzdHlsZT0iZm9udC1zaXplOjE0LjY3cHg7Ij48dGQgYWxpZ249ImxlZnQiIHN0eWxlPSJ2ZXJ0aWNhbC1hbGlnbjp0b3A7Zm9udC1mYW1pbHk6Q2FsaWJyaSxBcmlhbCxzYW5zLXNlcmlmOyI-UFImbmJzcDtBc3Npc3RhbnQ8L3RkPjwvdHI-PHRyIHN0eWxlPSJmb250LXNpemU6MTQuNjdweDtmb250LXdlaWdodDo0MDA7Ij48dGQgYWxpZ249ImxlZnQiIHN0eWxlPSJ2ZXJ0aWNhbC1hbGlnbjp0b3A7Zm9udC1mYW1pbHk6Q2FsaWJyaSxBcmlhbCxzYW5zLXNlcmlmOyI-QWRtaW5pc3RyYXRpb24mbmJzcDthbmQmbmJzcDtNYXJrZXRpbmcmbmJzcDtBc3Npc3RhbnQ8L3RkPjwvdHI-PC90YWJsZT48L3RkPjwvdHI-PHRyIHN0eWxlPSJmb250LXNpemU6MDtsaW5lLWhlaWdodDpub3JtYWw7Ij48dGQgYWxpZ249ImxlZnQiIHN0eWxlPSJ2ZXJ0aWNhbC1hbGlnbjp0b3A7Ij48aW1nIHNyYz0iY2lkOmltYWdlMDIyNzI0LnBuZ0A4QjA5RTkxMy5ENkZBOERENiIgd2lkdGg9IjMwMCIgaGVpZ2h0PSIxMjgiIGJvcmRlcj0iMCIgYWx0PSIiIHN0eWxlPSJ3aWR0aDozMDBweDttaW4td2lkdGg6MzAwcHg7bWF4LXdpZHRoOjMwMHB4O2hlaWdodDoxMjhweDttaW4taGVpZ2h0OjEyOHB4O21heC1oZWlnaHQ6MTI4cHg7Zm9udC1zaXplOjA7IiAvPjwvdGQ-PC90cj48dHIgc3R5bGU9ImZvbnQtc2l6ZTowOyI-PHRkIGFsaWduPSJsZWZ0IiBzdHlsZT0idmVydGljYWwtYWxpZ246dG9wOyI-PHRhYmxlIGNlbGxwYWRkaW5nPSIwIiBjZWxsc3BhY2luZz0iMCIgYm9yZGVyPSIwIiBzdHlsZT0iYm9yZGVyLWNvbGxhcHNlOmNvbGxhcHNlO2ZvbnQtc2l6ZTowO2NvbG9yOiMwMDAwMDE7Zm9udC1zdHlsZTpub3JtYWw7Zm9udC13ZWlnaHQ6NDAwO3doaXRlLXNwYWNlOm5vd3JhcDsiPjx0ciBzdHlsZT0iZm9udC1zaXplOjE0LjY3cHg7Ij48dGQgYWxpZ249ImxlZnQiIHN0eWxlPSJwYWRkaW5nOjA7dmVydGljYWwtYWxpZ246dG9wO2ZvbnQtZmFtaWx5OkNhbGlicmksQXJpYWwsc2Fucy1zZXJpZjtmb250LXdlaWdodDo3MDA7Ij5QOjwvdGQ-PHRkIGFsaWduPSJsZWZ0IiBzdHlsZT0icGFkZGluZzowO3ZlcnRpY2FsLWFsaWduOnRvcDtmb250LWZhbWlseTpDYWxpYnJpLEFyaWFsLHNhbnMtc2VyaWY7Ij4mbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsrNjEmbmJzcDs3Jm5ic3A7MzAwOSZuYnNwOzg0NDQ8YnIgLz48L3RkPjx0ZCBhbGlnbj0ibGVmdCIgc3R5bGU9InBhZGRpbmc6MDt2ZXJ0aWNhbC1hbGlnbjp0b3A7Zm9udC1mYW1pbHk6Q2FsaWJyaSxBcmlhbCxzYW5zLXNlcmlmOyI-Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7cmNybGF3LmNvbS5hdTxiciAvPjwvdGQ-PC90cj48dHIgc3R5bGU9ImZvbnQtc2l6ZToxNC42N3B4OyI-PHRkIGFsaWduPSJsZWZ0IiBzdHlsZT0icGFkZGluZzowO3ZlcnRpY2FsLWFsaWduOnRvcDtmb250LWZhbWlseTpDYWxpYnJpLEFyaWFsLHNhbnMtc2VyaWY7Zm9udC13ZWlnaHQ6NzAwOyI-RDo8L3RkPjx0ZCBhbGlnbj0ibGVmdCIgc3R5bGU9InBhZGRpbmc6MDt2ZXJ0aWNhbC1hbGlnbjp0b3A7Zm9udC1mYW1pbHk6Q2FsaWJyaSxBcmlhbCxzYW5zLXNlcmlmOyI-Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7PGEgaHJlZj0idGVsOis2MSUyMDclMjAzMDA5JTIwODQ4MCIgdGFyZ2V0PSJfYmxhbmsiIGlkPSJMUGxuazY4OTcxMyIgc3R5bGU9InRleHQtZGVjb3JhdGlvbjpub25lO2NvbG9yOiMwMDAwMDE7Ij4rNjEmbmJzcDs3Jm5ic3A7MzAwOSZuYnNwOzg0ODA8L2E-PC90ZD48dGQgYWxpZ249ImxlZnQiIHN0eWxlPSJwYWRkaW5nOjA7dmVydGljYWwtYWxpZ246dG9wO2ZvbnQtZmFtaWx5OkNhbGlicmksQXJpYWwsc2Fucy1zZXJpZjsiPiZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwO0wxNSwmbmJzcDsyNzAmbmJzcDtBZGVsYWlkZSZuYnNwO1N0PGJyIC8-PC90ZD48L3RyPjx0ciBzdHlsZT0iZm9udC1zaXplOjE0LjY3cHg7Ij48dGQgYWxpZ249ImxlZnQiIHN0eWxlPSJwYWRkaW5nOjA7dmVydGljYWwtYWxpZ246dG9wO2ZvbnQtZmFtaWx5OkNhbGlicmksQXJpYWwsc2Fucy1zZXJpZjtmb250LXdlaWdodDo3MDA7Ij5FOjwvdGQ-PHRkIGFsaWduPSJsZWZ0IiBzdHlsZT0icGFkZGluZzowO3ZlcnRpY2FsLWFsaWduOnRvcDtmb250LWZhbWlseTpDYWxpYnJpLEFyaWFsLHNhbnMtc2VyaWY7Ij4mbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDs8YSBocmVmPSJtYWlsdG86cHIuYXNzaXN0YW50QHJjcmxhdy5jb20uYXUiIHRhcmdldD0iX2JsYW5rIiBpZD0iTFBsbms2ODk3MTMiIHN0eWxlPSJ0ZXh0LWRlY29yYXRpb246bm9uZTtjb2xvcjojMDAwMDAxOyI-cHIuYXNzaXN0YW50QHJjcmxhdy5jb20uYXU8L2E-PC90ZD48dGQgYWxpZ249ImxlZnQiIHN0eWxlPSJwYWRkaW5nOjA7dmVydGljYWwtYWxpZ246dG9wO2ZvbnQtZmFtaWx5OkNhbGlicmksQXJpYWwsc2Fucy1zZXJpZjsiPiZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwO0JyaXNiYW5lJm5ic3A7UUxEJm5ic3A7NDAwMDxiciAvPjwvdGQ-PC90cj48L3RhYmxlPjwvdGQ-PC90cj48dHIgc3R5bGU9ImZvbnQtc2l6ZToxNC42N3B4O2NvbG9yOiMwMDAwMDE7Zm9udC1zdHlsZTpub3JtYWw7Zm9udC13ZWlnaHQ6NDAwO3doaXRlLXNwYWNlOm5vcm1hbDsiPjx0ZCBhbGlnbj0ibGVmdCIgc3R5bGU9InZlcnRpY2FsLWFsaWduOnRvcDtmb250LWZhbWlseTpDYWxpYnJpLEFyaWFsLHNhbnMtc2VyaWY7Ij48c3BhbiBzdHlsZT0iZm9udC1zaXplOjhweDsiPjxiciAvPiYjODIwMztJZiB5b3UgcmVjZWl2ZSB0aGlzIGVtYWlsIGJ5IG1pc3Rha2UsIHBsZWFzZSBub3RpZnkgdXMgYW5kIGRvIG5vdCBtYWtlIGFueSB1c2Ugb2YgdGhlJm5ic3A7PC9zcGFuPjxzcGFuIHN0eWxlPSJmb250LXNpemU6OXB4OyI-PGJyIC8-PC9zcGFuPjxzcGFuIHN0eWxlPSJmb250LXNpemU6OHB4OyI-ZW1haWwuIFdlIGRvIG5vdCB3YWl2ZSBhbnkgcHJpdmlsZWdlLCBjb25maWRlbnRpYWxpdHkgb3IgY29weXJpZ2h0IGFzc29jaWF0ZWQgd2l0aCBpdC4mbmJzcDs8L3NwYW4-PGJyIC8-PHNwYW4gc3R5bGU9ImZvbnQtc2l6ZTo4cHg7Ij5MaWFiaWxpdHkgbGltaXRlZCBieSBhIHNjaGVtZSBhcHByb3ZlZCB1bmRlciBwcm9mZXNzaW9uYWwgc3RhbmRhcmRzIGxlZ2lzbGF0aW9uJm5ic3A7PC9zcGFuPjxiciAvPjxzcGFuIHN0eWxlPSJmb250LXNpemU6OHB4OyI-KHBlcnNvbmFsIGluanVyeSB3b3JrIGV4ZW1wdGVkKS48L3NwYW4-PGJyIC8-PC90ZD48L3RyPjwvdGFibGU-PC9kaXY-PC9ib2R5Pg0KPC9odG1sPg0K"
+                }
+              },
+              {
+                "partId": "0.1.1",
+                "mimeType": "image/png",
+                "filename": "image022724.png",
+                "headers": [
+                  {
+                    "name": "Content-Type",
+                    "value": "image/png; name=image022724.png"
+                  },
+                  {
+                    "name": "Content-Transfer-Encoding",
+                    "value": "base64"
+                  },
+                  {
+                    "name": "Content-ID",
+                    "value": "<image022724.png@8B09E913.D6FA8DD6>"
+                  },
+                  {
+                    "name": "Content-Description",
+                    "value": "image022724.png"
+                  },
+                  {
+                    "name": "Content-Disposition",
+                    "value": "inline; creation-date=\"Mon, 29 Sep 2025 06:31:13 +0000\"; filename=image022724.png; modification-date=\"Mon, 29 Sep 2025 06:31:13 +0000\"; size=25787"
+                  }
+                ],
+                "body": {
+                  "attachmentId": "ANGjdJ-YmwDX6Vabp0r1JOaDsBlgZhPORyQwEYwLYF4va3IA2r38Wfe5Cj-BG2lF03AiB7O7Yb-tv_nsRZ6tDGvfRni21Eg9bUwVqH82i5tSvwtXcgkF3re_I460TWG3_vJaMHFFX6eeNmy9yd78LhcpLMgKrOmCeQYCvBLx7dJroOSfWhv941XF_F7yEATlaNFzZDFvt7tRBZpkIpVsjZ-7P6ixsJhNnujvjYSmirMAgGFbkLQkhrr9vwWcdFj9HfMDm2k9H1zY4eFSly_M4Tt8aEGEUI-qhBP_RkO8SvqpnXcMIQA1WLDw_VfkmaaxlaYvRsMlRBD3GOpwrja2WztZZAOC11fa6-OYUSMdbKcvBoYqPjEiPUVW3ho2Bjdcaj4JYbLYlYXHTvFR39C1",
+                  "size": 25787
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "partId": "1",
+        "mimeType": "application/pdf",
+        "filename": "Invoice 138406 dated 29.09.2025.pdf",
+        "headers": [
+          {
+            "name": "Content-Type",
+            "value": "application/pdf; name=\"Invoice 138406 dated 29.09.2025.pdf\""
+          },
+          {
+            "name": "Content-Description",
+            "value": "Invoice 138406 dated 29.09.2025.pdf"
+          },
+          {
+            "name": "Content-Disposition",
+            "value": "attachment; filename=\"Invoice 138406 dated 29.09.2025.pdf\"; size=259645; creation-date=\"Mon, 29 Sep 2025 06:33:42 GMT\"; modification-date=\"Mon, 29 Sep 2025 06:31:06 GMT\""
+          },
+          {
+            "name": "Content-Transfer-Encoding",
+            "value": "base64"
+          }
+        ],
+        "body": {
+          "attachmentId": "ANGjdJ-1TBbxZYDgxprcfuWriZBltINk7f_nCGGct93Bf6FFugcJHgpTMygib3AtcNzaCmzYny8DzZluroHLgplgd70JoOaWaM5Xk92dcwoDffh8RKwCaAu57BxAvTM3r30kfofCV_10pCMDo4hI1mgZ6KMYpY3_cQv0cDNdxayneEIlnCv7ThyUDxV4E4BCJ1H_N3m1fyQs4yjSBCCRbSrYVfX5La1yETKnl_75uzg4DpuTEwWXMtMC_FDR9awxaJWwzwTycKlBxp4IO97IDPgTqG2SYaHrilyl8MHG-jWv9fYG59DUXUoQ3IrJAjorE6yaJvyATvm1ndOeN-W1LGTcJonkPIXmOZ6Q9FARfZzMKrtEWyCNI-Gb2QwsjQgwziFd_Qdxec3Rqt6k16DL",
+          "size": 259645
+        }
+      }
+    ]
+  }
+}

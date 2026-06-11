@@ -1,0 +1,134 @@
+{
+  "id": "19b5467c2c209763",
+  "subject": "New form submission on Webflow for Nineteen First Avenue",
+  "from": "Webflow forms <no-reply-forms@webflow.com>",
+  "date": "Thu, 25 Dec 2025 07:27:23 +0000",
+  "snippet": "You just received a new form submission on your website Nineteen First Avenue. Your Name: Henry Rzechta Email: hr18@bigpond.net.au Phone: 0418531456 Budget*: $4m - $4.5m field: Terms and Conditions:",
+  "payload": {
+    "partId": "",
+    "mimeType": "text/html",
+    "filename": "",
+    "headers": [
+      {
+        "name": "Delivered-To",
+        "value": "ayrton@amansi.com.au"
+      },
+      {
+        "name": "Received",
+        "value": "by 2002:a05:6000:1003:b0:432:5ca5:28c8 with SMTP id a3csp2149856wrx;        Wed, 24 Dec 2025 23:27:25 -0800 (PST)"
+      },
+      {
+        "name": "X-Google-Smtp-Source",
+        "value": "AGHT+IGtU5bXzClUc0Sl0qi1KdWuGuD6jBISql194FPnaHDVkcWUgxs47pMElD1Di4jxpkR9GpZR"
+      },
+      {
+        "name": "X-Received",
+        "value": "by 2002:a5d:5f91:0:b0:42f:b871:66b9 with SMTP id ffacd0b85a97d-4324e7042cdmr24267358f8f.56.1766647644908;        Wed, 24 Dec 2025 23:27:24 -0800 (PST)"
+      },
+      {
+        "name": "ARC-Seal",
+        "value": "i=1; a=rsa-sha256; t=1766647644; cv=none;        d=google.com; s=arc-20240605;        b=RdAzYV+sWqmbYm2XMx7jtERAZibClz1iJkFgrXudRJ1n1EvFOLdZ3P9Cf5rlm+BGea         HeHWhYdtg2fefvzdkPJ98zlIBMEg2Xn6xn5IjksD+m2Lb6EJaY2BNdMn2GHQOLWqD/zf         q6WncErU9uiq+SF7HC20ci5AA4vbMHZ9p3xjaxUJa5e0uOSoZmYPMOeLbeclnGNSBmU4         Pi0qjFQnddCCjmHHXPfdKIryJlF4XgACC3FNaMwHNWUeHuEZofEtf6uiAxYwIpSlOWK6         UhYboUU+pHr4EuQ0te7pnRZ5BK1/JDmgjKYemc7B1czAdxkc1ID0aa0t4Gh3qh8IfI6y         1aWg=="
+      },
+      {
+        "name": "ARC-Message-Signature",
+        "value": "i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;        h=content-transfer-encoding:feedback-id:list-unsubscribe-post         :list-unsubscribe:date:subject:to:reply-to:from:mime-version         :message-id:dkim-signature;        bh=/6sg9QlqHXBf7Duprv92Gk5GepMArmO51HMHitkraUg=;        fh=ECRkHfVgWAmD/Aya2eGBSJPKgskn5v51oIvn318qsL8=;        b=UsGq74tvPwELE1b/FccMIRpE6Rns5BZ8xtLxfl/jYMp2vIOY4Fx11IXgNYT/KibuG0         7Xt+9NXoShqfgRQqZT5fGp2uPsHxtrr8URaC2E7sFLbdCpBDwUoJBqCawnfEB078x9zN         BbhkIWqkCGCVSemsME7nn0hfbtc04+Yo+w7QTkiWVvtvAqwdp5gi7txxDxNRmOAwR4it         yE67v3HZxsu5Cw09VoiVolXa/hOrQ228QXnjBSwR4jGTF7/gs1kOMS+rzhCaniLg1hx0         92px+NHhRVmRCYFIShzumpYPSLih3qiPgfFenVdlPUYen/68gXmJhknDUWqJpwhDpXJt         ZXRw==;        dara=google.com"
+      },
+      {
+        "name": "ARC-Authentication-Results",
+        "value": "i=1; mx.google.com;       dkim=pass header.i=@webflow.com header.s=mailjet header.b=E9Z42gUc;       spf=pass (google.com: domain of dc304ad6.amcaaiixrm8aaaaaaaaaardu3koaaaaajncaaaaaabhteabptodc@bnc3.webflow.com designates 87.253.236.107 as permitted sender) smtp.mailfrom=dc304ad6.AMcAAIiXRM8AAAAAAAAAARDu3KoAAAAAjncAAAAAABhTEABpTOdc@bnc3.webflow.com;       dmarc=pass (p=REJECT sp=NONE dis=NONE) header.from=webflow.com"
+      },
+      {
+        "name": "Return-Path",
+        "value": "<dc304ad6.AMcAAIiXRM8AAAAAAAAAARDu3KoAAAAAjncAAAAAABhTEABpTOdc@bnc3.webflow.com>"
+      },
+      {
+        "name": "Received",
+        "value": "from o107.p11.mailjet.com (o107.p11.mailjet.com. [87.253.236.107])        by mx.google.com with UTF8SMTPS id ffacd0b85a97d-4324eab2747si26558661f8f.153.2025.12.24.23.27.24        for <ayrton@amansi.com.au>        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);        Wed, 24 Dec 2025 23:27:24 -0800 (PST)"
+      },
+      {
+        "name": "Received-SPF",
+        "value": "pass (google.com: domain of dc304ad6.amcaaiixrm8aaaaaaaaaardu3koaaaaajncaaaaaabhteabptodc@bnc3.webflow.com designates 87.253.236.107 as permitted sender) client-ip=87.253.236.107;"
+      },
+      {
+        "name": "Authentication-Results",
+        "value": "mx.google.com;       dkim=pass header.i=@webflow.com header.s=mailjet header.b=E9Z42gUc;       spf=pass (google.com: domain of dc304ad6.amcaaiixrm8aaaaaaaaaardu3koaaaaajncaaaaaabhteabptodc@bnc3.webflow.com designates 87.253.236.107 as permitted sender) smtp.mailfrom=dc304ad6.AMcAAIiXRM8AAAAAAAAAARDu3KoAAAAAjncAAAAAABhTEABpTOdc@bnc3.webflow.com;       dmarc=pass (p=REJECT sp=NONE dis=NONE) header.from=webflow.com"
+      },
+      {
+        "name": "DKIM-Signature",
+        "value": "v=1; a=rsa-sha256; c=relaxed/simple; q=dns/txt;  d=webflow.com; i=no-reply-forms@webflow.com; s=mailjet; x=1766654844;  h=message-id:mime-version:from:from:reply-to:to:to:subject:subject:date:date:list-unsubscribe:  list-unsubscribe-post:feedback-id:x-csa-complaints:x-mj-mid:x-mj-smtpguid:  x-report-abuse-to:content-type:content-transfer-encoding;  bh=/6sg9QlqHXBf7Duprv92Gk5GepMArmO51HMHitkraUg=;  b=E9Z42gUcr5RGNCNCu9wR7v7I3wVuKyz8gSV+UXAotFRFcahO7MQaTCoAW uUIJ9s2GmdNqjJOkvo+B2xuAu/VjZHbGdpO5mBUB7t8sqJJrXKEUTYadaF+T K945aS0jFMiHC6+1ww+cpznZ6iG7tSG+V1TCmW++/ccrnmBBOheyDQ="
+      },
+      {
+        "name": "Return-Path",
+        "value": "<dc304ad6.AMcAAIiXRM8AAAAAAAAAARDu3KoAAAAAjncAAAAAABhTEABpTOdc@bnc3.webflow.com>"
+      },
+      {
+        "name": "Message-Id",
+        "value": "<dc304ad6.AMcAAIiXRM8AAAAAAAAAARDu3KoAAAAAjncAAAAAABhTEABpTOdc@mailjet.com>"
+      },
+      {
+        "name": "MIME-Version",
+        "value": "1.0"
+      },
+      {
+        "name": "From",
+        "value": "Webflow forms <no-reply-forms@webflow.com>"
+      },
+      {
+        "name": "Reply-To",
+        "value": "no-reply@webflow.com"
+      },
+      {
+        "name": "To",
+        "value": "ayrton@amansi.com.au"
+      },
+      {
+        "name": "Subject",
+        "value": "New form submission on Webflow for Nineteen First Avenue"
+      },
+      {
+        "name": "Date",
+        "value": "Thu, 25 Dec 2025 07:27:23 +0000"
+      },
+      {
+        "name": "List-Unsubscribe",
+        "value": "<mailto:unsub-dc304ad6.x9x26.s1rnug78uv0o@bnc3.mailjet.com>, <https://x9x26.mjt.lu/unsub2?m=AMcAAIiXRM8AAAAAAAAAARDu3KoAAAAAjncAAAAAABhTEABpTOdcd4D4B3_PSsGL6v8x0ngkugAA7QM&b=dc304ad6&e=d67d3647&x=XSzcaEfq_pbvMY9g3Dbido7kd6oTJNra4zJlmqeumI8>"
+      },
+      {
+        "name": "List-Unsubscribe-Post",
+        "value": "List-Unsubscribe=One-Click"
+      },
+      {
+        "name": "Feedback-Id",
+        "value": "e1fed85a-29a9-4773-a7d3-e06a6edb680a.1594128.60675:MJ"
+      },
+      {
+        "name": "X-CSA-Complaints",
+        "value": "csa-complaints@eco.de"
+      },
+      {
+        "name": "X-MJ-Mid",
+        "value": "AMcAAIiXRM8AAAAAAAAAARDu3KoAAAAAjncAAAAAABhTEABpTOdcd4D4B3_PSsGL6v8x0ngkugAA7QM"
+      },
+      {
+        "name": "X-MJ-SMTPGUID",
+        "value": "7780f807-7fcf-4ac1-8bea-ff31d27824ba"
+      },
+      {
+        "name": "X-REPORT-ABUSE-TO",
+        "value": "Message sent by Mailjet please report to abuse@mailjet.com with a copy of the message"
+      },
+      {
+        "name": "Content-Type",
+        "value": "text/html; charset=utf-8"
+      },
+      {
+        "name": "Content-Transfer-Encoding",
+        "value": "quoted-printable"
+      }
+    ],
+    "body": {
+      "size": 1591,
+      "data": "WW91IGp1c3QgcmVjZWl2ZWQgYSBuZXcgZm9ybSBzdWJtaXNzaW9uIG9uIHlvdXIgd2Vic2l0ZSBOaW5ldGVlbiBGaXJzdCBBdmVudWUuPGJyPiBZb3VyIE5hbWU6IEhlbnJ5IFJ6ZWNodGE8YnI-RW1haWw6IGhyMThAYmlncG9uZC5uZXQuYXU8YnI-UGhvbmU6IDA0MTg1MzE0NTY8YnI-QnVkZ2V0KjogJDRtIC0gJDQuNW08YnI-ZmllbGQ6IDxicj5UZXJtcyBhbmQgQ29uZGl0aW9uczogdHJ1ZTxicj48YnI-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLTxicj48YnI-DQo8c3Ryb25nPk51bWJlciBvZiBzdWJtaXNzaW9ucyByZWNlaXZlZDwvc3Ryb25nPg0KPGJyPjc4L3VubGltaXRlZCB0aGlzIG1vbnRoDQo8YnI-DQpEZWNlbWJlciAxc3QgJm5kYXNoOyBEZWNlbWJlciAzMXN0PGJyPjxicj4NCjxzdHJvbmc-TmVlZCBtb3JlIHN1Ym1pc3Npb25zPzwvc3Ryb25nPg0KPGJyPlBsZWFzZSBjb250YWN0IHlvdXIgd2Vic2l0ZSBhZG1pbmlzdHJhdG9yLjxicj48YnI-DQpJZiB5b3UgYmVsaWV2ZSB0aGlzIGlzIGEgc3BhbSBzdWJtaXNzaW9uLCBwbGVhc2UgZm9yd2FyZCB0byBmb3JtLXNwYW0tcmVwb3J0c0BzdXBwb3J0LndlYmZsb3cuY29tPGJyPjxicj48YSBocmVmPSJodHRwczovL3dlYmZsb3cuY29tL2Rhc2hib2FyZC91bnN1YnNjcmliZUZvcm0_dD0yZmNjNzU0ZmUwNjgxNzAzMWM3MmNkNWIyMWNiZWU3ZTNmZTZlNzdiMmU4MjEwYjMzOWNmYWEzMzIwODhjOTViJmFtcDtzPTY1MzFjYmMyY2FmMjEwMmI0YTczZjkzMyZhbXA7c249TmluZXRlZW4lMjBGaXJzdCUyMEF2ZW51ZSZhbXA7ZT1heXJ0b24lNDBhbWFuc2kuY29tLmF1JmFtcDtkPTE3NjY2NDc2NDMxNzEiPlVuc3Vic2NyaWJlPC9hPiBmcm9tIG5vdGlmaWNhdGlvbnMgZm9yIHRoaXMgc2l0ZS4NCjxici8-PGEgc3R5bGU9ImZvbnQtZmFtaWx5OiBBcmlhbCwgc2Fucy1zZXJpZjsiIGhyZWY9Imh0dHBzOi8veDl4MjYubWp0Lmx1L2xuay9BTWNBQUlpWFJNOEFBQUFBQUFBQUFSRHUzS29BQUFBQWpuY0FBQUFBQUJoVEVBQnBUT2RjZDRENEIzX1BTc0dMNnY4eDBuZ2t1Z0FBN1FNLzAvRVJPOTFMRWtVMEJfUUNHekpObVZKUS9hSFIwY0hNNkx5OTRPWGd5Tmk1dGFuUXViSFV2P2I9MSI-JiM4MjAzOzwvYT48YSBzdHlsZT0idGV4dC1kZWNvcmF0aW9uOiBub25lOyBkaXNwbGF5OiBpbmxpbmUtYmxvY2s7IiBocmVmPSJodHRwczovL3g5eDI2Lm1qdC5sdS9sbmsvQU1jQUFJaVhSTThBQUFBQUFBQUFBUkR1M0tvQUFBQUFqbmNBQUFBQUFCaFRFQUJwVE9kY2Q0RDRCM19QU3NHTDZ2OHgwbmdrdWdBQTdRTS8wL0VSTzkxTEVrVTBCX1FDR3pKTm1WSlEvYUhSMGNITTZMeTk0T1hneU5pNXRhblF1YkhVdj9iPTMiPg0KPGltZyBzcmM9Imh0dHBzOi8veDl4MjYubWp0Lmx1L29vL0FNY0FBSWlYUk04QUFBQUFBQUFBQVJEdTNLb0FBQUFBam5jQUFBQUFBQmhURUFCcFRPZGNkNEQ0QjNfUFNzR0w2djh4MG5na3VnQUE3UU0vM2I3ZTI3MTMvZS5naWYiIGhlaWdodD0iMSIgd2lkdGg9IjEiIGFsdD0iIiBib3JkZXI9IjAiIHN0eWxlPSJoZWlnaHQ6MXB4O3dpZHRoOjFweDtib3JkZXI6MDsiLz4NCjwvYT4NCg=="
+    }
+  }
+}

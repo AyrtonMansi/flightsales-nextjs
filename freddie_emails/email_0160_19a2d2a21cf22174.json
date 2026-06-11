@@ -1,0 +1,320 @@
+{
+  "id": "19a2d2a21cf22174",
+  "subject": "17-19 First Avenue, Surfers Paradise QLD 4217 - proposed builder",
+  "from": "Toby Stapleton <toby@raymondcapital.com.au>",
+  "date": "Tue, 28 Oct 2025 23:32:02 +0000",
+  "snippet": "Hi Jack The proposed builder, Aaron Peel from FactorCorp (cc&#39;d) would like to have a discussion on finding a way forward to develop 34 units at 17-19 First Avenue, Surfers Paradise. When are you",
+  "payload": {
+    "partId": "",
+    "mimeType": "multipart/related",
+    "filename": "",
+    "headers": [
+      {
+        "name": "Delivered-To",
+        "value": "ayrton@amansi.com.au"
+      },
+      {
+        "name": "Received",
+        "value": "by 2002:a05:6000:41d4:b0:429:8b93:875b with SMTP id 20csp1765514wro;        Tue, 28 Oct 2025 16:32:07 -0700 (PDT)"
+      },
+      {
+        "name": "X-Forwarded-Encrypted",
+        "value": "i=3; AJvYcCVy0ABT3+LPGPHXflaR16AN1hQT0+hi/2REUFNdQMEwlblV6FAB+o91URCfKESVoF3e1s1SSqI=@amansi.com.au"
+      },
+      {
+        "name": "X-Google-Smtp-Source",
+        "value": "AGHT+IG8r7/9/QrRbuVK6H89WxwlseBgzF4K7n2UiXqOjzX75+ZdFqG+S+UKQvcAR0bRq3OsopAI"
+      },
+      {
+        "name": "X-Received",
+        "value": "by 2002:a05:6a00:1704:b0:77d:a490:269c with SMTP id d2e1a72fcca58-7a4e53f9adfmr906721b3a.29.1761694326896;        Tue, 28 Oct 2025 16:32:06 -0700 (PDT)"
+      },
+      {
+        "name": "ARC-Seal",
+        "value": "i=2; a=rsa-sha256; t=1761694326; cv=pass;        d=google.com; s=arc-20240605;        b=TToQ3jH7ouzoN9D2BR0cG3IYxyhXNzL9n6/gmM9aJWjwDe/X4jY1ELZ25lsTPvqRE8         1EuOyMjWH5Jcg+ZZnmWmQE4PriLo/xg7X3p4mxVyRnRxDCOjlEmVEA5d/FpV5VHNuAye         OmbsEWGE529VKRpKkIVYlvryY5aFb9YfmFwautDjnmMLll/vPVfs6pe6E1AJ6Hs+EijT         PDZADxStIYtedt7me/ZacePAiNYtWYpLDVE61UtN4fnnkq+ZQODHAphrTTeCcvtNkSt1         cM7rC6QvLlu07laOsyRX5agykqRVXJ5+I8aIU6x2fQNcwuFgduyC6HGP9rQrBjjT3Gtv         yYwA=="
+      },
+      {
+        "name": "ARC-Message-Signature",
+        "value": "i=2; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;        h=mime-version:content-language:accept-language:in-reply-to         :references:message-id:date:thread-index:thread-topic:subject:cc:to         :from;        bh=/YF6hlrhRAGlyvFThjLEwe+8MTG9Xwb1D0lDNbBRXH0=;        fh=0g9IqGNQGKbMHGaAcE2W3LWlUkpAK9PqmE2SXwB8x3M=;        b=Xic8FhP9Hyl8dC1mcqGi59UzSftO76UIE1CstwUtmDQDHtoHOySKQ3itUYDC9C5BOu         ni33Cg5GNGk3KuiIz3DQ56LgS2A/VqTLogkuag8LCzDa+W/Z9SzpLz6wl4x2pNNnIbqb         /gY55svZCTTb0LGZKFBs1yh5aakVbOkifPk6LcA7MuW4WunFOH4TCb7yhwYconK4tg4R         qi9uFJ0OOR046o//kPESeFhlXFa8D5ELiXeyYhJDDvHgYAhYYwH+6chJxnXYfLvUZnr7         tgGh2FsN8b2k6ejAmijTg0RRMxRb8m625PsawmmtnNzmbF1TU4MkypA8tu21C9qQKrxE         EqHg==;        dara=google.com"
+      },
+      {
+        "name": "ARC-Authentication-Results",
+        "value": "i=2; mx.google.com;       arc=pass (i=1 spf=pass spfdomain=raymondcapital.com.au dkim=pass dkdomain=raymondcapital.com.au dmarc=pass fromdomain=raymondcapital.com.au);       spf=pass (google.com: domain of toby@raymondcapital.com.au designates 2a01:111:f403:c40e::1 as permitted sender) smtp.mailfrom=toby@raymondcapital.com.au"
+      },
+      {
+        "name": "Return-Path",
+        "value": "<toby@raymondcapital.com.au>"
+      },
+      {
+        "name": "Received",
+        "value": "from MEUPR01CU001.outbound.protection.outlook.com (mail-australiasoutheastazlp170100001.outbound.protection.outlook.com. [2a01:111:f403:c40e::1])        by mx.google.com with ESMTPS id d2e1a72fcca58-7a4155f8692si6623847b3a.289.2025.10.28.16.32.06        for <ayrton@amansi.com.au>        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);        Tue, 28 Oct 2025 16:32:06 -0700 (PDT)"
+      },
+      {
+        "name": "Received-SPF",
+        "value": "pass (google.com: domain of toby@raymondcapital.com.au designates 2a01:111:f403:c40e::1 as permitted sender) client-ip=2a01:111:f403:c40e::1;"
+      },
+      {
+        "name": "Authentication-Results",
+        "value": "mx.google.com;       arc=pass (i=1 spf=pass spfdomain=raymondcapital.com.au dkim=pass dkdomain=raymondcapital.com.au dmarc=pass fromdomain=raymondcapital.com.au);       spf=pass (google.com: domain of toby@raymondcapital.com.au designates 2a01:111:f403:c40e::1 as permitted sender) smtp.mailfrom=toby@raymondcapital.com.au"
+      },
+      {
+        "name": "ARC-Seal",
+        "value": "i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none; b=di9KiFvSIMHGHT3w0F8O36qYLWnmjAOFkzLAxwW1CuJjAHb0C3DujUsCfVM0VbIoe9nAz4HaX2xJlZnnNDWXo/EMyNuwP6DnrLWIenPvszz8FsURkkEzhHCv1F7R4CsFVy1Unbno6BLhTP2Zt2g/hy2xkYAh87C9boWO12USmgVPV87fKhPV0e2+O5zv61IgTfKaOrlK07ey6m/4MXQMzR2i3MrffiT64Zg1tmkLRcF/znp4ONXtRXzpF2BMAul+dfEgzTIlAYz5ctB61R597uqUJruDEU737XP9oZujmA3RfoZC0/VFUMXiZhVOUihB0ih5YASIGFpfXwScUSGPQw=="
+      },
+      {
+        "name": "ARC-Message-Signature",
+        "value": "i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; s=arcselector10001; h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1; bh=/YF6hlrhRAGlyvFThjLEwe+8MTG9Xwb1D0lDNbBRXH0=; b=rHYL5lAWPAUj40GeXxrhZIufDeu0aaC4OjwS45cji7Bn1tqzC5NRyJ8von+sfucU9gQAuVHIM1BJQWQ+uSRFo2G1iZlNDe66+DBnmCqviJ2xc1Zm+s8xrrOWztVvxSiyDnP/1+NdVI2ab+ezV8iH9+NSf+/lA8acfyaH5slnytZWNvQos38CHjRjEHaiblr5Wu705XrHGkkK/fHHN47ZM2mdPpInFZAafAkB98gUyr2y6WG7DL8L0FGu++5bdMg5h0diGm1Y7pqdoDvJ+K52cBmSwVLDnkmng2KML5eFChsztU9vg6psch8pktfBct4tGjBo8LEdHmC3eXSnyPnzQw=="
+      },
+      {
+        "name": "ARC-Authentication-Results",
+        "value": "i=1; mx.microsoft.com 1; spf=pass smtp.mailfrom=raymondcapital.com.au; dmarc=pass action=none header.from=raymondcapital.com.au; dkim=pass header.d=raymondcapital.com.au; arc=none"
+      },
+      {
+        "name": "Received",
+        "value": "from SYBP282MB4266.AUSP282.PROD.OUTLOOK.COM (2603:10c6:10:1aa::13) by SYBP282MB3510.AUSP282.PROD.OUTLOOK.COM (2603:10c6:10:1b1::10) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9253.20; Tue, 28 Oct 2025 23:32:02 +0000"
+      },
+      {
+        "name": "Received",
+        "value": "from SYBP282MB4266.AUSP282.PROD.OUTLOOK.COM ([fe80::3ebe:d34d:fba:dfc3]) by SYBP282MB4266.AUSP282.PROD.OUTLOOK.COM ([fe80::3ebe:d34d:fba:dfc3%4]) with mapi id 15.20.9275.013; Tue, 28 Oct 2025 23:32:02 +0000"
+      },
+      {
+        "name": "From",
+        "value": "Toby Stapleton <toby@raymondcapital.com.au>"
+      },
+      {
+        "name": "To",
+        "value": "Jack Jolly <jack.jolly@merrickscapital.com>, \"aaron@factorcorp.com.au\" <aaron@factorcorp.com.au>"
+      },
+      {
+        "name": "CC",
+        "value": "Tom Broad <tom@raymondcapital.com.au>, ayrton mansi <ayrton@amansi.com.au>"
+      },
+      {
+        "name": "Subject",
+        "value": "17-19 First Avenue, Surfers Paradise QLD 4217 - proposed builder"
+      },
+      {
+        "name": "Thread-Topic",
+        "value": "17-19 First Avenue, Surfers Paradise QLD 4217 - proposed builder"
+      },
+      {
+        "name": "Thread-Index",
+        "value": "AdxH0kYgEev7YJ1GSG6zXiFy03HwvAAkJ6igAAAGj1A="
+      },
+      {
+        "name": "Date",
+        "value": "Tue, 28 Oct 2025 23:32:02 +0000"
+      },
+      {
+        "name": "Message-ID",
+        "value": "<SYBP282MB42663A49EC011D31EA2C011D8FFDA@SYBP282MB4266.AUSP282.PROD.OUTLOOK.COM>"
+      },
+      {
+        "name": "References",
+        "value": "<SYBP282MB42665EF69FE6612F735AA9C28FFDA@SYBP282MB4266.AUSP282.PROD.OUTLOOK.COM> <SYBP282MB42664392D1D171FDCD1D34288FFDA@SYBP282MB4266.AUSP282.PROD.OUTLOOK.COM>"
+      },
+      {
+        "name": "In-Reply-To",
+        "value": "<SYBP282MB42664392D1D171FDCD1D34288FFDA@SYBP282MB4266.AUSP282.PROD.OUTLOOK.COM>"
+      },
+      {
+        "name": "Accept-Language",
+        "value": "en-GB, en-US"
+      },
+      {
+        "name": "Content-Language",
+        "value": "en-GB"
+      },
+      {
+        "name": "X-MS-Has-Attach",
+        "value": "yes"
+      },
+      {
+        "name": "X-MS-TNEF-Correlator",
+        "value": ""
+      },
+      {
+        "name": "authentication-results",
+        "value": "dkim=none (message not signed) header.d=none;dmarc=none action=none header.from=raymondcapital.com.au;"
+      },
+      {
+        "name": "x-ms-publictraffictype",
+        "value": "Email"
+      },
+      {
+        "name": "x-ms-traffictypediagnostic",
+        "value": "SYBP282MB4266:EE_|SYBP282MB3510:EE_"
+      },
+      {
+        "name": "x-ms-office365-filtering-correlation-id",
+        "value": "4866af52-7290-4f76-f180-08de167a32da"
+      },
+      {
+        "name": "x-ms-exchange-senderadcheck",
+        "value": "1"
+      },
+      {
+        "name": "x-ms-exchange-antispam-relay",
+        "value": "0"
+      },
+      {
+        "name": "x-microsoft-antispam",
+        "value": "BCL:0;ARA:13230040|376014|1800799024|366016|4053099003|8096899003|13003099007|38070700021;"
+      },
+      {
+        "name": "x-microsoft-antispam-message-info",
+        "value": "pPd5u0ys4CKVSBwtcFME8mQftUWTvnQtpeJt9ztx0wsbBRHB8ooHAKh79rnPxN4THQ6F9XHtGg2K3e7soXO67Ks9e9fTqI72+OrwOXRZMk212FP+YCdepbTUDvjYmqugDLNgRNK5zR3HzW4g27fZviQLQf1wPYuqSW9Jd9zSHozuR/UyeUCKkaMBMJHo6ReR7/Kv39GhciayW45rWI9dDxT5/nMSKj6MttXZWYtjqg5K+kpvbi/RWfNjJAn6zZ2gOX24H+ibaNpUHsi3ccoNL4goC5w3FwwPe+eMysjYv4fzYRxV53wr+uD4gB8AoRWsWUSSdUjYaL0PqpKLkDD5nU9fi+zb03z/kdDZAaAMCQ/C8QVg3+UTogIdlzlOTJL9ZfdZ52DMT22w8AariSWWaLHgF/0vmSa9IjZJmaRWoswRHf0podOmLPXCpW5juaTul+O8O0wOlZM3YdF3vXoOZ60XcajBj12HaZ0rZeLbTa8Zkc9q/KuE0x8YK7gV7ObTGcshhfxfhjCExGXHaoJMhdNmnNnP0DlWkA6zCRekPcXNQNWYXssiALJR+NPOTWrDEFPYuc+cXgWwKedLozsQM91llmB+zZozjr+xXvQDndU7cYQCh0PrfGnP8bGVPraWwD/55A3G0mFVIwrVwsghKK4/x2OjsyZ8EPAsuMkakfdTC0wqUCHDP4gzsBGB9RZCTwP7sqcP7mKkMh06CY3VDb77D97ptGltGQoma6pbsnlys1+oUB+mlsDIxStmj1I/CBkXihfbk7cg9yAHRrbpIl92Y+qguWtoPmi9L0iqBRIxEkhZxtRSGKUDCNRML5JHh7930UR//Srhw66Yw1dC3GWaAlD0UDeVujpdvxGb4GCo99bJha7soJbEkWvrKveaa6p8AONwK8BF7FNd9/D6ALPKUFU2Iu/bAUmmp/eogHI6to8JvJ3oiCalzDpOOXxTCkSAEV3XIsvG0emwsy2TEST97WDK7z83Masy+ld2Vdyy1sog50TfEHlO4lqidA1tTfmgR9QWW/ZdTqy7AU+tOxAKWWO4pN9HkuTAXUtk3urm5cKdzgoFnlTve+nNSE5RWx4oV3NSs2rrn/AhL6LD/GtbRwjMEoogCtc032Q9NoS7Y5Hoyv2XH+gY5jZvfTdkAsFgnMWRFnNdAXhWqhfx/KHTTJwaGTZGZ0nEHBOrAdKSfPV44NhHQCHPIluQSqy63L74Y2ApJ7mt5t8+QPIoSZFoHa6xPOc3GOZG61clRbJU0HZxv5LGrsUsBWo1wIWZqAKCvsG+efYxNBH9vGBa6ihUwFK2PMAtxjDN0qFjQgBnpJDysyexTu9aibfIEbq9+EoLLEca+bdMMi0bREvzRjIejlLqKlToYjHVn4FrJao09JkgD44DAmg4e0HgyEzvY4Jymk7KGXc2ItErrJQSeZigQ/zLYlPyngVOfL0Gfdhp9OWCxrZBN9uWXltSpVsZ"
+      },
+      {
+        "name": "x-forefront-antispam-report",
+        "value": "CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SYBP282MB4266.AUSP282.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230040)(376014)(1800799024)(366016)(4053099003)(8096899003)(13003099007)(38070700021);DIR:OUT;SFP:1102;"
+      },
+      {
+        "name": "x-ms-exchange-antispam-messagedata-chunkcount",
+        "value": "1"
+      },
+      {
+        "name": "x-ms-exchange-antispam-messagedata-0",
+        "value": "Z3IJRdE3ZD2CeUd51sjIR86TCY9XnHHnZ4av0NJ4EVs8OFOi4NaapThKYtsdwblnnJ+hbHNTbIKYMeWbcdwxbVvDffuHXsxTF+znTIx5wy3fHtFLqcdmTbA43TT5Bn2077CclTHOiHIMXURCPz38fQCZCngpmZ+R83SmOODd0M/tpEcKi9zYg2hLjwNzF8Ems9UQKDxMNo/FrwHrNJqBST2m0O3nt1jO4xqVC+smel70rHnrG6glRVdFTOf2zTEy9ywcLOtNRrGogvs3L6IQIqJOlOD0/obrugHA8Vj9K71Pk2B0Yk3HYc4z2ARQ693iZ92roANQt87A7VulKcmVSogg2+5n7iRm2oxzdrz9lKbob8x3Uo+RXypGoiChOQm5yMzb6l9/wSmTZH/FwF7AVAAncU9spqQGycEovd0/rKQQOadJrha18f92Eys39hqAiBeKT+fz6YWz17TJdID2DSGUKAPNnlZeHjwQjjZJ16x5Lsvn8bm9kaj9nIfUq8SDfSGJp6AnZkU1tSjyY4er94NUQ6yijUnWCMzl9gNm90ubknc0Lo1m1gaxGcgoPUsBejm/XsBZmou0RmShrVfg+/3HnplmU3fr2pK2ePeMe2LVHAfWOrYsIFnyHBnd3YYn0VtZRFAHR/jbzE5KK7oga2Mnlk04fm+xTjkFDGTuseK3qiJURfmkpVWyn8MHTLyC5uXKmaTTSACf8eJKCferEPmektOU/E97s/kEAskkHsbzpvmbNAhCbcBKmLdlPpYxcNurADJAX/L2lqC7Wx+a25R08FipndyfatOxbzbalcZGPjQ1h35wKc7cjQaEDDOJH0AcorfXDJioBUUros64M3j9dzlaxyiDcsgnJx5klGi84Fh50maehkAaS3LvDq4terCuuNjw4dvZT0Wi4P2gJtDI2ViPFMJ8Svz/J1IYTSXDoQcDa3EVpxyVtgvroBXZLAYi5YKHruffPhYbMfLQSIOdhrFGFt0BA6GWA2sTdbL12hCRDU69vEZ7OIwIV8Xefln8U01ESFgDNfYC786wE6z0Pe8oJFAEma/5OPZw7aHY1FMTtjxFr5marRZdDo6v9HHPooWOIMGPd6+ItL6v3afIy2+0pgro1o2aRxSkK7d2Jrf6lGXFXRfHKD+27pnfEMZKPvdE8Tb70ly4UbhZOex8NNQ5M4oPbJPI41WdMhcD+j4qepyll/hl1SkPE5jjCxyM8Yhz5PGoMbHiY2A4B2rUnZnUZYS9Uvvv3J2nzAgwQE2kXIvuVSZpCpgh66Aq97u9b5PhE7pZbQyFRVABsUNoNcFOgNec+U3PycOXCwYlMHKuEaidikRkywlihhIZNWJzuRGklF8NaEGk2xxTHkWMEDkYgT6gCqP/Zb2fFS//PLdfbbBqIYGxOEVRAWbAkWqDI2ohZhwBaoMOwcPyj7Ah18AvK6g+b8x9TxuSdYchtITo/3HqV7kJOPWIeJmYrvGmiuuo0IBCxs4T1jUCYwK9LkHOYT5DLDbF2dlkLgW0fkcHmYxJe+XGXw7UUCPjjVqb3932T34YQEwubU3Bv0eK9tlC/dkVPWhk05zMpKY1p/1UKAztZvf41NcWlKWX0PU65OJWm8ggT2isa9S70w=="
+      },
+      {
+        "name": "Content-Type",
+        "value": "multipart/related; boundary=\"_004_SYBP282MB42663A49EC011D31EA2C011D8FFDASYBP282MB4266AUSP_\"; type=\"multipart/alternative\""
+      },
+      {
+        "name": "MIME-Version",
+        "value": "1.0"
+      },
+      {
+        "name": "X-OriginatorOrg",
+        "value": "raymondcapital.com.au"
+      },
+      {
+        "name": "X-MS-Exchange-CrossTenant-AuthAs",
+        "value": "Internal"
+      },
+      {
+        "name": "X-MS-Exchange-CrossTenant-AuthSource",
+        "value": "SYBP282MB4266.AUSP282.PROD.OUTLOOK.COM"
+      },
+      {
+        "name": "X-MS-Exchange-CrossTenant-Network-Message-Id",
+        "value": "4866af52-7290-4f76-f180-08de167a32da"
+      },
+      {
+        "name": "X-MS-Exchange-CrossTenant-originalarrivaltime",
+        "value": "28 Oct 2025 23:32:02.7697 (UTC)"
+      },
+      {
+        "name": "X-MS-Exchange-CrossTenant-fromentityheader",
+        "value": "Hosted"
+      },
+      {
+        "name": "X-MS-Exchange-CrossTenant-id",
+        "value": "62e2c811-8f73-4517-898a-c041590ec211"
+      },
+      {
+        "name": "X-MS-Exchange-CrossTenant-mailboxtype",
+        "value": "HOSTED"
+      },
+      {
+        "name": "X-MS-Exchange-CrossTenant-userprincipalname",
+        "value": "twRksq/fGe0n2coqM1QCsWq/gLjIA9f7SjtZSspmrmrlZhysh606uMGpw3gS0OlsoNAd0+vVH+vFGZAMaYEyuTRrO7YlXdM1+cwz/fjOym8="
+      },
+      {
+        "name": "X-MS-Exchange-Transport-CrossTenantHeadersStamped",
+        "value": "SYBP282MB3510"
+      }
+    ],
+    "body": {
+      "size": 0
+    },
+    "parts": [
+      {
+        "partId": "0",
+        "mimeType": "multipart/alternative",
+        "filename": "",
+        "headers": [
+          {
+            "name": "Content-Type",
+            "value": "multipart/alternative; boundary=\"_000_SYBP282MB42663A49EC011D31EA2C011D8FFDASYBP282MB4266AUSP_\""
+          }
+        ],
+        "body": {
+          "size": 0
+        },
+        "parts": [
+          {
+            "partId": "0.0",
+            "mimeType": "text/plain",
+            "filename": "",
+            "headers": [
+              {
+                "name": "Content-Type",
+                "value": "text/plain; charset=\"us-ascii\""
+              },
+              {
+                "name": "Content-Transfer-Encoding",
+                "value": "quoted-printable"
+              }
+            ],
+            "body": {
+              "size": 550,
+              "data": "SGkgSmFjaw0KDQpUaGUgcHJvcG9zZWQgYnVpbGRlciwgQWFyb24gUGVlbCBmcm9tIEZhY3RvckNvcnAgKGNjJ2QpIHdvdWxkIGxpa2UgdG8gaGF2ZSBhIGRpc2N1c3Npb24gb24gZmluZGluZyBhIHdheSBmb3J3YXJkIHRvIGRldmVsb3AgMzQgdW5pdHMgYXQgMTctMTkgRmlyc3QgQXZlbnVlLCBTdXJmZXJzIFBhcmFkaXNlLg0KDQpXaGVuIGFyZSB5b3UgYXZhaWxhYmxlIGZvciBhbiBpbml0aWFsIGNhbGwgdG9kYXkgcG0gLyB0b21vcnJvdyAvIEZyaWRheT8NCg0KVGhhbmsgeW91DQoNCktpbmQgcmVnYXJkcw0KVG9ieSBTdGFwbGV0b24NCg0KW2NpZDppbWFnZTAwMS5wbmdAMDFEQzQ4MkUuQzY5MjNCODBdDQoNClBoOiArNjEgNDEzIDE4OCAzOTgNCkU6IHRvYnlAcmF5bW9uZGNhcGl0YWwuY29tLmF1PG1haWx0bzp0b2J5QHJheW1vbmRjYXBpdGFsLmNvbS5hdT4NClc6IHd3dy5yYXltb25kY2FwaXRhbC5jb20uYXU8aHR0cDovL3d3dy5yYXltb25kY2FwaXRhbC5jb20uYXUvPg0KQTogNC4wMy8gNjggQWxmcmVkIFN0cmVldCwgTWlsc29ucyBQb2ludCwgTlNXDQoNCg=="
+            }
+          },
+          {
+            "partId": "0.1",
+            "mimeType": "text/html",
+            "filename": "",
+            "headers": [
+              {
+                "name": "Content-Type",
+                "value": "text/html; charset=\"us-ascii\""
+              },
+              {
+                "name": "Content-Transfer-Encoding",
+                "value": "quoted-printable"
+              }
+            ],
+            "body": {
+              "size": 3586,
+              "data": "PGh0bWwgeG1sbnM6dj0idXJuOnNjaGVtYXMtbWljcm9zb2Z0LWNvbTp2bWwiIHhtbG5zOm89InVybjpzY2hlbWFzLW1pY3Jvc29mdC1jb206b2ZmaWNlOm9mZmljZSIgeG1sbnM6dz0idXJuOnNjaGVtYXMtbWljcm9zb2Z0LWNvbTpvZmZpY2U6d29yZCIgeG1sbnM6bT0iaHR0cDovL3NjaGVtYXMubWljcm9zb2Z0LmNvbS9vZmZpY2UvMjAwNC8xMi9vbW1sIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvVFIvUkVDLWh0bWw0MCI-DQo8aGVhZD4NCjxtZXRhIGh0dHAtZXF1aXY9IkNvbnRlbnQtVHlwZSIgY29udGVudD0idGV4dC9odG1sOyBjaGFyc2V0PXVzLWFzY2lpIj4NCjxtZXRhIG5hbWU9IkdlbmVyYXRvciIgY29udGVudD0iTWljcm9zb2Z0IFdvcmQgMTUgKGZpbHRlcmVkIG1lZGl1bSkiPg0KPCEtLVtpZiAhbXNvXT48c3R5bGU-dlw6KiB7YmVoYXZpb3I6dXJsKCNkZWZhdWx0I1ZNTCk7fQ0Kb1w6KiB7YmVoYXZpb3I6dXJsKCNkZWZhdWx0I1ZNTCk7fQ0Kd1w6KiB7YmVoYXZpb3I6dXJsKCNkZWZhdWx0I1ZNTCk7fQ0KLnNoYXBlIHtiZWhhdmlvcjp1cmwoI2RlZmF1bHQjVk1MKTt9DQo8L3N0eWxlPjwhW2VuZGlmXS0tPjxzdHlsZT48IS0tDQovKiBGb250IERlZmluaXRpb25zICovDQpAZm9udC1mYWNlDQoJe2ZvbnQtZmFtaWx5OiJDYW1icmlhIE1hdGgiOw0KCXBhbm9zZS0xOjIgNCA1IDMgNSA0IDYgMyAyIDQ7fQ0KQGZvbnQtZmFjZQ0KCXtmb250LWZhbWlseTpBcHRvczt9DQovKiBTdHlsZSBEZWZpbml0aW9ucyAqLw0KcC5Nc29Ob3JtYWwsIGxpLk1zb05vcm1hbCwgZGl2Lk1zb05vcm1hbA0KCXttYXJnaW46MGNtOw0KCWZvbnQtc2l6ZToxMS4wcHQ7DQoJZm9udC1mYW1pbHk6IkFwdG9zIixzYW5zLXNlcmlmOw0KCW1zby1saWdhdHVyZXM6c3RhbmRhcmRjb250ZXh0dWFsOw0KCW1zby1mYXJlYXN0LWxhbmd1YWdlOkVOLVVTO30NCmE6bGluaywgc3Bhbi5Nc29IeXBlcmxpbmsNCgl7bXNvLXN0eWxlLXByaW9yaXR5Ojk5Ow0KCWNvbG9yOiM0Njc4ODY7DQoJdGV4dC1kZWNvcmF0aW9uOnVuZGVybGluZTt9DQpzcGFuLkVtYWlsU3R5bGUxOQ0KCXttc28tc3R5bGUtdHlwZTpwZXJzb25hbC1yZXBseTsNCglmb250LWZhbWlseToiQXB0b3MiLHNhbnMtc2VyaWY7DQoJY29sb3I6d2luZG93dGV4dDt9DQouTXNvQ2hwRGVmYXVsdA0KCXttc28tc3R5bGUtdHlwZTpleHBvcnQtb25seTsNCglmb250LXNpemU6MTAuMHB0Ow0KCW1zby1saWdhdHVyZXM6bm9uZTt9DQpAcGFnZSBXb3JkU2VjdGlvbjENCgl7c2l6ZTo2MTIuMHB0IDc5Mi4wcHQ7DQoJbWFyZ2luOjcyLjBwdCA3Mi4wcHQgNzIuMHB0IDcyLjBwdDt9DQpkaXYuV29yZFNlY3Rpb24xDQoJe3BhZ2U6V29yZFNlY3Rpb24xO30NCi0tPjwvc3R5bGU-DQo8L2hlYWQ-DQo8Ym9keSBsYW5nPSJFTi1BVSIgbGluaz0iIzQ2Nzg4NiIgdmxpbms9IiM5NjYwN0QiIHN0eWxlPSJ3b3JkLXdyYXA6YnJlYWstd29yZCI-DQo8ZGl2IGNsYXNzPSJXb3JkU2VjdGlvbjEiPg0KPHAgY2xhc3M9Ik1zb05vcm1hbCI-SGkgSmFjazxvOnA-PC9vOnA-PC9wPg0KPHAgY2xhc3M9Ik1zb05vcm1hbCI-PG86cD4mbmJzcDs8L286cD48L3A-DQo8cCBjbGFzcz0iTXNvTm9ybWFsIj5UaGUgcHJvcG9zZWQgYnVpbGRlciwgQWFyb24gUGVlbCBmcm9tIEZhY3RvckNvcnAgKGNjJiM4MjE3O2QpIHdvdWxkIGxpa2UgdG8gaGF2ZSBhIGRpc2N1c3Npb24gb24gZmluZGluZyBhIHdheSBmb3J3YXJkIHRvIGRldmVsb3AgMzQgdW5pdHMgYXQgMTctMTkgRmlyc3QgQXZlbnVlLCBTdXJmZXJzIFBhcmFkaXNlLjxvOnA-PC9vOnA-PC9wPg0KPHAgY2xhc3M9Ik1zb05vcm1hbCI-PG86cD4mbmJzcDs8L286cD48L3A-DQo8cCBjbGFzcz0iTXNvTm9ybWFsIj5XaGVuIGFyZSB5b3UgYXZhaWxhYmxlIGZvciBhbiBpbml0aWFsIGNhbGwgdG9kYXkgcG0gLyB0b21vcnJvdyAvIEZyaWRheT88bzpwPjwvbzpwPjwvcD4NCjxwIGNsYXNzPSJNc29Ob3JtYWwiPjxvOnA-Jm5ic3A7PC9vOnA-PC9wPg0KPHAgY2xhc3M9Ik1zb05vcm1hbCI-VGhhbmsgeW91PG86cD48L286cD48L3A-DQo8cCBjbGFzcz0iTXNvTm9ybWFsIj48bzpwPiZuYnNwOzwvbzpwPjwvcD4NCjxwIGNsYXNzPSJNc29Ob3JtYWwiPjxzcGFuIHN0eWxlPSJtc28tZmFyZWFzdC1sYW5ndWFnZTpFTi1BVSI-S2luZCByZWdhcmRzPG86cD48L286cD48L3NwYW4-PC9wPg0KPHAgY2xhc3M9Ik1zb05vcm1hbCI-PHNwYW4gc3R5bGU9Im1zby1mYXJlYXN0LWxhbmd1YWdlOkVOLUFVIj5Ub2J5IFN0YXBsZXRvbjxvOnA-PC9vOnA-PC9zcGFuPjwvcD4NCjxwIGNsYXNzPSJNc29Ob3JtYWwiPjxzcGFuIHN0eWxlPSJtc28tZmFyZWFzdC1sYW5ndWFnZTpFTi1BVSI-PG86cD4mbmJzcDs8L286cD48L3NwYW4-PC9wPg0KPHAgY2xhc3M9Ik1zb05vcm1hbCI-PHNwYW4gc3R5bGU9ImZvbnQtc2l6ZToxMi4wcHQ7bXNvLWxpZ2F0dXJlczpub25lO21zby1mYXJlYXN0LWxhbmd1YWdlOkVOLUFVIj48aW1nIHdpZHRoPSIxOTciIGhlaWdodD0iNjAiIHN0eWxlPSJ3aWR0aDoyLjA1NTVpbjtoZWlnaHQ6LjYyNWluIiBpZD0iUGljdHVyZV94MDAyMF8xIiBzcmM9ImNpZDppbWFnZTAwMS5wbmdAMDFEQzQ4MkUuQzY5MjNCODAiPjwvc3Bhbj48c3BhbiBzdHlsZT0ibXNvLWZhcmVhc3QtbGFuZ3VhZ2U6RU4tQVUiPjxvOnA-PC9vOnA-PC9zcGFuPjwvcD4NCjxwIGNsYXNzPSJNc29Ob3JtYWwiPjxzcGFuIHN0eWxlPSJtc28tZmFyZWFzdC1sYW5ndWFnZTpFTi1BVSI-PG86cD4mbmJzcDs8L286cD48L3NwYW4-PC9wPg0KPHAgY2xhc3M9Ik1zb05vcm1hbCI-PHNwYW4gc3R5bGU9Im1zby1mYXJlYXN0LWxhbmd1YWdlOkVOLUFVIj5QaDogKzYxIDQxMyAxODggMzk4PG86cD48L286cD48L3NwYW4-PC9wPg0KPHAgY2xhc3M9Ik1zb05vcm1hbCI-PHNwYW4gc3R5bGU9Im1zby1mYXJlYXN0LWxhbmd1YWdlOkVOLUFVIj5FOiA8L3NwYW4-PGEgaHJlZj0ibWFpbHRvOnRvYnlAcmF5bW9uZGNhcGl0YWwuY29tLmF1Ij48c3BhbiBzdHlsZT0ibXNvLWZhcmVhc3QtbGFuZ3VhZ2U6RU4tQVUiPnRvYnlAcmF5bW9uZGNhcGl0YWwuY29tLmF1PC9zcGFuPjwvYT48c3BhbiBzdHlsZT0ibXNvLWZhcmVhc3QtbGFuZ3VhZ2U6RU4tQVUiPjxvOnA-PC9vOnA-PC9zcGFuPjwvcD4NCjxwIGNsYXNzPSJNc29Ob3JtYWwiPjxzcGFuIHN0eWxlPSJtc28tZmFyZWFzdC1sYW5ndWFnZTpFTi1BVSI-VzogPC9zcGFuPjxhIGhyZWY9Imh0dHA6Ly93d3cucmF5bW9uZGNhcGl0YWwuY29tLmF1LyI-PHNwYW4gc3R5bGU9Im1zby1mYXJlYXN0LWxhbmd1YWdlOkVOLUFVIj53d3cucmF5bW9uZGNhcGl0YWwuY29tLmF1PC9zcGFuPjwvYT48c3BhbiBzdHlsZT0ibXNvLWZhcmVhc3QtbGFuZ3VhZ2U6RU4tQVUiPjxvOnA-PC9vOnA-PC9zcGFuPjwvcD4NCjxwIGNsYXNzPSJNc29Ob3JtYWwiPjxzcGFuIHN0eWxlPSJtc28tZmFyZWFzdC1sYW5ndWFnZTpFTi1BVSI-QTogNC4wMy8gNjggQWxmcmVkIFN0cmVldCwgTWlsc29ucyBQb2ludCwgTlNXPG86cD48L286cD48L3NwYW4-PC9wPg0KPHAgY2xhc3M9Ik1zb05vcm1hbCI-PG86cD4mbmJzcDs8L286cD48L3A-DQo8L2Rpdj4NCjwvYm9keT4NCjwvaHRtbD4NCg=="
+            }
+          }
+        ]
+      },
+      {
+        "partId": "1",
+        "mimeType": "image/png",
+        "filename": "image001.png",
+        "headers": [
+          {
+            "name": "Content-Type",
+            "value": "image/png; name=\"image001.png\""
+          },
+          {
+            "name": "Content-Description",
+            "value": "image001.png"
+          },
+          {
+            "name": "Content-Disposition",
+            "value": "inline; filename=\"image001.png\"; size=5251; creation-date=\"Tue, 28 Oct 2025 23:32:02 GMT\"; modification-date=\"Tue, 28 Oct 2025 23:32:02 GMT\""
+          },
+          {
+            "name": "Content-ID",
+            "value": "<image001.png@01DC482E.C6923B80>"
+          },
+          {
+            "name": "Content-Transfer-Encoding",
+            "value": "base64"
+          }
+        ],
+        "body": {
+          "attachmentId": "ANGjdJ_PwEZUbBf7hEWQuq3bxL-iNakudK5_r1zRCxNBjOerOFnubiYs-MQ0gqzCKadpCGIqXXC0FWk4ZR6sX7JlCYGzWvh_lP4VZDgxbYnkoDE9pJOzP4SVsxG7aDpOP0Q7Dy3v2r_MGd0TxcAvUa9ed2lk4kWW-2ABkxawJQjvJXaUcDdLOHuVzX0vHFFUtsSrvi2v4M-JiwDjsMvl7x_ffSc8RFyY40f5_ExgpIlOz-pAONueECEWY4a_gmgVG5SjDa01hg2FBKNSCwNY5GW0sYPd0KIRt8YVy6REzzUYLZb29NtlM9lP_3KMBEa-esMscPxNHN2FQxHGoHzf_Gkp7XSUgcn6gAM2A-8tlRrLi4NNnVwh9sCNP6SQDZwj9JN8gchMNrw8Y6CFkgiP",
+          "size": 5251
+        }
+      }
+    ]
+  }
+}

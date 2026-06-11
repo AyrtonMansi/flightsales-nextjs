@@ -1,0 +1,343 @@
+{
+  "id": "1999898b267e708a",
+  "subject": "LOI - 17-19 First Avenue,  Surfers Paradise QLD 4217",
+  "from": "Alex Bragilevsky <alex@berkshireluxe.com.au>",
+  "date": "Tue, 30 Sep 2025 03:09:14 +0000",
+  "snippet": "Hi Ayrton Please see letter of offer and application form attached procured by Berkshire Luxe. To Proceed Execute and Return Letter of Offer Execute, Fill Out and Return Application Form Send Payment",
+  "payload": {
+    "partId": "",
+    "mimeType": "multipart/mixed",
+    "filename": "",
+    "headers": [
+      {
+        "name": "Delivered-To",
+        "value": "ayrton@amansi.com.au"
+      },
+      {
+        "name": "Received",
+        "value": "by 2002:a5d:4e47:0:b0:3ec:df73:bf39 with SMTP id r7csp1940194wrt;        Mon, 29 Sep 2025 20:09:31 -0700 (PDT)"
+      },
+      {
+        "name": "X-Google-Smtp-Source",
+        "value": "AGHT+IEdyJvrRdqRFz3AsNf0L3IdBwZckhmFQvM1zU8wvCwP1YeyT6XCJtGoKKe800QRhtc3EI28"
+      },
+      {
+        "name": "X-Received",
+        "value": "by 2002:a05:6a20:3d8d:b0:263:1c48:911e with SMTP id adf61e73a8af0-2e7d5f4062dmr20563654637.60.1759201768132;        Mon, 29 Sep 2025 20:09:28 -0700 (PDT)"
+      },
+      {
+        "name": "ARC-Seal",
+        "value": "i=2; a=rsa-sha256; t=1759201768; cv=pass;        d=google.com; s=arc-20240605;        b=lH9XRHkNzvdVeRJwGqcrJQThVBDzrbn52e3POg6zQDV94jJTFl0KOFipUlnJ9VJuiY         Kao9Gx9sEKKeGsOOSaT55lJfDyasWswk0mP+a0KY6wi7xYIV/4bmfK01XaoI02FoIjf0         4uLWOMKYg4C5NsoESUJcoxD61W6JEkTQmpUw3cTExweHhCbag7M/lxOkyJHcoSpkjrry         NaO1BlB/Y20AaDycxMATIBhK5asKpsgnTsnnEYtRVU9kMViC6MiuPGUuO1z3I8wSt3tu         EDoaiAp3pBoA/7KcvuJriMAxnWOfomjfREJkQ+zvFvP026i0jraIHrWKCOEqgn7z9AYM         6zzg=="
+      },
+      {
+        "name": "ARC-Message-Signature",
+        "value": "i=2; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;        h=mime-version:content-language:accept-language:in-reply-to         :references:message-id:date:thread-index:thread-topic:subject:to         :from;        bh=JfHzMBKdoN0zmMXU++rl5fnrYGsGIE+gISNVUC7yMI0=;        fh=+B6QPpxzHyQssoz6/6Keh2aOCDl9SBnPfEkZkq4ucKU=;        b=XMGe7Rho3LFmNzQluR89gUFKc429VRQFqGt3f9JvroaLgqEvU5Y6Rk3x82a9ULCdfQ         s9CylCK5W19lCKiZ+hLdlZZCzWZUyDv0cdTTibeBRTEe439z5Swpd31PvzGA2MqDJsOK         aRY4Oh4th/Nt1lt1e9ymMIoetp9KA4S6YZBlkqNGWmBCGeNWFd7mmZ8tvlbTptWrt9xq         HozbTR9d/Y4SKF5aDt61wTnz2lSVFJSxHro/C02ZDuMpcg8LLsF456R5L/t6gRu8GFGG         CQ10dd9SGmLOKMjPo809zJS9lVkO5TOfBPHsRCupDIpALymdS+TnmVaq6oP/MQA7aZIC         7DSA==;        dara=google.com"
+      },
+      {
+        "name": "ARC-Authentication-Results",
+        "value": "i=2; mx.google.com;       arc=pass (i=1 spf=pass spfdomain=berkshireluxe.com.au dkim=pass dkdomain=berkshireluxe.com.au dmarc=pass fromdomain=berkshireluxe.com.au);       spf=pass (google.com: domain of alex@berkshireluxe.com.au designates 2a01:111:f403:c40e::1 as permitted sender) smtp.mailfrom=alex@berkshireluxe.com.au"
+      },
+      {
+        "name": "Return-Path",
+        "value": "<alex@berkshireluxe.com.au>"
+      },
+      {
+        "name": "Received",
+        "value": "from MEUPR01CU001.outbound.protection.outlook.com (mail-australiasoutheastazlp170100001.outbound.protection.outlook.com. [2a01:111:f403:c40e::1])        by mx.google.com with ESMTPS id 41be03b00d2f7-b583b711265si5492260a12.687.2025.09.29.20.09.25        for <ayrton@amansi.com.au>        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);        Mon, 29 Sep 2025 20:09:27 -0700 (PDT)"
+      },
+      {
+        "name": "Received-SPF",
+        "value": "pass (google.com: domain of alex@berkshireluxe.com.au designates 2a01:111:f403:c40e::1 as permitted sender) client-ip=2a01:111:f403:c40e::1;"
+      },
+      {
+        "name": "Authentication-Results",
+        "value": "mx.google.com;       arc=pass (i=1 spf=pass spfdomain=berkshireluxe.com.au dkim=pass dkdomain=berkshireluxe.com.au dmarc=pass fromdomain=berkshireluxe.com.au);       spf=pass (google.com: domain of alex@berkshireluxe.com.au designates 2a01:111:f403:c40e::1 as permitted sender) smtp.mailfrom=alex@berkshireluxe.com.au"
+      },
+      {
+        "name": "ARC-Seal",
+        "value": "i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none; b=nnG3ty+VjbOQKE3oX2HrkLG+ymNaXTixL+D4Rp1VQJKuT0exDjjoB6BtfzadcbNk2zgHDIKSknYmiXQRY1FDCxPJWnQlv+x0ZjZ52+MfHPOImVkrPovxuOXgwasBV8z2GxoHEhYXD4J8GRzcoevTHDZwWdjZN+8kRuG/ORhmo7HgtTwxfOjkd78fdBbHZlvUexiANl4f2b0ef5oMEvCNwkwbv4D2JwoQw3En4ubmadcZ5sNCoSaZ6vLXJyGmLZChdblKRn6b8RawQ8fbDshmTGnS0gYaOmooq2jItmjINLueXk0TgkwTpXW4jlIoGk4/3WksXxDmT81zRwyNtoYh/w=="
+      },
+      {
+        "name": "ARC-Message-Signature",
+        "value": "i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; s=arcselector10001; h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1; bh=JfHzMBKdoN0zmMXU++rl5fnrYGsGIE+gISNVUC7yMI0=; b=Ov/nox5l8GFmGf4paRLICW25jfEAtZwxEc6v9tat39xtWjvl4TVkYSplkkASX/NyqWuR5JxATEHG4MWHdT4Zg8YSmMCLDtcLEcLD6E8pMCWj9iVvXk1IrmtOTzvDJL5JNwEbRT4brKz1xO01bAGAW0Sk/CtpE/DDBiKvuXzfh42+sGxYH8QE3CpsSH5z4Adfd6zMdHfXGv+hWSepoK+ygUTmlIpKRpRjQznTn1Fs3K/ZAhz31Yo7wT/Ea4QHJpqegIKpJPlZBB+3q+8uryR66OqdeG8OFDZS99iDIAfJuLetSkDr7Fc1Z7S0kxnOxdH/0HyGcZcNTG105CxPytdfNQ=="
+      },
+      {
+        "name": "ARC-Authentication-Results",
+        "value": "i=1; mx.microsoft.com 1; spf=pass smtp.mailfrom=berkshireluxe.com.au; dmarc=pass action=none header.from=berkshireluxe.com.au; dkim=pass header.d=berkshireluxe.com.au; arc=none"
+      },
+      {
+        "name": "Received",
+        "value": "from SY7P282MB5740.AUSP282.PROD.OUTLOOK.COM (2603:10c6:10:2d1::22) by SYBP282MB3543.AUSP282.PROD.OUTLOOK.COM (2603:10c6:10:1b3::13) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9160.11; Tue, 30 Sep 2025 03:09:14 +0000"
+      },
+      {
+        "name": "Received",
+        "value": "from SY7P282MB5740.AUSP282.PROD.OUTLOOK.COM ([fe80::7cc5:f2f0:fd49:b343]) by SY7P282MB5740.AUSP282.PROD.OUTLOOK.COM ([fe80::7cc5:f2f0:fd49:b343%4]) with mapi id 15.20.9160.015; Tue, 30 Sep 2025 03:09:14 +0000"
+      },
+      {
+        "name": "From",
+        "value": "Alex Bragilevsky <alex@berkshireluxe.com.au>"
+      },
+      {
+        "name": "To",
+        "value": "ayrton mansi <ayrton@amansi.com.au>"
+      },
+      {
+        "name": "Subject",
+        "value": "LOI - 17-19 First Avenue,  Surfers Paradise QLD 4217"
+      },
+      {
+        "name": "Thread-Topic",
+        "value": "LOI - 17-19 First Avenue,  Surfers Paradise QLD 4217"
+      },
+      {
+        "name": "Thread-Index",
+        "value": "AQHcMTJSY1m/OLvJtkqL1Z/wyVnAprSrDM6C"
+      },
+      {
+        "name": "Date",
+        "value": "Tue, 30 Sep 2025 03:09:14 +0000"
+      },
+      {
+        "name": "Message-ID",
+        "value": "<66A983FB-BFA6-48AC-AC21-6F08FE4FF6B1@berkshireluxe.com.au>"
+      },
+      {
+        "name": "References",
+        "value": "<CAOzwLTVuZZRGxMbYCoUkPuE30hqVAbP0oy9pb5TSz8fkxnMptg@mail.gmail.com> <SY7P282MB5740DCD465D062864C402AECE015A@SY7P282MB5740.AUSP282.PROD.OUTLOOK.COM> <CAOzwLTVc4X23CSMGcQDrwOOpESkYnbMeLUsWSX2JJRHtdDF-1A@mail.gmail.com> <DB97E2FC-00FB-4847-B64F-B2D0525D44EF@berkshireluxe.com.au> <6DF5E01C-AD52-4A92-9AF9-CE7E34EB3882@berkshireluxe.com.au> <SY7P282MB46185113A2EEFCF17345B4CF8B1BA@SY7P282MB4618.AUSP282.PROD.OUTLOOK.COM>"
+      },
+      {
+        "name": "In-Reply-To",
+        "value": "<SY7P282MB46185113A2EEFCF17345B4CF8B1BA@SY7P282MB4618.AUSP282.PROD.OUTLOOK.COM>"
+      },
+      {
+        "name": "Accept-Language",
+        "value": "en-AU, en-US"
+      },
+      {
+        "name": "Content-Language",
+        "value": "en-US"
+      },
+      {
+        "name": "X-MS-Has-Attach",
+        "value": "yes"
+      },
+      {
+        "name": "X-MS-TNEF-Correlator",
+        "value": ""
+      },
+      {
+        "name": "authentication-results",
+        "value": "dkim=none (message not signed) header.d=none;dmarc=none action=none header.from=berkshireluxe.com.au;"
+      },
+      {
+        "name": "x-ms-publictraffictype",
+        "value": "Email"
+      },
+      {
+        "name": "x-ms-traffictypediagnostic",
+        "value": "SY7P282MB5740:EE_|SYBP282MB3543:EE_"
+      },
+      {
+        "name": "x-ms-office365-filtering-correlation-id",
+        "value": "776fb589-22fa-48dd-af7b-08ddffcebc2f"
+      },
+      {
+        "name": "x-ms-exchange-senderadcheck",
+        "value": "1"
+      },
+      {
+        "name": "x-ms-exchange-antispam-relay",
+        "value": "0"
+      },
+      {
+        "name": "x-microsoft-antispam",
+        "value": "BCL:0;ARA:13230040|376014|1800799024|366016|38070700021|4053099003|8096899003;"
+      },
+      {
+        "name": "x-microsoft-antispam-message-info",
+        "value": "a9pr774BGidaJkSN7BhRF5A+fZIgE9SBPvTOe6l82u4BegWas0vLKDQfyQfMgE9zErzvNYn7TnZ/b5Lr3jgs2X6sKIEDnf+4iQkhe0nTkr5FXe5VG5+57Tw3qOsR8e5bsl3LRU0MdshAqrxXKi7Bc1mcY/vO6QXnP4qfgQgRfvY1fp1xoRMi3aXimPKku3kCVphRF0s2RbFtnzuaM5ZBAmW42FzTxWtF/ez5Djr8MnPq2kIooV32V0Jh/GeYPo5daehMVL/Od4FiYiOC/FgSA3MZ3s5Xu/Ue1uwsT/4W8qzQWGbTf02N9vT2w2KBM509Z/7oWCXlN1umtl3QqbezGDGaAqekfzHVIlt7BGRSzjDPOGHuOYDcVUMwVUDIcQiEmHGbgUA+Fc2XIRlUETNeCstGgnIZCgjxsyXCAphVbgU44NeYvqvY4qQrYZSEtBDZGUWDEwkcnpILDNCqzsPMToweZ2fiHZZohOm5+xZeF4E7xfdCfU7MTx40svkI0pKp18vr3XfuE2Trki63eunpZq7zT0lbFtP/kiNkmZJCW91NIPO0QXLuJ0FMIrlqPipkLPezVUs1DM9AiDPuyMIycB86ewzdE/BMO49jfVkoVgrzDITm9B6HMCw4wduiyMaMlRyFb0fgez3OE576UKT8eSvU3dN7KQMLHMm6S98wS6sDe53wMw8/aeVd7tLzPNQajGM1J0TIfIqcbir1khi4fUWAoO+X5hPdnizmlUcWT5dQblw4wq8uyBOvPSTCEt2YknbfSMpdWUbAXnyz6GdhMc+2TlPTPtT3zthEhxr26jTVPNMPJYdx71E7kWEEJ9H9CPx7uwUAoSE1VuG7DaBD7JV2SPzTMIm6sSFneveuCGFpnu3r9qL49XNG2VnhEZIFZdICIxjh7LRcVzmGwCY/vYW83uh8Brn1Gyv+1tUgXGh6ZWMHjBlFkneUHG7ghsX+L5jr7kp4XZ/VouoH4wTnyzO6GbK6/hP1tF+L26LEr6thv2nz4Mm6PSo4PRybnwp/mW03gPTdTwi/qqklCQtb0S6Fbq86NiTE52Pal9WOZa/J+JUcbfYG4ezs3M18xmEIEs9wv2hQI6jOqpeepwbrBYQ4mFYplUBHX8wryZ9bub0NidGrM2IIaIt9FbdlgB4DWV8VjXsyMlO2rZXrEwy6UehJA7hl0EOxUsRDgRvkcGXCAigS1XbTw1ots1CrjTWGewOW7g7u1KrPmLHSl0GinzspHTX3l4BkWufMYCnG/5Q4T1prQnZfZin5O6niOPu+OxxeKo7Zu0qJEyp3WqGAJcwpYpyo3EHeGA/SNHtFDt2YDVhXXlJZpc/IdO+mvotvL5l4oKets5r4OT3OVVKQ3KrrvV4c9geT+ut41epg2Ur0Vip1acO4m1za4pa3WHGkEC+yEsbG2WxtOWWDsBqE8oAJWAc7xoyr5HoKzsJO1alnuiR2gG8D7zKcY6+GN5Un"
+      },
+      {
+        "name": "x-forefront-antispam-report",
+        "value": "CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SY7P282MB5740.AUSP282.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230040)(376014)(1800799024)(366016)(38070700021)(4053099003)(8096899003);DIR:OUT;SFP:1102;"
+      },
+      {
+        "name": "x-ms-exchange-antispam-messagedata-chunkcount",
+        "value": "1"
+      },
+      {
+        "name": "x-ms-exchange-antispam-messagedata-0",
+        "value": "Pbb8v/sXzSJYszi8XlBIEyoiGSyZPR0fmVQilOwLyziY9gviulgX3a5MfVsAYgykDXOd+OPXD/a7AHE3SA5E4/fsxU4oxk5PBOTuwesxsAswrRQ6eRcaOQ9iRbiDod2QE+EzrrRinWAphSQBljR7ndrdK2UwqXJzakyYUD63efhsf4UyYPElg/j4Y+Z3FOGQa/rYG89H56ptK1NkgckWoVF18cgKgqoImE/byj0GH0ksUlxYNCSd8KTPQOdvyHHL2WswovNPH8mgWmrTtj6euLROVWIoa0YgP15UWnHrKbHwgnAC2acOhoZfBOaBxDYyTHAFelKRxhl8w8xaERygff43wnnjxY82Q7PUzqP3pc0bgx/Ai/CFVseB/IBURnNFX2tI9sgrL5HUx1bsJi/f05Z+9BMNs9z3OQw5e0JDbW7qdc7fP94fNmOEbCegFvemYx4CdAvQQzOZ/DBtJHAawXarZG0A1QQ4VZm9jtm9UvAaBv9PjnhnQ3pNG5UHj5ffvfTWZeMg8pWjOrxo4UOm3THXiTuOvIh9NWJxDuRJ9TvujTmshXTPlRAWRGVMdFN2TyxvKXKh5uOVuCcBis1waJVt13YmNuM1+WPJZvRZWxx3FJr711J45fw4mhY/Ntyx/aChk1cRnsk7ghZO4ZPFg9ZgmKR3Sz2OGJcJVZHArkvVh62mHwd2l72Esf+NAzL4H3QBRuBoOHXrGf+rTCbTAOzqWoq09YAzTrb4ogt4Hr1v0ky0tTjFoxJV0Sh0noyQ6nsAJab69Z36pY0eLVBDCXIrcy23hCa1QA5VFkISgrALi1RRZ9Yyg13pGLRZl1Ss5iWh8KlGyEMmDr18OmfGrcvK7P7jdYIEYyclgj6QzhZEw+O/abFBwd+7cZNG7Kvf2PEiD8zHlmpbiMBC45nWgXQTpN9HvmsnKrXujY+OUjhN7AoG+yPdpgqBO2+1jePG0NIZBT00a3qEcMZmqB7owNfrBxCs/umpiGd1L+ta4aRXqaaZLgcQ0Lz4CRW1hQVvgp16RwyLPWctRJ4jpkMBpXJc6Z1ZX1K5Ee98mpCBaSTOpb5AjS/jZB8zxcgsQMqhhETVDiF5U5IrEaMllFTmASWwHcv9aPrsGt4K8Bl1S+MSPRbkdtxrxlyE02Tf7597krkYHbhf1UCyVCWELDV0pVEuUULvUxAYwFngfsbq07URl07l8eNE8A83UQakQrpwDPeDAI3bwDgsUJtd+xM+XihZbrSxfw7t093D3NXVzKdkg3KUgQ0qyMPAbF/wNF7I7Rxb0Q81HDbvYL+L2cVTj7CiO95A6bntrrJQJWPETgNiUloonJpOLX/C9H3w37Ax/5G0zrOdB3DXpo2Yl8xddVKKoEXZ5JAbqN0V2gRkRI4R1KiMCxXGo7owZWKIB3fcvR0yZpVe5WgbRAHL3ja+xckzJDnzKE0SpOLwGl5OVYX9SinsC4zLOLJE9f7CscTX5VhQYyA+QUNhSV4D9nu00uGI0IPryBLknC1cHEz6LA1Z0s49xXH3BB2Z4KDwYsfuz9IcHF3GZQiMiYdfJayPnRO18lEUj/EyfNyJ83yU7L3wKSYiO4tRhNaOoIPW5v1dgIS5v3i/xDUO+35CVSS4Sg=="
+      },
+      {
+        "name": "Content-Type",
+        "value": "multipart/mixed; boundary=\"_005_66A983FBBFA648ACAC216F08FE4FF6B1berkshireluxecomau_\""
+      },
+      {
+        "name": "MIME-Version",
+        "value": "1.0"
+      },
+      {
+        "name": "X-OriginatorOrg",
+        "value": "berkshireluxe.com.au"
+      },
+      {
+        "name": "X-MS-Exchange-CrossTenant-AuthAs",
+        "value": "Internal"
+      },
+      {
+        "name": "X-MS-Exchange-CrossTenant-AuthSource",
+        "value": "SY7P282MB5740.AUSP282.PROD.OUTLOOK.COM"
+      },
+      {
+        "name": "X-MS-Exchange-CrossTenant-Network-Message-Id",
+        "value": "776fb589-22fa-48dd-af7b-08ddffcebc2f"
+      },
+      {
+        "name": "X-MS-Exchange-CrossTenant-originalarrivaltime",
+        "value": "30 Sep 2025 03:09:14.1934 (UTC)"
+      },
+      {
+        "name": "X-MS-Exchange-CrossTenant-fromentityheader",
+        "value": "Hosted"
+      },
+      {
+        "name": "X-MS-Exchange-CrossTenant-id",
+        "value": "51c32206-6cfe-4380-9ba2-a8e47c55d5f9"
+      },
+      {
+        "name": "X-MS-Exchange-CrossTenant-mailboxtype",
+        "value": "HOSTED"
+      },
+      {
+        "name": "X-MS-Exchange-CrossTenant-userprincipalname",
+        "value": "UlniSKBh/eXzjmqmRI8HDHwkuNDibKmh5+upZUo8FbAytvonK6/z35JtSpR8F/PTKJftJvkqZAMNy/bbugY1vA1uy+JIIuzRI9uI+ZOKzXY="
+      },
+      {
+        "name": "X-MS-Exchange-Transport-CrossTenantHeadersStamped",
+        "value": "SYBP282MB3543"
+      }
+    ],
+    "body": {
+      "size": 0
+    },
+    "parts": [
+      {
+        "partId": "0",
+        "mimeType": "multipart/alternative",
+        "filename": "",
+        "headers": [
+          {
+            "name": "Content-Type",
+            "value": "multipart/alternative; boundary=\"_000_66A983FBBFA648ACAC216F08FE4FF6B1berkshireluxecomau_\""
+          }
+        ],
+        "body": {
+          "size": 0
+        },
+        "parts": [
+          {
+            "partId": "0.0",
+            "mimeType": "text/plain",
+            "filename": "",
+            "headers": [
+              {
+                "name": "Content-Type",
+                "value": "text/plain; charset=\"us-ascii\""
+              },
+              {
+                "name": "Content-Transfer-Encoding",
+                "value": "quoted-printable"
+              }
+            ],
+            "body": {
+              "size": 567,
+              "data": "SGkgQXlydG9uDQoNClBsZWFzZSBzZWUgbGV0dGVyIG9mIG9mZmVyIGFuZCBhcHBsaWNhdGlvbiBmb3JtIGF0dGFjaGVkIHByb2N1cmVkIGJ5IEJlcmtzaGlyZSBMdXhlLg0KDQpUbyBQcm9jZWVkDQoNCiAgKiAgIEV4ZWN1dGUgYW5kIFJldHVybiBMZXR0ZXIgb2YgT2ZmZXINCiAgKiAgIEV4ZWN1dGUsIEZpbGwgT3V0IGFuZCBSZXR1cm4gQXBwbGljYXRpb24gRm9ybQ0KICAqICAgU2VuZCBQYXltZW50IFJlbWl0dGFuY2Ugb2YgVXBmcm9udCBGZWUgKEluIExPSSBEb2N1bWVudCkNClBsZWFzZSBub3RlIHRoYXQgdGhpcyBvZmZlciBpcyB2YWxpZCBmb3IgNSBidXNpbmVzcyBkYXlzLCBhcyB3ZSBjYW5ub3QgaG9sZCB0aGUgZnVuZHMgYXNzaWduZWQgdG8gdGhpcyB0cmFuc2FjdGlvbiBpbmRlZmluaXRlbHkuDQoNClBsZWFzZSBub3RlIHRoYXQgSSBoYXZlIHJlcXVlc3RlZCB0aGUgdGVybSB0byBiZSBhbWVuZGVkIHRvIDYgbW9udGhzIHRvIHJlcGF5IE1BIGluIGZ1bGwuDQoNCkFsc28gZ2l2ZW4gdGhlIExWUiA3NSUsIHRoZSBwcmljaW5nIHJlZmxlY3RzIGEgc3RyZXRjaCBwb3NpdGlvbi4NCg0K"
+            }
+          },
+          {
+            "partId": "0.1",
+            "mimeType": "text/html",
+            "filename": "",
+            "headers": [
+              {
+                "name": "Content-Type",
+                "value": "text/html; charset=\"us-ascii\""
+              },
+              {
+                "name": "Content-Transfer-Encoding",
+                "value": "quoted-printable"
+              }
+            ],
+            "body": {
+              "size": 3855,
+              "data": "PGh0bWw-DQo8aGVhZD4NCjxtZXRhIGh0dHAtZXF1aXY9IkNvbnRlbnQtVHlwZSIgY29udGVudD0idGV4dC9odG1sOyBjaGFyc2V0PXVzLWFzY2lpIj4NCjwvaGVhZD4NCjxib2R5IGRpcj0iYXV0byI-DQo8c3BhbiBzdHlsZT0iYmFja2dyb3VuZC1jb2xvcjogd2hpdGU7Ij5IaSBBeXJ0b248L3NwYW4-DQo8ZGl2PjxzcGFuIHN0eWxlPSJjb2xvcjogcmdiKDI5LCAyOCwgMjkpOyBmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IGZvbnQtc2l6ZTogMTEuNXB0OyBiYWNrZ3JvdW5kLWNvbG9yOiB3aGl0ZTsiPjxicj4NCjwvc3Bhbj48L2Rpdj4NCjxkaXY-PHNwYW4gc3R5bGU9ImNvbG9yOiByZ2IoMjksIDI4LCAyOSk7IGZvbnQtZmFtaWx5OiBBcmlhbCwgc2Fucy1zZXJpZjsgZm9udC1zaXplOiAxMS41cHQ7IGJhY2tncm91bmQtY29sb3I6IHdoaXRlOyI-UGxlYXNlIHNlZSBsZXR0ZXIgb2Ygb2ZmZXIgYW5kIGFwcGxpY2F0aW9uIGZvcm0gYXR0YWNoZWQgcHJvY3VyZWQgYnkgQmVya3NoaXJlIEx1eGUuPC9zcGFuPjwvZGl2Pg0KPGRpdj48Zm9udCBjb2xvcj0iIzFkMWMxZCIgZmFjZT0iQXJpYWwsIHNhbnMtc2VyaWYiPjxzcGFuIHN0eWxlPSJjYXJldC1jb2xvcjogcmdiKDI5LCAyOCwgMjkpOyBmb250LXNpemU6IDE1LjMzMzMzM3B4OyBiYWNrZ3JvdW5kLWNvbG9yOiByZ2IoMjU1LCAyNTUsIDI1NSk7Ij48YnI-DQo8L3NwYW4-PC9mb250Pg0KPGJsb2NrcXVvdGUgdHlwZT0iY2l0ZSI-DQo8ZGl2IGRpcj0ibHRyIj4NCjxkaXYgY2xhc3M9IldvcmRTZWN0aW9uMSI-DQo8cCBjbGFzcz0iTXNvTm9ybWFsIiBzdHlsZT0ibXNvLW1hcmdpbi10b3AtYWx0OmF1dG87bXNvLW1hcmdpbi1ib3R0b20tYWx0OmF1dG87YmFja2dyb3VuZDp3aGl0ZSI-DQo8Yj48c3BhbiBzdHlsZT0iZm9udC1zaXplOjExLjVwdDtmb250LWZhbWlseTomcXVvdDtBcmlhbCZxdW90OyxzYW5zLXNlcmlmO2NvbG9yOiMxRDFDMUQiPlRvIFByb2NlZWQ8L3NwYW4-PC9iPjxzcGFuIHN0eWxlPSJmb250LXNpemU6MTEuNXB0O2ZvbnQtZmFtaWx5OiZxdW90O0FyaWFsJnF1b3Q7LHNhbnMtc2VyaWY7Y29sb3I6IzFEMUMxRCI-PG86cD48L286cD48L3NwYW4-PC9wPg0KPHVsIHR5cGU9ImRpc2MiPg0KPGxpIGNsYXNzPSJNc29MaXN0UGFyYWdyYXBoIiBzdHlsZT0iY29sb3I6IzFEMUMxRDttc28tbGlzdDpsMCBsZXZlbDEgbGZvMztiYWNrZ3JvdW5kOndoaXRlIj4NCjxzcGFuIHN0eWxlPSJmb250LXNpemU6MTEuNXB0O2ZvbnQtZmFtaWx5OiZxdW90O0FyaWFsJnF1b3Q7LHNhbnMtc2VyaWYiPkV4ZWN1dGUgYW5kIFJldHVybiBMZXR0ZXIgb2YgT2ZmZXI8bzpwPjwvbzpwPjwvc3Bhbj48L2xpPjxsaSBjbGFzcz0iTXNvTGlzdFBhcmFncmFwaCIgc3R5bGU9ImNvbG9yOiMxRDFDMUQ7bXNvLWxpc3Q6bDAgbGV2ZWwxIGxmbzM7YmFja2dyb3VuZDp3aGl0ZSI-DQo8c3BhbiBzdHlsZT0iZm9udC1zaXplOjExLjVwdDtmb250LWZhbWlseTomcXVvdDtBcmlhbCZxdW90OyxzYW5zLXNlcmlmIj5FeGVjdXRlLCBGaWxsIE91dCBhbmQgUmV0dXJuIEFwcGxpY2F0aW9uIEZvcm08bzpwPjwvbzpwPjwvc3Bhbj48L2xpPjxsaSBjbGFzcz0iTXNvTGlzdFBhcmFncmFwaCIgc3R5bGU9ImNvbG9yOiMxRDFDMUQ7bXNvLWxpc3Q6bDAgbGV2ZWwxIGxmbzM7YmFja2dyb3VuZDp3aGl0ZSI-DQo8c3BhbiBzdHlsZT0iZm9udC1zaXplOjExLjVwdDtmb250LWZhbWlseTomcXVvdDtBcmlhbCZxdW90OyxzYW5zLXNlcmlmIj5TZW5kIFBheW1lbnQgUmVtaXR0YW5jZSBvZiBVcGZyb250IEZlZSAoSW4gTE9JIERvY3VtZW50KTxvOnA-PC9vOnA-PC9zcGFuPjwvbGk-PC91bD4NCjxwIGNsYXNzPSJNc29Ob3JtYWwiIHN0eWxlPSJtc28tbWFyZ2luLXRvcC1hbHQ6YXV0bzttc28tbWFyZ2luLWJvdHRvbS1hbHQ6YXV0bztiYWNrZ3JvdW5kOndoaXRlIj4NCjxzcGFuIHN0eWxlPSJmb250LXNpemU6MTEuNXB0O2ZvbnQtZmFtaWx5OiZxdW90O0FyaWFsJnF1b3Q7LHNhbnMtc2VyaWY7Y29sb3I6IzFEMUMxRCI-UGxlYXNlIG5vdGUgdGhhdCB0aGlzIG9mZmVyIGlzIHZhbGlkIGZvciA1IGJ1c2luZXNzIGRheXMsIGFzIHdlIGNhbm5vdCBob2xkIHRoZSBmdW5kcyBhc3NpZ25lZCB0byB0aGlzIHRyYW5zYWN0aW9uIGluZGVmaW5pdGVseS48L3NwYW4-PC9wPg0KPC9kaXY-DQo8L2Rpdj4NCjwvYmxvY2txdW90ZT4NCjxkaXY-PGJyPg0KPC9kaXY-DQpQbGVhc2Ugbm90ZSB0aGF0IEkgaGF2ZSByZXF1ZXN0ZWQgdGhlIHRlcm0gdG8gYmUgYW1lbmRlZCB0byA2IG1vbnRocyB0byByZXBheSBNQSBpbiBmdWxsLiZuYnNwOzwvZGl2Pg0KPGRpdj48YnI-DQo8L2Rpdj4NCjxkaXY-QWxzbyBnaXZlbiB0aGUgTFZSIDc1JSwgdGhlIHByaWNpbmcgcmVmbGVjdHMgYSBzdHJldGNoIHBvc2l0aW9uLjxicj4NCjxibG9ja3F1b3RlIHR5cGU9ImNpdGUiPg0KPGRpdiBkaXI9Imx0ciI-DQo8ZGl2IGNsYXNzPSJXb3JkU2VjdGlvbjEiPg0KPHAgY2xhc3M9Ik1zb05vcm1hbCIgc3R5bGU9Im1zby1tYXJnaW4tdG9wLWFsdDphdXRvO21zby1tYXJnaW4tYm90dG9tLWFsdDphdXRvO2JhY2tncm91bmQ6d2hpdGUiPg0KPHNwYW4gc3R5bGU9ImZvbnQtc2l6ZToxMS41cHQ7Zm9udC1mYW1pbHk6JnF1b3Q7QXJpYWwmcXVvdDssc2Fucy1zZXJpZjtjb2xvcjojMUQxQzFEIj48bzpwPjwvbzpwPjwvc3Bhbj48L3A-DQo8cCBjbGFzcz0iTXNvTm9ybWFsIiBzdHlsZT0ibXNvLW1hcmdpbi10b3AtYWx0OmF1dG87bXNvLW1hcmdpbi1ib3R0b20tYWx0OmF1dG87YmFja2dyb3VuZDp3aGl0ZSI-DQo8YnI-DQo8L3A-DQo8ZGl2Pg0KPGJsb2NrcXVvdGUgc3R5bGU9Im1hcmdpbi10b3A6NS4wcHQ7bWFyZ2luLWJvdHRvbTo1LjBwdCI-DQo8ZGl2Pg0KPGRpdj48L2Rpdj4NCjwvZGl2Pg0KPC9ibG9ja3F1b3RlPg0KPC9kaXY-DQo8L2Rpdj4NCjwvZGl2Pg0KPC9ibG9ja3F1b3RlPg0KPC9kaXY-DQo8ZGl2Pg0KPGJsb2NrcXVvdGUgdHlwZT0iY2l0ZSI-DQo8ZGl2IGRpcj0ibHRyIj48L2Rpdj4NCjwvYmxvY2txdW90ZT4NCjwvZGl2Pg0KPGRpdj4NCjxibG9ja3F1b3RlIHR5cGU9ImNpdGUiPg0KPGRpdiBkaXI9Imx0ciI-PC9kaXY-DQo8L2Jsb2NrcXVvdGU-DQo8c3R5bGU-QGZvbnQtZmFjZSB7IGZvbnQtZmFtaWx5OiAiQ2FtYnJpYSBNYXRoIjsgfQ0KQGZvbnQtZmFjZSB7IGZvbnQtZmFtaWx5OiBDYWxpYnJpOyB9DQpAZm9udC1mYWNlIHsgZm9udC1mYW1pbHk6IEFwdG9zOyB9DQpwLk1zb05vcm1hbCwgbGkuTXNvTm9ybWFsLCBkaXYuTXNvTm9ybWFsIHsgbWFyZ2luOiAwY207IGZvbnQtc2l6ZTogMTJwdDsgZm9udC1mYW1pbHk6IEFwdG9zLCBzYW5zLXNlcmlmOyB9DQphOmxpbmssIHNwYW4uTXNvSHlwZXJsaW5rIHsgY29sb3I6IGJsdWU7IHRleHQtZGVjb3JhdGlvbjogdW5kZXJsaW5lOyB9DQpwLk1zb0xpc3RQYXJhZ3JhcGgsIGxpLk1zb0xpc3RQYXJhZ3JhcGgsIGRpdi5Nc29MaXN0UGFyYWdyYXBoIHsgbWFyZ2luLXJpZ2h0OiAwY207IG1hcmdpbi1sZWZ0OiAwY207IGZvbnQtc2l6ZTogMTJwdDsgZm9udC1mYW1pbHk6IEFwdG9zLCBzYW5zLXNlcmlmOyB9DQpzcGFuLkVtYWlsU3R5bGUyMCB7IGZvbnQtZmFtaWx5OiBBcHRvcywgc2Fucy1zZXJpZjsgY29sb3I6IHdpbmRvd3RleHQ7IH0NCi5Nc29DaHBEZWZhdWx0IHsgZm9udC1zaXplOiAxMHB0OyB9DQpAcGFnZSBXb3JkU2VjdGlvbjEgeyBzaXplOiA2MTJwdCA3OTJwdDsgbWFyZ2luOiA3MnB0OyB9DQpkaXYuV29yZFNlY3Rpb24xIHsgcGFnZTogV29yZFNlY3Rpb24xOyB9DQpvbCB7IG1hcmdpbi1ib3R0b206IDBjbTsgfQ0KdWwgeyBtYXJnaW4tYm90dG9tOiAwY207IH08L3N0eWxlPjwvZGl2Pg0KPC9ib2R5Pg0KPC9odG1sPg0K"
+            }
+          }
+        ]
+      },
+      {
+        "partId": "1",
+        "mimeType": "application/pdf",
+        "filename": "Application Form.pdf",
+        "headers": [
+          {
+            "name": "Content-Type",
+            "value": "application/pdf; name=\"Application Form.pdf\""
+          },
+          {
+            "name": "Content-Description",
+            "value": "Application Form.pdf"
+          },
+          {
+            "name": "Content-Disposition",
+            "value": "attachment; filename=\"Application Form.pdf\"; size=2168736; creation-date=\"Tue, 30 Sep 2025 03:09:13 GMT\"; modification-date=\"Tue, 30 Sep 2025 03:09:13 GMT\""
+          },
+          {
+            "name": "Content-ID",
+            "value": "<8B064EF52ED60B4EB816EC8C6544749D@berkshireluxe.com.au>"
+          },
+          {
+            "name": "Content-Transfer-Encoding",
+            "value": "base64"
+          }
+        ],
+        "body": {
+          "attachmentId": "ANGjdJ_euzS9UgvzZT0qw5Q5hqPLzEP_9HvAPsBerwtblemcwbwukUuKCFhz1TLlolcHHD07n3raATRL10NgSy3sP_y_yQGRRylPIR2Htpa6hKq4Yp3oRWmFxZNFRuH16jfcoXxg7aPm7nvChyYL8yV3iUeMyNrx4d79W41iKPpmHhneYslCEti_bYef1WTILKBWauT6Van1r92vkp_R4imcbGEgX6UNr5RYVixtgUtXdWOlETfydp4P47yzA_jFqkC-rECUSW3UwtA4xMAgMLn5ykLl5BK9tQ6Qr9XU7rZmo9rXFpp4hNjRbz2f9v8Sni9DGTrVP13yVVHIhzIwgJEnvbEY0BncWDQb10ey91GpCRTLf2U2CJ0uG9HGUn95byY4Gtyk2JdawBJOZP6uGKHy6iBmaSPVFapnKNKJEQ",
+          "size": 2168736
+        }
+      },
+      {
+        "partId": "2",
+        "mimeType": "application/pdf",
+        "filename": "LOI - 17-19 First Avenue, Surfers Paradise QLD 4217.pdf",
+        "headers": [
+          {
+            "name": "Content-Type",
+            "value": "application/pdf; name=\"LOI - 17-19 First Avenue, Surfers Paradise QLD 4217.pdf\""
+          },
+          {
+            "name": "Content-Description",
+            "value": "LOI - 17-19 First Avenue, Surfers Paradise QLD 4217.pdf"
+          },
+          {
+            "name": "Content-Disposition",
+            "value": "attachment; filename=\"LOI - 17-19 First Avenue, Surfers Paradise QLD 4217.pdf\"; size=478293; creation-date=\"Tue, 30 Sep 2025 03:09:13 GMT\"; modification-date=\"Tue, 30 Sep 2025 03:09:13 GMT\""
+          },
+          {
+            "name": "Content-ID",
+            "value": "<08051762F2819144801CDDE2985E726F@berkshireluxe.com.au>"
+          },
+          {
+            "name": "Content-Transfer-Encoding",
+            "value": "base64"
+          }
+        ],
+        "body": {
+          "attachmentId": "ANGjdJ_9C1KK52Ffe2U7TOVGs1EuGbgHKBRiQMxbFWpilEDe_Kquwq2Ia4vrR_uN-3uKNTQBByxAVM_WZlzMXzP-Oh5OD8qy3N4Owhe6Xa94ech27wTqpW5omncrnfsA3OETHwJU2eV4nu9_UtXu7-Uva0BlwOc0Js1zHi8EfreRYGHGJGTwz_gTBMWdfemBgBbmSDUNlXUryNSNXPLJGguDx5WNlbXD0jm0HpSiyPZETcfCgEr35GAxDLyGxgnNCxsoQBbkG7xDiwChf41PTJXYv5kttnjQRylV0GEdzqWtxlIzFiTlCGmyF3fTGolR4ZuKL9HfRV67eH_NrrZ1W0X1qwszkxTB_Qc8d6nadRc_M8MKkqMTQIh8cc5PbX8L-DwGN0U1kV2eVI6v9Fgj9YA6lUh4kra8msa8bp-ouA",
+          "size": 478293
+        }
+      }
+    ]
+  }
+}

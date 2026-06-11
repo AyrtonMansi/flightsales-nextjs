@@ -1,0 +1,231 @@
+{
+  "id": "1983649b3f138989",
+  "subject": "Completed: Complete with Docusign: Power of Attorney - Freddie Sheen [2025.07.23]",
+  "from": "Jasmine Matthews via Docusign <dse@aumail.docusign.net>",
+  "date": "Wed, 23 Jul 2025 00:57:28 -0700",
+  "snippet": "Your document has been completed VIEW COMPLETED DOCUMENT Jasmine Matthews Jasmine.Matthews@holdingredlich.com All parties have completed Complete with Docusign: Power of Attorney - Freddie Sheen [",
+  "payload": {
+    "partId": "",
+    "mimeType": "multipart/mixed",
+    "filename": "",
+    "headers": [
+      {
+        "name": "Delivered-To",
+        "value": "ayrton@amansi.com.au"
+      },
+      {
+        "name": "Received",
+        "value": "by 2002:a05:6000:230f:b0:3a4:cb64:10b0 with SMTP id et15csp39467wrb;        Wed, 23 Jul 2025 00:57:38 -0700 (PDT)"
+      },
+      {
+        "name": "X-Google-Smtp-Source",
+        "value": "AGHT+IEIvUHuhTKwsCMYbmwqcppcG/2Xxq3892beU9uA9ZoKl6oNiXQqTzuhkww6qPO3eCHebH3s"
+      },
+      {
+        "name": "X-Received",
+        "value": "by 2002:a05:6830:4d96:b0:73c:c494:a032 with SMTP id 46e09a7af769-74080520ea8mr982957a34.2.1753257456208;        Wed, 23 Jul 2025 00:57:36 -0700 (PDT)"
+      },
+      {
+        "name": "ARC-Seal",
+        "value": "i=1; a=rsa-sha256; t=1753257456; cv=none;        d=google.com; s=arc-20240605;        b=kUtnh7gb1OE9NZjRFQNPuDnpzh3diPRcsxKB3/V+EXDhgat3gTUV0fEjeyTUNG5e2Q         iAC/sXnRDj0nkSiqrsimXGC1z5jlpHhfKO9+13AXn/JOkkHKEmNu4lzoVyizLc0RtXIK         M3cq2/nz5QyR2/Xj65s5e5xA4IrEn/FZYPrOmtsqA1MpPoZDbVaHsDyV2roeBCKnf1pZ         LlBOFhzezEAe+Eja01sqOmtb1r8mvmnHNiPSOFy4kAU+93cj7Aar5vwf7oFk2Dx0eLFw         SJrmI9b3ShX7I4UnCPOCftTKRS0h3L/Ggkd/jT6FH06dktkPWTtpf1bL1X9pisDjSTcF         HSNA=="
+      },
+      {
+        "name": "ARC-Message-Signature",
+        "value": "i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;        h=mime-version:subject:date:message-id:to:from:feedback-id:reply-to         :sender:dkim-signature;        bh=JcHyfp2fDcV5bY+bKnPK8KmGswWl8o+Rf02HOazRkeQ=;        fh=yIt0KonVqJxiPWO1FUQkXr7Db6KAqaMadPqyQvNngys=;        b=DJCuIrjFCaf/nuOdYZkGfDvtAI9O0TtWgpgXbwiElnzEkw/Ut+bkVaPXBmltCECRLl         rvEU1vLYlppQVDB+pc9/S1WVkuX1wB3UEr8jUl+vj+MLkAX3qG3XhHS1pee0YxL3MWJq         592ySycSJ5+fPNtxR5aPpC9Q61kDLTUKlWg96tEcQ+iXYz7PddwX1ejpWuPBCkSpsWOz         D26JKtBhQmWOPRfNawk9cbcmmpLorcEpd2mCK0v8aMFgSox70yQO+125C+Vs+pzFDph3         d/we30dOF1owO8+JVa3tIOJU635WCa1XX+VPkRpefiCYvEwRV1o1nK6ublULwfQBheah         7cQQ==;        dara=google.com"
+      },
+      {
+        "name": "ARC-Authentication-Results",
+        "value": "i=1; mx.google.com;       dkim=pass header.i=@aumail.docusign.net header.s=mail1 header.b=yOeBdS0u;       spf=pass (google.com: domain of dse@aumail.docusign.net designates 64.207.219.71 as permitted sender) smtp.mailfrom=dse@aumail.docusign.net;       dmarc=pass (p=REJECT sp=REJECT dis=NONE) header.from=docusign.net"
+      },
+      {
+        "name": "Return-Path",
+        "value": "<dse@aumail.docusign.net>"
+      },
+      {
+        "name": "Received",
+        "value": "from mailch.docusign.net (mailch.docusign.net. [64.207.219.71])        by mx.google.com with ESMTPS id 46e09a7af769-73e83b4819dsi6688355a34.252.2025.07.23.00.57.35        for <ayrton@amansi.com.au>        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);        Wed, 23 Jul 2025 00:57:36 -0700 (PDT)"
+      },
+      {
+        "name": "Received-SPF",
+        "value": "pass (google.com: domain of dse@aumail.docusign.net designates 64.207.219.71 as permitted sender) client-ip=64.207.219.71;"
+      },
+      {
+        "name": "Authentication-Results",
+        "value": "mx.google.com;       dkim=pass header.i=@aumail.docusign.net header.s=mail1 header.b=yOeBdS0u;       spf=pass (google.com: domain of dse@aumail.docusign.net designates 64.207.219.71 as permitted sender) smtp.mailfrom=dse@aumail.docusign.net;       dmarc=pass (p=REJECT sp=REJECT dis=NONE) header.from=docusign.net"
+      },
+      {
+        "name": "Received",
+        "value": "from ME1FE31.AUAD.DOCUSIGN.NET (se-c103-f51-81.corp.docusign.net [10.101.81.137]) by mailch.docusign.net (Postfix) with ESMTP id 0994F1F50A for <ayrton@amansi.com.au>; Wed, 23 Jul 2025 07:57:29 +0000 (UTC)"
+      },
+      {
+        "name": "DKIM-Signature",
+        "value": "v=1; a=rsa-sha256; c=relaxed/simple; d=aumail.docusign.net; s=mail1; t=1753257455; bh=l1pB/5bkMqgYTK8Da90Klk42J51t8np5HWoooRfT8jk=; h=Reply-To:Feedback-ID:From:To:Date:Subject; b=yOeBdS0uBS+p63QeUp3AkYDOiyG6jzlpbcHNjFrrQ4WCHq//stHqk30t1ksqz1+J+\t yUf6G53SkmxeM2Zaf8nPVUgu04vcsm3xUicwWQ+Y7rekGxfXPO0NS47tTIhl5xZDY8\t fSQt7RSppHK4Hildetg7IdygPi41mT3tsdElfKE+uG3GlO1/gfB0Itkg1kzTBEuMyc\t PtcCs7sr11oR2IUYWYgNGCuSEBAlxD1J0hgcS46FAKxm5CXecLS/FoljKoVxzkcpfw\t UzV40zJEOZa5yL6clcX4CTelWSUMgsb6ycFFjh1Lk57IyXCcIWRF58d60LRQjTxmMF\t zh7D2vSCdyLKA=="
+      },
+      {
+        "name": "Received",
+        "value": "from aumail.docusign.net ([127.0.0.1]) by ME1FE31.AUAD.DOCUSIGN.NET with Microsoft SMTPSVC(10.0.17763.1697);\t Wed, 23 Jul 2025 00:57:28 -0700"
+      },
+      {
+        "name": "Sender",
+        "value": "DocuSign AU System <dse@aumail.docusign.net>"
+      },
+      {
+        "name": "Reply-To",
+        "value": "Jasmine Matthews <Jasmine.Matthews@holdingredlich.com>"
+      },
+      {
+        "name": "Feedback-ID",
+        "value": "0:4b0f46a9-bd29-49c3-9412-33622ca2074a:RecipientEnvelopeComplete:Docusign_Prod"
+      },
+      {
+        "name": "X-DS-Score",
+        "value": "0"
+      },
+      {
+        "name": "From",
+        "value": "Jasmine Matthews via Docusign <dse@aumail.docusign.net>"
+      },
+      {
+        "name": "To",
+        "value": "Ayrton Marcello Mansi <ayrton@amansi.com.au>"
+      },
+      {
+        "name": "Message-ID",
+        "value": "<efb70c2c9d874c5c92ed897c221b89e1@aumail.docusign.net>"
+      },
+      {
+        "name": "Date",
+        "value": "Wed, 23 Jul 2025 00:57:28 -0700"
+      },
+      {
+        "name": "Subject",
+        "value": "Completed: Complete with Docusign: Power of Attorney - Freddie Sheen [2025.07.23]"
+      },
+      {
+        "name": "MIME-Version",
+        "value": "1.0"
+      },
+      {
+        "name": "Content-Type",
+        "value": "multipart/mixed; boundary=\"----=_NextPart_66E3ED6C_CE46_4A31_9CF6_80392866AD21\""
+      },
+      {
+        "name": "X-OriginalArrivalTime",
+        "value": "23 Jul 2025 07:57:28.0446 (UTC) FILETIME=[6F6371E0:01DBFBA7]"
+      }
+    ],
+    "body": {
+      "size": 0
+    },
+    "parts": [
+      {
+        "partId": "0",
+        "mimeType": "multipart/alternative",
+        "filename": "",
+        "headers": [
+          {
+            "name": "Content-Type",
+            "value": "multipart/alternative; boundary=\"----=_NextPart_98B3CDE9_4CBB_44E7_8956_F0E52A7028CA\""
+          }
+        ],
+        "body": {
+          "size": 0
+        },
+        "parts": [
+          {
+            "partId": "0.0",
+            "mimeType": "text/plain",
+            "filename": "",
+            "headers": [
+              {
+                "name": "Content-type",
+                "value": "text/plain; charset=utf-8"
+              },
+              {
+                "name": "Content-Transfer-Encoding",
+                "value": "quoted-printable"
+              }
+            ],
+            "body": {
+              "size": 1936,
+              "data": "SGVsbG8gQXlydG9uIE1hcmNlbGxvIE1hbnNpLCAgICANCg0KQWxsIHBhcnRpZXMgaGF2ZSBjb21wbGV0ZWQgQ29tcGxldGUgd2l0aCBEb2N1c2lnbjogUG93ZXIgb2YgQXR0b3JuZXkgLSBGcmVkZGllIFNoZWVuIFsyMDI1LjA3LjIzXS4NCiAgICANCiAgICANCg0KaHR0cHM6Ly9hdS5kb2N1c2lnbi5uZXQvU2lnbmluZy9FbWFpbFN0YXJ0LmFzcHg_YT1mYjNmMzI4Ni01NGQ0LTQ4OTEtOGFlYS0zODYyZmEzMjhkZTImZXR0aT00MyZyPTgxMjg4M2M0LTU3ZGQtNDNmOS05MmMyLWM0NmU3ZTVkOTA4Mg0KDQpJZiBjbGlja2luZyB0aGUgbGluayBkb2VzIG5vdCB3b3JrLCB5b3UgY2FuIGhpZ2hsaWdodCBhbmQgY29weSB0aGUgZW50aXJlIGxpbmUgYWJvdmUgYW5kIHBhc3RlIGl0IGludG8geW91ciBicm93c2VyIHRvIGdldCBzdGFydGVkLg0KDQpUaGlzIG1lc3NhZ2Ugd2FzIHNlbnQgdG8geW91IGJ5IEphc21pbmUgTWF0dGhld3Mgd2hvIGlzIHVzaW5nIHRoZSBEb2N1c2lnbiBFbGVjdHJvbmljIFNpZ25hdHVyZSBTZXJ2aWNlLiBJZiB5b3Ugd291bGQgcmF0aGVyIG5vdCByZWNlaXZlIGVtYWlsIGZyb20gdGhpcyBzZW5kZXIgeW91IG1heSBjb250YWN0IHRoZSBzZW5kZXIgd2l0aCB5b3VyIHJlcXVlc3QuDQoNCkRvIE5vdCBTaGFyZSBUaGlzIEVtYWlsDQpUaGlzIGVtYWlsIGNvbnRhaW5zIGEgc2VjdXJlIGxpbmsgdG8gRG9jdXNpZ24uIFBsZWFzZSBkbyBub3Qgc2hhcmUgdGhpcyBlbWFpbCwgbGluaywgb3IgYWNjZXNzIGNvZGUgd2l0aCBvdGhlcnMuDQoNClF1ZXN0aW9ucyBhYm91dCB0aGUgRG9jdW1lbnQ_DQpJZiB5b3UgbmVlZCB0byBtb2RpZnkgdGhlIGRvY3VtZW50IG9yIGhhdmUgcXVlc3Rpb25zIGFib3V0IHRoZSBkZXRhaWxzIGluIHRoZSBkb2N1bWVudCwgcGxlYXNlIHJlYWNoIG91dCB0byB0aGUgc2VuZGVyIGJ5IGVtYWlsaW5nIHRoZW0gZGlyZWN0bHkuDQoNClN0b3AgcmVjZWl2aW5nIHRoaXMgZW1haWwNClJlcG9ydCB0aGlzIGVtYWlsIGh0dHBzOi8vcHJvdGVjdC5kb2N1c2lnbi5uZXQvcmVwb3J0LWFidXNlP2U9QVV0b21qcEZhazlHbGJQTDB6RkZpMTJoQW5lTVB4cVNoMGc3cjlxS29jOUF3RkVXVTIxbjZwb0g0Vy1RSDQwRnZlWHNTc01WR0dmaHIwX3RoRE5qU0xNTmp3ZVNMdFNXd1dJbk96UHZLd1B0cFk4WTJuQzFzM0NwMS1TMXMtdEV4MUZMWC1zY195WmdaRDVNa01hWnEyTUdZYkF6SjQ4RVpBZndfZ3h2NjFSSnVocTdOMVk5SHBkRzdEYTliRjRqNDR3RHBxanZCVzJfb1cwdEdhREplYzJuaFZ1VGJRWnZnLW9ELU1fSERRdDhUOXJBUnM5SEhyWC1ERW9LUkQwZTVCQUh4SVAySmZzQzlycE56UzZwZ2lhYjR0MVZSWDNQakVSLXZ5MGhYWURuTFdzb096SVdpckQ5aXRoQ0RHektsekc5VE5IX1NOdUczRGo5TmY1RXc1MUFHMjFkV0EyaXZjM3pJQlAwdFNRbkxQbk5YUjZMU015RlVNRWl1cmtqWXlnc2x0ZGh6bzdWZFVxYmdQckVLMGdxUFpfM1B6b1g2MlNzVXZ3dkM2MEhhc2ZwalhHYXh1MElUNi1FSHBKbm53Jmxhbmc9ZW4NCkRlY2xpbmluZyB0byBzaWduIA0KTWFuYWdpbmcgbm90aWZpY2F0aW9ucyANCg0KSWYgeW91IGhhdmUgdHJvdWJsZSBzaWduaW5nLCB2aXNpdCAiSG93IHRvIFNpZ24gYSBEb2N1bWVudCIgb24gb3VyIERvY3VzaWduIFN1cHBvcnQgQ2VudGVyLCBvciBiZWNvbWUgcGFydCBvZiB0aGUgRG9jdXNpZ24gQ29tbXVuaXR5IHRvIGFjY2VzcyB0aXBzIGFuZCBndWlkYW5jZSBmcm9tIHBlZXJzLg0KaHR0cHM6Ly9zdXBwb3J0LmRvY3VzaWduLmNvbS9zL2FydGljbGVzL0hvdy1kby1JLXNpZ24tYS1Eb2N1U2lnbi1kb2N1bWVudC1CYXNpYy1TaWduaW5nP2xhbmd1YWdlPWVuX1VTJiMzODt1dG1fY2FtcGFpZ249R0JMX1hYX0RCVV9VUFNfMjIxMV9TaWduTm90aWZpY2F0aW9uRW1haWxGb290ZXImIzM4O3V0bV9tZWRpdW09cHJvZHVjdCYjMzg7dXRtX3NvdXJjZT1wb3N0c2VuZA=="
+            }
+          },
+          {
+            "partId": "0.1",
+            "mimeType": "text/html",
+            "filename": "",
+            "headers": [
+              {
+                "name": "Content-type",
+                "value": "text/html; charset=utf-8"
+              },
+              {
+                "name": "Content-Transfer-Encoding",
+                "value": "quoted-printable"
+              }
+            ],
+            "body": {
+              "size": 8669,
+              "data": "PGh0bWwgbGFuZz0iZW4iPjxoZWFkPjxtZXRhIGh0dHAtZXF1aXY9IkNvbnRlbnQtVHlwZSIgY29udGVudD0idGV4dC9odG1sOyBjaGFyc2V0PVVURi04Ii8-PG1ldGEgbmFtZT0idmlld3BvcnQiIGNvbnRlbnQ9ImluaXRpYWwtc2NhbGU9MS4wIi8-PG1ldGEgbmFtZT0iZm9ybWF0LWRldGVjdGlvbiIgY29udGVudD0idGVsZXBob25lPW5vIi8-PHRpdGxlPlJlY2lwaWVudEVudmVsb3BlQ29tcGxldGU8L3RpdGxlPjwvaGVhZD48Ym9keSBzdHlsZT0iYmFja2dyb3VuZC1jb2xvcjojRUFFQUVBO3BhZGRpbmc6MiU7Zm9udC1mYW1pbHk6SGVsdmV0aWNhLEFyaWFsLFNhbnMgU2VyaWY7Ij48dGFibGUgcm9sZT0ncHJlc2VudGF0aW9uJyBib3JkZXI9JzAnIGNlbGxzcGFjaW5nPScwJyBjZWxscGFkZGluZz0nMCcgYWxpZ249J2NlbnRlcicgd2lkdGg9IjEwMCUiIGRpcj0iIj48dHI-PHRkPjwvdGQ-PHRkIHdpZHRoPSI2NDAiPjx0YWJsZSByb2xlPSJwcmVzZW50YXRpb24iIHN0eWxlPSJtc28tdGFibGUtbHNwYWNlOjBwdDttc28tdGFibGUtcnNwYWNlOjBwdDtib3JkZXItY29sbGFwc2U6Y29sbGFwc2U7YmFja2dyb3VuZC1jb2xvcjojZmZmZmZmO21heC13aWR0aDo2NDBweDsiPjx0cj48dGQgc3R5bGU9InBhZGRpbmc6MTBweCAyNHB4OyI-PGltZyBzdHlsZT0iYm9yZGVyOm5vbmU7IiB3aWR0aD0iIiBzcmM9Imh0dHBzOi8vYXUuZG9jdXNpZ24ubmV0L01lbWJlci9JbWFnZS5hc3B4P2k9bG9nbyZsPWJkNTFkN2YxLWY4NGEtNDliYy05MjFlLTViMTQ1NmVkZTBjNSIgYWx0PSIiLz48L3RkPjwvdHI-PHRyPjx0ZCBzdHlsZT0icGFkZGluZzowcHggMjRweCAzMHB4IDI0cHg7Ij48dGFibGUgcm9sZT0ncHJlc2VudGF0aW9uJyBib3JkZXI9JzAnIGNlbGxzcGFjaW5nPScwJyBjZWxscGFkZGluZz0nMCcgd2lkdGg9JzEwMCUnIGFsaWduPSdjZW50ZXInIHN0eWxlPSdiYWNrZ3JvdW5kLWNvbG9yOiM0NDU1NWY7Y29sb3I6IzAwOWJkODsnPjx0cj48dGQgc3R5bGU9InBhZGRpbmc6MjhweCAxMHB4IDM2cHggMTBweDtib3JkZXItcmFkaXVzOjJweDtiYWNrZ3JvdW5kLWNvbG9yOiM0NDU1NWY7Y29sb3I6IzAwOWJkODtmb250LXNpemU6MTZweDtmb250LWZhbWlseTpIZWx2ZXRpY2EsQXJpYWwsU2FucyBTZXJpZjt3aWR0aDoxMDAlO3RleHQtYWxpZ246Y2VudGVyOyIgYWxpZ249ImNlbnRlciI-PGltZyB3aWR0aD0iNzUiIGhlaWdodD0iNzUiIHNyYz0iaHR0cHM6Ly9kb2N1Y2RuLWEuYWthbWFpaGQubmV0L29saXZlL2ltYWdlcy8yLjc2LjAvZW1haWwvaWNvbkZpbGVXaXRoQ2hlY2tXaGl0ZS5wbmciIHN0eWxlPSJ3aWR0aDo3NXB4O2hlaWdodDo3NXB4OyIgYWx0PSIiIC8-PHRhYmxlIHJvbGU9J3ByZXNlbnRhdGlvbicgYm9yZGVyPScwJyBjZWxsc3BhY2luZz0nMCcgY2VsbHBhZGRpbmc9JzAnIHdpZHRoPScxMDAlJz48dHI-PHRkIHN0eWxlPSJwYWRkaW5nLXRvcDoyNHB4O2ZvbnQtc2l6ZToxNnB4O2ZvbnQtZmFtaWx5OkhlbHZldGljYSxBcmlhbCxTYW5zIFNlcmlmO2JvcmRlcjpub25lO3RleHQtYWxpZ246Y2VudGVyO2NvbG9yOiMwMDliZDgiIGFsaWduPSJjZW50ZXIiPiBZb3VyIGRvY3VtZW50IGhhcyBiZWVuIGNvbXBsZXRlZCA8L3RkPjwvdHI-PC90YWJsZT48dGFibGUgcm9sZT0ncHJlc2VudGF0aW9uJyBib3JkZXI9JzAnIGNlbGxzcGFjaW5nPScwJyBjZWxscGFkZGluZz0nMCcgd2lkdGg9JzEwMCUnPjx0cj48dGQgYWxpZ249ImNlbnRlciIgc3R5bGU9InBhZGRpbmctdG9wOjMwcHg7Ij48ZGl2Pjx0YWJsZSBjZWxsc3BhY2luZz0iMCIgY2VsbHBhZGRpbmc9IjAiPjx0cj48dGQgYWxpZ249ImNlbnRlciIgaGVpZ2h0PSI0NCIgc3R5bGU9ImZvbnQtc2l6ZToxNHB4O2NvbG9yOiMwMDliZDg7YmFja2dyb3VuZC1jb2xvcjojNDQ1NTVmO2ZvbnQtZmFtaWx5OkhlbHZldGljYSxBcmlhbCxTYW5zIFNlcmlmO2ZvbnQtd2VpZ2h0OmJvbGQ7dGV4dC1hbGlnbjpjZW50ZXI7dGV4dC1kZWNvcmF0aW9uOm5vbmU7O2JvcmRlci1yYWRpdXM6MnB4O2JvcmRlcjogMXB4IHNvbGlkICMwMDliZDg7YmFja2dyb3VuZC1jb2xvcjojNDQ1NTVmO2hlaWdodDoxMDAlO2Rpc3BsYXk6YmxvY2s7Ij48YSBocmVmPSJodHRwczovL2F1LmRvY3VzaWduLm5ldC9TaWduaW5nL0VtYWlsU3RhcnQuYXNweD9hPWZiM2YzMjg2LTU0ZDQtNDg5MS04YWVhLTM4NjJmYTMyOGRlMiZldHRpPTQzJnI9ODEyODgzYzQtNTdkZC00M2Y5LTkyYzItYzQ2ZTdlNWQ5MDgyIiBzdHlsZT0icGFkZGluZzowcHggMTJweDs7Zm9udC1zaXplOjE0cHg7Y29sb3I6IzAwOWJkODtiYWNrZ3JvdW5kLWNvbG9yOiM0NDU1NWY7Zm9udC1mYW1pbHk6SGVsdmV0aWNhLEFyaWFsLFNhbnMgU2VyaWY7Zm9udC13ZWlnaHQ6Ym9sZDt0ZXh0LWFsaWduOmNlbnRlcjt0ZXh0LWRlY29yYXRpb246bm9uZTs7ZGlzcGxheTppbmxpbmUtYmxvY2siPjxzcGFuIHN0eWxlPSJsaW5lLWhlaWdodDo0NHB4OyI-PCEtLVtpZiBtc29dPiZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOzwhW2VuZGlmXS0tPiBWSUVXIENPTVBMRVRFRCBET0NVTUVOVCA8IS0tW2lmIG1zb10-Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7PCFbZW5kaWZdLS0-PC9zcGFuPjwvYT48L3RkPjwvdHI-PC90YWJsZT48L2Rpdj48L3RkPjwvdHI-PC90YWJsZT48L3RkPjwvdHI-PC90YWJsZT48L3RkPjwvdHI-PHRyPjx0ZCBzdHlsZT0icGFkZGluZzowcHggMjRweCAyNHB4IDI0cHg7Y29sb3I6IzAwMDAwMDtmb250LXNpemU6MTZweDtmb250LWZhbWlseTpIZWx2ZXRpY2EsQXJpYWwsU2FucyBTZXJpZjtiYWNrZ3JvdW5kLWNvbG9yOndoaXRlOyI-PHRhYmxlIHJvbGU9J3ByZXNlbnRhdGlvbicgYm9yZGVyPScwJyBjZWxsc3BhY2luZz0nMCcgY2VsbHBhZGRpbmc9JzAnPjx0cj48dGQgc3R5bGU9InBhZGRpbmctYm90dG9tOjIwcHg7Ij48ZGl2IHN0eWxlPSJmb250LWZhbWlseTpIZWx2ZXRpY2EsQXJpYWwsU2FucyBTZXJpZjtmb250LXdlaWdodDpib2xkO2xpbmUtaGVpZ2h0OjE4cHg7Zm9udC1zaXplOjE1cHg7Y29sb3I6IzMzMzMzMzsiPiBKYXNtaW5lIE1hdHRoZXdzIDwvZGl2PjxkaXYgc3R5bGU9ImZvbnQtZmFtaWx5OkhlbHZldGljYSxBcmlhbCxTYW5zIFNlcmlmO2xpbmUtaGVpZ2h0OjE4cHg7Zm9udC1zaXplOjE1cHg7Y29sb3I6IzY2NjY2NjsiPkphc21pbmUuTWF0dGhld3NAaG9sZGluZ3JlZGxpY2guY29tPC9kaXY-PC90ZD48L3RyPjwvdGFibGU-PHAgc3R5bGU9ImZvbnQtc2l6ZToxNXB4O2NvbG9yOiMzMzMzMzM7Zm9udC1mYW1pbHk6SGVsdmV0aWNhLEFyaWFsLFNhbnMgU2VyaWY7bGluZS1oZWlnaHQ6MjBweDsiPkFsbCBwYXJ0aWVzIGhhdmUgY29tcGxldGVkIENvbXBsZXRlIHdpdGggRG9jdXNpZ246IFBvd2VyIG9mIEF0dG9ybmV5IC0gRnJlZGRpZSBTaGVlbiBbMjAyNS4wNy4yM10uPC9wPjwvdGQ-PC90cj48dHI-PHRkIHN0eWxlPSJwYWRkaW5nOjBweCAyNHB4IDEycHggMjRweDtiYWNrZ3JvdW5kLWNvbG9yOiNmZmZmZmY7Zm9udC1mYW1pbHk6SGVsdmV0aWNhLEFyaWFsLFNhbnMgU2VyaWY7Zm9udC1zaXplOjExcHg7Y29sb3I6IzY2NjY2NjsiPjx0YWJsZSBib3JkZXI9IjAiIGNlbGxzcGFjaW5nPSIwIiBjZWxscGFkZGluZz0iMCI-PHRib2R5Pjx0cj48dGQgdmFsaWduPSJ0b3AiIHN0eWxlPSJmb250LWZhbWlseTogSGVsdmV0aWNhLEFyaWFsLFNhbnMgU2VyaWY7IGZvbnQtc2l6ZTogMTFweDsgY29sb3I6ICM2NjY2NjY7IHZlcnRpY2FsLWFsaWduOiB0b3A7Ij48ZGl2IHN0eWxlPSJmb250LWZhbWlseTpIZWx2ZXRpY2EsQXJpYWwsU2FucyBTZXJpZjsgZm9udC1zaXplOjExcHg7IGNvbG9yOiM2NjY2NjY7IHBhZGRpbmc6IDJweCA1cHggMCAwOyI-UG93ZXJlZCBieSYjMTYwOzwvZGl2PjwvdGQ-PHRkPjxpbWcgc3JjPSJodHRwczovL2RvY3VjZG4tYS5ha2FtYWloZC5uZXQvb2xpdmUvaW1hZ2VzLzIuNjIuMC9nbG9iYWwtYXNzZXRzL2VtYWlsLXRlbXBsYXRlcy9lbWFpbC1sb2dvLnBuZyIgaGVpZ2h0PSIxOSIgYWx0PSJEb2N1c2lnbiIgc3R5bGU9ImJvcmRlcjpub25lOyIvPjwvdGQ-PC90cj48L3Rib2R5PjwvdGFibGU-PC90ZD48L3RyPjx0cj48dGQgc3R5bGU9InBhZGRpbmc6MzBweCAyNHB4IDQ1cHggMjRweDtiYWNrZ3JvdW5kLWNvbG9yOiNFQUVBRUE7Ij48cCBzdHlsZT0ibWFyZ2luLWJvdHRvbToxZW07Zm9udC1mYW1pbHk6SGVsdmV0aWNhLEFyaWFsLFNhbnMgU2VyaWY7Zm9udC1zaXplOjEzcHg7Y29sb3I6IzY2NjY2NjtsaW5lLWhlaWdodDoxOHB4OyI-PGIgYXJpYS1sZXZlbD0iMyIgcm9sZT0iaGVhZGluZyI-RG8gTm90IFNoYXJlIFRoaXMgRW1haWw8L2I-PGJyLz4gVGhpcyBlbWFpbCBjb250YWlucyBhIHNlY3VyZSBsaW5rIHRvIERvY3VzaWduLiBQbGVhc2UgZG8gbm90IHNoYXJlIHRoaXMgZW1haWwsIGxpbmssIG9yIGFjY2VzcyBjb2RlIHdpdGggb3RoZXJzLjxici8-PC9wPjxwIHN0eWxlPSJtYXJnaW4tYm90dG9tOjFlbTtmb250LWZhbWlseTpIZWx2ZXRpY2EsQXJpYWwsU2FucyBTZXJpZjtmb250LXNpemU6MTNweDtjb2xvcjojNjY2NjY2O2xpbmUtaGVpZ2h0OjE4cHg7Ij48YiBhcmlhLWxldmVsPSIzIiByb2xlPSJoZWFkaW5nIj5BbHRlcm5hdGUgU2lnbmluZyBNZXRob2Q8L2I-PGJyLz4gVmlzaXQgRG9jdXNpZ24uY29tLCBjbGljayAnQWNjZXNzIERvY3VtZW50cycsIGFuZCBlbnRlciB0aGUgc2VjdXJpdHkgY29kZTo8YnIgLz4gRkIzRjMyODY1NEQ0NDg5MThBRUEzODYyRkEzMjhERTI1IDwvcD48cCBzdHlsZT0ibWFyZ2luLWJvdHRvbToxZW07Zm9udC1mYW1pbHk6SGVsdmV0aWNhLEFyaWFsLFNhbnMgU2VyaWY7Zm9udC1zaXplOjEzcHg7Y29sb3I6IzY2NjY2NjtsaW5lLWhlaWdodDoxOHB4OyI-PGIgYXJpYS1sZXZlbD0iMyIgcm9sZT0iaGVhZGluZyI-QWJvdXQgRG9jdXNpZ248L2I-PGJyLz4gU2lnbiBkb2N1bWVudHMgZWxlY3Ryb25pY2FsbHkgaW4ganVzdCBtaW51dGVzLiBJdCdzIHNhZmUsIHNlY3VyZSwgYW5kIGxlZ2FsbHkgYmluZGluZy4gV2hldGhlciB5b3UncmUgaW4gYW4gb2ZmaWNlLCBhdCBob21lLCBvbi10aGUtZ28gLS0gb3IgZXZlbiBhY3Jvc3MgdGhlIGdsb2JlIC0tIERvY3VzaWduIHByb3ZpZGVzIGEgcHJvZmVzc2lvbmFsIHRydXN0ZWQgc29sdXRpb24gZm9yIERpZ2l0YWwgVHJhbnNhY3Rpb24gTWFuYWdlbWVudOKEoi4gPC9wPjxwIHN0eWxlPSJtYXJnaW4tYm90dG9tOjFlbTtmb250LWZhbWlseTpIZWx2ZXRpY2EsQXJpYWwsU2FucyBTZXJpZjtmb250LXNpemU6MTNweDtjb2xvcjojNjY2NjY2O2xpbmUtaGVpZ2h0OjE4cHg7Ij48YiBhcmlhLWxldmVsPSIzIiByb2xlPSJoZWFkaW5nIj5RdWVzdGlvbnMgYWJvdXQgdGhlIERvY3VtZW50PzwvYj48YnIgLz4gSWYgeW91IG5lZWQgdG8gbW9kaWZ5IHRoZSBkb2N1bWVudCBvciBoYXZlIHF1ZXN0aW9ucyBhYm91dCB0aGUgZGV0YWlscyBpbiB0aGUgZG9jdW1lbnQsIHBsZWFzZSByZWFjaCBvdXQgdG8gdGhlIHNlbmRlciBieSBlbWFpbGluZyB0aGVtIGRpcmVjdGx5LjxiciAvPjxiciAvPjxiIGFyaWEtbGV2ZWw9IjMiIHJvbGU9ImhlYWRpbmciPlN0b3AgcmVjZWl2aW5nIHRoaXMgZW1haWw8L2I-PGJyIC8-PGEgaHJlZj0naHR0cHM6Ly9wcm90ZWN0LmRvY3VzaWduLm5ldC9yZXBvcnQtYWJ1c2U_ZT1BVXRvbWpwRmFrOUdsYlBMMHpGRmkxMmhBbmVNUHhxU2gwZzdyOXFLb2M5QXdGRVdVMjFuNnBvSDRXLVFINDBGdmVYc1NzTVZHR2ZocjBfdGhETmpTTE1OandlU0x0U1d3V0luT3pQdkt3UHRwWThZMm5DMXMzQ3AxLVMxcy10RXgxRkxYLXNjX3laZ1pENU1rTWFacTJNR1liQXpKNDhFWkFmd19neHY2MVJKdWhxN04xWTlIcGRHN0RhOWJGNGo0NHdEcHFqdkJXMl9vVzB0R2FESmVjMm5oVnVUYlFadmctb0QtTV9IRFF0OFQ5ckFSczlISHJYLURFb0tSRDBlNUJBSHhJUDJKZnNDOXJwTnpTNnBnaWFiNHQxVlJYM1BqRVItdnkwaFhZRG5MV3NvT3pJV2lyRDlpdGhDREd6S2x6RzlUTkhfU051RzNEajlOZjVFdzUxQUcyMWRXQTJpdmMzeklCUDB0U1FuTFBuTlhSNkxTTXlGVU1FaXVya2pZeWdzbHRkaHpvN1ZkVXFiZ1ByRUswZ3FQWl8zUHpvWDYyU3NVdnd2QzYwSGFzZnBqWEdheHUwSVQ2LUVIcEpubncmbGFuZz1lbicgc3R5bGU9J2NvbG9yOiMyNDYzZDE7JyA-UmVwb3J0IHRoaXMgZW1haWw8L2E-IG9yIHJlYWQgbW9yZSBhYm91dCA8YSBocmVmPSdodHRwczovL3N1cHBvcnQuZG9jdXNpZ24uY29tL2VuL2d1aWRlcy9EZWNsaW5pbmctdG8tc2lnbi1Eb2N1U2lnbi1TaWduZXItR3VpZGUnIHN0eWxlPSdjb2xvcjojMjQ2M2QxOycgPkRlY2xpbmluZyB0byBzaWduPC9hPiBhbmQgPGEgaHJlZj0naHR0cHM6Ly9zdXBwb3J0LmRvY3VzaWduLmNvbS9lbi9hcnRpY2xlcy9Ib3ctZG8tSS1tYW5hZ2UtbXktZW1haWwtbm90aWZpY2F0aW9ucycgc3R5bGU9J2NvbG9yOiMyNDYzZDE7JyA-TWFuYWdpbmcgbm90aWZpY2F0aW9uczwvYT4uPGJyIC8-PGJyIC8-IElmIHlvdSBoYXZlIHRyb3VibGUgc2lnbmluZywgdmlzaXQgIjxhIGhyZWY9J2h0dHBzOi8vc3VwcG9ydC5kb2N1c2lnbi5jb20vcy9hcnRpY2xlcy9Ib3ctZG8tSS1zaWduLWEtRG9jdVNpZ24tZG9jdW1lbnQtQmFzaWMtU2lnbmluZz9sYW5ndWFnZT1lbl9VUyYjMzg7dXRtX2NhbXBhaWduPUdCTF9YWF9EQlVfVVBTXzIyMTFfU2lnbk5vdGlmaWNhdGlvbkVtYWlsRm9vdGVyJiMzODt1dG1fbWVkaXVtPXByb2R1Y3QmIzM4O3V0bV9zb3VyY2U9cG9zdHNlbmQnIHN0eWxlPSdjb2xvcjojMjQ2M2QxOycgPkhvdyB0byBTaWduIGEgRG9jdW1lbnQ8L2E-IiBvbiBvdXIgPGEgaHJlZj0naHR0cHM6Ly9zdXBwb3J0LmRvY3VzaWduLmNvbS8nIHN0eWxlPSdjb2xvcjojMjQ2M2QxOycgPkRvY3VzaWduIFN1cHBvcnQgQ2VudGVyPC9hPiwgb3IgYmVjb21lIHBhcnQgb2YgdGhlIDxhIGhyZWY9J2h0dHBzOi8vY29tbXVuaXR5LmRvY3VzaWduLmNvbS9uZXctbWVtYmVyLWd1aWRlLTE0Mj91dG1fY2FtcGFpZ249R0JMX1VTX1BSRF9BV0FfMjQwNV9Db21tdW5pdHlDVEEmIzM4O3V0bV9tZWRpdW09ZW1haWwmIzM4O3V0bV9zb3VyY2U9cG9zdHNlbmQnIHN0eWxlPSdjb2xvcjojMjQ2M2QxOycgPkRvY3VzaWduIENvbW11bml0eTwvYT4gdG8gYWNjZXNzIHRpcHMgYW5kIGd1aWRhbmNlIGZyb20gcGVlcnMuPGJyIC8-PGJyIC8-PC9wPjxwIHN0eWxlPSJtYXJnaW4tYm90dG9tOjFlbTtmb250LWZhbWlseTpIZWx2ZXRpY2EsQXJpYWwsU2FucyBTZXJpZjtmb250LXNpemU6MTNweDtjb2xvcjojNjY2NjY2O2xpbmUtaGVpZ2h0OjE4cHg7Ij48YSBocmVmPSJodHRwczovL3d3dy5kb2N1c2lnbi5jb20vZmVhdHVyZXMtYW5kLWJlbmVmaXRzL21vYmlsZT91dG1fY2FtcGFpZ249R0JMX1hYX0RCVV9VUFNfMjIxMV9TaWduTm90aWZpY2F0aW9uRW1haWxGb290ZXImIzM4O3V0bV9tZWRpdW09cHJvZHVjdCYjMzg7dXRtX3NvdXJjZT1wb3N0c2VuZCIgc3R5bGU9ImNvbG9yOiMyNDYzZDE7IiA-PGltZyBzdHlsZT0ibWFyZ2luLXJpZ2h0OjdweDtib3JkZXI6bm9uZTt2ZXJ0aWNhbC1hbGlnbjptaWRkbGU7IiB3aWR0aD0iMTgiIGhlaWdodD0iMTgiIHNyYz0iaHR0cHM6Ly9kb2N1Y2RuLWEuYWthbWFpaGQubmV0L29saXZlL2ltYWdlcy8yLjYyLjAvZ2xvYmFsLWFzc2V0cy9lbWFpbC10ZW1wbGF0ZXMvaWNvbi1kb3dubG9hZC1hcHAucG5nIiBhbHQ9IiIgLz5Eb3dubG9hZCB0aGUgRG9jdXNpZ24gQXBwIDwvYT48L3A-PHAgc3R5bGU9Im1hcmdpbi1ib3R0b206MWVtO2ZvbnQtZmFtaWx5OkhlbHZldGljYSxBcmlhbCxTYW5zIFNlcmlmO2ZvbnQtc2l6ZToxM3B4O2NvbG9yOiM2NjY2NjY7bGluZS1oZWlnaHQ6MThweDtmb250LXNpemU6MTBweDtsaW5lLWhlaWdodDoxNHB4OyI-VGhpcyBtZXNzYWdlIHdhcyBzZW50IHRvIHlvdSBieSBKYXNtaW5lIE1hdHRoZXdzIHdobyBpcyB1c2luZyB0aGUgRG9jdXNpZ24gRWxlY3Ryb25pYyBTaWduYXR1cmUgU2VydmljZS4gSWYgeW91IHdvdWxkIHJhdGhlciBub3QgcmVjZWl2ZSBlbWFpbCBmcm9tIHRoaXMgc2VuZGVyIHlvdSBtYXkgY29udGFjdCB0aGUgc2VuZGVyIHdpdGggeW91ciByZXF1ZXN0LjwvcD48L3RkPjwvdHI-PC90YWJsZT48L3RkPjx0ZD48L3RkPjwvdHI-PC90YWJsZT48c3BhbiBpdGVtc2NvcGU9IiIgaXRlbXR5cGU9Imh0dHA6Ly9zY2hlbWEub3JnL0VtYWlsTWVzc2FnZSI-PG1ldGEgaXRlbXByb3A9InRleHQiIGNvbnRlbnQ9Ikphc21pbmUgTWF0dGhld3Mgc2VudCB5b3UgYSBkb2N1bWVudCB0byByZXZpZXcgYW5kIHNpZ24uIi8-PHNwYW4gaXRlbXNjb3BlPSIiIGl0ZW1wcm9wPSJhYm91dCIgaXRlbXR5cGU9Imh0dHA6Ly9zY2hlbWEub3JnL0NyZWF0aXZlV29yayI-PHNwYW4gaXRlbXNjb3BlPSIiIGl0ZW1wcm9wPSJhY3Rpb24iIGl0ZW10eXBlPSJodHRwOi8vc2NoZW1hLm9yZy9WaWV3QWN0aW9uIj48bWV0YSBpdGVtcHJvcD0idXJsIiBjb250ZW50PSJodHRwczovL2F1LmRvY3VzaWduLm5ldC9TaWduaW5nL0VtYWlsU3RhcnQuYXNweD9hPWZiM2YzMjg2LTU0ZDQtNDg5MS04YWVhLTM4NjJmYTMyOGRlMiZldHRpPTQzJnI9ODEyODgzYzQtNTdkZC00M2Y5LTkyYzItYzQ2ZTdlNWQ5MDgyIi8-PG1ldGEgaXRlbXByb3A9Im5hbWUiIGNvbnRlbnQ9IlZpZXcgRG9jdW1lbnRzIi8-PC9zcGFuPjwvc3Bhbj48L3NwYW4-PC9ib2R5PjwvaHRtbD4="
+            }
+          }
+        ]
+      },
+      {
+        "partId": "1",
+        "mimeType": "application/pdf",
+        "filename": "Power of Attorney - Freddie Sheen [2025.07.23].pdf",
+        "headers": [
+          {
+            "name": "Content-type",
+            "value": "application/pdf"
+          },
+          {
+            "name": "Content-Transfer-Encoding",
+            "value": "base64"
+          },
+          {
+            "name": "Content-Description",
+            "value": "Power of Attorney - Freddie Sheen [2025.07.23].pdf"
+          },
+          {
+            "name": "Content-Disposition",
+            "value": "attachment; filename=\"Power of Attorney - Freddie Sheen [2025.07.23].pdf\""
+          }
+        ],
+        "body": {
+          "attachmentId": "ANGjdJ9XPlqGFZgVKl-RQKj4piK7DGGEINqQY0Y5GAJ2d9aBk8mWKureOOE0Z9pOL9t56UffdPrP1mDqgrTlPIMpXIV5yUsOJrYSa2LyjxDjLbf-WS_5s7p7opzotI67BKaHJ9RPZ_AvtADjMviQmJJ-mpwpmYyyA9DC46Pd0kySFYF_kB-uLlX2gIr84mw5tBGezNplI_9M30b9c1l0q_qn2Ub7F_Qx6xbI7UOWVx1fz-DdsmIygnCQBikIAD-0TibcPoU-1PLnWum6g1VQx3W7H2qqUTanOnCvTvQfjOOvQMSGpPzD2updJDeYiJATc01Xlmw-rdL0pdWZQZEitF_ZZd2cqAjpjqsQEat1oLJ5_SEHxD2QawgjoV5MYSMuQ25IGVatBvSKyIZPhBee",
+          "size": 274479
+        }
+      },
+      {
+        "partId": "2",
+        "mimeType": "application/pdf",
+        "filename": "Summary.pdf",
+        "headers": [
+          {
+            "name": "Content-type",
+            "value": "application/pdf"
+          },
+          {
+            "name": "Content-Transfer-Encoding",
+            "value": "base64"
+          },
+          {
+            "name": "Content-Description",
+            "value": "Summary.pdf"
+          },
+          {
+            "name": "Content-Disposition",
+            "value": "attachment; filename=\"Summary.pdf\""
+          }
+        ],
+        "body": {
+          "attachmentId": "ANGjdJ-nNN-FNECkPI9raw0l8TURZdseY6se2OzuvBroAgeekUQrIJmjRoIX8sdujg7R7xTUZ5MBmJgPM4oL63um8FWMHLc_dSFC6xBEWrH1mtg0IJWOYtzA4ePWs6CkcGKqCEpK0glwKrf6u9CgQjN1HHRzSiQOCFwerwjQsmNA0ACEIq5PKArXk2nxq8kxiK66Sj76KV0zOUeA8cpt5w3PGFIkm3nb35YWiF1ZnOKyhGDWaSOcbtE_RUjycDgBsY_7rt2bsX8bdIxsAdMOG67u2FlZsfry31AhxUAqHLZsmWof8OV2mt7St3hp8vg-4dFJSpxbdog4FATiPW6eoL6rMsuUeuAbAz3Km2SWiMV9Ll-M9M8lp4hk8j5WXK351klEQlmm3fGSsC5F_4lgdNSaCvkR5bZ4DMwBuKlYWw",
+          "size": 363246
+        }
+      }
+    ]
+  }
+}
