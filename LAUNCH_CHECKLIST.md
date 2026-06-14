@@ -1,174 +1,129 @@
-# Synapse Network - Launch Checklist
+# Launch checklist
 
-## Pre-Launch (T-30 days)
+Operational steps to flip FlightSales from "deployable code" to "live business".
+Wave A code is shipped — these are the human/console steps to activate it.
 
-### Smart Contracts
-- [x] Contracts written
-- [x] Unit tests passing
-- [ ] Integration tests
-- [ ] Formal verification (Certora)
-- [ ] Audit #1 (Trail of Bits)
-- [ ] Audit #2 (OpenZeppelin)
-- [ ] Bug bounty launch (Immunefi)
-- [ ] Testnet deployment
-- [ ] Mainnet deployment
+## 1. Apply the database schema
 
-### Backend Infrastructure
-- [x] API Gateway built
-- [x] P2P mesh tested
-- [x] IPFS nodes deployed (5 regions)
-- [ ] Load testing (10k req/s)
-- [ ] DDoS protection active
-- [ ] Monitoring (Prometheus/Grafana)
-- [ ] Alerting configured
-- [ ] Backup procedures
-- [ ] Runbook documented
+`supabase/schema.sql` has accumulated a lot of additive changes (advanced
+filter columns, dealer_applications, admin_audit, notifications, email_log,
+suspended_at, RPC). None of it is on your live Supabase project until you
+run it.
 
-### Frontend
-- [x] React app built
-- [x] Wallet integration
-- [x] All pages connected
-- [ ] IPFS deployment tested
-- [ ] ENS resolution (synapse.eth)
-- [ ] Mobile responsive
-- [ ] SEO optimization
-- [ ] Analytics (decentralized)
+1. Open Supabase project → SQL Editor → New query
+2. Paste the entire contents of `supabase/schema.sql`
+3. Run
 
-### Node Software
-- [x] Docker image built
-- [x] GPU detection working
-- [x] P2P connection tested
-- [ ] Auto-update mechanism
-- [ ] 50 beta nodes running
-- [ ] Documentation complete
-- [ ] Video tutorials
-- [ ] Community support ready
+All statements are `IF NOT EXISTS` / `ADD COLUMN IF NOT EXISTS` / `CREATE OR REPLACE`,
+so re-running is safe.
 
-### Tokenomics
-- [ ] Initial liquidity (Uniswap)
-- [ ] LBP or fair launch
-- [ ] Vesting schedules active
-- [ ] Treasury funded
-- [ ] Emissions schedule
+## 2. Set up Resend (transactional email)
 
-### Legal/Compliance
-- [ ] Terms of Service
-- [ ] Privacy Policy
-- [ ] Risk Disclosures
-- [ ] Entity structure (if any)
-- [ ] Jurisdiction analysis
+1. Sign up at https://resend.com (free up to 3,000 emails/month)
+2. **Domains** → Add domain → `flightsales.com.au`
+3. Resend gives you 4 DNS records (SPF, DKIM x2, return-path). Add them in
+   your registrar. SPF should look like `v=spf1 include:_spf.resend.com ~all`.
+4. Wait 5-30 min for verification, then click **Verify**.
+5. **API Keys** → Create API Key → copy.
 
-### Marketing
-- [ ] Website live
-- [ ] Whitepaper published
-- [ ] Twitter active
-- [ ] Discord community (1000+)
-- [ ] Announcement blog post
-- [ ] PR outreach
-- [ ] Influencer partnerships
-- [ ] Airdrop campaign (if any)
+Add to Vercel project env vars (Production scope):
+- `RESEND_API_KEY` = the key from step 5
+- `EMAIL_FROM` = `FlightSales <noreply@flightsales.com.au>`
+- `EMAIL_REPLY_TO` = `support@flightsales.com.au`
+- `EMAIL_BCC_ADMIN` = `ops@flightsales.com.au` (or your inbox)
+- `SUPABASE_SERVICE_ROLE_KEY` = from Supabase project settings → API
 
-## Launch Day (T-0)
+Redeploy.
 
-### Morning (T-6 hours)
-- [ ] Final health checks
-- [ ] All systems green
-- [ ] Team on standby
-- [ ] Communication channels open
+## 3. Branded auth emails (optional but recommended)
 
-### Launch (T-0)
-- [ ] Contracts unpaused
-- [ ] Frontend goes live
-- [ ] API opens
-- [ ] Announcement tweets
-- [ ] Discord announcement
-- [ ] Monitor metrics
+Supabase's default auth emails are unbranded and rate-limited. To use Resend
+for them too:
 
-### Post-Launch (T+ hours)
-- [ ] Monitor for bugs
-- [ ] Community support
-- [ ] Track metrics
-- [ ] Respond to issues
-- [ ] Celebrate!
+1. Supabase project → Authentication → SMTP Settings → enable custom SMTP
+2. Host: `smtp.resend.com`
+3. Port: `587`
+4. Username: `resend`
+5. Password: your Resend API key
+6. Sender: `noreply@flightsales.com.au`
+7. Templates → Confirm signup / Magic link / Reset password — replace the
+   default HTML with your branded version (you can copy the shell from
+   `src/lib/emailTemplates.js`)
 
-## Post-Launch (T+30 days)
+## 4. Set up Google OAuth for production
 
-### Growth
-- [ ] 1000+ nodes
-- [ ] 1M+ API requests/day
-- [ ] $1M+ market cap
-- [ ] 5+ enterprise customers
+The /login page has Google sign-in but it'll fail in production until you
+configure it in the Supabase Auth provider:
 
-### Development
-- [ ] L2 deployment
-- [ ] Mobile app
-- [ ] Additional models
-- [ ] Cross-chain bridge
+1. Google Cloud Console → APIs & Services → Credentials → Create OAuth
+   2.0 Client ID
+2. Application type: Web application
+3. Authorized redirect URIs:
+   - `https://YOUR-PROJECT.supabase.co/auth/v1/callback`
+4. Copy Client ID and Client Secret
+5. Supabase → Authentication → Providers → Google → enable, paste creds
 
-### Governance
-- [ ] First DAO proposal
-- [ ] Treasury spend vote
-- [ ] Parameter changes
-- [ ] Community grants
+## 5. Domain + DNS
 
-## Metrics to Track
+If `flightsales.com.au` isn't already pointed at Vercel:
+1. Vercel project → Settings → Domains → Add `flightsales.com.au`
+2. Vercel gives you an A record (or CNAME for subdomain) — paste in registrar
+3. SSL provisions automatically
 
-### Technical
-- Node count (target: 100 → 1000 → 10000)
-- API latency (target: < 500ms)
-- Uptime (target: 99.9%)
-- Error rate (target: < 0.1%)
+Update env vars:
+- `NEXT_PUBLIC_SITE_URL=https://flightsales.com.au`
 
-### Economic
-- HSK price stability
-- Trading volume
-- Node earnings distribution
-- Treasury growth
+## 6. Set up the support mailbox
 
-### Community
-- Discord members
-- GitHub stars
-- Node operator retention
-- Developer adoption
+Decide whether `support@flightsales.com.au` is:
+- A Google Workspace mailbox (paid, ~$10 AUD / user / month) — recommended
+- A forwarding alias on your registrar (free, no outbound)
 
-## Risk Mitigation
+If forwarding alias, set the destination to your personal email. Replies
+won't go from @flightsales.com.au though, which buyers will notice.
 
-### Technical Risks
-- **Smart contract bug** → Emergency pause, upgrade
-- **Node exodus** → Incentivize with higher rewards
-- **API overload** → Rate limiting, scaling
+## 7. Smoke-test the customer flows
 
-### Market Risks
-- **Low demand** → Marketing, partnerships
-- **Price volatility** → Staking incentives
-- **Competition** → Feature differentiation
+Once Resend + schema + domain are live:
 
-### Regulatory Risks
-- **SEC action** → Decentralize further
-- **Exchange delisting** → DEX focus
-- **Jurisdiction ban** → VPN resistance
+| Flow | What to check |
+|---|---|
+| Sign up with email | Confirmation email arrives, branded |
+| Reset password | Reset email arrives, link works |
+| Submit a contact form | Both you and the user get emails within ~5s |
+| Submit an enquiry on a listing (as a different user) | Listing owner gets the seller email; buyer gets the auto-reply |
+| Approve a listing in admin | Seller gets `listing.approved` email + bell notification |
+| Reject a listing with reason | Seller gets `listing.rejected` email with the reason |
+| Approve a dealer application | Applicant gets `dealer_app.approved` email |
+| Bell icon shows unread count for a signed-in user with new notifications | Click → marks read |
 
-## Success Criteria
+Check Resend dashboard → Emails to see delivery status. Bounces / complaints
+will show there too.
 
-### Minimum Viable Launch
-- 100 nodes online
-- 10,000 API requests/day
-- $100k market cap
-- No critical bugs
+## 8. Pick a monetization model (decision required)
 
-### Successful Launch
-- 1000 nodes online
-- 1M API requests/day
-- $1M market cap
-- Community governance active
+Currently the site makes zero revenue. Pick one before launch announcements:
+- **Listing fee per aircraft** (one-time per 30/60/90 days)
+- **Featured listing upsell** (paid bump)
+- **Dealer subscription** (monthly fee for verified badge + extras)
+- **Lead fee** (sell finance / insurance / valuation leads to providers)
 
-### Exceptional Launch
-- 10,000 nodes online
-- 10M API requests/day
-- $10M market cap
-- Top 10 AI infrastructure
+Stripe wiring is ~6 hours of dev work for any of these. Code path doesn't exist yet.
 
----
+## 9. Legal + business
 
-**Launch Date:** March 1, 2026
-**Countdown:** 6 days remaining
+- ABN visible on Privacy / Terms / Contact pages (legal requirement for AU
+  businesses)
+- Public liability insurance (advised)
+- ACCC review — ensure "verified dealer" claims are backed by a documented
+  verification process
+- Notifiable Data Breach plan documented (Privacy Act 1988)
+
+## 10. Optional v1.1
+
+- Saved-search digest emails (template `search.digest` is ready, no scheduler yet)
+- Listing alert emails to buyers when new matches appear
+- 2FA for admin accounts (Supabase TOTP factors built in)
+- Admin audit log writes (table seeded; no writes wired)
+- Cloudflare Turnstile on signup + contact (anti-bot)
+- Analytics — Plausible (`<script async src="…">` in layout, ~5 min)
