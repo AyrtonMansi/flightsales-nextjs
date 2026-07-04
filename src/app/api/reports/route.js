@@ -7,6 +7,7 @@ import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { sendEmail } from '../../../lib/email';
 import { rateLimit, callerIp } from '../../../lib/ratelimit';
+import { adminClient } from '../../../lib/requireAdmin';
 
 export const runtime = 'nodejs';
 
@@ -29,13 +30,6 @@ async function reporterFromAuth(req) {
 const ALLOWED_REASONS = new Set([
   'fake_listing', 'wrong_price', 'sold_elsewhere', 'spam', 'other',
 ]);
-
-function adminClient() {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const key = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-  if (!url || !key) return null;
-  return createClient(url, key, { auth: { persistSession: false } });
-}
 
 export async function POST(req) {
   // Per-IP rate limit — reports trigger an admin email, so the abuse vector

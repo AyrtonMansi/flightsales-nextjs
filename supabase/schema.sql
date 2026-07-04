@@ -76,6 +76,17 @@ CREATE INDEX IF NOT EXISTS idx_aircraft_condition ON aircraft(condition);
 CREATE INDEX IF NOT EXISTS idx_aircraft_dealer ON aircraft(dealer_id);
 CREATE INDEX IF NOT EXISTS idx_aircraft_user ON aircraft(user_id);
 
+-- Composite covering the hottest read path in the app: buyer-facing
+-- listings and the homepage both run
+-- .eq('status','active').order('created_at desc'). The single-column
+-- idx_aircraft_status above only helps the equality filter; this one
+-- also serves the sort without a separate pass.
+CREATE INDEX IF NOT EXISTS idx_aircraft_status_created ON aircraft(status, created_at DESC);
+
+-- expires_at is scanned in full by the daily expire-listings cron
+-- (.lte('expires_at', ...) / .gt('expires_at', ...)) with no index today.
+CREATE INDEX IF NOT EXISTS idx_aircraft_expires_at ON aircraft(expires_at);
+
 -- Parallel FK from aircraft.user_id to profiles.id so PostgREST can embed
 -- the seller's profile fields (incl. abn_verified_at) into listing
 -- selects. Logically redundant with the existing aircraft.user_id ->
@@ -915,10 +926,27 @@ CREATE POLICY "Users see own affiliate leads"
 --    mutate. Service-role bypasses via auth.role().
 -- ============================================================
 
+-- Data-driven rewrite of the same check: one array is the single source
+-- of truth for "which profile columns are server-only," instead of 16
+-- hand-written IF blocks. A future sensitive column (e.g. a Stripe
+-- customer id) is now a one-line addition to protected_cols instead of a
+-- new IF block someone has to remember to write — same columns blocked,
+-- same bypass, same error text.
 CREATE OR REPLACE FUNCTION protect_profile_columns()
-RETURNS TRIGGER AS $$
+RETURNS TRIGGER
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
 DECLARE
   caller_role TEXT;
+  protected_cols CONSTANT TEXT[] := ARRAY[
+    'role', 'is_dealer', 'abn', 'abn_verified_at', 'abn_business_name',
+    'abn_entity_type', 'abn_status', 'abn_gst_registered', 'abn_postcode',
+    'abn_state', 'pending_dealer', 'suspended_at', 'suspension_reason',
+    'subscription_plan', 'subscription_status', 'dealer_id'
+  ];
+  col TEXT;
 BEGIN
   -- Service role bypasses (server admin routes, abn-verify route).
   caller_role := COALESCE(
@@ -930,26 +958,19 @@ BEGIN
   END IF;
 
   -- Anyone else: ensure the protected columns are unchanged.
-  IF NEW.role               IS DISTINCT FROM OLD.role               THEN RAISE EXCEPTION 'cannot modify profiles.role';               END IF;
-  IF NEW.is_dealer          IS DISTINCT FROM OLD.is_dealer          THEN RAISE EXCEPTION 'cannot modify profiles.is_dealer';          END IF;
-  IF NEW.abn                IS DISTINCT FROM OLD.abn                THEN RAISE EXCEPTION 'cannot modify profiles.abn directly (use /api/abn-verify)';                END IF;
-  IF NEW.abn_verified_at    IS DISTINCT FROM OLD.abn_verified_at    THEN RAISE EXCEPTION 'cannot modify profiles.abn_verified_at';    END IF;
-  IF NEW.abn_business_name  IS DISTINCT FROM OLD.abn_business_name  THEN RAISE EXCEPTION 'cannot modify profiles.abn_business_name';  END IF;
-  IF NEW.abn_entity_type    IS DISTINCT FROM OLD.abn_entity_type    THEN RAISE EXCEPTION 'cannot modify profiles.abn_entity_type';    END IF;
-  IF NEW.abn_status         IS DISTINCT FROM OLD.abn_status         THEN RAISE EXCEPTION 'cannot modify profiles.abn_status';         END IF;
-  IF NEW.abn_gst_registered IS DISTINCT FROM OLD.abn_gst_registered THEN RAISE EXCEPTION 'cannot modify profiles.abn_gst_registered'; END IF;
-  IF NEW.abn_postcode       IS DISTINCT FROM OLD.abn_postcode       THEN RAISE EXCEPTION 'cannot modify profiles.abn_postcode';       END IF;
-  IF NEW.abn_state          IS DISTINCT FROM OLD.abn_state          THEN RAISE EXCEPTION 'cannot modify profiles.abn_state';          END IF;
-  IF NEW.pending_dealer     IS DISTINCT FROM OLD.pending_dealer     THEN RAISE EXCEPTION 'cannot modify profiles.pending_dealer';     END IF;
-  IF NEW.suspended_at       IS DISTINCT FROM OLD.suspended_at       THEN RAISE EXCEPTION 'cannot modify profiles.suspended_at';       END IF;
-  IF NEW.suspension_reason  IS DISTINCT FROM OLD.suspension_reason  THEN RAISE EXCEPTION 'cannot modify profiles.suspension_reason';  END IF;
-  IF NEW.subscription_plan  IS DISTINCT FROM OLD.subscription_plan  THEN RAISE EXCEPTION 'cannot modify profiles.subscription_plan';  END IF;
-  IF NEW.subscription_status IS DISTINCT FROM OLD.subscription_status THEN RAISE EXCEPTION 'cannot modify profiles.subscription_status'; END IF;
-  IF NEW.dealer_id          IS DISTINCT FROM OLD.dealer_id          THEN RAISE EXCEPTION 'cannot modify profiles.dealer_id';          END IF;
+  FOREACH col IN ARRAY protected_cols LOOP
+    IF (to_jsonb(NEW) ->> col) IS DISTINCT FROM (to_jsonb(OLD) ->> col) THEN
+      IF col = 'abn' THEN
+        RAISE EXCEPTION 'cannot modify profiles.abn directly (use /api/abn-verify)';
+      ELSE
+        RAISE EXCEPTION 'cannot modify profiles.%', col;
+      END IF;
+    END IF;
+  END LOOP;
 
   RETURN NEW;
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
+$$;
 
 DROP TRIGGER IF EXISTS protect_profile_columns_trigger ON profiles;
 CREATE TRIGGER protect_profile_columns_trigger

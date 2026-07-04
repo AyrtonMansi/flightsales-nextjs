@@ -1,28 +1,18 @@
 import { supabase } from '@/lib/supabase';
-
-// In-memory rate limiter: 10 requests per minute per IP
-const rateLimit = new Map();
-
-function checkRateLimit(ip) {
-  const now = Date.now();
-  // Clean old entries
-  for (const [key, entries] of rateLimit.entries()) {
-    const fresh = entries.filter(t => now - t < 60000);
-    if (fresh.length === 0) rateLimit.delete(key);
-    else rateLimit.set(key, fresh);
-  }
-  const entries = rateLimit.get(ip) || [];
-  if (entries.length >= 10) return false;
-  rateLimit.set(ip, [...entries, now]);
-  return true;
-}
+import { rateLimit, callerIp } from '@/lib/ratelimit';
 
 // CASA Aircraft Register scraper with caching
 export async function GET(request) {
-  const ip = request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || 'unknown';
+  const ip = callerIp(request);
 
-  if (!checkRateLimit(ip)) {
-    return Response.json({ error: 'Rate limit exceeded. Please wait a minute.' }, { status: 429 });
+  // Upstash-backed in prod (consistent across serverless instances),
+  // in-memory fallback in dev — same shared limiter every other route uses.
+  const rl = await rateLimit(`casa-lookup:${ip}`, { limit: 10, windowMs: 60 * 1000 });
+  if (!rl.ok) {
+    return Response.json(
+      { error: 'Rate limit exceeded. Please wait a minute.' },
+      { status: 429, headers: { 'Retry-After': String(rl.retryAfter) } }
+    );
   }
 
   const { searchParams } = new URL(request.url);

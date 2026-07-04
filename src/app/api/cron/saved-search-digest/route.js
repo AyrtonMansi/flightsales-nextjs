@@ -9,17 +9,10 @@
 // fields later is a matter of expanding applyFilters() below.
 
 import { NextResponse } from 'next/server';
-import { createClient } from '@supabase/supabase-js';
 import { sendEmail } from '../../../../lib/email';
+import { adminClient } from '../../../../lib/requireAdmin';
 
 export const runtime = 'nodejs';
-
-function adminClient() {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
-  if (!url || !key) return null;
-  return createClient(url, key, { auth: { persistSession: false } });
-}
 
 function applyFilters(query, filters) {
   const f = filters || {};
@@ -53,9 +46,22 @@ export async function GET(req) {
     .select('id, user_id, name, filters, frequency, last_sent_at')
     .in('frequency', ['daily', 'weekly']);
 
-  let sent = 0;
-  for (const s of searches || []) {
-    if (s.frequency === 'weekly' && !isMonday) continue;
+  const due = (searches || []).filter(s => s.frequency !== 'weekly' || isMonday);
+
+  // One batched profile lookup for every search owner instead of one
+  // query per search inside the loop.
+  const ownerIds = [...new Set(due.map(s => s.user_id).filter(Boolean))];
+  const { data: owners } = ownerIds.length
+    ? await supabase.from('profiles').select('id, email').in('id', ownerIds)
+    : { data: [] };
+  const emailByOwnerId = new Map((owners || []).map(o => [o.id, o.email]));
+
+  // Each search's match-count query has its own filter shape, so it
+  // can't be collapsed into one query — but the searches are otherwise
+  // independent, so run them concurrently instead of one-at-a-time.
+  const sentFlags = await Promise.all(due.map(async (s) => {
+    const email = emailByOwnerId.get(s.user_id);
+    if (!email) return false;
 
     const since = s.last_sent_at || new Date(Date.now() - 7 * 86400000).toISOString();
 
@@ -67,11 +73,7 @@ export async function GET(req) {
     q = applyFilters(q, s.filters);
     const { count } = await q;
 
-    if (!count || count === 0) continue;
-
-    const { data: profile } = await supabase
-      .from('profiles').select('email').eq('id', s.user_id).maybeSingle();
-    if (!profile?.email) continue;
+    if (!count || count === 0) return false;
 
     // Reconstruct a /buy querystring so the digest CTA links straight
     // to the filtered list. URL-encode any list values.
@@ -84,7 +86,7 @@ export async function GET(req) {
     if (f.maxPrice) params.set('maxPrice', String(f.maxPrice));
 
     await sendEmail({
-      to: profile.email,
+      to: email,
       template: 'search.digest',
       vars: {
         searchName: s.name,
@@ -98,8 +100,10 @@ export async function GET(req) {
       .update({ last_sent_at: now.toISOString() })
       .eq('id', s.id);
 
-    sent += 1;
-  }
+    return true;
+  }));
+
+  const sent = sentFlags.filter(Boolean).length;
 
   return NextResponse.json({ ok: true, sent, walked: searches?.length || 0 });
 }

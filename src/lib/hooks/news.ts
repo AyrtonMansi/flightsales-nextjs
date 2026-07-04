@@ -34,6 +34,7 @@ export function useNews(limit: number = 6): UseNewsReturn {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    let cancelled = false;
     async function fetch() {
       try {
         const { data, error: err } = await supabase
@@ -43,14 +44,17 @@ export function useNews(limit: number = 6): UseNewsReturn {
           .order('date', { ascending: false })
           .limit(limit);
         if (err) throw err;
+        if (cancelled) return;
         setArticles((data as NewsArticle[]) || []);
       } catch (err) {
+        if (cancelled) return;
         setError(err instanceof Error ? err.message : String(err));
       } finally {
-        setLoading(false);
+        if (!cancelled) setLoading(false);
       }
     }
     fetch();
+    return () => { cancelled = true; };
   }, [limit]);
 
   return { articles, loading, error };

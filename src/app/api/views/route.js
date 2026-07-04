@@ -5,17 +5,10 @@
 // billable, so cookie dedup is fine — no need for fingerprinting.
 
 import { NextResponse } from 'next/server';
-import { createClient } from '@supabase/supabase-js';
 import { rateLimit, callerIp } from '../../../lib/ratelimit';
+import { adminClient } from '../../../lib/requireAdmin';
 
 export const runtime = 'nodejs';
-
-function adminClient() {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const key = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-  if (!url || !key) return null;
-  return createClient(url, key, { auth: { persistSession: false } });
-}
 
 export async function POST(req) {
   // Per-IP rate limit — service-role write that's otherwise unauthenticated.

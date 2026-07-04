@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { supabase } from '../supabase';
 import { isSupabaseConfigured } from './_shared';
 
@@ -17,6 +17,10 @@ export function useAircraft(filters = {}) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [total, setTotal] = useState(0);
+  // Guards against rapid filter changes: if a newer fetch starts before an
+  // older one resolves, the older response is discarded instead of
+  // clobbering state with stale results.
+  const fetchIdRef = useRef(0);
 
   // Destructure to primitives so useCallback can depend on each value directly.
   // Avoids the JSON.stringify(filters) hack that ran on every render.
@@ -57,10 +61,12 @@ export function useAircraft(filters = {}) {
   const damageKey = (damageHistory || []).join('|');
 
   const fetchAircraft = useCallback(async () => {
+    const fetchId = ++fetchIdRef.current;
     setLoading(true);
     setError(null);
 
     if (!isSupabaseConfigured()) {
+      if (fetchIdRef.current !== fetchId) return;
       setAircraft([]);
       setTotal(0);
       setLoading(false);
@@ -176,6 +182,7 @@ export function useAircraft(filters = {}) {
 
       const { data, error: err, count } = await query;
       if (err) throw err;
+      if (fetchIdRef.current !== fetchId) return; // superseded by a newer fetch
 
       // Apply TBO % filter client-side (see note above).
       let rows = data || [];
@@ -191,9 +198,10 @@ export function useAircraft(filters = {}) {
       setAircraft(rows);
       setTotal(tboPctMin ? rows.length : (count || 0));
     } catch (err) {
+      if (fetchIdRef.current !== fetchId) return;
       setError(err.message);
     } finally {
-      setLoading(false);
+      if (fetchIdRef.current === fetchId) setLoading(false);
     }
   }, [
     category, manufacturer, state, condition, dealerId,
@@ -227,6 +235,7 @@ export function useFeaturedAircraft() {
   const [error, setError] = useState(null);
 
   useEffect(() => {
+    let cancelled = false;
     async function fetch() {
       try {
         const { data, error: err } = await supabase
@@ -237,17 +246,20 @@ export function useFeaturedAircraft() {
           .order('created_at', { ascending: false })
           .limit(3);
         if (err) throw err;
+        if (cancelled) return;
         setAircraft(data || []);
       } catch (err) {
+        if (cancelled) return;
         setError(err.message);
         console.error('[useFeaturedAircraft]', err.message);
       } finally {
-        setLoading(false);
+        if (!cancelled) setLoading(false);
       }
     }
     fetch();
     // No safety-net timeout: the previous setTimeout(setLoading(false), 5000)
     // fired unconditionally and caused a flicker.
+    return () => { cancelled = true; };
   }, []);
 
   return { aircraft, loading, error };
@@ -258,6 +270,7 @@ export function useLatestAircraft() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    let cancelled = false;
     async function fetch() {
       try {
         const { data } = await supabase
@@ -266,15 +279,31 @@ export function useLatestAircraft() {
           .eq('status', 'active')
           .order('created_at', { ascending: false })
           .limit(3);
+        if (cancelled) return;
         setAircraft(data || []);
       } catch (err) {
+        if (cancelled) return;
         console.error('[useLatestAircraft]', err.message);
       } finally {
-        setLoading(false);
+        if (!cancelled) setLoading(false);
       }
     }
     fetch();
+    return () => { cancelled = true; };
   }, []);
 
   return { aircraft, loading };
+}
+
+// Single-row fetch by id — used by FlightSalesApp's mount-time fallback
+// (when a route gave only an id, no full row) and its popstate handler
+// (browser back/forward into /listings/:id). Centralised here so both
+// call sites share one query shape instead of duplicating it inline.
+export async function fetchAircraftById(id) {
+  const { data } = await supabase
+    .from('aircraft')
+    .select(`*, dealer:dealers(id, name, location, rating, verified)`)
+    .eq('id', id)
+    .maybeSingle();
+  return data || null;
 }

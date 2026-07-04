@@ -1,9 +1,8 @@
 'use client';
 import { useState, useEffect } from "react";
-import { useAuth, useProfile, useSavedAircraft } from "../lib/hooks";
+import { useAuth, useProfile, useSavedAircraft, fetchAircraftById, fetchDealerById } from "../lib/hooks";
 import { onToast } from "../lib/toast";
 import { installErrorLogger } from "../lib/errorLogger";
-import { supabase } from "../lib/supabase";
 import { Icons } from "./Icons";
 import Nav from "./Nav";
 import MobileSubBar from "./MobileSubBar";
@@ -139,20 +138,12 @@ export default function FlightSalesApp({
   useEffect(() => {
     let cancelled = false;
     if (initialListingId && !selectedListing) {
-      supabase
-        .from('aircraft')
-        .select(`*, dealer:dealers(id, name, location, rating, verified)`)
-        .eq('id', initialListingId)
-        .maybeSingle()
-        .then(({ data }) => { if (!cancelled && data) setSelectedListingRaw(data); });
+      fetchAircraftById(initialListingId)
+        .then((data) => { if (!cancelled && data) setSelectedListingRaw(data); });
     }
     if (initialDealerId && !selectedDealer) {
-      supabase
-        .from('dealers')
-        .select('*')
-        .eq('id', initialDealerId)
-        .maybeSingle()
-        .then(({ data }) => { if (!cancelled && data) setSelectedDealer(data); });
+      fetchDealerById(initialDealerId)
+        .then((data) => { if (!cancelled && data) setSelectedDealer(data); });
     }
     return () => { cancelled = true; };
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -172,18 +163,16 @@ export default function FlightSalesApp({
       if (path.startsWith("/dealers/")) {
         const id = path.split("/")[2];
         if (id) {
-          supabase.from('dealers').select('*').eq('id', id).maybeSingle()
-            .then(({ data }) => { if (data) { setSelectedDealer(data); setPage("dealer-detail"); } });
+          fetchDealerById(id)
+            .then((data) => { if (data) { setSelectedDealer(data); setPage("dealer-detail"); } });
         }
         return;
       }
       if (path.startsWith("/listings/")) {
         const id = path.split("/")[2];
         if (id) {
-          supabase.from('aircraft')
-            .select(`*, dealer:dealers(id, name, location, rating, verified)`)
-            .eq('id', id).maybeSingle()
-            .then(({ data }) => { if (data) { setSelectedListingRaw(data); setPage("detail"); } });
+          fetchAircraftById(id)
+            .then((data) => { if (data) { setSelectedListingRaw(data); setPage("detail"); } });
         }
         return;
       }

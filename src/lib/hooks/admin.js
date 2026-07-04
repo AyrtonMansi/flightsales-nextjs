@@ -15,10 +15,14 @@ export function useAdminListings() {
   const fetchAll = useCallback(async () => {
     setLoading(true);
     try {
+      // Safety cap, not real pagination — the admin Listings tab has no
+      // paging UI yet, so this just stops a future data spike from
+      // pulling the entire table into the browser on every load.
       const { data, error: err } = await supabase
         .from('aircraft')
         .select(`*, dealer:dealers(id, name)`)
-        .order('created_at', { ascending: false });
+        .order('created_at', { ascending: false })
+        .limit(2000);
       if (err) throw err;
       setListings(data || []);
     } catch (err) {
@@ -83,11 +87,13 @@ export function useAdminUsers() {
     setLoading(true);
     try {
       // Client-side aggregation. Slow at scale, but works without
-      // requiring an admin_users_with_listings_count RPC.
+      // requiring an admin_users_with_listings_count RPC. Safety cap,
+      // not real pagination — stops a future user-base spike from
+      // pulling every profile into the browser on every load.
       const { data: profiles } = await supabase
-        .from('profiles').select('*').order('created_at', { ascending: false });
+        .from('profiles').select('*').order('created_at', { ascending: false }).limit(2000);
       const { data: counts } = await supabase
-        .from('aircraft').select('user_id');
+        .from('aircraft').select('user_id').limit(5000);
       const listingsByUser = (counts || []).reduce((acc, r) => {
         if (r.user_id) acc[r.user_id] = (acc[r.user_id] || 0) + 1;
         return acc;
@@ -136,10 +142,13 @@ export function useAdminEnquiries() {
   const fetchAll = useCallback(async () => {
     setLoading(true);
     try {
+      // Safety cap, not real pagination — the admin Enquiries tab polls
+      // every 30s (below), so this bounds worst-case payload size.
       const { data } = await supabase
         .from('enquiries')
         .select(`*, aircraft:aircraft(id, title)`)
-        .order('created_at', { ascending: false });
+        .order('created_at', { ascending: false })
+        .limit(2000);
       setEnquiries(data || []);
     } finally {
       setLoading(false);
@@ -200,10 +209,12 @@ export function useDealerApplications() {
   const fetchAll = useCallback(async () => {
     setLoading(true);
     try {
+      // Safety cap, not real pagination.
       const { data: rows, error: err } = await supabase
         .from('dealer_applications')
         .select('*')
-        .order('created_at', { ascending: false });
+        .order('created_at', { ascending: false })
+        .limit(2000);
       if (err) throw err;
       const userIds = [...new Set((rows || []).map(r => r.user_id).filter(Boolean))];
       let profileById = {};
@@ -262,10 +273,12 @@ export function useNewsArticles() {
   const fetchAll = useCallback(async () => {
     setLoading(true);
     try {
+      // Safety cap, not real pagination.
       const { data } = await supabase
         .from('news_articles')
         .select('*')
-        .order('date', { ascending: false });
+        .order('date', { ascending: false })
+        .limit(2000);
       setArticles(data || []);
     } finally {
       setLoading(false);

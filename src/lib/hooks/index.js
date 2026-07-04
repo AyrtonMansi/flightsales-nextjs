@@ -26,8 +26,8 @@
 // and tree-shaking can drop unused modules from each consumer's
 // bundle. This barrel exists for back-compat only.
 
-export { useAircraft, useFeaturedAircraft, useLatestAircraft } from './aircraft';
-export { useDealers } from './dealers';
+export { useAircraft, useFeaturedAircraft, useLatestAircraft, fetchAircraftById } from './aircraft';
+export { useDealers, fetchDealerById } from './dealers';
 export { useNews } from './news';
 export { useAuth } from './auth';
 export { useProfile } from './profile';

@@ -9,6 +9,12 @@ import { isSupabaseConfigured } from './_shared';
 // Soft-fails when Supabase env isn't configured so the app still
 // renders in local dev with stub data (instead of throwing).
 
+function assertConfigured(action) {
+  if (!isSupabaseConfigured()) {
+    throw new Error(`${action} not available - Supabase not configured`);
+  }
+}
+
 export function useAuth() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -37,9 +43,7 @@ export function useAuth() {
   }, []);
 
   const signUp = async (email, password, metadata = {}) => {
-    if (!isSupabaseConfigured()) {
-      throw new Error('Authentication not available - Supabase not configured');
-    }
+    assertConfigured('Authentication');
     // Anchor the confirmation link to the live origin. Without this Supabase
     // falls back to the project's Site URL, which has previously been wrong in
     // production (left as localhost or a stale Vercel preview), bouncing every
@@ -56,18 +60,14 @@ export function useAuth() {
   };
 
   const signIn = async (email, password) => {
-    if (!isSupabaseConfigured()) {
-      throw new Error('Authentication not available - Supabase not configured');
-    }
+    assertConfigured('Authentication');
     const { data, error } = await supabase.auth.signInWithPassword({ email, password });
     if (error) throw error;
     return data;
   };
 
   const signInWithGoogle = async () => {
-    if (!isSupabaseConfigured()) {
-      throw new Error('Authentication not available - Supabase not configured');
-    }
+    assertConfigured('Authentication');
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: { redirectTo: `${window.location.origin}/auth/callback?next=/dashboard` }
@@ -85,9 +85,7 @@ export function useAuth() {
   };
 
   const resetPassword = async (email) => {
-    if (!isSupabaseConfigured()) {
-      throw new Error('Password reset not available - Supabase not configured');
-    }
+    assertConfigured('Password reset');
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
       redirectTo: `${window.location.origin}/auth/reset-password`,
     });
@@ -95,9 +93,7 @@ export function useAuth() {
   };
 
   const updatePassword = async (newPassword) => {
-    if (!isSupabaseConfigured()) {
-      throw new Error('Password update not available - Supabase not configured');
-    }
+    assertConfigured('Password update');
     const { error } = await supabase.auth.updateUser({ password: newPassword });
     if (error) throw error;
   };

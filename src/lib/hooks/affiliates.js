@@ -103,10 +103,14 @@ export function useAffiliateLeads() {
   const fetchAll = useCallback(async () => {
     setLoading(true);
     try {
+      // Safety cap, not real pagination — leads are an append-only log
+      // that will keep growing, unlike affiliates itself (curated,
+      // bounded reference data).
       const { data } = await supabase
         .from('affiliate_leads')
         .select('*, affiliate:affiliates(id, name, type)')
-        .order('created_at', { ascending: false });
+        .order('created_at', { ascending: false })
+        .limit(2000);
       setLeads(data || []);
     } finally {
       setLoading(false);

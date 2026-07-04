@@ -10,17 +10,10 @@
 // dedupe across reruns. Cheap; no per-event row needed for this volume.
 
 import { NextResponse } from 'next/server';
-import { createClient } from '@supabase/supabase-js';
 import { sendEmail } from '../../../../lib/email';
+import { adminClient } from '../../../../lib/requireAdmin';
 
 export const runtime = 'nodejs';
-
-function adminClient() {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
-  if (!url || !key) return null;
-  return createClient(url, key, { auth: { persistSession: false } });
-}
 
 function daysAgo(n) {
   return new Date(Date.now() - n * 86400000).toISOString();
@@ -36,12 +29,36 @@ async function ageBucket(supabase, lo, hi) {
   return data || [];
 }
 
-async function listingsForUser(supabase, userId) {
-  const { count } = await supabase
-    .from('aircraft')
-    .select('id', { count: 'exact', head: true })
-    .eq('user_id', userId);
-  return count || 0;
+// Which of these users have listed at least one aircraft — a single
+// batched query instead of one count() per user.
+async function usersWithListings(supabase, userIds) {
+  if (!userIds.length) return new Set();
+  const { data } = await supabase.from('aircraft').select('user_id').in('user_id', userIds);
+  return new Set((data || []).map(r => r.user_id));
+}
+
+// Send the nudge to everyone in the bucket who hasn't listed yet
+// (parallel), then stamp onboarding_step_sent for the whole bucket
+// (nudged + already-listed) in one batched update instead of one per user.
+async function processBucket(supabase, bucket, step) {
+  const pending = bucket.filter(u => u.onboarding_step_sent !== step && u.onboarding_step_sent !== 'day7');
+  if (!pending.length) return 0;
+
+  const listedIds = await usersWithListings(supabase, pending.map(u => u.id));
+  const toNudge = pending.filter(u => !listedIds.has(u.id) && u.email);
+  const toStamp = pending.map(u => u.id);
+
+  await Promise.all(toNudge.map(u => sendEmail({
+    to: u.email,
+    template: `onboarding.${step}`,
+    vars: { firstName: u.full_name?.split(' ')[0] },
+  })));
+
+  if (toStamp.length) {
+    await supabase.from('profiles').update({ onboarding_step_sent: step }).in('id', toStamp);
+  }
+
+  return toNudge.length;
 }
 
 export async function GET(req) {
@@ -53,49 +70,17 @@ export async function GET(req) {
   const supabase = adminClient();
   if (!supabase) return NextResponse.json({ ok: false, error: 'no_db' }, { status: 500 });
 
-  let day2Sent = 0;
-  let day7Sent = 0;
+  // Users 2-3 days old (day-2 nudge) and 7-8 days old (day-7 nudge) —
+  // independent buckets, fetched concurrently.
+  const [day2Bucket, day7Bucket] = await Promise.all([
+    ageBucket(supabase, 2, 3),
+    ageBucket(supabase, 7, 8),
+  ]);
 
-  // ── Day 2 nudge ──────────────────────────────────────────────────
-  // Users 2-3 days old who haven't received the day-2 email yet AND
-  // who haven't listed any aircraft.
-  const day2Bucket = await ageBucket(supabase, 2, 3);
-  for (const u of day2Bucket) {
-    if (u.onboarding_step_sent === 'day2' || u.onboarding_step_sent === 'day7') continue;
-    const listings = await listingsForUser(supabase, u.id);
-    if (listings > 0) {
-      // They've listed — skip nudge but mark so we don't keep checking
-      await supabase.from('profiles').update({ onboarding_step_sent: 'day2' }).eq('id', u.id);
-      continue;
-    }
-    if (!u.email) continue;
-    await sendEmail({
-      to: u.email,
-      template: 'onboarding.day2',
-      vars: { firstName: u.full_name?.split(' ')[0] },
-    });
-    await supabase.from('profiles').update({ onboarding_step_sent: 'day2' }).eq('id', u.id);
-    day2Sent += 1;
-  }
-
-  // ── Day 7 final nudge ────────────────────────────────────────────
-  const day7Bucket = await ageBucket(supabase, 7, 8);
-  for (const u of day7Bucket) {
-    if (u.onboarding_step_sent === 'day7') continue;
-    const listings = await listingsForUser(supabase, u.id);
-    if (listings > 0) {
-      await supabase.from('profiles').update({ onboarding_step_sent: 'day7' }).eq('id', u.id);
-      continue;
-    }
-    if (!u.email) continue;
-    await sendEmail({
-      to: u.email,
-      template: 'onboarding.day7',
-      vars: { firstName: u.full_name?.split(' ')[0] },
-    });
-    await supabase.from('profiles').update({ onboarding_step_sent: 'day7' }).eq('id', u.id);
-    day7Sent += 1;
-  }
+  const [day2Sent, day7Sent] = await Promise.all([
+    processBucket(supabase, day2Bucket, 'day2'),
+    processBucket(supabase, day7Bucket, 'day7'),
+  ]);
 
   return NextResponse.json({ ok: true, day2Sent, day7Sent });
 }

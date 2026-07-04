@@ -14,17 +14,10 @@
 // manually fire the endpoint and trigger a flood of renewal emails.
 
 import { NextResponse } from 'next/server';
-import { createClient } from '@supabase/supabase-js';
 import { sendEmail } from '../../../../lib/email';
+import { adminClient } from '../../../../lib/requireAdmin';
 
 export const runtime = 'nodejs';
-
-function adminClient() {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
-  if (!url || !key) return null;
-  return createClient(url, key, { auth: { persistSession: false } });
-}
 
 export async function GET(req) {
   // Verify the Vercel Cron header.
@@ -49,13 +42,11 @@ export async function GET(req) {
     .gt('expires_at', now.toISOString())
     .is('renewal_reminder_sent_at', null);
 
-  let remindersSent = 0;
-  for (const row of dueSoon || []) {
-    const recipient = row.profile?.email;
-    if (!recipient) continue;
+  const remindable = (dueSoon || []).filter(row => row.profile?.email);
+  await Promise.all(remindable.map(row => {
     const daysLeft = Math.max(1, Math.ceil((new Date(row.expires_at) - now) / 86400000));
-    await sendEmail({
-      to: recipient,
+    return sendEmail({
+      to: row.profile.email,
       template: 'listing.approved',  // re-uses the visual shell; subject overridden via vars
       vars: {
         aircraftTitle: row.title,
@@ -63,12 +54,14 @@ export async function GET(req) {
         renewalDays: daysLeft,
       },
     });
+  }));
+  if (remindable.length) {
     await supabase
       .from('aircraft')
       .update({ renewal_reminder_sent_at: now.toISOString() })
-      .eq('id', row.id);
-    remindersSent++;
+      .in('id', remindable.map(row => row.id));
   }
+  const remindersSent = remindable.length;
 
   // Pass 2 — auto-archive expired listings.
   const { data: expired } = await supabase
@@ -84,14 +77,19 @@ export async function GET(req) {
       .in('id', expired.map(r => r.id));
 
     // Notify each seller their listing expired (skip if email infra
-    // unavailable; the status change is the source of truth).
-    for (const row of expired) {
-      if (!row.user_id) continue;
-      const { data: profile } = await supabase
-        .from('profiles').select('email').eq('id', row.user_id).maybeSingle();
-      if (!profile?.email) continue;
+    // unavailable; the status change is the source of truth). One
+    // batched profiles lookup instead of one query per expired listing.
+    const ownerIds = [...new Set(expired.map(r => r.user_id).filter(Boolean))];
+    const { data: owners } = ownerIds.length
+      ? await supabase.from('profiles').select('id, email').in('id', ownerIds)
+      : { data: [] };
+    const emailByOwnerId = new Map((owners || []).map(o => [o.id, o.email]));
+
+    await Promise.all(expired.map(async (row) => {
+      const email = row.user_id ? emailByOwnerId.get(row.user_id) : null;
+      if (!email) return;
       await sendEmail({
-        to: profile.email,
+        to: email,
         template: 'listing.rejected', // re-uses template; reason explains expiry
         vars: {
           aircraftTitle: 'Your listing',
@@ -99,7 +97,7 @@ export async function GET(req) {
           reason: 'Your listing reached its 60-day expiry and has been auto-archived. Open your dashboard to renew it for another 60 days.',
         },
       });
-    }
+    }));
   }
 
   return NextResponse.json({
