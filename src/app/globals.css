@@ -976,6 +976,10 @@ html, body { overflow-x: hidden; max-width: 100%; }
   max-width: 480px;
   font-weight: 400; line-height: 1.45; letter-spacing: -0.01em;
 }
+/* fs-hero-sub was designed for the centered home hero; inside the
+   left-aligned about/pricing hero the auto margins float the paragraph
+   toward the middle while the h1 hugs the left edge. Pin it left. */
+.fs-about-hero .fs-hero-sub { margin-left: 0; margin-right: 0; }
 .fs-hero .fs-search-bar { margin: 0 auto; }
 .fs-hero .fs-categories { justify-content: center; }
 .fs-hero .fs-stats { justify-content: center; margin-left: auto; margin-right: auto; max-width: 480px; }
@@ -2552,7 +2556,11 @@ html, body { overflow-x: hidden; max-width: 100%; }
   background: var(--fs-bg);
 }
 .fs-login-brand {
-  background: var(--fs-ink);
+  /* Soft radial wash lifts the panel off pure-black so it reads as a
+     designed surface rather than an unloaded image slot. */
+  background:
+    radial-gradient(120% 90% at 15% 10%, rgba(83, 170, 226, 0.16), transparent 55%),
+    var(--fs-ink);
   color: var(--fs-white);
   display: flex;
   align-items: center;
@@ -2560,6 +2568,11 @@ html, body { overflow-x: hidden; max-width: 100%; }
   padding: 56px 48px;
 }
 .fs-login-brand-inner { max-width: 360px; }
+.fs-login-brand-mark {
+  color: var(--fs-accent);
+  margin-bottom: 20px;
+  display: block;
+}
 .fs-login-brand-wordmark {
   font-size: 32px; font-weight: 800;
   letter-spacing: -0.03em;
@@ -2572,6 +2585,29 @@ html, body { overflow-x: hidden; max-width: 100%; }
   line-height: 1.45;
   letter-spacing: -0.01em;
   margin: 0;
+}
+.fs-login-brand-points {
+  list-style: none;
+  margin: 32px 0 0;
+  padding: 0;
+  display: grid;
+  gap: 14px;
+}
+.fs-login-brand-points li {
+  position: relative;
+  padding-left: 26px;
+  font-size: 14px;
+  line-height: 1.45;
+  color: rgba(255, 255, 255, 0.66);
+}
+.fs-login-brand-points li::before {
+  content: "✓";
+  position: absolute;
+  left: 0;
+  top: 0;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--fs-accent);
 }
 .fs-login-form-col {
   display: flex;

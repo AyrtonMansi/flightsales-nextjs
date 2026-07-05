@@ -128,11 +128,13 @@ export default function MakeModelPicker({
               setMakeOpen(true);
             }}
             onFocus={() => setMakeOpen(true)}
+            role="combobox"
             aria-autocomplete="list"
             aria-expanded={makeOpen}
+            aria-controls="mmp-make-listbox"
           />
           {makeOpen && makeSuggestions.length > 0 && (
-            <ul className="fs-mmp-pop" role="listbox">
+            <ul className="fs-mmp-pop" id="mmp-make-listbox" role="listbox">
               {makeSuggestions.map((mk) => (
                 <li key={mk.slug}>
                   <button
@@ -165,11 +167,13 @@ export default function MakeModelPicker({
               setModelOpen(true);
             }}
             onFocus={() => setModelOpen(true)}
+            role="combobox"
             aria-autocomplete="list"
             aria-expanded={modelOpen}
+            aria-controls="mmp-model-listbox"
           />
           {modelOpen && modelSuggestions.length > 0 && (
-            <ul className="fs-mmp-pop" role="listbox">
+            <ul className="fs-mmp-pop" id="mmp-model-listbox" role="listbox">
               {modelSuggestions.map((mdl) => (
                 <li key={mdl.slug}>
                   <button

@@ -43,24 +43,28 @@ export default function CheckboxList({
     return { active: a, dormant: d };
   }, [options, selected, collapseZero]);
 
-  const filterMatch = (list) => {
-    if (!filterText) return list;
-    const q = filterText.toLowerCase();
-    return list.filter(o => o.label.toLowerCase().includes(q));
-  };
-
   const visible = useMemo(() => {
     // When user has expanded OR is searching, show everything from active
     // + dormant that matches. Otherwise show first `maxVisible` from active.
-    if (filterText) return filterMatch([...active, ...dormant]);
+    if (filterText) {
+      const q = filterText.toLowerCase();
+      return [...active, ...dormant].filter(o => o.label.toLowerCase().includes(q));
+    }
     if (expanded) return [...active, ...dormant];
+    // Empty-marketplace fallback: with zero stock, collapseZero would sink
+    // EVERY option behind "Show N more" and the rail would render nothing
+    // but toggle buttons — which reads as broken. Show the first
+    // `maxVisible` dormant options (grayed via the zero style) instead.
+    if (active.length === 0) return dormant.slice(0, maxVisible);
     return active.slice(0, maxVisible);
   }, [active, dormant, filterText, expanded, maxVisible]);
 
-  // "Show N more" button reveals: (active beyond maxVisible) + (all dormant).
+  // "Show N more" button reveals whatever the default view truncated.
   const moreCount = (expanded || filterText)
     ? 0
-    : Math.max(0, active.length - maxVisible) + dormant.length;
+    : active.length === 0
+      ? Math.max(0, dormant.length - maxVisible)
+      : Math.max(0, active.length - maxVisible) + dormant.length;
 
   return (
     <div className="fs-fc-checklist">

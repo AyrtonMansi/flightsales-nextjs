@@ -104,6 +104,10 @@ export function useFacets(filterState) {
   // only and never sends row data over the wire.
   const { rows: universe = [], loading } = useFacetUniverse();
 
+  // Stringified filter key keeps the memo dep shallow + stable across
+  // renders (the filterState object identity churns every render).
+  const filterKey = JSON.stringify(filterState);
+
   return useMemo(() => {
     if (loading || universe.length === 0) {
       return {
@@ -144,12 +148,13 @@ export function useFacets(filterState) {
       autopilotCounts:   tallyBy(subsetExcluding('autopilots'),    'autopilot'),
       damageCounts:      tallyBy(subsetExcluding('damageHistory'), 'damage_history'),
     };
-    // Stringified state key keeps deps shallow + stable across renders.
+    // filterKey stands in for filterState (see above) — the raw object
+    // is deliberately excluded so identity churn doesn't recompute.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     loading,
     universe,
-    JSON.stringify(filterState),
+    filterKey,
   ]);
 }
 

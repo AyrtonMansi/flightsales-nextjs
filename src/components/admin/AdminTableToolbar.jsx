@@ -67,8 +67,14 @@ export default function AdminTableToolbar({
 export function SortHeader({ field, sort, onSortChange, align = 'left', children }) {
   const isActive = sort?.field === field;
   const direction = isActive ? sort.direction : null;
+  // aria-sort lives on the <th> (the only element the attribute is valid
+  // on) and is omitted entirely when this column isn't the active sort —
+  // per WAI-ARIA, only the sorted column should carry the attribute.
   return (
-    <th style={{ textAlign: align }}>
+    <th
+      style={{ textAlign: align }}
+      aria-sort={direction === 'asc' ? 'ascending' : direction === 'desc' ? 'descending' : undefined}
+    >
       <button
         type="button"
         className={`fs-admin-sortbtn${isActive ? ' on' : ''}`}
@@ -77,7 +83,6 @@ export function SortHeader({ field, sort, onSortChange, align = 'left', children
           else if (direction === 'asc') onSortChange({ field, direction: 'desc' });
           else onSortChange(null);
         }}
-        aria-sort={direction === 'asc' ? 'ascending' : direction === 'desc' ? 'descending' : 'none'}
       >
         {children}
         <span className="fs-admin-sort-indicator" aria-hidden="true">

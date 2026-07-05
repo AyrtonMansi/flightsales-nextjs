@@ -24,9 +24,9 @@ export function useAircraft(filters = {}) {
 
   // Destructure to primitives so useCallback can depend on each value directly.
   // Avoids the JSON.stringify(filters) hack that ran on every render.
-  // Multi-select fields (categories, manufacturers, states, conditions) are
-  // arrays — joined to a string for the dep array so identity churn doesn't
-  // refetch when the contents are unchanged.
+  // Multi-select fields are arrays; their references are stable across
+  // renders because BuyPage's filterReducer only swaps an array when its
+  // contents change, so they can sit in the dep array directly.
   const {
     // legacy single-string filters kept for back-compat with hooks that still
     // pass scalars (useFeaturedAircraft, dealer detail page, etc.)
@@ -46,19 +46,6 @@ export function useAircraft(filters = {}) {
     dealerOnly, privateOnly, featuredOnly,
     search, sortBy, page, pageSize,
   } = filters;
-
-  const catKey = (categories || []).join('|');
-  const makeKey = (manufacturers || []).join('|');
-  const modelKey = (models || []).join('|');
-  const countryKey = (countries || []).join('|');
-  const stateKey = (states || []).join('|');
-  const condKey = (conditions || []).join('|');
-  const engCountKey = (engineCounts || []).join('|');
-  const engTypeKey = (engineTypes || []).join('|');
-  const engMakeKey = (engineMakes || []).join('|');
-  const avSuiteKey = (avionicsSuites || []).join('|');
-  const apKey = (autopilots || []).join('|');
-  const damageKey = (damageHistory || []).join('|');
 
   const fetchAircraft = useCallback(async () => {
     const fetchId = ++fetchIdRef.current;
@@ -205,9 +192,9 @@ export function useAircraft(filters = {}) {
     }
   }, [
     category, manufacturer, state, condition, dealerId,
-    catKey, makeKey, modelKey, countryKey, stateKey, condKey,
-    engCountKey, engTypeKey, engMakeKey,
-    avSuiteKey, apKey, damageKey,
+    categories, manufacturers, models, countries, states, conditions,
+    engineCounts, engineTypes, engineMakes,
+    avionicsSuites, autopilots, damageHistory,
     minPrice, maxPrice, maxHours, ifrOnly, glassOnly,
     yearFrom, yearTo,
     cruiseMin, rangeMin, usefulLoadMin, fuelBurnMax,
@@ -218,10 +205,6 @@ export function useAircraft(filters = {}) {
     logbooksComplete, hangared, ownerMaxCount,
     dealerOnly, privateOnly, featuredOnly,
     search, sortBy, page, pageSize,
-    // arrays referenced indirectly via *Key keys above
-    categories, manufacturers, states, conditions,
-    engineCounts, engineTypes, engineMakes,
-    avionicsSuites, autopilots, damageHistory,
   ]);
 
   useEffect(() => { fetchAircraft(); }, [fetchAircraft]);
