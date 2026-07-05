@@ -349,7 +349,11 @@ export default function FlightSalesApp({
     <>
       <Nav page={page} setPage={setPageWrap} setMobileOpen={setMobileOpen} mobileOpen={mobileOpen} user={user} signOut={signOut} setDashboardTab={setDashboardTab} />
       <MobileSubBar setPage={setPageWrap} />
-      {page !== 'home' && page !== 'detail' && <Breadcrumbs />}
+      {/* No breadcrumbs on home (is the root), detail (has its own back
+          affordance), or login (focused conversion surface — the strip
+          reads as clutter above the split-screen panel, and the form
+          column already carries "← Back to home"). */}
+      {page !== 'home' && page !== 'detail' && page !== 'login' && <Breadcrumbs />}
 
       {page === "home" && <HomePage setPage={setPageWrap} setSelectedListing={setSelectedListing} savedIds={savedIds} onSave={onSave} setSearchFilters={setSearchFilters} initialHomeData={initialHomeData} />}
       {page === "buy" && <BuyPage setSelectedListing={setSelectedListing} savedIds={savedIds} onSave={onSave} initialFilters={searchFilters} user={user} setPage={setPageWrap} />}
