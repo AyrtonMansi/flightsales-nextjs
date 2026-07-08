@@ -35,7 +35,7 @@ const ContactPage = () => {
     <>
       <div className="fs-about-hero">
         <div className="fs-container">
-          <h1 style={{ fontFamily: "var(--fs-font)", fontSize: 40, fontWeight: 700, letterSpacing: "-0.03em" }}>Contact Us</h1>
+          <h1 style={{ fontSize: 44 }}>Contact Us</h1>
           <p style={{ color: "var(--fs-ink-3)", marginTop: 8 }}>Get in touch with the Flightsales team</p>
         </div>
       </div>

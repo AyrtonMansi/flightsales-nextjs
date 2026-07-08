@@ -74,7 +74,7 @@ const SellPage = ({ user, setPage }) => {
       <>
         <div className="fs-about-hero">
           <div className="fs-container">
-            <h1 style={{ fontFamily: 'var(--fs-font)', fontSize: 40, fontWeight: 700, letterSpacing: '-0.03em' }}>
+            <h1 style={{ fontSize: 44 }}>
               Verify your business first
             </h1>
             <p style={{ color: 'var(--fs-ink-3)', marginTop: 8, fontSize: 16 }}>
@@ -100,7 +100,7 @@ const SellPage = ({ user, setPage }) => {
       <>
         <div className="fs-about-hero">
           <div className="fs-container">
-            <h1 style={{ fontFamily: "var(--fs-font)", fontSize: 40, fontWeight: 700, letterSpacing: "-0.03em" }}>Sell Your Aircraft</h1>
+            <h1 style={{ fontSize: 44 }}>Sell Your Aircraft</h1>
             <p style={{ color: "var(--fs-ink-3)", marginTop: 8, fontSize: 16 }}>Reach thousands of qualified buyers across Australia</p>
           </div>
         </div>
@@ -257,7 +257,7 @@ const SellPage = ({ user, setPage }) => {
     <>
       <div className="fs-about-hero fs-sell-hero">
         <div className="fs-container">
-          <h1 style={{ fontFamily: "var(--fs-font)", fontSize: 40, fontWeight: 700, letterSpacing: "-0.03em" }}>Sell Your Aircraft</h1>
+          <h1 style={{ fontSize: 44 }}>Sell Your Aircraft</h1>
           <p style={{ color: "var(--fs-ink-3)", marginTop: 8, fontSize: 16 }}>Reach thousands of qualified buyers across Australia</p>
         </div>
       </div>

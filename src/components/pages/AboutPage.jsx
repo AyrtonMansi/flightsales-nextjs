@@ -4,7 +4,7 @@ const AboutPage = () => (
   <>
     <div className="fs-about-hero" style={{ padding: "72px 0" }}>
       <div className="fs-container">
-        <h1 style={{ fontFamily: "var(--fs-font)", fontSize: 40, marginBottom: 12 }}>About Flightsales</h1>
+        <h1 style={{ fontSize: 44, marginBottom: 12 }}>About Flightsales</h1>
         <p style={{ color: "var(--fs-ink-3)", maxWidth: 600, margin: "0 auto", fontSize: 16, lineHeight: 1.5 }}>
           We're building Australia's most trusted aircraft marketplace. A place where pilots, owners, and dealers can buy and sell with transparency, confidence, and fair pricing.
         </p>

@@ -16,7 +16,7 @@ const DealersPage = ({ onSelectDealer, setPage }) => {
     <>
       <div className="fs-about-hero">
         <div className="fs-container">
-          <h1 style={{ fontFamily: 'var(--fs-font)', fontSize: 40, fontWeight: 700, letterSpacing: '-0.03em' }}>Verified Dealers</h1>
+          <h1 style={{ fontSize: 44 }}>Verified Dealers</h1>
           <p style={{ color: 'var(--fs-ink-3)', marginTop: 8, fontSize: 16 }}>Trusted aviation businesses across Australia</p>
         </div>
       </div>

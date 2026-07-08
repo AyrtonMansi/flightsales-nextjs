@@ -105,7 +105,7 @@ const LoginPage = ({ setPage, signIn, signUp, signInWithGoogle, resetPassword, l
         </button>
 
         <div style={{ marginBottom: 28 }}>
-          <h1 style={{ fontFamily: "var(--fs-font)", fontSize: 28, marginBottom: 8, fontWeight: 700, letterSpacing: "-0.02em" }}>
+          <h1 className="fs-display" style={{ fontSize: 32, marginBottom: 8 }}>
             {mode === 'login' ? 'Welcome back' : 'Create your account'}
           </h1>
           <p style={{ fontSize: 15, color: "var(--fs-gray-500)", lineHeight: 1.5 }}>

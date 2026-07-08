@@ -111,7 +111,7 @@ const HomePage = ({ setPage, setSelectedListing, savedIds, onSave, setSearchFilt
         <div className="fs-container">
           <div className="fs-hero-v3-grid">
             <div className="fs-hero-v3-left">
-              <h1>Find your next aircraft.</h1>
+              <h1>Find your <em>next</em> aircraft.</h1>
               <p className="fs-hero-sub">
                 Search thousands of listings from verified dealers and private sellers.
               </p>

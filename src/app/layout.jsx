@@ -46,6 +46,16 @@ export default function RootLayout({ children }) {
           rel="stylesheet"
           href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"
         />
+        {/* Fraunces — display serif for hero + section headings only (body
+            and all UI stay Inter). This is the original design intent
+            noted in globals.css; the link was never actually added.
+            Variable opsz axis lets one file serve 40px hero down to 24px
+            section titles with optical-sizing auto. SOFT/WONK held near 0
+            so it reads classic-editorial, not fashion-quirky. */}
+        <link
+          rel="stylesheet"
+          href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400..600;1,9..144,400..600&display=swap"
+        />
         {/* Plausible analytics — privacy-friendly, GDPR-compliant, no
             cookies, free for low volume. Soft-disabled when the env
             var is unset (development). Set NEXT_PUBLIC_PLAUSIBLE_DOMAIN
