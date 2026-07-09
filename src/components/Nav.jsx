@@ -72,21 +72,28 @@ const Nav = ({ page, setPage, setMobileOpen, mobileOpen, user, signOut, setDashb
     <>
       <nav className="fs-nav">
         <div className="fs-container fs-nav-inner">
-          <div className="fs-nav-logo" onClick={go('home')}>
-            {/* Brand mark — Bootstrap Icons `airplane-fill`, MIT
-                licensed, drawn by the Bootstrap design team. This is
-                a CLASSIC commercial-airliner planform silhouette
-                viewed from below: symmetric wings, swept-back stab,
-                pointed nose. Unlike Lucide's `plane` (which is a
-                stylized paper-airplane / sent-message icon and reads
-                as "send" rather than "aircraft"), this is what
-                actually looks like a real airplane.
-                Filled rather than stroked so it has visual weight
-                next to the "FlightSales" wordmark.
+          <div
+            className="fs-nav-logo"
+            onClick={go('home')}
+            onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); go('home')(e); } }}
+            role="link"
+            tabIndex={0}
+            aria-label="FlightSales — home"
+          >
+            {/* Brand lockup — the vetted Bootstrap `airplane-fill` mark
+                (MIT, a true commercial-airliner planform, not Lucide's
+                paper-plane "send" glyph) set into a solid accent tile.
+                The tile reads as a real brand mark rather than a bare
+                inline icon; the plane is rotated 45° so it ascends
+                (lift / take-off) instead of pointing straight up. Reusing
+                the vetted path avoids the hand-drawn-silhouette distortion
+                that bit earlier logo attempts.
                 Source: https://icons.getbootstrap.com/icons/airplane-fill/ */}
-            <svg className="fs-nav-logo-mark" width="20" height="20" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
-              <path d="M6.428 1.151C6.708.591 7.213 0 8 0s1.292.592 1.572 1.151C9.861 1.73 10 2.431 10 3v3.691l5.17 2.585a1.5 1.5 0 0 1 .83 1.342V12a.5.5 0 0 1-.582.493l-5.507-.918-.375 2.253 1.318 1.318A.5.5 0 0 1 10.5 16h-5a.5.5 0 0 1-.354-.854l1.319-1.318-.376-2.253-5.507.918A.5.5 0 0 1 0 12v-1.382a1.5 1.5 0 0 1 .83-1.342L6 6.691V3c0-.568.14-1.271.428-1.849Z" />
-            </svg>
+            <span className="fs-nav-logo-tile" aria-hidden="true">
+              <svg className="fs-nav-logo-mark" width="17" height="17" viewBox="0 0 16 16" fill="currentColor">
+                <path d="M6.428 1.151C6.708.591 7.213 0 8 0s1.292.592 1.572 1.151C9.861 1.73 10 2.431 10 3v3.691l5.17 2.585a1.5 1.5 0 0 1 .83 1.342V12a.5.5 0 0 1-.582.493l-5.507-.918-.375 2.253 1.318 1.318A.5.5 0 0 1 10.5 16h-5a.5.5 0 0 1-.354-.854l1.319-1.318-.376-2.253-5.507.918A.5.5 0 0 1 0 12v-1.382a1.5 1.5 0 0 1 .83-1.342L6 6.691V3c0-.568.14-1.271.428-1.849Z" />
+              </svg>
+            </span>
             <span className="fs-nav-logo-text">
               FlightSales<span className="fs-nav-logo-tld">.com.au</span>
             </span>
