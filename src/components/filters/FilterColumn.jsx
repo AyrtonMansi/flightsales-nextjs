@@ -6,6 +6,7 @@ import CheckboxList from './CheckboxList';
 import MakeModelTree from './MakeModelTree';
 import NumberField from './NumberField';
 import RangeSlider from './RangeSlider';
+import { Icons } from '../Icons';
 import { CATEGORIES, MANUFACTURERS, CONDITIONS } from '../../lib/constants';
 import LocationCascade from './LocationCascade';
 import { useAircraftCatalogue, makesForCategories, modelsForMakesAndCategories } from '../../lib/aircraftCatalogue';
@@ -201,13 +202,21 @@ export default function FilterColumn({ state, dispatch, total, user }) {
 
   return (
     <div className="fs-fc">
-      {/* Sticky header — only renders when there's something
-          actionable (a Reset button when filters are active). The
-          static "0 aircraft" count that lived here previously was
-          redundant with the same count already shown in the main
-          column header, and read as noise at the top of the rail. */}
+      {/* Sticky header — only renders when there's something actionable.
+          The full removable-pill breakdown lives in the main column
+          (ActiveFilterChips); this is deliberately just a quick numeric
+          orientation + reset, so it stays useful while the user is
+          scrolled deep into the advanced sections without repeating
+          the same list twice. The static "0 aircraft" count that used
+          to live here was redundant with the count already shown in
+          the main column header, and read as noise at the top of the
+          rail — this replaces it with something that's actually only
+          shown when there's a reason to. */}
       {activeTotal > 0 && (
-        <div className="fs-fc-head fs-fc-head-reset-only">
+        <div className="fs-fc-head">
+          <span className="fs-fc-head-count">
+            {activeTotal} filter{activeTotal === 1 ? '' : 's'} active
+          </span>
           <button
             type="button"
             className="fs-fc-reset"
@@ -222,7 +231,9 @@ export default function FilterColumn({ state, dispatch, total, user }) {
       <div className="fs-fc-basic">
         {/* Search */}
         <div className="fs-fc-field">
-          <label className="fs-fc-label" htmlFor="fc-search">Search</label>
+          <label className="fs-fc-label" htmlFor="fc-search">
+            <span className="fs-fc-label-icon" aria-hidden="true">{Icons.search}</span> Search
+          </label>
           <input
             id="fc-search"
             type="text"
@@ -235,7 +246,7 @@ export default function FilterColumn({ state, dispatch, total, user }) {
 
         {/* Category */}
         <div className="fs-fc-field">
-          <span className="fs-fc-label">Category</span>
+          <span className="fs-fc-label"><span className="fs-fc-label-icon" aria-hidden="true">{Icons.grid}</span> Category</span>
           <CheckboxList
             options={decorateAndSortByCount(
               CATEGORIES.map(c => ({ value: c, label: c })),
@@ -253,7 +264,7 @@ export default function FilterColumn({ state, dispatch, total, user }) {
             out indented below it. Replaces the older two-section pattern
             where Model lived in its own block beneath Make. */}
         <div className="fs-fc-field">
-          <span className="fs-fc-label">Make &amp; Model</span>
+          <span className="fs-fc-label"><span className="fs-fc-label-icon" aria-hidden="true">{Icons.tag}</span> Make &amp; Model</span>
           <MakeModelTree
             makes={makesDecorated}
             selectedMakes={state.manufacturers}
@@ -270,7 +281,7 @@ export default function FilterColumn({ state, dispatch, total, user }) {
             The user's home region is floated to the top via /api/geo
             (Vercel IP-country header). Defaults to showing 3 regions. */}
         <div className="fs-fc-field">
-          <span className="fs-fc-label">Location</span>
+          <span className="fs-fc-label"><span className="fs-fc-label-icon" aria-hidden="true">{Icons.location}</span> Location</span>
           <LocationCascade
             selectedCountries={state.countries}
             selectedStates={state.states}
@@ -283,7 +294,7 @@ export default function FilterColumn({ state, dispatch, total, user }) {
 
         {/* Condition */}
         <div className="fs-fc-field">
-          <span className="fs-fc-label">Condition</span>
+          <span className="fs-fc-label"><span className="fs-fc-label-icon" aria-hidden="true">{Icons.star}</span> Condition</span>
           <CheckboxList
             options={decorateAndSortByCount(
               CONDITIONS.map(c => ({ value: c, label: c })),
@@ -298,7 +309,7 @@ export default function FilterColumn({ state, dispatch, total, user }) {
 
         {/* Price */}
         <div className="fs-fc-field">
-          <span className="fs-fc-label">Price</span>
+          <span className="fs-fc-label"><span className="fs-fc-label-icon" aria-hidden="true">{Icons.dollar}</span> Price</span>
           <RangeSlider
             min={0} max={15_000_000} step={50_000}
             minValue={state.minPrice} maxValue={state.maxPrice}
@@ -317,7 +328,7 @@ export default function FilterColumn({ state, dispatch, total, user }) {
 
         {/* Year */}
         <div className="fs-fc-field">
-          <span className="fs-fc-label">Year</span>
+          <span className="fs-fc-label"><span className="fs-fc-label-icon" aria-hidden="true">{Icons.clock}</span> Year</span>
           <RangeSlider
             min={1960} max={2026} step={1}
             minValue={state.yearFrom} maxValue={state.yearTo}
@@ -331,7 +342,7 @@ export default function FilterColumn({ state, dispatch, total, user }) {
 
         {/* Seller */}
         <div className="fs-fc-field">
-          <span className="fs-fc-label">Seller</span>
+          <span className="fs-fc-label"><span className="fs-fc-label-icon" aria-hidden="true">{Icons.user}</span> Seller</span>
           <label className={`fs-fc-checkrow${state.dealerOnly ? ' on' : ''}`}>
             <input type="checkbox" checked={state.dealerOnly}
               onChange={e => setField('dealerOnly', e.target.checked)} />
@@ -370,6 +381,7 @@ export default function FilterColumn({ state, dispatch, total, user }) {
         <>
           <FilterSection
             title="Performance"
+            icon={Icons.gauge}
             activeCount={perfActive}
             onReset={() => resetSection(SECTION_FIELDS.performance)}
           >
@@ -414,6 +426,7 @@ export default function FilterColumn({ state, dispatch, total, user }) {
 
           <FilterSection
             title="Engine"
+            icon={Icons.settings}
             activeCount={engActive}
             onReset={() => resetSection(SECTION_FIELDS.engine)}
           >
@@ -467,6 +480,7 @@ export default function FilterColumn({ state, dispatch, total, user }) {
 
           <FilterSection
             title="Avionics & equipment"
+            icon={Icons.shield}
             activeCount={equipActive}
             onReset={() => resetSection(SECTION_FIELDS.equipment)}
           >
@@ -516,6 +530,7 @@ export default function FilterColumn({ state, dispatch, total, user }) {
 
           <FilterSection
             title="History & condition"
+            icon={Icons.clock}
             activeCount={histActive}
             onReset={() => resetSection(SECTION_FIELDS.history)}
           >

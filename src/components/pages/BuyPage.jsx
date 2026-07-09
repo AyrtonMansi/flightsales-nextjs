@@ -11,6 +11,7 @@ import CardSkeleton from '../CardSkeleton';
 import MobileFilterSheet from '../MobileFilterSheet';
 import EmptyState from '../EmptyState';
 import FilterColumn from '../filters/FilterColumn';
+import ActiveFilterChips from '../filters/ActiveFilterChips';
 import {
   initialFilters, filterReducer, toQueryFilters, countActiveTotal,
 } from '../../lib/filterReducer';
@@ -153,6 +154,15 @@ const BuyPage = ({ setSelectedListing, savedIds, onSave, initialFilters: initial
                 {Icons.filter} Filters{activeFilterCount > 0 ? ` · ${activeFilterCount}` : ''}
               </button>
             </div>
+
+            {/* Active filter summary — every applied filter as a removable
+                pill, visible here in the main column regardless of where
+                the sidebar has scrolled to. */}
+            <ActiveFilterChips
+              state={state}
+              dispatch={dispatch}
+              onClearAll={() => dispatch({ type: 'RESET' })}
+            />
 
             {/* Toolbar */}
             <div className="fs-buy-main-toolbar">
