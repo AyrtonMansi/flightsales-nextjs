@@ -680,7 +680,7 @@ a { color: inherit; text-decoration: none; }
 .fs-type-row::-webkit-scrollbar { display: none; }
 .fs-type-row-inner {
   display: flex;
-  gap: 8px;
+  gap: 10px;
   justify-content: center;
   width: max-content;
   margin: 0 auto;
@@ -692,25 +692,40 @@ a { color: inherit; text-decoration: none; }
      and the horizontal scroll still works for the long tail. */
   .fs-type-row-inner { padding: 0 16px; }
 }
+/* Type tiles — bordered cards rather than bare icons floating on the
+   hero. The borderless version read as an unfinished icon strip; a
+   hairline card with a hover lift makes the row read as what it is:
+   nine tappable "browse by type" entry points. Selection state stays
+   ink-filled (white silhouette) exactly as before. */
 .fs-type-tile {
   flex-shrink: 0;
   display: flex; flex-direction: column;
-  align-items: center; justify-content: center; gap: 6px;
-  width: 80px;
-  padding: 12px 8px;
-  background: transparent;
-  border: 0;
-  border-radius: var(--fs-radius);
+  align-items: center; justify-content: center; gap: 7px;
+  width: 86px;
+  padding: 14px 8px 12px;
+  background: var(--fs-white);
+  border: 1px solid var(--fs-line);
+  border-radius: var(--fs-radius-lg);
   cursor: pointer;
   font-family: var(--fs-font);
   color: var(--fs-ink);
-  transition: background 0.12s, color 0.12s, transform 0.12s;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease,
+              transform 0.15s var(--fs-ease-out),
+              background 0.12s, color 0.12s;
 }
-.fs-type-tile:hover { background: rgba(10, 10, 10, 0.04); }
-.fs-type-tile:active { transform: scale(0.97); }
+.fs-type-tile:hover {
+  border-color: var(--fs-line-2);
+  transform: translateY(-2px);
+  box-shadow: 0 1px 2px rgba(0,0,0,0.04), 0 8px 16px -6px rgba(0,0,0,0.08);
+}
+.fs-type-tile:active { transform: translateY(0) scale(0.97); }
 .fs-type-tile.on {
   background: var(--fs-ink);
+  border-color: var(--fs-ink);
   color: var(--fs-white);
+}
+@media (prefers-reduced-motion: reduce) {
+  .fs-type-tile:hover, .fs-type-tile:active { transform: none; }
 }
 
 /* Scroll hint — a small centred hairline pill under the type row.
@@ -733,7 +748,7 @@ a { color: inherit; text-decoration: none; }
 }
 .fs-type-tile-label {
   font-size: 11px;
-  font-weight: 500;
+  font-weight: 600;
   letter-spacing: -0.005em;
   white-space: nowrap;
 }
@@ -1550,7 +1565,14 @@ html, body { overflow-x: hidden; max-width: 100%; }
      also keep the explicit padding-right as a safety net for the
      wider webkit ::-webkit-scrollbar thumb below. */
   scrollbar-gutter: stable;
-  padding-right: 12px;
+  padding-right: 20px;
+  /* Hairline anchors the rail as its own column instead of a stack of
+     controls floating in the page gutter. Desktop only — the mobile
+     sheet supplies its own containment. */
+  border-right: 1px solid var(--fs-line);
+}
+@media (max-width: 768px) {
+  .fs-buy-sidebar { border-right: none; }
 }
 .fs-buy-sidebar::-webkit-scrollbar { width: 6px; }
 .fs-buy-sidebar::-webkit-scrollbar-thumb { background: var(--fs-line); border-radius: 3px; }
@@ -2295,7 +2317,16 @@ html, body { overflow-x: hidden; max-width: 100%; }
 }
 .fs-fc-reset:hover { color: var(--fs-ink); }
 
-.fs-fc-basic { display: flex; flex-direction: column; gap: 20px; padding: 12px 0 4px; }
+/* Basic fields — one hairline-separated group per field, matching the
+   advanced sections' border-top rhythm below so the whole rail reads
+   as a single consistent list of sections instead of a gap-spaced
+   stack that switches to bordered sections halfway down. */
+.fs-fc-basic { display: flex; flex-direction: column; gap: 0; padding: 0; }
+.fs-fc-basic .fs-fc-field {
+  padding: 16px 0;
+  border-top: 1px solid var(--fs-line);
+}
+.fs-fc-basic .fs-fc-field:first-child { border-top: none; padding-top: 12px; }
 
 .fs-fc-field { display: flex; flex-direction: column; gap: 8px; }
 /* Icon + text label — a long vertical rail of otherwise-identical bold
@@ -2333,15 +2364,14 @@ html, body { overflow-x: hidden; max-width: 100%; }
   box-shadow: 0 0 0 3px var(--fs-accent-ring);
 }
 
+/* Basic → advanced junction. The per-field hairlines above and the
+   advanced sections' own border-top now carry all the separation, so
+   the old dotted rule here became a third competing line style —
+   reduced to pure breathing room. */
 .fs-fc-divider {
-  height: 1px;
-  background: var(--fs-line);
-  margin: 24px 0;
-  /* dotted variant — subtle differentiation from in-section border */
-  background-image: linear-gradient(to right, var(--fs-line) 50%, transparent 0);
-  background-size: 4px 1px;
-  background-repeat: repeat-x;
-  background-color: transparent;
+  height: 10px;
+  background: none;
+  margin: 0;
 }
 
 /* Checkbox list */
@@ -2404,13 +2434,18 @@ html, body { overflow-x: hidden; max-width: 100%; }
 .fs-fc-checkrow.zero .fs-fc-checkrow-label { color: var(--fs-ink-4); font-weight: 400; }
 .fs-fc-checkrow.zero .fs-fc-checkrow-count  { color: var(--fs-ink-4); }
 .fs-fc-empty { font-size: 12px; color: var(--fs-ink-4); margin: 6px 0; }
+/* "Show N more" — accent-signal treatment. These are the rail's only
+   expand affordances; in muted grey they read as disabled text and
+   the audit showed users had no scent that more options existed. The
+   accent is documented for exactly this kind of signal. */
 .fs-fc-more {
-  background: none; border: none; padding: 4px 0;
-  color: var(--fs-ink-3); font-size: 12px; font-weight: 500;
+  background: none; border: none; padding: 5px 0;
+  color: var(--fs-accent-700); font-size: 12px; font-weight: 600;
   cursor: pointer; text-align: left;
   font-family: var(--fs-font);
+  transition: color 0.12s ease;
 }
-.fs-fc-more:hover { color: var(--fs-ink); }
+.fs-fc-more:hover { color: var(--fs-ink); text-decoration: underline; text-underline-offset: 2px; }
 
 /* Number field */
 .fs-fc-numfield {
@@ -2559,16 +2594,29 @@ html, body { overflow-x: hidden; max-width: 100%; }
 .fs-fc-section-reset:hover { color: var(--fs-ink); }
 
 /* Auth gate (logged-out users) */
+/* Advanced-filters auth gate. Solid hairline card, not dashed — dashed
+   borders read as "placeholder / drop-zone", which undersells what is
+   actually the rail's one conversion surface. Lock badge gives it an
+   instant visual read before the copy. */
 .fs-fc-gate {
-  border: 1px dashed var(--fs-line);
-  border-radius: var(--fs-radius);
+  border: 1px solid var(--fs-line);
+  border-radius: var(--fs-radius-lg);
   padding: 20px 18px;
   background: var(--fs-bg-2);
   text-align: left;
   display: flex; flex-direction: column; gap: 10px;
 }
+.fs-fc-gate-badge {
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  background: var(--fs-white);
+  border: 1px solid var(--fs-line-2);
+  display: inline-flex; align-items: center; justify-content: center;
+  color: var(--fs-ink-2);
+  margin-bottom: 2px;
+}
 .fs-fc-gate h3 {
-  font-size: 13px; font-weight: 600; margin: 0;
+  font-size: 13.5px; font-weight: 700; margin: 0;
   color: var(--fs-ink); letter-spacing: -0.005em;
 }
 .fs-fc-gate p {
