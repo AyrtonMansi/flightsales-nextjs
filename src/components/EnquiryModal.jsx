@@ -4,6 +4,7 @@ import { Icons } from './Icons';
 import Turnstile from './Turnstile';
 import { formatPriceFull } from '../lib/format';
 import { useDialog } from '../lib/useDialog';
+import { track } from '../lib/analytics';
 
 const EnquiryModal = ({ listing, onClose, user }) => {
   const dialogRef = useRef(null);
@@ -146,6 +147,7 @@ const EnquiryModal = ({ listing, onClose, user }) => {
                     const json = await res.json();
                     if (!res.ok || !json.ok) throw new Error(json.error || 'Failed to send enquiry.');
                     setSent(true);
+                    track('enquiry_submit', { id: listing.id, finance: !!formData.financeStatus });
                   } catch (err) {
                     setSendError(err.message || "Failed to send enquiry. Please try again.");
                   } finally {

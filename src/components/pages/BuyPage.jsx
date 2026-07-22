@@ -1,5 +1,5 @@
 'use client';
-import { useReducer, useEffect, useMemo, useState } from 'react';
+import { useReducer, useEffect, useMemo, useState, useRef } from 'react';
 import { Icons } from '../Icons';
 import ListingCard from '../ListingCard';
 import EnquiryModal from '../EnquiryModal';
@@ -12,8 +12,11 @@ import MobileFilterSheet from '../MobileFilterSheet';
 import EmptyState from '../EmptyState';
 import FilterColumn from '../filters/FilterColumn';
 import ActiveFilterChips from '../filters/ActiveFilterChips';
+import { track } from '../../lib/analytics';
+import { useDebouncedValue } from '../../lib/useDebouncedValue';
 import {
   initialFilters, filterReducer, toQueryFilters, countActiveTotal,
+  filtersToSearchParams, searchParamsToFilters, hasFilterParams,
 } from '../../lib/filterReducer';
 
 const PAGE_SIZE = 12;
@@ -64,6 +67,38 @@ const BuyPage = ({ setSelectedListing, savedIds, onSave, initialFilters: initial
   const [aiQuery, setAiQuery] = useState(initialFiltersProp?.query || '');
   const rotatingPlaceholder = useRotatingPlaceholder(AI_SEARCH_EXAMPLES);
 
+  // ── URL ⇄ filter-state sync ──────────────────────────────────────
+  // The reducer initialises from `seeded` (matches SSR, so no hydration
+  // mismatch). Post-mount, if the URL carries filter params it's a deep
+  // link / refresh — hydrate from it, overriding the seeded state. Then
+  // every subsequent filter change writes a debounced, replaceState URL
+  // so the view is shareable without spamming browser history. window
+  // history (not next/router) keeps this a pure address-bar update with
+  // no navigation, consistent with FlightSalesApp's existing routing.
+  const urlHydratedRef = useRef(false);
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (hasFilterParams(params)) {
+      dispatch({ type: 'HYDRATE', payload: searchParamsToFilters(params, initialFilters) });
+      const q = params.get('q');
+      if (q) setAiQuery(q);
+    }
+    urlHydratedRef.current = true;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    if (!urlHydratedRef.current) return;
+    const t = setTimeout(() => {
+      const qs = filtersToSearchParams(state).toString();
+      const url = qs ? `/buy?${qs}` : '/buy';
+      if (url !== window.location.pathname + window.location.search) {
+        window.history.replaceState(null, '', url);
+      }
+    }, 350);
+    return () => clearTimeout(t);
+  }, [state]);
+
   // Reset to page 1 whenever filters change so we don't land on an empty page.
   useEffect(() => { setResultPage(1); }, [
     state.search, state.categories, state.manufacturers, state.states,
@@ -74,7 +109,15 @@ const BuyPage = ({ setSelectedListing, savedIds, onSave, initialFilters: initial
     state.dealerOnly, state.privateOnly, state.featuredOnly,
   ]);
 
-  const queryFilters = useMemo(() => toQueryFilters(state), [state]);
+  // Debounce only the free-text search that feeds the DB query. The input
+  // itself stays bound to state.search (instant), but the query uses the
+  // settled value so typing "Cirrus" fires one request, not six. Every
+  // other filter is a discrete click and applies immediately.
+  const debouncedSearch = useDebouncedValue(state.search, 300);
+  const queryFilters = useMemo(
+    () => ({ ...toQueryFilters(state), search: debouncedSearch || undefined }),
+    [state, debouncedSearch],
+  );
   const { aircraft: dbAircraft, loading: dbLoading, total: dbTotal } = useAircraft(queryFilters);
   const { total: systemTotal } = useAircraft({});
 
@@ -83,6 +126,7 @@ const BuyPage = ({ setSelectedListing, savedIds, onSave, initialFilters: initial
     const parsed = parseAiQuery(query);
     dispatch({ type: 'HYDRATE', payload: aiResultToState(parsed, initialFilters) });
     setAiQuery(query);
+    track('search_submit', { source: 'buy_ai', len: query.trim().length });
   };
 
   const activeFilterCount = countActiveTotal(state);
@@ -161,7 +205,7 @@ const BuyPage = ({ setSelectedListing, savedIds, onSave, initialFilters: initial
             <ActiveFilterChips
               state={state}
               dispatch={dispatch}
-              onClearAll={() => dispatch({ type: 'RESET' })}
+              onClearAll={() => { track('filter_reset', { via: 'chips', count: activeFilterCount }); dispatch({ type: 'RESET' }); }}
             />
 
             {/* Toolbar */}
@@ -183,7 +227,7 @@ const BuyPage = ({ setSelectedListing, savedIds, onSave, initialFilters: initial
                   <select
                     className="fs-sort-select"
                     value={state.sortBy}
-                    onChange={e => { dispatch({ type: 'SET', field: 'sortBy', value: e.target.value }); setResultPage(1); }}
+                    onChange={e => { dispatch({ type: 'SET', field: 'sortBy', value: e.target.value }); setResultPage(1); track('sort_change', { sort: e.target.value }); }}
                   >
                     <option value="newest">Newest first</option>
                     <option value="price-asc">Price: low to high</option>
@@ -219,7 +263,7 @@ const BuyPage = ({ setSelectedListing, savedIds, onSave, initialFilters: initial
                       listing={l}
                       onSave={onSave}
                       saved={savedIds.has(l.id)}
-                      onQuickLook={setQuickLook}
+                      onQuickLook={(listing) => { track('quicklook_open', { id: listing.id }); setQuickLook(listing); }}
                     />
                   ))}
                 </div>
@@ -271,10 +315,10 @@ const BuyPage = ({ setSelectedListing, savedIds, onSave, initialFilters: initial
         <QuickLookModal
           listing={quickLook}
           onClose={() => setQuickLook(null)}
-          onViewFull={(l) => { setQuickLook(null); setSelectedListing(l); }}
+          onViewFull={(l) => { track('listing_view', { id: l.id, source: 'buy_quicklook' }); setQuickLook(null); setSelectedListing(l); }}
           onSave={onSave}
           saved={savedIds.has(quickLook.id)}
-          onEnquire={(l) => { setQuickLook(null); setEnquireFor(l); }}
+          onEnquire={(l) => { track('enquiry_open', { id: l.id, source: 'buy_quicklook' }); setQuickLook(null); setEnquireFor(l); }}
         />
       )}
 

@@ -187,3 +187,107 @@ export function toQueryFilters(state) {
     sortBy: state.sortBy,
   };
 }
+
+// ── URL <-> filter-state serialization ──────────────────────────────
+// Compact, human-readable query params so /buy views are shareable,
+// deep-linkable, and survive refresh. Only non-default values are
+// written, so a clean search stays at a bare /buy. Pure functions —
+// unit-testable, no window access.
+//
+// Arrays are comma-joined. No filter value in the current catalogue
+// data contains a comma (make/model/avionics names, category labels,
+// ISO country + sub-division codes), so a comma is a safe separator;
+// documented here because it's the one assumption in the scheme.
+
+const ARRAY_PARAMS = {
+  categories: 'cat', manufacturers: 'make', models: 'model',
+  countries: 'country', states: 'state', conditions: 'cond',
+  engineCounts: 'engc', engineTypes: 'engt', engineMakes: 'engm',
+  avionicsSuites: 'av', autopilots: 'ap', damageHistory: 'damage',
+};
+const BOOL_PARAMS = {
+  dealerOnly: 'dealer', privateOnly: 'private', featuredOnly: 'featured',
+  ifrOnly: 'ifr', glassOnly: 'glass', adsbIn: 'adsbin', adsbOut: 'adsbout',
+  synVis: 'synvis', deIce: 'deice', airCon: 'aircon', pressurised: 'press',
+  retractable: 'retract', cargoDoor: 'cargo', parachute: 'chute',
+  logbooksComplete: 'logs', hangared: 'hangar',
+};
+const SCALAR_PARAMS = {
+  cruiseMin: 'cruise', rangeMin: 'range', usefulLoadMin: 'load',
+  fuelBurnMax: 'fuel', ceilingMin: 'ceiling', smohMax: 'smoh',
+  tboPctMin: 'tbo', ownerMaxCount: 'owners',
+};
+// paired lo/hi -> single "lo-hi" param (either side may be blank; all
+// three ranges are non-negative so the first '-' is the separator).
+const RANGE_PARAMS = [
+  { lo: 'minPrice', hi: 'maxPrice', key: 'price' },
+  { lo: 'yearFrom', hi: 'yearTo', key: 'year' },
+  { lo: 'mtowMin', hi: 'mtowMax', key: 'mtow' },
+];
+
+// Returns a URLSearchParams holding only the active filters.
+export function filtersToSearchParams(state) {
+  const p = new URLSearchParams();
+  if (state.search) p.set('q', state.search);
+  for (const [field, key] of Object.entries(ARRAY_PARAMS)) {
+    if (state[field] && state[field].length) p.set(key, state[field].join(','));
+  }
+  for (const [field, key] of Object.entries(BOOL_PARAMS)) {
+    if (state[field]) p.set(key, '1');
+  }
+  for (const [field, key] of Object.entries(SCALAR_PARAMS)) {
+    if (state[field]) p.set(key, String(state[field]));
+  }
+  for (const { lo, hi, key } of RANGE_PARAMS) {
+    const l = state[lo]; const h = state[hi];
+    if (l || h) p.set(key, `${l || ''}-${h || ''}`);
+  }
+  if (state.sortBy && state.sortBy !== 'newest') p.set('sort', state.sortBy);
+  return p;
+}
+
+// Returns a full filter-state object with any present params overriding
+// `base` (defaults to a clean initialFilters).
+export function searchParamsToFilters(params, base = initialFilters) {
+  const next = { ...base };
+  const q = params.get('q');
+  if (q != null) next.search = q;
+  for (const [field, key] of Object.entries(ARRAY_PARAMS)) {
+    const v = params.get(key);
+    if (v != null) next[field] = v.split(',').filter(Boolean);
+  }
+  for (const [field, key] of Object.entries(BOOL_PARAMS)) {
+    if (params.get(key) === '1') next[field] = true;
+  }
+  for (const [field, key] of Object.entries(SCALAR_PARAMS)) {
+    const v = params.get(key);
+    if (v) next[field] = v;
+  }
+  for (const { lo, hi, key } of RANGE_PARAMS) {
+    const v = params.get(key);
+    if (v == null) continue;
+    const dash = v.indexOf('-');
+    if (dash === -1) { next[lo] = v; continue; }
+    const l = v.slice(0, dash);
+    const h = v.slice(dash + 1);
+    if (l) next[lo] = l;
+    if (h) next[hi] = h;
+  }
+  const sort = params.get('sort');
+  if (sort) next.sortBy = sort;
+  return next;
+}
+
+// True if the URL carries any recognised filter param — used to decide
+// whether an incoming URL is a deep link worth hydrating over the
+// default (or home-hero-seeded) state.
+export function hasFilterParams(params) {
+  const keys = [
+    'q', 'sort',
+    ...Object.values(ARRAY_PARAMS),
+    ...Object.values(BOOL_PARAMS),
+    ...Object.values(SCALAR_PARAMS),
+    ...RANGE_PARAMS.map((r) => r.key),
+  ];
+  return keys.some((k) => params.has(k));
+}

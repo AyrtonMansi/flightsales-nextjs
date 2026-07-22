@@ -61,11 +61,22 @@ export default function RootLayout({ children }) {
             var is unset (development). Set NEXT_PUBLIC_PLAUSIBLE_DOMAIN
             in Vercel to enable. */}
         {process.env.NEXT_PUBLIC_PLAUSIBLE_DOMAIN && (
-          <script
-            defer
-            data-domain={process.env.NEXT_PUBLIC_PLAUSIBLE_DOMAIN}
-            src="https://plausible.io/js/script.js"
-          />
+          <>
+            <script
+              defer
+              data-domain={process.env.NEXT_PUBLIC_PLAUSIBLE_DOMAIN}
+              src="https://plausible.io/js/script.js"
+            />
+            {/* Init stub — queues custom events fired before the deferred
+                script finishes loading, so lib/analytics track() calls
+                are never dropped on a fast first interaction. */}
+            <script
+              dangerouslySetInnerHTML={{
+                __html:
+                  'window.plausible=window.plausible||function(){(window.plausible.q=window.plausible.q||[]).push(arguments)}',
+              }}
+            />
+          </>
         )}
       </head>
       <body>
