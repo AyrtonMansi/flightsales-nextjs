@@ -99,15 +99,20 @@ const BuyPage = ({ setSelectedListing, savedIds, onSave, initialFilters: initial
     return () => clearTimeout(t);
   }, [state]);
 
-  // Reset to page 1 whenever filters change so we don't land on an empty page.
-  useEffect(() => { setResultPage(1); }, [
-    state.search, state.categories, state.manufacturers, state.states,
-    state.conditions, state.minPrice, state.maxPrice, state.yearFrom,
-    state.yearTo, state.ifrOnly, state.glassOnly, state.retractable,
-    state.pressurised, state.cruiseMin, state.rangeMin, state.usefulLoadMin,
-    state.fuelBurnMax, state.smohMax, state.tboPctMin,
-    state.dealerOnly, state.privateOnly, state.featuredOnly,
-  ]);
+  // Reset to page 1 whenever the filter/sort criteria actually sent to the
+  // query change. Deriving this from the same canonical serializer used for
+  // URL sync (rather than a hand-maintained field list) guarantees it can't
+  // drift out of sync as new filters are added — the previous hand-listed
+  // dependency array was missing 21 fields (the entire Engine and Avionics
+  // & Equipment sections, MTOW, ceiling, countries, models, damage history,
+  // hangared, owner count...). Concretely: a signed-in user on page 3 of
+  // turboprop results who then ticked "Garmin G1000/NXi" under Avionics
+  // would see the result count shrink but resultPage stay at 3 — with
+  // fewer than 3 pages of results, pageRows.slice() silently returned an
+  // empty array while the header still said "8 aircraft" and the pager
+  // (gated on totalPages > 1) didn't even render to let them back out.
+  const filterSignature = filtersToSearchParams(state).toString();
+  useEffect(() => { setResultPage(1); }, [filterSignature]);
 
   // Debounce only the free-text search that feeds the DB query. The input
   // itself stays bound to state.search (instant), but the query uses the
@@ -227,7 +232,7 @@ const BuyPage = ({ setSelectedListing, savedIds, onSave, initialFilters: initial
                   <select
                     className="fs-sort-select"
                     value={state.sortBy}
-                    onChange={e => { dispatch({ type: 'SET', field: 'sortBy', value: e.target.value }); setResultPage(1); track('sort_change', { sort: e.target.value }); }}
+                    onChange={e => { dispatch({ type: 'SET', field: 'sortBy', value: e.target.value }); track('sort_change', { sort: e.target.value }); }}
                   >
                     <option value="newest">Newest first</option>
                     <option value="price-asc">Price: low to high</option>

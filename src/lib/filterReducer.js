@@ -194,10 +194,33 @@ export function toQueryFilters(state) {
 // written, so a clean search stays at a bare /buy. Pure functions —
 // unit-testable, no window access.
 //
-// Arrays are comma-joined. No filter value in the current catalogue
-// data contains a comma (make/model/avionics names, category labels,
-// ISO country + sub-division codes), so a comma is a safe separator;
-// documented here because it's the one assumption in the scheme.
+// Array values are comma-joined into one param. Category/condition/
+// engine-type values come from fixed constant lists with no commas,
+// but manufacturers/models/engineMakes are augmented from live DB rows
+// (admin/dealer imports — see aircraftCatalogue.js) and are therefore
+// unconstrained free text. A literal comma in one of those (e.g. a
+// manufacturer name with a comma) would otherwise silently split into
+// two filter values on decode. escapeItem/splitEscaped below backslash-
+// escape ',' and '\' within each item before joining, so the join is
+// unambiguous regardless of content — this runs on the raw string
+// BEFORE handing it to URLSearchParams.set, which does its own percent-
+// encoding of the whole value on serialization (pre-encoding here too,
+// e.g. via encodeURIComponent, would double-encode).
+function escapeItem(s) {
+  return String(s).replace(/\\/g, '\\\\').replace(/,/g, '\\,');
+}
+function splitEscaped(s) {
+  const out = [];
+  let cur = '';
+  for (let i = 0; i < s.length; i++) {
+    const c = s[i];
+    if (c === '\\' && i + 1 < s.length) { cur += s[i + 1]; i++; }
+    else if (c === ',') { out.push(cur); cur = ''; }
+    else cur += c;
+  }
+  out.push(cur);
+  return out;
+}
 
 const ARRAY_PARAMS = {
   categories: 'cat', manufacturers: 'make', models: 'model',
@@ -230,7 +253,9 @@ export function filtersToSearchParams(state) {
   const p = new URLSearchParams();
   if (state.search) p.set('q', state.search);
   for (const [field, key] of Object.entries(ARRAY_PARAMS)) {
-    if (state[field] && state[field].length) p.set(key, state[field].join(','));
+    if (state[field] && state[field].length) {
+      p.set(key, state[field].map(escapeItem).join(','));
+    }
   }
   for (const [field, key] of Object.entries(BOOL_PARAMS)) {
     if (state[field]) p.set(key, '1');
@@ -254,7 +279,7 @@ export function searchParamsToFilters(params, base = initialFilters) {
   if (q != null) next.search = q;
   for (const [field, key] of Object.entries(ARRAY_PARAMS)) {
     const v = params.get(key);
-    if (v != null) next[field] = v.split(',').filter(Boolean);
+    if (v != null) next[field] = splitEscaped(v).filter(Boolean);
   }
   for (const [field, key] of Object.entries(BOOL_PARAMS)) {
     if (params.get(key) === '1') next[field] = true;
