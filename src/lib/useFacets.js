@@ -20,10 +20,32 @@ import { useFacetUniverse } from './hooks/facetUniverse';
 // to a /api/search/facets Postgres group-by endpoint without changing
 // this hook's signature.
 
+// Sanitise a free-text search term the same way hooks/aircraft.js does
+// before splicing it into its PostgREST .or() filter (word chars, spaces,
+// hyphens, dots only). Applying the identical whitelist here — even
+// though a client-side .includes() check has no injection risk of its
+// own — keeps this an exact behavioural mirror of the real query, not
+// just an equivalent-looking one: whatever normalises the term one way
+// server-side must normalise it the same way here, or the facet counts
+// would predict a different match than the result grid actually returns.
+function sanitiseSearch(term) {
+  return String(term).slice(0, 80).replace(/[^A-Za-z0-9 .\-]/g, ' ').trim();
+}
+
 // Returns true iff `listing` matches every filter constraint in `filters`,
 // IGNORING the field named in `excludeField`. Used so makeCounts excludes
 // the manufacturers facet when computing per-make counts.
-function listingMatches(listing, filters, excludeField) {
+//
+// This function is the client-side mirror of the real Supabase query in
+// hooks/aircraft.js's fetchAircraft — every constraint applied there must
+// have an equivalent check here, or the sidebar's live counts silently
+// diverge from what the result grid actually shows. That drift already
+// happened once (engineTypes read a listing.engine_type_category property
+// that was never selected — every row had it undefined, so ticking any
+// Engine Type option zeroed out every other facet's count) — hence the
+// exhaustive per-field comment below and the field-by-field parity test
+// in tests/e2e/useFacets.unit.spec.js.
+export function listingMatches(listing, filters, excludeField) {
   const cats        = excludeField === 'categories'    ? [] : (filters.categories    ?? []);
   const makes       = excludeField === 'manufacturers' ? [] : (filters.manufacturers ?? []);
   const models      = excludeField === 'models'        ? [] : (filters.models        ?? []);
@@ -43,44 +65,104 @@ function listingMatches(listing, filters, excludeField) {
   if (states.length      && !states.includes(listing.state)) return false;
   if (countries.length   && !countries.includes(listing.country)) return false;
   if (conditions.length  && !conditions.includes(listing.condition)) return false;
-  if (engineCounts.length && !engineCounts.includes(listing.engine_count)) return false;
-  if (engineTypes.length  && !engineTypes.includes(listing.engine_type_category)) return false;
+  // engine_count is a Postgres INTEGER column — Supabase returns it as a
+  // JS number, while engineCounts holds the checkbox '1'/'2'/'4' STRING
+  // values (same as everywhere else filter state travels: URL params,
+  // reducer state). String() both sides so the comparison isn't strict-
+  // equality-comparing a string array against a number and silently
+  // excluding every listing.
+  if (engineCounts.length && !engineCounts.includes(String(listing.engine_count))) return false;
+  // Was listing.engine_type_category — a property FACET_COLUMNS never
+  // selected, so it was always undefined and this branch excluded every
+  // listing the instant any Engine Type option was ticked.
+  if (engineTypes.length  && !engineTypes.includes(listing.engine_type)) return false;
   if (engineMakes.length  && !engineMakes.includes(listing.engine_make)) return false;
   if (avSuites.length    && !avSuites.includes(listing.avionics_suite)) return false;
   if (aps.length         && !aps.includes(listing.autopilot)) return false;
   if (damage.length      && !damage.includes(listing.damage_history)) return false;
 
-  // Numeric ranges (always applied — these aren't faceted)
+  // Numeric ranges (always applied — these aren't faceted). Mirrors every
+  // .gte/.lte in hooks/aircraft.js's Performance + Engine sections; these
+  // were previously entirely absent here, so e.g. setting "Cruise ≥ 200kts"
+  // filtered the result grid correctly but left every sidebar count as if
+  // no cruise constraint were active.
   if (filters.minPrice && Number(listing.price) < Number(filters.minPrice)) return false;
   if (filters.maxPrice && Number(listing.price) > Number(filters.maxPrice)) return false;
   if (filters.yearFrom && Number(listing.year)  < Number(filters.yearFrom)) return false;
   if (filters.yearTo   && Number(listing.year)  > Number(filters.yearTo))   return false;
+  if (filters.cruiseMin      && Number(listing.cruise_kts)     < Number(filters.cruiseMin))      return false;
+  if (filters.rangeMin       && Number(listing.range_nm)       < Number(filters.rangeMin))       return false;
+  if (filters.usefulLoadMin  && Number(listing.useful_load)    < Number(filters.usefulLoadMin))  return false;
+  if (filters.fuelBurnMax    && Number(listing.fuel_burn)      > Number(filters.fuelBurnMax))    return false;
+  if (filters.mtowMin        && Number(listing.mtow)           < Number(filters.mtowMin))        return false;
+  if (filters.mtowMax        && Number(listing.mtow)           > Number(filters.mtowMax))        return false;
+  if (filters.ceilingMin     && Number(listing.service_ceiling) < Number(filters.ceilingMin))    return false;
+  if (filters.smohMax        && Number(listing.eng_hours)      > Number(filters.smohMax))        return false;
+  if (filters.ownerMaxCount  && Number(listing.owner_count)    > Number(filters.ownerMaxCount))  return false;
+  // TBO remaining % — same derived-percentage rule as the post-fetch
+  // client-side filter in hooks/aircraft.js (no raw column for it).
+  if (filters.tboPctMin) {
+    if (!listing.eng_tbo || !listing.eng_hours) return false;
+    const remaining = ((listing.eng_tbo - listing.eng_hours) / listing.eng_tbo) * 100;
+    if (remaining < Number(filters.tboPctMin)) return false;
+  }
+
+  // Free-text search — same title/manufacturer/model substring match the
+  // real query's .or(ilike) performs, sanitised identically first.
+  if (filters.search) {
+    const safe = sanitiseSearch(filters.search).toLowerCase();
+    if (safe) {
+      const hay = `${listing.title || ''} ${listing.manufacturer || ''} ${listing.model || ''}`.toLowerCase();
+      if (!hay.includes(safe)) return false;
+    }
+  }
 
   // Booleans (only enforce when truthy)
   if (filters.ifrOnly       && !listing.ifr) return false;
   if (filters.glassOnly     && !listing.glass_cockpit) return false;
   if (filters.adsbIn        && !listing.adsb_in) return false;
   if (filters.adsbOut       && !listing.adsb_out) return false;
-  if (filters.synVis        && !listing.synthetic_vision) return false;
+  if (filters.synVis        && !listing.syn_vis) return false;
   if (filters.deIce         && !listing.de_ice) return false;
   if (filters.airCon        && !listing.air_con) return false;
   if (filters.pressurised   && !listing.pressurised) return false;
   if (filters.retractable   && !listing.retractable) return false;
   if (filters.cargoDoor     && !listing.cargo_door) return false;
   if (filters.parachute     && !listing.parachute) return false;
-  if (filters.dealerOnly    && !listing.dealer_id) return false;
-  if (filters.privateOnly   &&  listing.dealer_id) return false;
+  if (filters.logbooksComplete && !listing.logbooks_complete) return false;
+  if (filters.hangared      && !listing.hangared) return false;
   if (filters.featuredOnly  && !listing.featured) return false;
+  // Seller: dealerOnly/privateOnly mirror the real query's exact
+  // cancel-out semantics (hooks/aircraft.js) — a constraint applies only
+  // when exactly one of the pair is on. Naively AND-ing "has a dealer_id"
+  // with "has no dealer_id" (the previous form) excluded every listing
+  // whenever a user had BOTH boxes ticked, while the real query — which
+  // only ever applies one of the two .not()/.is() clauses when they
+  // disagree — correctly falls through to "no seller constraint" and
+  // shows everything. Every sidebar count went to 0 in that state while
+  // the result grid stayed full.
+  if (filters.dealerOnly && !filters.privateOnly && !listing.dealer_id) return false;
+  if (filters.privateOnly && !filters.dealerOnly &&  listing.dealer_id) return false;
 
   return true;
 }
 
 // Group a list of listings into a count Map keyed by `field` value.
-function tallyBy(listings, field) {
+// `keyFn` normalises the raw column value before it becomes a Map key —
+// needed for engine_count (a Postgres INTEGER, returned as a JS number)
+// so the tally's keys line up with the STRING '1'/'2'/'4' values every
+// checkbox, URL param, and reducer field uses for it. Without this,
+// decorateAndSortByCount's `counts.get(opt.value)` — a strict-equality
+// Map lookup, opt.value being the string '1' — would never find the
+// number-keyed entry and every Engine Count checkbox would permanently
+// show (0), sinking the whole section behind "Show more" regardless of
+// actual stock.
+export function tallyBy(listings, field, keyFn = (v) => v) {
   const counts = new Map();
   for (const l of listings) {
-    const key = l[field];
-    if (key == null || key === '') continue;
+    const raw = l[field];
+    if (raw == null || raw === '') continue;
+    const key = keyFn(raw);
     counts.set(key, (counts.get(key) ?? 0) + 1);
   }
   return counts;
@@ -141,8 +223,8 @@ export function useFacets(filterState) {
       stateCounts:       tallyBy(subsetExcluding('states'),        'state'),
       countryCounts:     tallyBy(subsetExcluding('countries'),     'country'),
       conditionCounts:   tallyBy(subsetExcluding('conditions'),    'condition'),
-      engineCountCounts: tallyBy(subsetExcluding('engineCounts'),  'engine_count'),
-      engineTypeCounts:  tallyBy(subsetExcluding('engineTypes'),   'engine_type_category'),
+      engineCountCounts: tallyBy(subsetExcluding('engineCounts'),  'engine_count', String),
+      engineTypeCounts:  tallyBy(subsetExcluding('engineTypes'),   'engine_type'),
       engineMakeCounts:  tallyBy(subsetExcluding('engineMakes'),   'engine_make'),
       avSuiteCounts:     tallyBy(subsetExcluding('avionicsSuites'),'avionics_suite'),
       autopilotCounts:   tallyBy(subsetExcluding('autopilots'),    'autopilot'),

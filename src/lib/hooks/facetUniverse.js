@@ -23,6 +23,7 @@ const FACET_LIMIT = 5000;
 
 const FACET_COLUMNS = [
   'id',                    // for stable React keys if needed
+  'title',                 // free-text search facet matching (title/manufacturer/model)
   'category',
   'manufacturer',
   'model',
@@ -30,7 +31,7 @@ const FACET_COLUMNS = [
   'country',
   'condition',
   'engine_count',
-  'engine_type',           // listingMatches reads engine_type_category
+  'engine_type',
   'engine_make',
   'avionics_suite',
   'autopilot',
@@ -40,9 +41,14 @@ const FACET_COLUMNS = [
   'adsb_in', 'adsb_out',
   'syn_vis', 'de_ice', 'air_con',
   'pressurised', 'retractable', 'cargo_door', 'parachute',
+  'logbooks_complete', 'hangared',
   'dealer_id', 'featured',
-  // Numerics for range gating
+  // Numerics for range gating — mirrors every .gte/.lte the real query
+  // in hooks/aircraft.js applies, so facet counts stay consistent with
+  // what the result grid actually shows.
   'price', 'year',
+  'cruise_kts', 'range_nm', 'useful_load', 'fuel_burn',
+  'mtow', 'service_ceiling', 'eng_hours', 'eng_tbo', 'owner_count',
 ].join(', ');
 
 export function useFacetUniverse() {
