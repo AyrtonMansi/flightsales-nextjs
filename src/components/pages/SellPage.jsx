@@ -263,6 +263,10 @@ const SellPage = ({ user, setPage }) => {
       </div>
       <section className="fs-section">
         <div className="fs-container" style={{ maxWidth: 700, margin: "0 auto" }}>
+          {/* Unverified users used to only find out at the final "Submit"
+              click on step 3 — after filling every field and uploading
+              photos. Gating here surfaces it before they invest any time. */}
+          <EmailVerifyGate user={user}>
           {/* Progress — segments + step labels so users see the journey */}
           <div className="fs-sell-progress">
             {[
@@ -809,6 +813,7 @@ const SellPage = ({ user, setPage }) => {
               )}
             </div>
           )}
+          </EmailVerifyGate>
         </div>
       </section>
       {croppingUrl && (
