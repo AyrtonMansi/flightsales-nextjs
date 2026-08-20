@@ -46,10 +46,14 @@ export function useAdminListings() {
   };
 
   const updateStatus = async (id, status) => {
-    // Map old status strings to new server actions.
+    // Map old status strings to new server actions. 'pending' must map to
+    // 'unpublish' (not the catch-all below) — 'restore' sets status back to
+    // 'active', which is the opposite of what callers asking for 'pending'
+    // (Unpublish, bulk Archive) actually want.
     const action =
-      status === 'active' ? 'approve' :
-      status === 'sold'   ? 'archive' :
+      status === 'active'  ? 'approve' :
+      status === 'sold'    ? 'archive' :
+      status === 'pending' ? 'unpublish' :
       'restore';
     const data = await callAdmin(action, id);
     setListings(prev => prev.map(l => l.id === id ? { ...l, ...data } : l));
@@ -165,7 +169,12 @@ export function useAdminEnquiries() {
   }, [fetchAll]);
 
   const updateStatus = async (id, status) => {
-    await supabase.from('enquiries').update({ status }).eq('id', id);
+    // Was discarding the error and optimistically updating local state
+    // regardless — a status the DB's CHECK constraint rejects looked like
+    // it saved (toast + highlighted selection) until the next poll/reload
+    // silently reverted it. Throw so callers can surface the failure.
+    const { error } = await supabase.from('enquiries').update({ status }).eq('id', id);
+    if (error) throw error;
     setEnquiries(prev => prev.map(e => e.id === id ? { ...e, status } : e));
   };
 

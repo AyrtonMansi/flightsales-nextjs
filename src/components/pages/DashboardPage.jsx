@@ -117,6 +117,20 @@ const DashboardPage = ({ user, setPage, signOut, savedIds, savedListings, onSave
     setPage('home');
   };
 
+  const handleCancelProfileEdit = () => {
+    // Cancel used to just close edit mode without resetting profileData,
+    // so unsaved edits stayed visible in the read-only view afterward
+    // (nothing was persisted, but it looked saved) and re-opening edit
+    // mode picked the stale draft back up.
+    setProfileData({
+      full_name: user.full_name || '',
+      email: user.email || '',
+      phone: user.phone || '',
+      location: user.location || '',
+    });
+    setEditProfile(false);
+  };
+
   const handleSaveProfile = async () => {
     setSavingProfile(true);
     try {
@@ -134,21 +148,33 @@ const DashboardPage = ({ user, setPage, signOut, savedIds, savedListings, onSave
     }
   };
 
-  const handleEnquiryStatusChange = (enquiryId, newStatus) => {
-    updateEnquiryStatus(enquiryId, newStatus);
-    if (selectedEnquiry?.id === enquiryId) {
-      setSelectedEnquiry(prev => ({ ...prev, status: newStatus }));
+  const handleEnquiryStatusChange = async (enquiryId, newStatus) => {
+    try {
+      await updateEnquiryStatus(enquiryId, newStatus);
+      if (selectedEnquiry?.id === enquiryId) {
+        setSelectedEnquiry(prev => ({ ...prev, status: newStatus }));
+      }
+    } catch (err) {
+      showToast(err?.message ? `Failed: ${err.message}` : 'Failed to update status');
     }
   };
 
-  const handleReplySubmit = (enquiryId) => {
+  const handleReplySubmit = async (enquiryId) => {
     if (!replyText.trim()) return;
     setReplyText('');
-    updateEnquiryStatus(enquiryId, 'replied');
+    try {
+      await updateEnquiryStatus(enquiryId, 'replied');
+    } catch (err) {
+      showToast(err?.message ? `Failed: ${err.message}` : 'Failed to update status');
+    }
   };
 
-  const handleMarkSpam = (enquiryId) => {
-    updateEnquiryStatus(enquiryId, 'spam');
+  const handleMarkSpam = async (enquiryId) => {
+    try {
+      await updateEnquiryStatus(enquiryId, 'spam');
+    } catch (err) {
+      showToast(err?.message ? `Failed: ${err.message}` : 'Failed to update status');
+    }
   };
 
   const getStatusBadge = (status) => {
@@ -640,7 +666,10 @@ const DashboardPage = ({ user, setPage, signOut, savedIds, savedListings, onSave
                                     onClick={() => setEditingListing(myListingsRaw.find(r => r.id === listing.id))}
                                     style={{ padding: "6px 12px", background: "var(--fs-gray-100)", border: "none", borderRadius: 6, fontSize: 12, cursor: "pointer" }}
                                   >Edit</button>
-                                  <button style={{ padding: "6px 12px", background: "var(--fs-ink)", color: 'white', border: "none", borderRadius: 6, fontSize: 12, cursor: "pointer" }}>Boost</button>
+                                  <button
+                                    onClick={() => showToast('Boosted listings are coming soon')}
+                                    style={{ padding: "6px 12px", background: "var(--fs-ink)", color: 'white', border: "none", borderRadius: 6, fontSize: 12, cursor: "pointer" }}
+                                  >Boost</button>
                                 </div>
                               </td>
                             </tr>
@@ -1176,6 +1205,7 @@ const DashboardPage = ({ user, setPage, signOut, savedIds, savedListings, onSave
                   setEditProfile={setEditProfile}
                   savingProfile={savingProfile}
                   onSave={handleSaveProfile}
+                  onCancel={handleCancelProfileEdit}
                 />
               )}
             </div>

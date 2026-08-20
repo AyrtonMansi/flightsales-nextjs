@@ -15,6 +15,7 @@ export default function ProfileTab({
   setEditProfile,
   savingProfile,
   onSave,
+  onCancel,
 }) {
   return (
     <>
@@ -92,7 +93,7 @@ export default function ProfileTab({
               >
                 {savingProfile ? 'Saving...' : 'Save Changes'}
               </button>
-              <button className="fs-detail-cta fs-detail-cta-secondary" onClick={() => setEditProfile(false)}>
+              <button className="fs-detail-cta fs-detail-cta-secondary" onClick={onCancel}>
                 Cancel
               </button>
             </div>

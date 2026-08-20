@@ -5,7 +5,7 @@
 // policy didn't restrict the target column (e.g. status flip).
 //
 // Body: { id, action, ...params }
-//   action: 'approve' | 'reject' | 'feature' | 'unfeature' | 'archive' | 'restore'
+//   action: 'approve' | 'reject' | 'unpublish' | 'feature' | 'unfeature' | 'archive' | 'restore'
 //   reason: required when action === 'reject'
 
 import { NextResponse, type NextRequest } from 'next/server';
@@ -13,8 +13,8 @@ import { requireAdmin, audit } from '../../../../lib/requireAdmin';
 
 export const runtime = 'nodejs';
 
-type Action = 'approve' | 'reject' | 'feature' | 'unfeature' | 'archive' | 'restore';
-const ACTIONS = new Set<Action>(['approve', 'reject', 'feature', 'unfeature', 'archive', 'restore']);
+type Action = 'approve' | 'reject' | 'unpublish' | 'feature' | 'unfeature' | 'archive' | 'restore';
+const ACTIONS = new Set<Action>(['approve', 'reject', 'unpublish', 'feature', 'unfeature', 'archive', 'restore']);
 
 export async function POST(req: NextRequest) {
   const auth = await requireAdmin(req);
@@ -48,6 +48,10 @@ export async function POST(req: NextRequest) {
   switch (action as Action) {
     case 'approve':    patch.status = 'active';  patch.rejection_reason = null; break;
     case 'reject':     patch.status = 'pending'; patch.rejection_reason = reason!.trim(); break;
+    // Admin pulling an already-live listing offline — distinct from
+    // 'reject' (which is for the initial-review queue and requires a
+    // reason sent to the seller). Doesn't touch rejection_reason.
+    case 'unpublish':  patch.status = 'pending'; break;
     case 'feature':    patch.featured = true; break;
     case 'unfeature':  patch.featured = false; break;
     case 'archive':    patch.status = 'sold'; break;

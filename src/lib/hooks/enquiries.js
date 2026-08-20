@@ -42,7 +42,12 @@ export function useMyEnquiries(userId) {
   }, [userId, fetchEnquiries]);
 
   const updateStatus = async (id, status) => {
-    await supabase.from('enquiries').update({ status }).eq('id', id);
+    // The error was previously discarded, so a status the DB's CHECK
+    // constraint rejects (e.g. a value the UI offers that isn't in the
+    // constraint's allow-list) still flipped local state as if it had
+    // saved — reload and it silently reverts. Surface the failure instead.
+    const { error } = await supabase.from('enquiries').update({ status }).eq('id', id);
+    if (error) throw error;
     setEnquiries(prev => prev.map(e => e.id === id ? { ...e, status } : e));
   };
 

@@ -50,7 +50,7 @@ export async function POST(req: NextRequest) {
       })
       .eq('id', id);
     if (error) return NextResponse.json({ ok: false, error: 'update_failed', detail: error.message }, { status: 500 });
-    await audit(auth.adminC, auth.user?.id ?? null, 'dealer_app.reject', 'dealer_applications', id, app, null);
+    await audit(auth.adminC, auth.user?.id ?? null, 'dealer_app.reject', 'dealer_applications', id, app, { reason: reason!.trim() });
     return NextResponse.json({ ok: true, status: 'rejected' });
   }
 

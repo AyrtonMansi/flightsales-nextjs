@@ -9,12 +9,26 @@ import AdminTableToolbar, { SortHeader, Pager } from '../AdminTableToolbar';
 // First time something goes wrong (wrong listing approved, user wrongly
 // banned), this is where you reconstruct what happened.
 
+// Keys match the exact `action` strings the /api/admin/* routes write
+// (present tense — `listing.${action}` / `user.${action}` verbs, e.g.
+// 'listing.approve' not 'listing.approved'). These previously used
+// past-tense keys that never matched anything written to admin_audit,
+// so every row fell back to the raw action string with a blank summary.
 const ACTION_LABELS = {
-  'listing.approved': 'Listing approved',
-  'listing.rejected': 'Listing rejected',
-  'dealer_app.approved': 'Dealer app approved',
-  'dealer_app.rejected': 'Dealer app rejected',
-  'user.suspended': 'User suspended',
+  'listing.approve': 'Listing approved',
+  'listing.reject': 'Listing rejected',
+  'listing.unpublish': 'Listing unpublished',
+  'listing.feature': 'Listing featured',
+  'listing.unfeature': 'Listing unfeatured',
+  'listing.archive': 'Listing archived (sold)',
+  'listing.restore': 'Listing restored',
+  'dealer_app.approve': 'Dealer app approved',
+  'dealer_app.reject': 'Dealer app rejected',
+  'user.suspend': 'User suspended',
+  'user.unsuspend': 'User unsuspended',
+  'user.promote': 'User promoted to dealer',
+  'user.demote': 'User demoted from dealer',
+  'user.set_role': 'User role changed',
 };
 
 export default function AuditTab() {
@@ -80,12 +94,35 @@ export default function AuditTab() {
   );
 }
 
+// `before`/`after` are the actual DB rows (or update patches) the routes
+// pass to audit() — field names match the aircraft/profiles/dealer_applications
+// columns (snake_case), not a synthetic {aircraftTitle, reason} shape.
 function summarise(row) {
-  const v = row.after || {};
-  if (row.action === 'listing.approved') return v.aircraftTitle || '';
-  if (row.action === 'listing.rejected') return `${v.aircraftTitle || ''} — ${v.reason || ''}`;
-  if (row.action === 'dealer_app.approved') return v.businessName || '';
-  if (row.action === 'dealer_app.rejected') return `${v.businessName || ''} — ${v.reason || ''}`;
-  if (row.action === 'user.suspended') return v.reason || '';
-  return '';
+  const before = row.before || {};
+  const after = row.after || {};
+  switch (row.action) {
+    case 'listing.approve':
+    case 'listing.unpublish':
+    case 'listing.archive':
+    case 'listing.restore':
+    case 'listing.feature':
+    case 'listing.unfeature':
+      return after.title || before.title || '';
+    case 'listing.reject':
+      return `${after.title || before.title || ''} — ${after.rejection_reason || ''}`;
+    case 'dealer_app.approve':
+      return before.business_name || '';
+    case 'dealer_app.reject':
+      return `${before.business_name || ''} — ${after.reason || ''}`;
+    case 'user.suspend':
+      return `${before.email || ''} — ${after.suspension_reason || ''}`;
+    case 'user.unsuspend':
+    case 'user.promote':
+    case 'user.demote':
+      return before.email || after.email || '';
+    case 'user.set_role':
+      return `${before.email || ''} → ${after.role || ''}`;
+    default:
+      return '';
+  }
 }
