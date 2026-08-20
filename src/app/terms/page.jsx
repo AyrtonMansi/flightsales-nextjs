@@ -1,6 +1,6 @@
 export const metadata = {
-  title: 'Terms of Service | Flightsales.com.au',
-  description: 'Terms of Service for Flightsales.com.au - Australia\'s aircraft marketplace'
+  title: 'Terms of Service | FlightSales.com.au',
+  description: 'Terms of Service for FlightSales.com.au - Australia\'s aircraft marketplace'
 };
 
 export default function TermsPage() {
@@ -12,13 +12,13 @@ export default function TermsPage() {
       <div style={{ lineHeight: 1.7, color: 'var(--fs-gray-700)' }}>
         <h2 style={{ fontSize: '20px', fontWeight: 700, marginTop: '32px', marginBottom: '16px' }}>1. Acceptance of Terms</h2>
         <p style={{ marginBottom: '16px' }}>
-          By accessing or using Flightsales.com.au ("the Platform"), you agree to be bound by these Terms of Service. 
+          By accessing or using FlightSales.com.au ("the Platform"), you agree to be bound by these Terms of Service.
           If you do not agree to these terms, please do not use the Platform.
         </p>
 
         <h2 style={{ fontSize: '20px', fontWeight: 700, marginTop: '32px', marginBottom: '16px' }}>2. Description of Service</h2>
         <p style={{ marginBottom: '16px' }}>
-          Flightsales.com.au is an online marketplace that connects aircraft buyers and sellers in Australia. 
+          FlightSales.com.au is an online marketplace that connects aircraft buyers and sellers in Australia.
           We provide a platform for listing aircraft, searching for aircraft, and facilitating enquiries between parties.
         </p>
 
@@ -56,7 +56,7 @@ export default function TermsPage() {
 
         <h2 style={{ fontSize: '20px', fontWeight: 700, marginTop: '32px', marginBottom: '16px' }}>7. Limitation of Liability</h2>
         <p style={{ marginBottom: '16px' }}>
-          Flightsales Pty Ltd acts as a platform provider only and is not responsible for the accuracy of listings, 
+          FlightSales Pty Ltd acts as a platform provider only and is not responsible for the accuracy of listings,
           the condition of aircraft, or the conduct of users. All transactions are between buyers and sellers directly.
         </p>
 

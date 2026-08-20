@@ -25,7 +25,7 @@ const TOGGLE_GROUPS = [
   {
     heading: 'Other',
     items: [
-      { key: 'marketingEmails', label: 'Marketing emails', desc: 'Promotions, tips, and news from Flightsales' },
+      { key: 'marketingEmails', label: 'Marketing emails', desc: 'Promotions, tips, and news from FlightSales' },
     ],
   },
 ];

@@ -348,7 +348,15 @@ export default function FlightSalesApp({
   return (
     <>
       <Nav page={page} setPage={setPageWrap} setMobileOpen={setMobileOpen} mobileOpen={mobileOpen} user={user} signOut={signOut} setDashboardTab={setDashboardTab} />
-      <MobileSubBar setPage={setPageWrap} />
+      {/* "Sell aircraft →" is a promotional shortcut, so it's wrong on
+          pages where it's either redundant (the user is already on Sell)
+          or simply out of place (login's a focused conversion surface —
+          same reasoning the breadcrumb strip below is already excluded
+          for; dashboard/admin/onboarding are logged-in utility contexts,
+          not browsing/marketing ones). */}
+      {!['sell', 'login', 'dashboard', 'admin', 'onboarding'].includes(page) && (
+        <MobileSubBar setPage={setPageWrap} />
+      )}
       {/* No breadcrumbs on home (is the root), detail (has its own back
           affordance), or login (focused conversion surface — the strip
           reads as clutter above the split-screen panel, and the form

@@ -109,7 +109,7 @@ const LoginPage = ({ setPage, signIn, signUp, signInWithGoogle, resetPassword, l
             {mode === 'login' ? 'Welcome back' : 'Create your account'}
           </h1>
           <p style={{ fontSize: 15, color: "var(--fs-gray-500)", lineHeight: 1.5 }}>
-            {mode === 'login' ? 'Sign in to manage your listings and saved aircraft' : 'Join Flightsales to buy and sell aircraft across Australia'}
+            {mode === 'login' ? 'Sign in to manage your listings and saved aircraft' : 'Join FlightSales to buy and sell aircraft across Australia'}
           </p>
         </div>
 

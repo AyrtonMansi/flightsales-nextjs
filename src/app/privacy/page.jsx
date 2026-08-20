@@ -1,6 +1,6 @@
 export const metadata = {
-  title: 'Privacy Policy | Flightsales.com.au',
-  description: 'Privacy Policy for Flightsales.com.au - Australia\'s aircraft marketplace'
+  title: 'Privacy Policy | FlightSales.com.au',
+  description: 'Privacy Policy for FlightSales.com.au - Australia\'s aircraft marketplace'
 };
 
 export default function PrivacyPage() {
@@ -12,7 +12,7 @@ export default function PrivacyPage() {
       <div style={{ lineHeight: 1.7, color: 'var(--fs-gray-700)' }}>
         <h2 style={{ fontSize: '20px', fontWeight: 700, marginTop: '32px', marginBottom: '16px' }}>1. Introduction</h2>
         <p style={{ marginBottom: '16px' }}>
-          Flightsales Pty Ltd ("we", "us", "our") is committed to protecting your privacy 
+          FlightSales Pty Ltd ("we", "us", "our") is committed to protecting your privacy
           in accordance with the Australian Privacy Act 1988 (Cth) and the Australian Privacy Principles (APPs).
         </p>
 
@@ -98,7 +98,7 @@ export default function PrivacyPage() {
         <p>
           For privacy-related questions, please contact:<br />
           Privacy Officer<br />
-          Flightsales Pty Ltd<br />
+          FlightSales Pty Ltd<br />
           Email: privacy@flightsales.com.au
         </p>
       </div>
