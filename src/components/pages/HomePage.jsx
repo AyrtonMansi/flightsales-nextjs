@@ -41,8 +41,12 @@ const HomePage = ({ setPage, setSelectedListing, savedIds, onSave, setSearchFilt
   // genuine empty states rather than fake dealers and stub news.
   const displayDealers = dealersFromDB;
   const displayNews = newsFromDB;
-  // Skeleton flag — server data is never loading
-  void featuredLoading; void latestLoading;
+  // Skeleton flags — when SSR already supplied featured/latest, the client
+  // hooks still fire their own (redundant) fetch on mount and start
+  // `loading: true`, which was flashing the pulse skeleton over content we
+  // already had. Suppress the loading branch whenever server data exists.
+  const showFeaturedLoading = !hasServerData && featuredLoading;
+  const showLatestLoading = !hasServerData && latestLoading;
 
   const handleAiSearch = (query) => {
     if (!query.trim()) return;
@@ -151,7 +155,7 @@ const HomePage = ({ setPage, setSelectedListing, savedIds, onSave, setSearchFilt
             </div>
             <Link href="/buy" className="fs-section-link">View all {Icons.arrowRight}</Link>
           </div>
-          {featuredLoading ? (
+          {showFeaturedLoading ? (
             <div className="fs-grid">
               {[1,2,3].map(i => <div key={i} style={{ height: 360, background: "var(--fs-bg-2)", borderRadius: "var(--fs-radius)", animation: "fs-pulse 1.5s infinite" }} />)}
             </div>
@@ -179,7 +183,7 @@ const HomePage = ({ setPage, setSelectedListing, savedIds, onSave, setSearchFilt
             </div>
             <Link href="/buy" className="fs-section-link">View all {Icons.arrowRight}</Link>
           </div>
-          {latestLoading ? (
+          {showLatestLoading ? (
             <div className="fs-grid">
               {[1,2,3].map(i => <div key={i} style={{ height: 360, background: "var(--fs-line)", borderRadius: "var(--fs-radius)", animation: "fs-pulse 1.5s infinite" }} />)}
             </div>

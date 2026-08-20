@@ -36,31 +36,40 @@ async function fetchHomeData() {
   const supabase = makeServerClient();
   if (!supabase) return { featured: [], latest: [], totalListings: 0 };
 
-  const [featuredRes, latestRes, countRes] = await Promise.all([
-    supabase
-      .from('aircraft')
-      .select(`*, dealer:dealers(id, name, location, rating, verified)`)
-      .eq('featured', true)
-      .eq('status', 'active')
-      .order('created_at', { ascending: false })
-      .limit(3),
-    supabase
-      .from('aircraft')
-      .select(`*, dealer:dealers(id, name, location, rating, verified)`)
-      .eq('status', 'active')
-      .order('created_at', { ascending: false })
-      .limit(3),
-    supabase
-      .from('aircraft')
-      .select('id', { count: 'exact', head: true })
-      .eq('status', 'active'),
-  ]);
+  // A network-level failure (timeout, DNS, outage) can reject rather than
+  // resolve with an `error` field, which would otherwise crash this Server
+  // Component and take the whole homepage down with it. Degrade to empty
+  // arrays instead — the client-side hooks retry independently on mount.
+  try {
+    const [featuredRes, latestRes, countRes] = await Promise.all([
+      supabase
+        .from('aircraft')
+        .select(`*, dealer:dealers(id, name, location, rating, verified)`)
+        .eq('featured', true)
+        .eq('status', 'active')
+        .order('created_at', { ascending: false })
+        .limit(3),
+      supabase
+        .from('aircraft')
+        .select(`*, dealer:dealers(id, name, location, rating, verified)`)
+        .eq('status', 'active')
+        .order('created_at', { ascending: false })
+        .limit(3),
+      supabase
+        .from('aircraft')
+        .select('id', { count: 'exact', head: true })
+        .eq('status', 'active'),
+    ]);
 
-  return {
-    featured: featuredRes.data || [],
-    latest: latestRes.data || [],
-    totalListings: countRes.count || 0,
-  };
+    return {
+      featured: featuredRes.data || [],
+      latest: latestRes.data || [],
+      totalListings: countRes.count || 0,
+    };
+  } catch (err) {
+    console.error('[fetchHomeData]', err.message);
+    return { featured: [], latest: [], totalListings: 0 };
+  }
 }
 
 export default async function Page() {
