@@ -1,5 +1,5 @@
 'use client';
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 import { Icons } from '../Icons';
 import BulkImportTab from '../dealer/BulkImportTab';
 import AbnVerifyCard from '../dealer/AbnVerifyCard';
@@ -45,7 +45,7 @@ export default function BusinessDashboardPage({ user, setPage, signOut }) {
     return <><section className="fs-dash-hero"><div className="fs-container fs-dash-hero-inner"><div className="fs-dash-hero-id"><div className="fs-dash-hero-avatar">{user?.full_name?.[0]?.toUpperCase() || 'B'}</div><div><span className="fs-dash-hero-eyebrow">Business verification</span><h1 className="fs-dash-hero-title">Verify your business</h1><p className="fs-dash-hero-sub">Verify your ABN before publishing dealer inventory.</p></div></div><button className="fs-dash-hero-signout" onClick={async () => { await signOut?.(); setPage('home'); }}>Sign out</button></div></section><section className="fs-section" style={{ padding: '24px 0 48px' }}><div className="fs-container" style={{ maxWidth: 760 }}><AbnVerifyCard user={user} /></div></section></>;
   }
 
-  const enquiriesByListing = useMemo(() => myEnquiries.reduce((acc, e) => { const id = e.aircraft?.id || e.aircraft_id; if (id) acc[id] = (acc[id] || 0) + 1; return acc; }, {}), [myEnquiries]);
+  const enquiriesByListing = myEnquiries.reduce((acc, e) => { const id = e.aircraft?.id || e.aircraft_id; if (id) acc[id] = (acc[id] || 0) + 1; return acc; }, {});
   const activeListings = myListings.filter(l => l.status === 'active');
   const pendingListings = myListings.filter(l => l.status === 'pending');
   const newLeads = myEnquiries.filter(e => (e.status || 'new') === 'new');
