@@ -37,10 +37,10 @@ test.describe('Role dashboards', () => {
     await expect(page.getByRole('heading', { name: 'Lead pipeline' })).toBeVisible();
 
     await page.getByRole('button', { name: /^Bulk import/i }).click();
-    await expect(page.getByRole('heading', { name: 'Bulk import' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Bulk import' }).first()).toBeVisible();
 
     await page.getByRole('button', { name: /^Business profile/i }).click();
-    await expect(page.getByRole('heading', { name: 'Business profile' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Business profile' }).first()).toBeVisible();
 
     await expect(page.getByText(/Stripe coming soon/i)).toHaveCount(0);
     await expect(page.getByText(/Coming soon/i)).toHaveCount(0);
