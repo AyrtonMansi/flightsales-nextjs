@@ -3,7 +3,6 @@ import { createClient } from '@supabase/supabase-js';
 
 const SITE = 'https://flightsales.com.au';
 
-// 5-min ISR — dealer profiles change infrequently.
 export const revalidate = 300;
 
 function makeServerClient() {
@@ -16,9 +15,6 @@ function makeServerClient() {
 async function fetchDealer(id) {
   const supabase = makeServerClient();
   if (!supabase) return null;
-  // See the note in listings/[id]: a network-level rejection here would
-  // crash the Server Component and 500 the dealer page rather than
-  // degrading to the not-found state.
   try {
     const { data } = await supabase
       .from('dealers')
@@ -33,7 +29,7 @@ async function fetchDealer(id) {
 }
 
 export async function generateMetadata({ params }) {
-  const { id } = params;
+  const { id } = await params;
   const dealer = await fetchDealer(id);
   if (!dealer) {
     return {
@@ -57,7 +53,6 @@ export async function generateMetadata({ params }) {
   };
 }
 
-// schema.org JSON-LD for the dealer — AutomotiveBusiness with rating/address.
 function buildJsonLd(dealer) {
   if (!dealer) return null;
   const url = `${SITE}/dealers/${dealer.id}`;
@@ -80,7 +75,8 @@ function buildJsonLd(dealer) {
 }
 
 export default async function Page({ params }) {
-  const dealer = await fetchDealer(params.id);
+  const { id } = await params;
+  const dealer = await fetchDealer(id);
   const jsonLd = buildJsonLd(dealer);
   return (
     <>
@@ -92,7 +88,7 @@ export default async function Page({ params }) {
       )}
       <PageShell
         initialPage="dealer-detail"
-        initialDealerId={params.id}
+        initialDealerId={id}
         initialDealer={dealer || null}
       />
     </>
