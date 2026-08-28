@@ -1,17 +1,13 @@
 'use client';
 import Link from 'next/link';
 
-// Real <Link> anchors so footer links work for right-click "open in new tab",
-// crawlers, and screen readers. The <span onClick> pattern looked like links
-// but failed all three. Category-specific browse pages can wire to query
-// params later (e.g. /buy?category=Single+Engine+Piston) when BuyPage reads them.
 const Footer = () => (
   <footer className="fs-footer">
     <div className="fs-container">
       <div className="fs-footer-grid">
         <div>
           <div className="fs-footer-brand">FlightSales</div>
-          <p className="fs-footer-desc">Australia's aircraft marketplace. Buy and sell aircraft with confidence — from single-engine pistons to turboprops and helicopters.</p>
+          <p className="fs-footer-desc">Australia's aircraft marketplace. Browse dealer and private listings across general aviation, helicopters, turboprops and more.</p>
         </div>
         <div>
           <div className="fs-footer-heading">Browse</div>
@@ -25,7 +21,7 @@ const Footer = () => (
           ].map(([label, cat]) => (
             <Link
               key={label}
-              href={cat ? `/buy?category=${encodeURIComponent(cat)}` : "/buy"}
+              href={cat ? `/buy?cat=${encodeURIComponent(cat)}` : "/buy"}
               className="fs-footer-link"
             >
               {label}
@@ -50,9 +46,7 @@ const Footer = () => (
       <div className="fs-footer-bottom">
         <span>
           &copy; 2026 FlightSales Pty Ltd. All rights reserved.
-          {process.env.NEXT_PUBLIC_FS_ABN ? (
-            <> · ABN {process.env.NEXT_PUBLIC_FS_ABN}</>
-          ) : null}
+          {process.env.NEXT_PUBLIC_FS_ABN ? <> · ABN {process.env.NEXT_PUBLIC_FS_ABN}</> : null}
         </span>
       </div>
     </div>

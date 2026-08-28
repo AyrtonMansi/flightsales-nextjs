@@ -3,7 +3,7 @@ import PasswordGate from '@/components/PasswordGate';
 
 export const metadata = {
   title: 'FlightSales.com.au | Australia\'s Aircraft Marketplace',
-  description: 'Buy and sell aircraft with confidence. Australia\'s most trusted aviation marketplace with verified dealers, transparent listings, and real market data.',
+  description: 'Browse and list aircraft for sale across Australia. FlightSales connects buyers with aviation businesses and private sellers.',
   keywords: 'aircraft for sale, planes for sale australia, aviation marketplace, buy aircraft, sell aircraft, cessna, cirrus, piper, helicopter',
   robots: {
     index: true,
@@ -17,20 +17,13 @@ export const metadata = {
   },
   openGraph: {
     title: 'FlightSales.com.au | Buy & Sell Aircraft',
-    description: 'Australia\'s most trusted aviation marketplace.',
+    description: 'Australia\'s aircraft marketplace for dealer and private listings.',
     url: 'https://flightsales.com.au',
     siteName: 'FlightSales',
     type: 'website',
   },
 };
 
-// Without this, mobile browsers default to rendering at a 980px virtual
-// viewport and scale to fit — which is why every responsive @media rule
-// in globals.css was silently inert on phones (the page reported itself
-// as 980px wide regardless of actual screen size). The Next.js 14 App
-// Router preferred pattern is `export const viewport`. Setting both
-// width and initialScale ensures the page lays out at the real device
-// width and that pinch-zoom resets to 1× on first paint.
 export const viewport = {
   width: 'device-width',
   initialScale: 1,
@@ -46,20 +39,10 @@ export default function RootLayout({ children }) {
           rel="stylesheet"
           href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"
         />
-        {/* Fraunces — display serif for hero + section headings only (body
-            and all UI stay Inter). This is the original design intent
-            noted in globals.css; the link was never actually added.
-            Variable opsz axis lets one file serve 40px hero down to 24px
-            section titles with optical-sizing auto. SOFT/WONK held near 0
-            so it reads classic-editorial, not fashion-quirky. */}
         <link
           rel="stylesheet"
           href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400..600;1,9..144,400..600&display=swap"
         />
-        {/* Plausible analytics — privacy-friendly, GDPR-compliant, no
-            cookies, free for low volume. Soft-disabled when the env
-            var is unset (development). Set NEXT_PUBLIC_PLAUSIBLE_DOMAIN
-            in Vercel to enable. */}
         {process.env.NEXT_PUBLIC_PLAUSIBLE_DOMAIN && (
           <>
             <script
@@ -67,9 +50,6 @@ export default function RootLayout({ children }) {
               data-domain={process.env.NEXT_PUBLIC_PLAUSIBLE_DOMAIN}
               src="https://plausible.io/js/script.js"
             />
-            {/* Init stub — queues custom events fired before the deferred
-                script finishes loading, so lib/analytics track() calls
-                are never dropped on a fast first interaction. */}
             <script
               dangerouslySetInnerHTML={{
                 __html:

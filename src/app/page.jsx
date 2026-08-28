@@ -5,19 +5,17 @@
 import PageShell from '@/components/PageShell';
 import { createClient } from '@supabase/supabase-js';
 
-// 1-min ISR — home is the most-trafficked entry; cached HTML between
-// updates avoids hammering Supabase on every request.
 export const revalidate = 60;
 
 const SITE = 'https://flightsales.com.au';
 
 export const metadata = {
   title: "FlightSales | Australia's marketplace for aircraft",
-  description: "Buy and sell aircraft with confidence. Verified listings, transparent pricing, real market data.",
+  description: "Browse aircraft for sale from aviation businesses and private sellers across Australia.",
   alternates: { canonical: SITE },
   openGraph: {
     title: "FlightSales | Australia's marketplace for aircraft",
-    description: 'Buy and sell aircraft with confidence.',
+    description: 'Browse aircraft listings and connect directly with sellers.',
     url: SITE,
     siteName: 'FlightSales',
     type: 'website',
@@ -36,10 +34,6 @@ async function fetchHomeData() {
   const supabase = makeServerClient();
   if (!supabase) return { featured: [], latest: [], totalListings: 0 };
 
-  // A network-level failure (timeout, DNS, outage) can reject rather than
-  // resolve with an `error` field, which would otherwise crash this Server
-  // Component and take the whole homepage down with it. Degrade to empty
-  // arrays instead — the client-side hooks retry independently on mount.
   try {
     const [featuredRes, latestRes, countRes] = await Promise.all([
       supabase

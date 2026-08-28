@@ -1,74 +1,52 @@
-// Single source of truth for FlightSales pricing.
+// Commercial configuration for FlightSales.
 //
-// Listing fees
-//   - Experimental / LSA / Ultralight / RAAus-registered: free
-//   - Certified < $500k:          $99 flat
-//   - Certified >= $500k:         $99 + 0.025% of (price - $500,000)
-//
-// Dealer subscription
-//   - Dealer Lite:  $49/mo, up to 5 active listings (private-seller alternative)
-//   - Pro:          unlimited, featured slots — future
-//   - Enterprise:   bulk import, white-label — future
+// IMPORTANT: production billing is not wired yet. The marketplace therefore
+// runs in launch-access mode: creating a listing is free and no dealer
+// subscription is charged. Keeping this state explicit prevents UI/legal copy
+// from advertising or collecting fees before a payment flow exists end-to-end.
 
-// ─── Listing fees ───────────────────────────────────────────────────
+export const BILLING_ENABLED = false;
 
+// Retained as proposed commercial parameters for a future billing launch.
+// They must not be presented as live prices while BILLING_ENABLED is false.
 export const BASE_LISTING_FEE_AUD = 99;
 export const PREMIUM_THRESHOLD_AUD = 500_000;
-export const PREMIUM_RATE = 0.00025; // 0.025% of the amount above $500k
+export const PREMIUM_RATE = 0.00025;
 
-// Categories that get free listings. Match the user-facing category
-// values in lib/constants.js. "Experimental" isn't a category in
-// the picker today — we cover it via rego pattern below.
 const FREE_CATEGORIES = new Set(['LSA', 'Ultralight']);
-
-// RAAus (Recreational Aviation Australia) rego prefixes. These cover
-// the recreational class — primarily ultralights and LSAs but also
-// some experimentals. A rego starting with these digits + a hyphen
-// (e.g. "24-1234") is RAAus-registered.
-//
-// Reference: RAAus member-registered aircraft use the 10-, 19-, 24-,
-// 25-, 28-, 32-, 55-, 95- prefixes.
 const RAAUS_REGO_RE = /^(10|19|24|25|28|32|55|95)-\d{2,4}\b/i;
 
 export interface ListingFeeInput {
   category?: string | null;
   price?: number | null;
   rego?: string | null;
-  /**
-   * Future flag for an explicit "experimental" classification.
-   * Falls back to the category + rego heuristic when unset.
-   */
   isExperimental?: boolean;
 }
 
 export interface ListingFee {
-  /** Total fee in AUD. Always an integer (cents rounded). */
   feeAud: number;
-  /** True when this listing qualifies for free placement. */
   free: boolean;
-  /** Human-readable line-by-line breakdown for the fee modal/summary. */
   breakdown: Array<{ label: string; amount: number }>;
-  /** Internal tier key for analytics/Stripe metadata. */
-  tier: 'free' | 'standard' | 'premium';
-  /** Reason the listing was placed in this tier — useful for UI copy. */
+  tier: 'launch' | 'free' | 'standard' | 'premium';
   reason: string;
 }
 
 export function calculateListingFee(input: ListingFeeInput): ListingFee {
+  if (!BILLING_ENABLED) {
+    return {
+      feeAud: 0,
+      free: true,
+      tier: 'launch',
+      reason: 'Launch access — no listing fee is currently charged.',
+      breakdown: [{ label: 'Listing fee', amount: 0 }],
+    };
+  }
+
   const { category, price, rego, isExperimental } = input;
+  if (isExperimental) return zeroFee('Experimental aircraft — free placement.');
+  if (category && FREE_CATEGORIES.has(category)) return zeroFee(`${category} aircraft — free placement.`);
+  if (rego && RAAUS_REGO_RE.test(rego.trim())) return zeroFee('RAAus-registered aircraft — free placement.');
 
-  // ─── Free tier checks (any one qualifies) ──────────────────────
-  if (isExperimental) {
-    return zeroFee('Experimental aircraft — free placement.');
-  }
-  if (category && FREE_CATEGORIES.has(category)) {
-    return zeroFee(`${category} aircraft — free placement.`);
-  }
-  if (rego && RAAUS_REGO_RE.test(rego.trim())) {
-    return zeroFee('RAAus-registered aircraft — free placement.');
-  }
-
-  // ─── Certified aircraft fee tier ───────────────────────────────
   const p = Number.isFinite(price) ? Math.max(0, Math.round(price as number)) : 0;
   if (p < PREMIUM_THRESHOLD_AUD) {
     return {
@@ -76,13 +54,10 @@ export function calculateListingFee(input: ListingFeeInput): ListingFee {
       free: false,
       tier: 'standard',
       reason: `Certified aircraft under $${PREMIUM_THRESHOLD_AUD.toLocaleString()}.`,
-      breakdown: [
-        { label: 'Base listing fee', amount: BASE_LISTING_FEE_AUD },
-      ],
+      breakdown: [{ label: 'Base listing fee', amount: BASE_LISTING_FEE_AUD }],
     };
   }
 
-  // p >= PREMIUM_THRESHOLD_AUD
   const above = p - PREMIUM_THRESHOLD_AUD;
   const variable = Math.round(above * PREMIUM_RATE);
   return {
@@ -107,26 +82,29 @@ function zeroFee(reason: string): ListingFee {
   };
 }
 
-// Pretty-print helper for AUD amounts. Uses tabular figures via the
-// component's own font-feature-settings; this just produces the string.
 export function fmtAud(n: number): string {
   if (!Number.isFinite(n)) return '$0';
   if (n === 0) return 'Free';
-  return n.toLocaleString('en-AU', { style: 'currency', currency: 'AUD', minimumFractionDigits: 0, maximumFractionDigits: 0 });
+  return n.toLocaleString('en-AU', {
+    style: 'currency',
+    currency: 'AUD',
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  });
 }
-
-// ─── Dealer subscription plans ──────────────────────────────────────
 
 export interface DealerPlan {
   key: 'dealer_lite' | 'pro';
   name: string;
-  priceLabel: string;       // shown in the plan card
-  priceMonthlyAud: number;  // for Stripe metadata + comparisons
+  priceLabel: string;
+  priceMonthlyAud: number;
   listingLimit: number | 'unlimited';
   desc: string;
   features: string[];
 }
 
+// Proposed future packaging only. Consumers must gate these behind
+// BILLING_ENABLED; while false, business accounts use launch access.
 export const DEALER_PLANS: DealerPlan[] = [
   {
     key: 'dealer_lite',
@@ -135,12 +113,7 @@ export const DEALER_PLANS: DealerPlan[] = [
     priceMonthlyAud: 49,
     listingLimit: 3,
     desc: 'Up to 3 active listings, verified badge, lead alerts',
-    features: [
-      'Up to 3 active listings',
-      'Verified business badge',
-      'Real-time lead alerts',
-      'ABR auto-verification',
-    ],
+    features: ['Up to 3 active listings', 'Verified business badge', 'Real-time lead alerts', 'ABR auto-verification'],
   },
   {
     key: 'pro',
@@ -149,12 +122,6 @@ export const DEALER_PLANS: DealerPlan[] = [
     priceMonthlyAud: 199,
     listingLimit: 'unlimited',
     desc: 'Unlimited listings, featured slots, bulk import, team access',
-    features: [
-      'Unlimited active listings',
-      'Featured listing slots',
-      'Bulk CSV import',
-      'Team access (3 seats)',
-      'Market-position analytics',
-    ],
+    features: ['Unlimited active listings', 'Featured listing slots', 'Bulk CSV import', 'Team access (3 seats)', 'Market-position analytics'],
   },
 ];
