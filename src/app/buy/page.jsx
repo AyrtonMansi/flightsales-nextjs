@@ -1,3 +1,4 @@
+import './compact.css';
 import PageShell from '@/components/PageShell';
 
 const SITE = 'https://flightsales.com.au';
