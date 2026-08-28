@@ -15,6 +15,7 @@ import { sendEmail } from '../../../lib/email';
 import { rateLimit, callerIp } from '../../../lib/ratelimit';
 import { assertSafeOutboundUrl } from '../../../lib/ssrfGuard';
 import { getBearerUserId } from '../../../lib/serverAuth';
+import { verifyTurnstileToken } from '../../../lib/turnstile';
 
 export const runtime = 'nodejs';
 
@@ -49,6 +50,14 @@ export async function POST(req: NextRequest) {
 
   let body: Record<string, unknown>;
   try { body = await req.json(); } catch { return NextResponse.json({ ok: false, error: 'invalid_json' }, { status: 400 }); }
+
+  // Anon-callable, and every accepted lead is emailed to a paying partner —
+  // junk here is a commercial-relationship problem, not just noise. The
+  // route's own comment already claimed Turnstile was the first line of
+  // defence; it was never actually verified.
+  if (!(await verifyTurnstileToken(body?.turnstileToken as string | undefined))) {
+    return NextResponse.json({ ok: false, error: 'captcha_failed' }, { status: 400 });
+  }
 
   const affiliateId = clean(body.affiliateId, 64);
   const userName    = clean(body.userName, 200);

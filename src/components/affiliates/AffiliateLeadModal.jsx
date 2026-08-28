@@ -4,6 +4,7 @@ import { Icons } from '../Icons';
 import { showToast } from '../../lib/toast';
 import { useDialog } from '../../lib/useDialog';
 import { authedFetch } from '../../lib/authedFetch';
+import Turnstile from '../Turnstile';
 
 // Lead-capture modal opened when the user clicks a partner CTA. Pre-
 // fills name + email if they're signed in. Discloses what's being
@@ -25,6 +26,7 @@ export default function AffiliateLeadModal({ partner, listing, user, onClose }) 
   const [consent, setConsent] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [done, setDone] = useState(false);
+  const [turnstileToken, setTurnstileToken] = useState(null);
 
   const submit = async (e) => {
     e.preventDefault();
@@ -49,6 +51,7 @@ export default function AffiliateLeadModal({ partner, listing, user, onClose }) 
           userEmail: email.trim(),
           userPhone: phone.trim() || null,
           message: message.trim() || null,
+          turnstileToken,
         }),
       });
       const data = await res.json();
@@ -175,6 +178,12 @@ export default function AffiliateLeadModal({ partner, listing, user, onClose }) 
                 I agree to share my name, email{phone ? ', phone' : ''}{listing ? `, and the aircraft I'm enquiring about (${listing.title || `#${listing.id}`})` : ''} with <strong style={{ color: 'var(--fs-ink)' }}>{partner.name}</strong> so they can contact me about {prettyTypeLong(partner.type)}. They will only use my details for this enquiry.
               </span>
             </label>
+
+            {/* Leads are dispatched to paying partners by email, so junk here
+                is a commercial-relationship problem, not just noise. */}
+            <div style={{ marginTop: 4 }}>
+              <Turnstile onToken={setTurnstileToken} action="affiliate_lead" />
+            </div>
 
             <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8, marginTop: 4 }}>
               <button type="button" className="fs-form-cancel" onClick={onClose}>Cancel</button>

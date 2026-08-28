@@ -2,6 +2,7 @@
 import { useRef, useState } from 'react';
 import { useDialog } from '../lib/useDialog';
 import { authedFetch } from '../lib/authedFetch';
+import Turnstile from './Turnstile';
 
 // Small modal opened from the listing detail's "Report listing" link.
 // Sends the report to /api/reports which persists + emails admin.
@@ -27,6 +28,7 @@ export default function ReportListingModal({ aircraftId, user, onClose }) {
   const [submitting, setSubmitting] = useState(false);
   const [done, setDone] = useState(false);
   const [error, setError] = useState(null);
+  const [turnstileToken, setTurnstileToken] = useState(null);
 
   const submit = async (e) => {
     e.preventDefault();
@@ -41,6 +43,7 @@ export default function ReportListingModal({ aircraftId, user, onClose }) {
           details: details.trim() || null,
           reporterUserId: user?.id || null,
           reporterEmail: reporterEmail.trim() || null,
+          turnstileToken,
         }),
       });
       const json = await res.json();
@@ -109,6 +112,13 @@ export default function ReportListingModal({ aircraftId, user, onClose }) {
                 onChange={(e) => setReporterEmail(e.target.value)}
               />
             )}
+
+            {/* Anonymous callers can hit /api/reports, and every report emails
+                the ops inbox — without a captcha it's a mailbomb vector that
+                also buries genuine reports under junk. */}
+            <div style={{ margin: '0 0 12px' }}>
+              <Turnstile onToken={setTurnstileToken} action="report" />
+            </div>
 
             {error && (
               <p style={{ color: '#dc2626', fontSize: 13, margin: '0 0 12px' }}>{error}</p>
