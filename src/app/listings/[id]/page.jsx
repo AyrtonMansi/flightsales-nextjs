@@ -21,10 +21,6 @@ function makeServerClient() {
 async function fetchListing(id) {
   const supabase = makeServerClient();
   if (!supabase) return null;
-  // A network-level failure (timeout, DNS, Supabase outage) rejects rather
-  // than resolving with an `error` field, which would crash this Server
-  // Component and 500 the whole listing page. Degrade to null instead — the
-  // page already renders a graceful "not found" state for that case.
   try {
     const { data } = await supabase
       .from('aircraft')
@@ -39,7 +35,7 @@ async function fetchListing(id) {
 }
 
 export async function generateMetadata({ params }) {
-  const { id } = params;
+  const { id } = await params;
   const listing = await fetchListing(id);
   if (!listing) {
     return {
@@ -53,8 +49,6 @@ export async function generateMetadata({ params }) {
   const description = `${listing.year || ''} ${listing.manufacturer || ''} ${listing.model || ''}`.trim()
     + (locTxt ? ` for sale in ${locTxt}.` : ' for sale.')
     + (listing.description ? ` ${listing.description.slice(0, 140)}` : '');
-  // Prefer the listing's actual photo; fall back to a generated OG card so
-  // every listing has a presentable share preview even with no images.
   const ogParams = new URLSearchParams({
     title: listing.title || 'Aircraft for sale',
     price: String(listing.price || ''),
@@ -82,9 +76,6 @@ export async function generateMetadata({ params }) {
   };
 }
 
-// schema.org JSON-LD for the listing — Vehicle as the primary type with a
-// nested Product/Offer so Google can show price + availability in rich
-// results. Server-rendered into the HTML; no JS required to read.
 function buildJsonLd(listing) {
   if (!listing) return null;
   const url = `${SITE}/listings/${listing.id}`;
@@ -118,13 +109,13 @@ function buildJsonLd(listing) {
         }
       : undefined,
   };
-  // Strip undefined values for cleaner output
   Object.keys(data).forEach(k => data[k] === undefined && delete data[k]);
   return data;
 }
 
 export default async function Page({ params }) {
-  const listing = await fetchListing(params.id);
+  const { id } = await params;
+  const listing = await fetchListing(id);
   const jsonLd = buildJsonLd(listing);
   return (
     <>
@@ -136,7 +127,7 @@ export default async function Page({ params }) {
       )}
       <PageShell
         initialPage="detail"
-        initialListingId={params.id}
+        initialListingId={id}
         initialListing={listing || null}
       />
     </>
