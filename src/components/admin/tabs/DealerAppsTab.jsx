@@ -6,6 +6,7 @@ import useTableState from '../../../lib/useTableState';
 import AdminTableToolbar, { SortHeader, Pager } from '../AdminTableToolbar';
 import StatusBadge from '../StatusBadge';
 import ConfirmDialog from '../ConfirmDialog';
+import { authedFetch } from '../../../lib/authedFetch';
 
 const STATUS_OPTIONS = (counts) => [
   { value: 'pending', label: 'Pending', count: counts.pending },
@@ -47,7 +48,7 @@ export default function DealerAppsTab({ adminId }) {
   // hostage to email deliverability.
   const notify = async (event, app, extras = {}) => {
     try {
-      await fetch('/api/admin/notify', {
+      await authedFetch('/api/admin/notify', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

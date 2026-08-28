@@ -3,15 +3,23 @@
 // Two valid callers:
 //   1. Server-to-server with `x-internal-token: ${INTERNAL_API_TOKEN}`
 //      — useful for trusted internal callers (cron, build steps) so
-//      they don't need a session cookie.
-//   2. A real admin session — we read the supabase auth cookie, look
-//      up the profile, and require role='admin'.
+//      they don't need a user session.
+//   2. A real admin session — the browser sends its Supabase access token
+//      as `Authorization: Bearer <jwt>` (see src/lib/authedFetch.js); we
+//      verify that JWT, look up the profile, and require role='admin'.
+//
+// This previously tried to read a Supabase auth *cookie*, which never
+// worked: the browser client stores its session in localStorage, and
+// supabase-js does not resolve sessions from a forwarded cookie header
+// regardless. Every admin mutation therefore 403'd for real admins. See
+// the long note in src/lib/serverAuth.ts.
 //
 // Returns the user-session client + a service-role admin client on
 // success, or null. Callers should respond 403 on null.
 
 import { createClient, type SupabaseClient, type User } from '@supabase/supabase-js';
 import type { NextRequest } from 'next/server';
+import { getBearerUser } from './serverAuth';
 
 export interface AdminAuthContext {
   user: User | null;       // null when authorised via internal-token
@@ -35,17 +43,8 @@ export async function requireAdmin(req: NextRequest): Promise<AdminAuthContext |
     return { user: null, adminC };
   }
 
-  // Path 2: user-session cookie + profile.role check.
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const anon = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-  if (!url || !anon) return null;
-
-  const cookieHeader = req.headers.get('cookie') || '';
-  const userClient = createClient(url, anon, {
-    auth: { persistSession: false, autoRefreshToken: false },
-    global: { headers: { cookie: cookieHeader } },
-  });
-  const { data: { user } } = await userClient.auth.getUser();
+  // Path 2: verified user access token + profile.role check.
+  const user = await getBearerUser(req);
   if (!user) return null;
 
   const { data: profile } = await adminC

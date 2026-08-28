@@ -1,5 +1,6 @@
 'use client';
 import { useState } from 'react';
+import { authedFetch } from '../../lib/authedFetch';
 
 // ABN verification card — sits in the dealer dashboard's Business profile
 // section. Single input + Verify button. Calls /api/abn-verify which hits
@@ -41,7 +42,7 @@ export default function AbnVerifyCard({ user }) {
     setError('');
     setBusy(true);
     try {
-      const r = await fetch('/api/abn-verify', {
+      const r = await authedFetch('/api/abn-verify', {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
         body: JSON.stringify({ abn }),

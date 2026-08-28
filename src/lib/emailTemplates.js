@@ -10,7 +10,14 @@
 const SITE = 'https://flightsales.com.au';
 const BRAND = 'FlightSales';
 
+// `preheader` is escaped here rather than at each call site: most preheaders
+// interpolate user-controlled values (buyer name, aircraft title, saved-search
+// name, partner name) and every one of them was previously injected raw into
+// the markup below. Escaping centrally means existing and future templates are
+// safe by construction. `body` is NOT escaped — it is markup the templates
+// assemble deliberately, and each one escapes its own interpolated values.
 function shell({ preheader, body }) {
+  preheader = escape(preheader);
   return `<!DOCTYPE html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${BRAND}</title></head>
 <body style="margin:0;padding:0;background:#f8fafc;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;color:#0a0a0a;">
@@ -27,8 +34,15 @@ This is an automated message. If you didn't expect it, please ignore.
 </table></td></tr></table></body></html>`;
 }
 
+// Both arguments are escaped. Callers build hrefs like
+// `${SITE}/listings/${v.aircraftId}` and `${SITE}/buy?${v.queryString}`, where
+// the trailing segment comes from request data — unescaped, a value containing
+// a double quote breaks out of the href attribute and lets an attacker plant
+// their own link inside a genuinely DKIM-signed FlightSales email. Escaping
+// the quote makes breakout impossible; the hardcoded `${SITE}` prefix on every
+// call site already rules out javascript:/data: schemes.
 function btn(href, label) {
-  return `<a href="${href}" style="display:inline-block;background:#0a0a0a;color:#fff;text-decoration:none;padding:12px 22px;border-radius:6px;font-weight:600;font-size:14px;">${label}</a>`;
+  return `<a href="${escape(href)}" style="display:inline-block;background:#0a0a0a;color:#fff;text-decoration:none;padding:12px 22px;border-radius:6px;font-weight:600;font-size:14px;">${escape(label)}</a>`;
 }
 
 const TEMPLATES = {

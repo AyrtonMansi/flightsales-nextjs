@@ -3,20 +3,16 @@ import { createClient } from '@supabase/supabase-js';
 import { sendEmail } from '../../../lib/email';
 import { rateLimit, callerIp } from '../../../lib/ratelimit';
 import { adminClient } from '../../../lib/requireAdmin';
+import { getBearerUserId } from '../../../lib/serverAuth';
 
 export const runtime = 'nodejs';
 
+// Derive the reporter's user_id from their verified access token, never from
+// the request body — trusting a body-supplied id would let anyone forge
+// attribution against any user. Anonymous reports are still allowed and simply
+// record a null reporter.
 async function reporterFromAuth(req) {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const anon = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-  if (!url || !anon) return null;
-  const cookieHeader = req.headers.get('cookie') || '';
-  const userClient = createClient(url, anon, {
-    auth: { persistSession: false, autoRefreshToken: false },
-    global: { headers: { cookie: cookieHeader } },
-  });
-  const { data: { user } } = await userClient.auth.getUser();
-  return user?.id || null;
+  return getBearerUserId(req);
 }
 
 const ALLOWED_REASONS = new Set(['fake_listing', 'wrong_price', 'sold_elsewhere', 'spam', 'other']);

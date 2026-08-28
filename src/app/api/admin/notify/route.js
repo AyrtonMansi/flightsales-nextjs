@@ -17,6 +17,7 @@ import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { sendEmail } from '../../../../lib/email';
 import { adminClient } from '../../../../lib/requireAdmin';
+import { getBearerUser } from '../../../../lib/serverAuth';
 
 export const runtime = 'nodejs';
 
@@ -55,14 +56,10 @@ async function isAuthorisedAdmin(req) {
   const anon = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
   if (!url || !anon) return false;
 
-  // Build a request-scoped supabase client that can read the user's
-  // auth cookie — service role client doesn't see the session.
-  const cookieHeader = req.headers.get('cookie') || '';
-  const userClient = createClient(url, anon, {
-    auth: { persistSession: false, autoRefreshToken: false },
-    global: { headers: { cookie: cookieHeader } },
-  });
-  const { data: { user } } = await userClient.auth.getUser();
+  // Verify the caller's access token (sent as an Authorization: Bearer
+  // header by src/lib/authedFetch.js). The service-role client can't see
+  // a user session, and the cookie this used to forward never existed.
+  const user = await getBearerUser(req);
   if (!user) return false;
 
   // Verify admin role server-side via the service-role-able client.

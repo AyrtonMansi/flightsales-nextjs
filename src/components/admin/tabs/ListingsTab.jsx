@@ -7,6 +7,7 @@ import AdminTableToolbar, { SortHeader, Pager } from '../AdminTableToolbar';
 import StatusBadge from '../StatusBadge';
 import ConfirmDialog from '../ConfirmDialog';
 import ListingDetailDrawer from '../ListingDetailDrawer';
+import { authedFetch } from '../../../lib/authedFetch';
 
 // Status filter options for the listings tab. "Pending" is the most common
 // admin landing state — defaults there to surface what needs review.
@@ -95,7 +96,7 @@ export default function ListingsTab() {
     const l = listings.find(x => x.id === id);
     if (!l) return;
     try {
-      await fetch('/api/admin/notify', {
+      await authedFetch('/api/admin/notify', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

@@ -3,6 +3,7 @@ import { useRef, useState } from 'react';
 import { Icons } from '../Icons';
 import { showToast } from '../../lib/toast';
 import { useDialog } from '../../lib/useDialog';
+import { authedFetch } from '../../lib/authedFetch';
 
 // Lead-capture modal opened when the user clicks a partner CTA. Pre-
 // fills name + email if they're signed in. Discloses what's being
@@ -37,7 +38,7 @@ export default function AffiliateLeadModal({ partner, listing, user, onClose }) 
     }
     setSubmitting(true);
     try {
-      const res = await fetch('/api/affiliate-leads', {
+      const res = await authedFetch('/api/affiliate-leads', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

@@ -15,10 +15,16 @@ export function useActiveAffiliates(filters = {}) {
     (async () => {
       setLoading(true);
       try {
+        // Reads the column-limited `affiliates_public` view, never the base
+        // table. The base table mixes in api_credential_secret,
+        // lead_webhook_url, commission_pct, contract_url and contact_email
+        // — a `.select('*')` here (what this used to do) shipped all of
+        // them to any anonymous visitor. The view also bakes in the
+        // status='active' filter, so it can't be dropped by accident.
+        // See supabase/migrations/2026_08_20_affiliates_public_view.sql.
         let q = supabase
-          .from('affiliates')
-          .select('*')
-          .eq('status', 'active')
+          .from('affiliates_public')
+          .select('id, slug, name, type, logo_url, website_url, description, cta_text, min_listing_price, max_listing_price, categories, states, display_priority')
           .order('display_priority', { ascending: true });
         if (type) q = q.eq('type', type);
         const { data } = await q;

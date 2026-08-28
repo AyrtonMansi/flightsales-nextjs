@@ -1,6 +1,7 @@
 'use client';
 import { useRef, useState } from 'react';
 import { useDialog } from '../lib/useDialog';
+import { authedFetch } from '../lib/authedFetch';
 
 // Small modal opened from the listing detail's "Report listing" link.
 // Sends the report to /api/reports which persists + emails admin.
@@ -31,7 +32,7 @@ export default function ReportListingModal({ aircraftId, user, onClose }) {
     e.preventDefault();
     setSubmitting(true); setError(null);
     try {
-      const res = await fetch('/api/reports', {
+      const res = await authedFetch('/api/reports', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

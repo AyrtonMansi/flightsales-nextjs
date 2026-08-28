@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '../supabase';
+import { authedFetch } from '../authedFetch';
 
 // Admin-side hooks — read full universes (cross-user). Mutations route
 // through /api/admin/* server routes that re-verify role='admin' and
@@ -35,7 +36,7 @@ export function useAdminListings() {
   useEffect(() => { fetchAll(); }, [fetchAll]);
 
   const callAdmin = async (action, id, params = {}) => {
-    const res = await fetch('/api/admin/listings', {
+    const res = await authedFetch('/api/admin/listings', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ id, action, ...params }),
@@ -111,7 +112,7 @@ export function useAdminUsers() {
   useEffect(() => { fetchAll(); }, [fetchAll]);
 
   const callAdmin = async (action, userId, params = {}) => {
-    const res = await fetch('/api/admin/users', {
+    const res = await authedFetch('/api/admin/users', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ userId, action, ...params }),
@@ -245,7 +246,7 @@ export function useDealerApplications() {
   useEffect(() => { fetchAll(); }, [fetchAll]);
 
   const approveApp = async (app) => {
-    const res = await fetch('/api/admin/dealer-apps', {
+    const res = await authedFetch('/api/admin/dealer-apps', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ id: app.id, action: 'approve' }),
@@ -257,7 +258,7 @@ export function useDealerApplications() {
   };
 
   const rejectApp = async (appId, reason) => {
-    const res = await fetch('/api/admin/dealer-apps', {
+    const res = await authedFetch('/api/admin/dealer-apps', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ id: appId, action: 'reject', reason }),

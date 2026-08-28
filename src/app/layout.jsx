@@ -1,20 +1,30 @@
 import './globals.css';
 import PasswordGate from '@/components/PasswordGate';
+import { isSiteGated } from '@/lib/siteGate';
+
+// Evaluated on the server at build/render time. Single source of truth for
+// whether the pre-launch password wall is up — see src/lib/siteGate.js.
+const GATED = isSiteGated();
 
 export const metadata = {
   title: 'FlightSales.com.au | Australia\'s Aircraft Marketplace',
   description: 'Browse and list aircraft for sale across Australia. FlightSales connects buyers with aviation businesses and private sellers.',
   keywords: 'aircraft for sale, planes for sale australia, aviation marketplace, buy aircraft, sell aircraft, cessna, cirrus, piper, helicopter',
-  robots: {
-    index: true,
-    follow: true,
-    googleBot: {
-      index: true,
-      follow: true,
-      'max-image-preview': 'large',
-      'max-snippet': -1,
-    },
-  },
+  // While the password wall is up there is nothing behind it a crawler can
+  // reach, so indexing would only ever cache the gate itself. Flip to
+  // indexable automatically the moment the gate comes down.
+  robots: GATED
+    ? { index: false, follow: false }
+    : {
+        index: true,
+        follow: true,
+        googleBot: {
+          index: true,
+          follow: true,
+          'max-image-preview': 'large',
+          'max-snippet': -1,
+        },
+      },
   openGraph: {
     title: 'FlightSales.com.au | Buy & Sell Aircraft',
     description: 'Australia\'s aircraft marketplace for dealer and private listings.',
@@ -60,7 +70,7 @@ export default function RootLayout({ children }) {
         )}
       </head>
       <body>
-        <PasswordGate>
+        <PasswordGate enabled={GATED}>
           {children}
         </PasswordGate>
       </body>

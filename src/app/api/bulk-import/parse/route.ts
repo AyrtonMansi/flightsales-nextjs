@@ -14,6 +14,7 @@ import { NextResponse, type NextRequest } from 'next/server';
 import { createClient, type User } from '@supabase/supabase-js';
 import { parseCsv, rowsToListings, type PreviewListingRow } from '../../../../lib/csv';
 import { MODELS_SEED } from '../../../../lib/aircraftCatalogueSeed';
+import { getBearerUser } from '../../../../lib/serverAuth';
 
 interface CatalogueModel {
   slug: string;
@@ -69,12 +70,7 @@ async function authoriseDealer(req: NextRequest): Promise<AuthContext | null> {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const anon = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
   if (!url || !anon) return null;
-  const cookieHeader = req.headers.get('cookie') || '';
-  const userClient = createClient(url, anon, {
-    auth: { persistSession: false, autoRefreshToken: false },
-    global: { headers: { cookie: cookieHeader } },
-  });
-  const { data: { user } } = await userClient.auth.getUser();
+  const user = await getBearerUser(req);
   if (!user) return null;
   // Look up role via service role so the user's RLS doesn't fight us.
   const service = process.env.SUPABASE_SERVICE_ROLE_KEY;

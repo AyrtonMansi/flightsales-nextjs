@@ -21,6 +21,7 @@
 
 import { NextResponse, type NextRequest } from 'next/server';
 import { createClient, type SupabaseClient, type User } from '@supabase/supabase-js';
+import { getBearerUser } from '../../../lib/serverAuth';
 
 export const runtime = 'nodejs';
 
@@ -59,12 +60,7 @@ async function authoriseSelf(req: NextRequest): Promise<AuthContext | null> {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const anon = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
   if (!url || !anon) return null;
-  const cookieHeader = req.headers.get('cookie') || '';
-  const userClient = createClient(url, anon, {
-    auth: { persistSession: false, autoRefreshToken: false },
-    global: { headers: { cookie: cookieHeader } },
-  });
-  const { data: { user } } = await userClient.auth.getUser();
+  const user = await getBearerUser(req);
   if (!user) return null;
   const service = process.env.SUPABASE_SERVICE_ROLE_KEY;
   if (!service) return null;

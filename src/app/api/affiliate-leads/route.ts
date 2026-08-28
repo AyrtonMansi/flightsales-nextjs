@@ -14,6 +14,7 @@ import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 import { sendEmail } from '../../../lib/email';
 import { rateLimit, callerIp } from '../../../lib/ratelimit';
 import { assertSafeOutboundUrl } from '../../../lib/ssrfGuard';
+import { getBearerUserId } from '../../../lib/serverAuth';
 
 export const runtime = 'nodejs';
 
@@ -56,20 +57,8 @@ export async function POST(req: NextRequest) {
   const message     = clean(body.message, 2000);
   // Derive the user_id from the auth cookie, not the body — preserves
   // accurate attribution even if the client tampers with the payload.
-  let userId: string | null = null;
-  try {
-    const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-    const anon = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-    if (url && anon) {
-      const cookieHeader = req.headers.get('cookie') || '';
-      const userClient = createClient(url, anon, {
-        auth: { persistSession: false, autoRefreshToken: false },
-        global: { headers: { cookie: cookieHeader } },
-      });
-      const { data: { user } } = await userClient.auth.getUser();
-      userId = user?.id || null;
-    }
-  } catch { /* anon caller — leave userId null */ }
+  // Anonymous callers are allowed here — they just get a null attribution.
+  const userId: string | null = await getBearerUserId(req);
 
   // listingId is a UUID string (matches the schema fix that made
   // affiliate_leads.listing_id a UUID, not an INTEGER).

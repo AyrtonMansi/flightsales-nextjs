@@ -1,5 +1,6 @@
 'use client';
 import { useRef, useState } from 'react';
+import { authedFetch } from '../../lib/authedFetch';
 
 // Bulk-import flow for dealer dashboards. Three states:
 //   1. Drop zone — paste CSV or upload a file
@@ -47,7 +48,7 @@ export default function BulkImportTab({ user }) {
     setParseError('');
     setPhase('parsing');
     try {
-      const r = await fetch('/api/bulk-import/parse', {
+      const r = await authedFetch('/api/bulk-import/parse', {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
         body: JSON.stringify({ csv }),
@@ -87,7 +88,7 @@ export default function BulkImportTab({ user }) {
     if (selected.length === 0) return;
     setPhase('submitting');
     try {
-      const r = await fetch('/api/bulk-import/submit', {
+      const r = await authedFetch('/api/bulk-import/submit', {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
         body: JSON.stringify({

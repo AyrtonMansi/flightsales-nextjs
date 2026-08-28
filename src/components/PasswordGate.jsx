@@ -2,20 +2,30 @@
 
 import { useState, useEffect } from 'react';
 
-export default function PasswordGate({ children }) {
+// `enabled` is decided on the server (src/lib/siteGate.js) and passed in by
+// the root layout. This component deliberately reads NO env var itself —
+// the previous version checked NEXT_PUBLIC_SITE_PASSWORD_PROTECTED while
+// the API route checked SITE_PASSWORD_PROTECTED, so the two could disagree
+// and the documented launch procedure left the wall up for real visitors.
+export default function PasswordGate({ children, enabled = true }) {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
-  const [isLoading, setIsLoading] = useState(true);
+  // When the gate is off there is nothing to look up, so skip the loading
+  // state entirely — otherwise every visitor gets a full-screen black
+  // "Loading…" flash on first paint of every cold load.
+  const [isLoading, setIsLoading] = useState(enabled);
 
   useEffect(() => {
-    // Check if already authenticated
-    const auth = sessionStorage.getItem('fs_site_auth');
-    if (auth === 'true') {
-      setIsAuthenticated(true);
-    }
+    if (!enabled) return;
+    // sessionStorage can throw in private mode / when site data is blocked.
+    try {
+      if (sessionStorage.getItem('fs_site_auth') === 'true') {
+        setIsAuthenticated(true);
+      }
+    } catch { /* treat as not authenticated */ }
     setIsLoading(false);
-  }, []);
+  }, [enabled]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -31,8 +41,10 @@ export default function PasswordGate({ children }) {
       const data = await res.json();
 
       if (data.ok) {
-        sessionStorage.setItem('fs_site_auth', 'true');
+        try { sessionStorage.setItem('fs_site_auth', 'true'); } catch { /* non-fatal */ }
         setIsAuthenticated(true);
+      } else if (res.status === 429) {
+        setError('Too many attempts. Wait a minute and try again.');
       } else {
         setError('Incorrect password');
       }
@@ -41,10 +53,8 @@ export default function PasswordGate({ children }) {
     }
   };
 
-  // Don't show gate if password protection is explicitly disabled
-  if (process.env.NEXT_PUBLIC_SITE_PASSWORD_PROTECTED === 'false') {
-    return children;
-  }
+  // Gate disabled server-side — render the site with no flash, no fetch.
+  if (!enabled) return children;
 
   if (isLoading) {
     return (
