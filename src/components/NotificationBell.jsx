@@ -3,9 +3,6 @@ import { useEffect, useRef, useState } from 'react';
 import { useNotifications } from '../lib/hooks';
 import { Icons } from './Icons';
 
-// Bell icon + dropdown panel. Sits in the desktop nav for signed-in
-// users. Mobile users can see notifications in the dashboard's Messages
-// tab (deferred — bell is desktop-only for v1).
 export default function NotificationBell({ user, setPage }) {
   const { items, unreadCount, markRead, markAllRead } = useNotifications(user?.id);
   const [open, setOpen] = useState(false);
@@ -22,12 +19,11 @@ export default function NotificationBell({ user, setPage }) {
   const handleItemClick = async (n) => {
     if (!n.read_at) await markRead(n.id);
     setOpen(false);
-    if (n.link) {
-      // Best-effort routing — most links are /dashboard or /listings/:id
-      if (typeof window !== 'undefined') window.location.href = n.link;
-    } else {
-      setPage?.('dashboard');
+    if (n.link && typeof window !== 'undefined') {
+      window.location.assign(n.link);
+      return;
     }
+    setPage?.('dashboard');
   };
 
   return (
@@ -50,7 +46,7 @@ export default function NotificationBell({ user, setPage }) {
             )}
           </div>
           {items.length === 0 ? (
-            <div className="fs-bell-empty">You're all caught up.</div>
+            <div className="fs-bell-empty">You&apos;re all caught up.</div>
           ) : (
             <div className="fs-bell-list">
               {items.slice(0, 12).map(n => (
