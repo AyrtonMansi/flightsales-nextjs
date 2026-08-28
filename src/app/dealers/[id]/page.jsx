@@ -16,12 +16,20 @@ function makeServerClient() {
 async function fetchDealer(id) {
   const supabase = makeServerClient();
   if (!supabase) return null;
-  const { data } = await supabase
-    .from('dealers')
-    .select('*')
-    .eq('id', id)
-    .maybeSingle();
-  return data;
+  // See the note in listings/[id]: a network-level rejection here would
+  // crash the Server Component and 500 the dealer page rather than
+  // degrading to the not-found state.
+  try {
+    const { data } = await supabase
+      .from('dealers')
+      .select('*')
+      .eq('id', id)
+      .maybeSingle();
+    return data;
+  } catch (err) {
+    console.error('[fetchDealer]', err?.message);
+    return null;
+  }
 }
 
 export async function generateMetadata({ params }) {

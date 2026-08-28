@@ -27,6 +27,12 @@ export async function POST(req) {
   try { body = await req.json(); } catch { return NextResponse.json({ ok: false }, { status: 400 }); }
   const { aircraftId } = body || {};
   if (!aircraftId) return NextResponse.json({ ok: false, error: 'missing_aircraftId' }, { status: 400 });
+  // Must be a UUID. Without this any string reached the DB, and the
+  // read-modify-write fallback below would happily churn on junk input.
+  if (typeof aircraftId !== 'string' ||
+      !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(aircraftId)) {
+    return NextResponse.json({ ok: false, error: 'invalid_aircraftId' }, { status: 400 });
+  }
 
   // Cookie-deduplicate. The `fs_v_` cookie holds a comma-separated list
   // of aircraft ids the user has viewed today. Trimmed to last 200 to

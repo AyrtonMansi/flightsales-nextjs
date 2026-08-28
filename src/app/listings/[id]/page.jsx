@@ -21,12 +21,21 @@ function makeServerClient() {
 async function fetchListing(id) {
   const supabase = makeServerClient();
   if (!supabase) return null;
-  const { data } = await supabase
-    .from('aircraft')
-    .select(`*, dealer:dealers(id, name, location, rating, verified)`)
-    .eq('id', id)
-    .maybeSingle();
-  return data;
+  // A network-level failure (timeout, DNS, Supabase outage) rejects rather
+  // than resolving with an `error` field, which would crash this Server
+  // Component and 500 the whole listing page. Degrade to null instead — the
+  // page already renders a graceful "not found" state for that case.
+  try {
+    const { data } = await supabase
+      .from('aircraft')
+      .select(`*, dealer:dealers(id, name, location, rating, verified)`)
+      .eq('id', id)
+      .maybeSingle();
+    return data;
+  } catch (err) {
+    console.error('[fetchListing]', err?.message);
+    return null;
+  }
 }
 
 export async function generateMetadata({ params }) {

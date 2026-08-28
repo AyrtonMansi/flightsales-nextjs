@@ -1,5 +1,6 @@
 import { supabase } from '@/lib/supabase';
 import { rateLimit, callerIp } from '@/lib/ratelimit';
+import { adminClient } from '@/lib/requireAdmin';
 
 // CASA Aircraft Register scraper with caching
 export async function GET(request) {
@@ -91,12 +92,24 @@ export async function GET(request) {
       );
     }
 
-    // Cache the result
-    await supabase.from('casa_cache').insert({
-      rego,
-      data,
-      cached_at: new Date().toISOString()
-    });
+    // Cache the result. Written with the service-role client so the
+    // casa_cache INSERT policy can be locked down to service_role only.
+    // It previously granted INSERT to any `authenticated` user (despite
+    // being named "Service role can insert"), which let any signed-up
+    // user pre-poison the cache for a rego someone else was about to
+    // list — the /sell form auto-fills make/model/MTOW straight from
+    // whatever is cached here. Cache writes are best-effort: a failure
+    // must not break the lookup we just performed for the user.
+    try {
+      const writer = adminClient();
+      if (writer) {
+        await writer.from('casa_cache').insert({
+          rego,
+          data,
+          cached_at: new Date().toISOString(),
+        });
+      }
+    } catch { /* cache write is non-critical */ }
 
     return Response.json(
       {
