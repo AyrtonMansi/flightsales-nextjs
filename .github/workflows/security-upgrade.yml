@@ -21,10 +21,11 @@ jobs:
           node-version: 20
           cache: npm
       - run: npm ci
-      - name: Move to supported patched Next.js line
+      - name: Move to patched Active-LTS framework line
         run: |
-          npm install --save-exact next@15.5.24 react@19.2.0 react-dom@19.2.0 @vercel/og@1.0.0
-          npm install --save-dev --save-exact eslint-config-next@15.5.24 @types/react@19 @types/react-dom@19
+          npm install --save-exact next@16.3.3 react@19.2.0 react-dom@19.2.0 @vercel/og@1.0.0
+          npm install --save-dev --save-exact eslint@9 eslint-config-next@16.3.3 @types/react@19 @types/react-dom@19
+          npm pkg set scripts.lint="eslint src"
           npm audit fix --omit=dev || true
       - name: Verify production dependency audit
         run: npm audit --omit=dev --audit-level=high
@@ -36,6 +37,6 @@ jobs:
           if git diff --cached --quiet; then
             echo "No dependency changes"
           else
-            git commit -m "Upgrade supported production dependencies"
+            git commit -m "Upgrade to patched Next.js active LTS"
             git push origin HEAD:main
           fi
