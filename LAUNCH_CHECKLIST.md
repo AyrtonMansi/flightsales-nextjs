@@ -1,4 +1,16 @@
-# Launch checklist
+# Launch checklist (superseded — see LAUNCH.md)
+
+> ⚠️ **`LAUNCH.md` is the authoritative go-live runbook.** Follow that one.
+>
+> This file predates several changes and is kept only for its detailed
+> third-party setup walkthroughs (Resend DNS, Upstash, Turnstile), which are
+> still accurate. Where the two disagree, LAUNCH.md wins.
+>
+> Specifically, this file does **not** cover: the five pending SQL migrations
+> in `supabase/migrations/` (one of which closes a live data-exposure hole),
+> the two secrets that need rotating because they were committed to git
+> history, or the fact that Turnstile and Upstash now fail closed in
+> production rather than silently disabling themselves.
 
 Operational steps to flip FlightSales from "deployable code" to "live business".
 Wave A code is shipped — these are the human/console steps to activate it.

@@ -1,171 +1,213 @@
-# Launch checklist — what's left for FlightSales.com.au
+# Go-live runbook — FlightSales.com.au
 
-This file documents the state of the codebase right now (May 2026) and the
-exact ops work outstanding to flip the site live for real users.
+Last reviewed: 2026-08-20.
 
-> What I (Claude) verified from inside this repo
-> - `npm run build`     — clean, all 14 routes prerender or stream cleanly
-> - `npm run lint`      — clean (3 pre-existing warnings, none blocking)
-> - `npm run test:e2e`  — 19/19 unit + HTTP smoke tests pass; browser tests
->   need `npx playwright install chromium` locally to run
-> - All 13 tables the code references exist in `supabase/schema.sql`
-> - Every public route returns 200 against `next dev`
-> - Every API route validates input + gates auth correctly
->
-> ✅ COMPLETED (Sat 2026-05-02)
-> - Vercel deployment fixed — redeployed from correct GitHub repo
-> - Supabase schema applied — 13 tables + storage bucket created
-> - Vercel env vars updated with correct Supabase project ref (gztdahwsfwybpzqcegty)
->
-> What I cannot verify from here (you must check on the live deploy)
-> - Resend domain verification
-> - DNS pointing flightsales.com.au at Vercel
+This is the ordered procedure to take the site from password-gated to
+publicly live, plus the things that must be true before you do.
 
 ---
 
-## 1. ✅ Apply the latest schema migration — DONE
+## 🔴 Do this first: rotate two secrets
 
-Schema has been applied successfully. Verified:
-- **13 tables** in public schema
-- **aircraft-images bucket** exists and is public
+A previous version of this file had live values for `CRON_SECRET` and
+`INTERNAL_API_TOKEN` pasted into it, and that file is in the git history
+(commit `6a470d9`). Deleting them from the working copy does **not** remove
+them from history — anyone who can read the repo can still read them.
 
-If you need to re-run: `supabase/schema.sql` is idempotent (`CREATE TABLE IF NOT EXISTS`, `ADD COLUMN IF NOT EXISTS`, `ON CONFLICT DO NOTHING`).
+Generate new ones and update them in Vercel before launch:
+
+```bash
+openssl rand -hex 32   # CRON_SECRET
+openssl rand -hex 32   # INTERNAL_API_TOKEN
+```
+
+`CRON_SECRET` is the only thing standing between the public internet and
+your three cron endpoints (expire-listings, saved-search-digest,
+onboarding-emails). `INTERNAL_API_TOKEN` bypasses the admin auth gate.
+
+Also change `SITE_PASSWORD` if you care about the pre-launch gate — the
+current value is likewise in the history.
 
 ---
 
-## 2. ✅ Vercel environment variables — DONE
+## 1. Apply the pending SQL migrations
 
-✅ All required env vars set:
-- `NEXT_PUBLIC_SUPABASE_URL` = `https://gztdahwsfwybpzqcegty.supabase.co`
-- `NEXT_PUBLIC_SUPABASE_ANON_KEY` = set
-- `NEXT_PUBLIC_SITE_URL` = `https://flightsales.com.au`
-- `SUPABASE_SERVICE_ROLE_KEY` = set
-- `EMAIL_FROM` = `FlightSales <noreply@flightsales.com.au>`
-- `EMAIL_REPLY_TO` = `support@flightsales.com.au`
-- `EMAIL_BCC_ADMIN` = `ayrton@flightsales.com.au`
-- `CRON_SECRET` = set
-- `INTERNAL_API_TOKEN` = set
-- `SITE_PASSWORD_PROTECTED` = `true`
-- `SITE_PASSWORD` = `flightsales2026`
+`supabase/schema.sql` is already applied. Since then, five migration files
+have landed in `supabase/migrations/`. Paste each into the Supabase SQL
+editor, oldest first, and confirm it succeeds:
 
-❌ Still need to add:
+| File | What it does | Severity |
+|---|---|---|
+| `2026_05_12_signup_metadata.sql` | signup metadata trigger | — |
+| `2026_05_13_maintainability_pass.sql` | profile column-lock rewrite + 2 missing indexes | perf |
+| `2026_08_20_affiliates_public_view.sql` | **stops serving partner API secrets to anonymous visitors** | 🔴 security |
+| `2026_08_20_enquiry_status_pipeline.sql` | widens `enquiries.status` to the values the UI actually writes | 🟠 broken feature |
+| `2026_08_20_views_and_casa_cache.sql` | adds the missing `increment_view_count()`; closes CASA cache poisoning | 🟠 security/perf |
 
-| Name | Where it comes from |
+The affiliates one is the important one. Until it runs, every logged-out
+visitor to `/partners` receives each active partner's
+`api_credential_secret`, `lead_webhook_url`, `commission_pct`,
+`contract_url` and `contact_email` in the page's network response. The
+application code already reads from the restricted view, so running this
+migration is what actually closes the hole.
+
+They're all idempotent — safe to re-run.
+
+---
+
+## 2. Environment variables
+
+### Required — the site is broken without these
+
+| Name | Notes |
 |---|---|
-| `RESEND_API_KEY` | Resend → API Keys (needed for transactional email) |
-| `NEXT_PUBLIC_FS_ABN` | your ABN (shown on legal pages) |
+| `NEXT_PUBLIC_SUPABASE_URL` | ✅ set |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | ✅ set |
+| `SUPABASE_SERVICE_ROLE_KEY` | ✅ set |
+| `NEXT_PUBLIC_SITE_URL` | ✅ set |
+| `CRON_SECRET` | ✅ set — **rotate, see above** |
+| `INTERNAL_API_TOKEN` | ✅ set — **rotate, see above** |
+| `RESEND_API_KEY` | ❌ **still needed** — no transactional email without it |
+| `EMAIL_FROM` / `EMAIL_REPLY_TO` / `EMAIL_BCC_ADMIN` | ✅ set |
+| `NEXT_PUBLIC_FS_ABN` | ❌ **still needed** — shown on the legal pages |
 
-Optional but recommended:
+### Required *in production* — these now fail closed
+
+Both of these used to fail **open**, which meant a missing variable
+silently disabled a security control instead of announcing itself. They
+now refuse the request instead. That's deliberate, but it does mean a
+missing value is a hard outage on the affected forms rather than a quiet
+downgrade — so set them before launch:
+
+| Name | If missing in production |
+|---|---|
+| `TURNSTILE_SECRET_KEY` + `NEXT_PUBLIC_TURNSTILE_SITE_KEY` | every enquiry, contact, report and partner-lead submission is rejected |
+| `UPSTASH_REDIS_REST_URL` + `UPSTASH_REDIS_REST_TOKEN` | public write routes return 503 (`abuse_protection_unavailable`) |
+
+Turnstile: cloudflare.com → Turnstile → add site → copy both keys.
+Upstash: upstash.com → create a Redis database → REST URL + token.
+
+### Optional
 
 | Name | Why |
 |---|---|
-| `NEXT_PUBLIC_TURNSTILE_SITE_KEY` + `TURNSTILE_SECRET_KEY` | spam protection on contact / enquiry / signup |
-| `UPSTASH_REDIS_REST_URL` + `UPSTASH_REDIS_REST_TOKEN` | rate limiting on POST routes |
-| `NEXT_PUBLIC_SENTRY_DSN` | error tracking |
-| `NEXT_PUBLIC_PLAUSIBLE_DOMAIN` | analytics |
+| `NEXT_PUBLIC_SENTRY_DSN` | error tracking (the app posts to Sentry's store API directly) |
+| `NEXT_PUBLIC_PLAUSIBLE_DOMAIN` | privacy-friendly analytics |
+| `ABR_GUID` | ABN verification for dealer accounts; route 503s without it |
 
-After adding env vars → **Redeploy**. Vercel doesn't hot-reload them.
-
----
-
-## 3. ✅ Pre-launch protection — DONE
-
-The site is password-protected and blocked from search engines:
-- **Password gate**: All visitors must enter `flightsales2026` to access
-- **robots.txt**: `Disallow: /` blocks all crawlers
-- **Meta tags**: `noindex, nofollow` on all pages
-
-To remove protection when ready to launch:
-1. Set `SITE_PASSWORD_PROTECTED=false` in Vercel env vars
-2. Revert `robots.txt` to allow crawling
-3. Remove `noindex` meta tags from layout
-
-## 4. Resend domain verification
-
-If not done already:
-
-1. https://resend.com → sign up.
-2. Add domain `flightsales.com.au`.
-3. Add the DNS records they show (SPF + DKIM + return-path).
-4. Wait for "Verified". Until verified, `EMAIL_FROM` must use Resend's
-   sandbox `onboarding@resend.dev` and only the email you registered with
-   can receive mail.
-
-Without this, **no transactional email goes out** — buyers/sellers won't
-get enquiry replies, dealer applications won't trigger approval emails,
-the password-reset link relies on Supabase's default sender (which works
-but looks unprofessional).
+After changing env vars, **redeploy** — Vercel does not hot-reload them,
+and several are read at build time.
 
 ---
 
-## 5. Domain → Vercel
+## 3. Resend domain verification
 
-Vercel project → Settings → Domains → add `flightsales.com.au` and
-`www.flightsales.com.au`. Update DNS at your registrar per Vercel's
-instructions. Wait for SSL provisioning (~minutes).
+1. resend.com → add domain `flightsales.com.au`
+2. Add the SPF + DKIM + return-path DNS records they show
+3. Wait for **Verified**
 
-**Note**: Keep the site password-protected until you're ready to launch publicly.
+Until verified, `EMAIL_FROM` must use Resend's sandbox
+`onboarding@resend.dev`, and only the address you signed up with can
+receive mail. Without it: no enquiry notifications, no dealer-approval
+emails, no onboarding sequence.
 
 ---
 
-## 6. Make yourself admin
+## 4. Domain → Vercel
 
-Once you've signed up with your real email:
+Project → Settings → Domains → add `flightsales.com.au` and
+`www.flightsales.com.au`, update DNS at the registrar, wait for SSL.
+
+Safe to do while still password-gated.
+
+---
+
+## 5. Make yourself admin
+
+After signing up with your real email:
 
 ```sql
-update profiles set role = 'admin'
-where email = 'you@flightsales.com.au';
+update profiles set role = 'admin' where email = 'you@flightsales.com.au';
 ```
 
-Sign out + back in. `/admin` becomes reachable, and Nav auto-redirects
-admin users away from `/dashboard`.
+Sign out and back in.
 
 ---
 
-## 7. Cron jobs
+## 6. Confirm cron jobs
 
-Vercel automatically registers them from `vercel.json`. After deploy:
-- Vercel project → **Cron Jobs** tab → confirm 3 entries:
-  - `/api/cron/expire-listings` 09:00 UTC daily
-  - `/api/cron/saved-search-digest` 09:30 UTC daily
-  - `/api/cron/onboarding-emails` 10:00 UTC daily
-- Click each → **Run now** → confirm 200 in logs.
+Vercel registers these from `vercel.json`. Project → **Cron Jobs**:
+
+- `/api/cron/expire-listings` — 09:00 UTC daily
+- `/api/cron/saved-search-digest` — 09:30 UTC daily
+- `/api/cron/onboarding-emails` — 10:00 UTC daily
+
+Hit **Run now** on each and confirm a 200. They fail closed if
+`CRON_SECRET` is unset, so a 401 here means the env var didn't take.
 
 ---
 
-## 8. Pre-launch smoke test (do this on the real domain)
+## 7. Smoke test — while still gated
 
-Run through in order:
+Do this on the real domain with the password wall still up.
 
-1. **Sign up** with a real email at `/login` → confirm email arrives → click
-   link → land on dashboard.
-2. **Edit profile** → save → reload → persists.
-3. **Upload a test listing** with photos → submit.
-4. As admin (`/admin`), approve it.
-5. Open the listing as **anonymous** (incognito) → see it on `/buy` and
-   `/listings/[id]`.
-6. **Send an enquiry** → both buyer and seller receive emails.
-7. **Save** the listing → appears on the dashboard's Saved tab.
-8. From admin's **Cron Jobs** tab → fire each cron → check logs are clean.
-9. Visit `/admin` → all 7 tabs load, no console errors.
+1. Sign up with a real email → confirmation email arrives → click it →
+   land on the dashboard **signed in**
+2. Sign in with Google → land on the dashboard signed in
+3. Edit profile → save → reload → persists
+4. Create a listing with photos → submit
+5. As admin, approve it in `/admin`
+6. In an incognito window, find it on `/buy` and open `/listings/[id]`
+7. Send an enquiry → both buyer and seller receive email
+8. Save the listing → it appears under Saved
+9. In `/admin`: approve, unpublish, and feature a listing — confirm each
+   does what its label says, and that the Audit tab shows readable rows
+10. Report a listing → captcha appears → submit → ops inbox receives it
 
-If any step fails, paste the failing screen + the browser console error
-into the next session.
+Steps 1, 2 and 9 are the ones worth being fussy about — all three were
+broken until recently and are easy to regress.
 
-### Quick verification commands
+---
+
+## 8. Go live
+
+**One environment variable:**
+
+```
+SITE_PASSWORD_PROTECTED=false
+```
+
+Redeploy. That single change simultaneously:
+
+- removes the password wall for visitors
+- flips the site's robots meta from `noindex, nofollow` to `index, follow`
+- switches `robots.txt` from `Disallow: /` to the real crawl rules
+- starts advertising `sitemap.xml`
+
+There is nothing else to revert by hand. (This used to be a three-step
+manual process where the documented step didn't actually work — the gate
+read a different variable than the one this file told you to set, so
+following the runbook left the wall up for real users while the API
+accepted any password.)
+
+Verify immediately after the redeploy:
 
 ```bash
-# Check site loads
-curl -s https://flightsales-nextjs.vercel.app | head -5
-
-# Check API responds (RLS error expected without auth)
-curl -s -X POST https://flightsales-nextjs.vercel.app/api/contact \
-  -H "Content-Type: application/json" \
-  -d '{"name":"Test","email":"test@test.com","message":"Test"}'
-
-# Should return: {"ok":false,"error":"db_insert_failed",...}
-# (This means DB is connected but RLS blocks anonymous inserts)
+curl -s https://flightsales.com.au | grep -c "Coming soon"   # expect 0
+curl -s https://flightsales.com.au/robots.txt                # expect Allow: /
+curl -s https://flightsales.com.au | grep -o 'name="robots" content="[^"]*"'
 ```
+
+To put the wall back up, set it to `true` (or remove it — it defaults to
+protected) and redeploy.
+
+---
+
+## 9. After launch
+
+- Submit `https://flightsales.com.au/sitemap.xml` in Google Search Console
+- Watch Sentry (or the function logs) for the first hour
+- Check Resend's dashboard for bounces on the first real enquiries
 
 ---
 
@@ -173,30 +215,18 @@ curl -s -X POST https://flightsales-nextjs.vercel.app/api/contact \
 
 ### CASA rego lookup on `/sell`
 
-The current implementation uses headless Chromium via `playwright-core`,
-which doesn't ship with Vercel serverless functions. The route detects
-the missing executable and returns a `503 { available: false }` so the
-SellPage falls back to manual entry **without** showing a scary error.
+Uses headless Chromium via `playwright-core`, which doesn't ship with
+Vercel serverless functions. The route detects the missing executable and
+returns `503 { available: false }`, and the sell form falls back to manual
+entry without showing an error.
 
-This means: **users can list aircraft normally**, but the rego auto-fill
-feature is silently disabled in production until we either:
+Users can list aircraft normally; only the rego auto-fill is disabled.
+Fixing it properly means replacing the scraper with a fetch-based lookup
+rather than bundling a 50 MB Chromium.
 
-  a. Switch to `@sparticuz/chromium-min` (heavy, ~50 MB cold start), or
-  b. Replace the scraper with a fetch-based lookup against a CASA JSON
-     endpoint (lighter, faster, but requires reverse-engineering or
-     CASA's official API access).
+### Verification status of this document
 
-Option (b) is the better long-term move and is tracked in the next
-sprint.
-
----
-
-## Generated secrets (rotate before paste-into-Vercel)
-
-```
-CRON_SECRET=8c4161ec0d6e4a9cbad0e4cf2667ba4e544847939eb88737246af66da682a4ff
-INTERNAL_API_TOKEN=8547722bede062de5e554b29c6404b1771761a2a7e2138b35d519fe306fb0ea4
-```
-
-These were generated locally just now. Either paste directly or run
-`openssl rand -hex 32` twice to roll your own.
+`npm run build`, `npx tsc --noEmit` and the full Playwright suite (166
+tests) all pass in CI as of the date at the top. Everything under
+"Environment variables", Resend verification and DNS are external systems
+that can only be confirmed on the live deployment.
