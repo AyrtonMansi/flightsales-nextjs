@@ -1,0 +1,102 @@
+/* Route-scoped mobile compaction for /buy.
+   Keep one clear page title, one search row and one result toolbar before
+   inventory. Desktop retains breadcrumbs and supporting context. */
+
+@media (max-width: 768px) {
+  /* On /buy, "Home > Buy Aircraft" repeats the page title and consumes a
+     valuable line above the marketplace. This stylesheet is loaded only by
+     the /buy route, so the adjacent container is safely the breadcrumb row. */
+  .fs-mobile-subbar + .fs-container {
+    display: none;
+  }
+
+  /* Secondary sell action remains available, but should read as a compact
+     utility strip rather than another page header. */
+  .fs-mobile-subbar {
+    min-height: 42px !important;
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+  }
+
+  .fs-mobile-subbar-link {
+    min-height: 42px !important;
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+    font-size: 13px !important;
+  }
+
+  /* The first child of the buy main column is the page heading block. */
+  .fs-buy-main > div:first-child {
+    padding: 12px 0 10px !important;
+    margin-bottom: 10px !important;
+    border-bottom: 0 !important;
+  }
+
+  .fs-buy-main > div:first-child h1 {
+    font-size: 28px !important;
+    line-height: 1.08 !important;
+    margin: 0 !important;
+    letter-spacing: -0.025em !important;
+  }
+
+  /* "Browse active dealer and private listings" repeats what the title and
+     marketplace already communicate. Remove it on the constrained surface. */
+  .fs-buy-main > div:first-child p {
+    display: none !important;
+  }
+
+  .fs-buy-main-search {
+    gap: 10px !important;
+    margin-bottom: 8px !important;
+    padding-bottom: 0 !important;
+  }
+
+  .fs-buy-search-input-wrap,
+  .fs-mobile-filter-btn {
+    min-height: 48px !important;
+    height: 48px !important;
+  }
+
+  .fs-buy-search-input-wrap {
+    border-radius: 12px !important;
+  }
+
+  .fs-search-inline-input {
+    font-size: 15px !important;
+  }
+
+  .fs-mobile-filter-btn {
+    padding: 0 16px !important;
+    border-radius: 999px !important;
+    white-space: nowrap;
+  }
+
+  /* Active chips stay immediately actionable but no longer create a large
+     dead band above the result count. */
+  .fs-chips {
+    padding-top: 2px !important;
+    padding-bottom: 8px !important;
+    gap: 6px !important;
+  }
+
+  .fs-buy-main-toolbar {
+    min-height: 52px !important;
+    padding: 8px 0 10px !important;
+    margin-top: 0 !important;
+    margin-bottom: 12px !important;
+  }
+
+  .fs-results-count {
+    line-height: 1.2 !important;
+  }
+
+  .fs-results-count > span:first-child {
+    font-size: 20px !important;
+  }
+
+  /* Empty/results content should start closer to the controls. */
+  .fs-buy-main-toolbar + [role="alert"],
+  .fs-buy-main-toolbar + .fs-grid {
+    margin-top: 0 !important;
+  }
+}
