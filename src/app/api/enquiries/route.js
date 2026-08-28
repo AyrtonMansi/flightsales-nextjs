@@ -1,14 +1,5 @@
 // POST /api/enquiries
-// Records a buyer enquiry against a listing AND fires two emails:
-//   1) seller — "you've got an enquiry"
-//   2) buyer  — auto-reply confirming the message went through
-// Plus an in-app notification row for the seller's bell.
-//
-// This route exists instead of letting the client write directly to the
-// enquiries table because the email + notification triggers need server
-// context (Resend API key, Supabase service role for the cross-user
-// notification insert). The client-side submitEnquiry helper still
-// works for back-compat but new callers should hit this route.
+// Persists a buyer enquiry, notifies the seller and sends a buyer receipt.
 
 import { NextResponse } from 'next/server';
 import { sendEmail } from '../../../lib/email';
@@ -18,126 +9,109 @@ import { adminClient } from '../../../lib/requireAdmin';
 
 export const runtime = 'nodejs';
 
-export async function POST(req) {
-  // Per-IP rate limit: 10 enquiries / hour. Pre-CAPTCHA so bots that
-  // skip Turnstile still get throttled.
-  const ip = callerIp(req);
-  const rl = await rateLimit(`enquiries:${ip}`, { limit: 10, windowMs: 60 * 60 * 1000 });
-  if (!rl.ok) {
-    return NextResponse.json({ ok: false, error: 'rate_limited' }, {
-      status: 429,
-      headers: { 'Retry-After': String(rl.retryAfter) },
+function limitedResponse(rl) {
+  if (rl.unavailable) {
+    return NextResponse.json({ ok: false, error: 'abuse_protection_unavailable' }, {
+      status: 503,
+      headers: { 'Retry-After': String(rl.retryAfter || 60) },
     });
   }
+  return NextResponse.json({ ok: false, error: 'rate_limited' }, {
+    status: 429,
+    headers: { 'Retry-After': String(rl.retryAfter || 60) },
+  });
+}
+
+export async function POST(req) {
+  const ip = callerIp(req);
+  const rl = await rateLimit(`enquiries:${ip}`, { limit: 10, windowMs: 60 * 60 * 1000 });
+  if (!rl.ok) return limitedResponse(rl);
 
   let body;
   try { body = await req.json(); } catch { return NextResponse.json({ ok: false, error: 'invalid_json' }, { status: 400 }); }
   const { aircraftId, name, email, phone, message, financeStatus, turnstileToken } = body || {};
 
-  // CAPTCHA — soft-no-ops in dev (no TURNSTILE_SECRET_KEY); enforced in
-  // prod once the Cloudflare key is set in Vercel env.
   if (!(await verifyTurnstileToken(turnstileToken))) {
     return NextResponse.json({ ok: false, error: 'captcha_failed' }, { status: 400 });
   }
 
-  // Minimum fields. Server-side validation only — client also checks but
-  // we don't trust that.
-  if (!aircraftId || !name || !email || !message) {
+  const cleanName = String(name || '').trim();
+  const cleanEmail = String(email || '').trim().toLowerCase();
+  const cleanPhone = String(phone || '').trim();
+  const cleanMessage = String(message || '').trim();
+  if (!aircraftId || !cleanName || !cleanEmail || !cleanMessage) {
     return NextResponse.json({ ok: false, error: 'missing_fields' }, { status: 400 });
   }
-
-  // Light anti-spam — basic email shape and length guards. Real CAPTCHA
-  // arrives via Turnstile token check (added separately). Until then,
-  // these alone reduce bot submissions by >70%.
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(cleanEmail)) {
     return NextResponse.json({ ok: false, error: 'invalid_email' }, { status: 400 });
   }
-  if (message.length > 4000 || name.length > 200) {
+  if (cleanMessage.length > 4000 || cleanName.length > 120 || cleanEmail.length > 254 || cleanPhone.length > 60) {
     return NextResponse.json({ ok: false, error: 'too_long' }, { status: 400 });
   }
 
   const supabase = adminClient();
-  if (!supabase) return NextResponse.json({ ok: false, error: 'no_db' }, { status: 500 });
+  if (!supabase) return NextResponse.json({ ok: false, error: 'no_db' }, { status: 503 });
 
-  // Validate the listing exists AND is active. Without this an attacker
-  // can spam enquiries against arbitrary UUIDs (filling up enquiries +
-  // triggering seller notifications + admin emails). Also catches
-  // typos in the client form before we send an email.
-  const { data: targetListing } = await supabase
+  const { data: listing } = await supabase
     .from('aircraft')
-    .select('id, status, user_id')
+    .select(`id, title, status, user_id, dealer_id, dealer:dealers(id, name)`)
     .eq('id', aircraftId)
     .maybeSingle();
-  if (!targetListing) {
-    return NextResponse.json({ ok: false, error: 'listing_not_found' }, { status: 404 });
-  }
-  if (targetListing.status !== 'active') {
-    return NextResponse.json({ ok: false, error: 'listing_not_available' }, { status: 410 });
-  }
+  if (!listing) return NextResponse.json({ ok: false, error: 'listing_not_found' }, { status: 404 });
+  if (listing.status !== 'active') return NextResponse.json({ ok: false, error: 'listing_not_available' }, { status: 410 });
 
-  // 1) Persist the enquiry.
   const { data: enquiry, error: enquiryErr } = await supabase
     .from('enquiries')
     .insert({
       aircraft_id: aircraftId,
-      name, email,
-      phone: phone || null,
-      message,
+      name: cleanName,
+      email: cleanEmail,
+      phone: cleanPhone || null,
+      message: cleanMessage,
       finance_status: financeStatus || null,
       status: 'new',
     })
     .select()
     .single();
   if (enquiryErr) {
-    return NextResponse.json({ ok: false, error: 'db_insert_failed', detail: enquiryErr.message }, { status: 500 });
+    console.error('[enquiries] insert failed', enquiryErr.message);
+    return NextResponse.json({ ok: false, error: 'db_insert_failed' }, { status: 500 });
   }
-
-  // 2) Look up the listing + seller's email so we know who to notify.
-  const { data: listing } = await supabase
-    .from('aircraft')
-    .select(`id, title, user_id, dealer_id, dealer:dealers(id, name)`)
-    .eq('id', aircraftId)
-    .maybeSingle();
 
   let sellerEmail = null;
   let sellerUserId = null;
-  if (listing?.user_id) {
+  if (listing.user_id) {
     sellerUserId = listing.user_id;
     const { data: profile } = await supabase
       .from('profiles')
-      .select('email, full_name')
+      .select('email')
       .eq('id', listing.user_id)
       .maybeSingle();
     sellerEmail = profile?.email || null;
   }
 
-  const aircraftTitle = listing?.title || 'your listing';
-
-  // 3) Email seller (if we have an address). Fail-soft — DB row is
-  // already in, the admin BCC will catch sends without a seller email.
+  const aircraftTitle = listing.title || 'your listing';
   if (sellerEmail) {
     await sendEmail({
       to: sellerEmail,
       template: 'enquiry.seller',
-      replyTo: email, // seller can reply directly to buyer
-      vars: { buyerName: name, buyerEmail: email, buyerPhone: phone, message, aircraftTitle, aircraftId },
+      replyTo: cleanEmail,
+      vars: { buyerName: cleanName, buyerEmail: cleanEmail, buyerPhone: cleanPhone, message: cleanMessage, aircraftTitle, aircraftId },
     });
   }
 
-  // 4) Auto-reply to buyer.
   await sendEmail({
-    to: email,
+    to: cleanEmail,
     template: 'enquiry.buyer',
-    vars: { buyerName: name, aircraftTitle, aircraftId },
+    vars: { buyerName: cleanName, aircraftTitle, aircraftId },
   });
 
-  // 5) In-app notification for the seller.
   if (sellerUserId) {
     await supabase.from('notifications').insert({
       user_id: sellerUserId,
       type: 'enquiry.received',
       title: `New enquiry on ${aircraftTitle}`,
-      body: `${name} <${email}> — ${message.slice(0, 120)}${message.length > 120 ? '…' : ''}`,
+      body: `${cleanName} <${cleanEmail}> — ${cleanMessage.slice(0, 120)}${cleanMessage.length > 120 ? '…' : ''}`,
       link: '/dashboard',
     });
   }
