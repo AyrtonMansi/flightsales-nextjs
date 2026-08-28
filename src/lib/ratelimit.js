@@ -2,9 +2,10 @@ import { createHash, createHmac } from 'node:crypto';
 
 // Distributed rate limiter for public write endpoints.
 // Upstash Redis is the production backend. Development may fall back to a
-// per-process memory bucket, but production deliberately reports an unavailable
-// limiter when Redis is missing/unreachable so callers can fail closed instead
-// of silently running without abuse protection.
+// per-process memory bucket. Production public-write routes fail closed by
+// default when Redis is missing/unreachable, while explicitly non-critical
+// gates (such as the pre-launch shared site password) may opt into a bounded
+// per-instance fallback so infrastructure failure does not lock out the site.
 
 const MEM_BUCKETS = new Map();
 
@@ -64,18 +65,23 @@ async function upstashTake(key, limit, windowMs) {
   }
 }
 
-export async function rateLimit(id, { limit = 10, windowMs = 60 * 60 * 1000 } = {}) {
+export async function rateLimit(
+  id,
+  { limit = 10, windowMs = 60 * 60 * 1000, failClosed = true } = {},
+) {
   const key = privateKey(id);
   const distributed = await upstashTake(key, limit, windowMs);
   if (distributed) return distributed;
 
-  if (process.env.NODE_ENV === 'production') {
+  if (process.env.NODE_ENV === 'production' && failClosed) {
     // Security control unavailable. Public write routes should return 503 rather
     // than become unlimited because a Redis secret was omitted or the backend
     // failed. Callers can distinguish this from a genuine 429 via unavailable.
     return { ok: false, retryAfter: 60, unavailable: true, backend: 'unavailable' };
   }
 
+  // Explicit fallback path. This is intentionally only suitable for low-risk
+  // gates because serverless instances do not share memory.
   return memTake(key, limit, windowMs);
 }
 
