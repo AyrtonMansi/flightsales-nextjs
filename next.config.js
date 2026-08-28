@@ -25,10 +25,7 @@ const contentSecurityPolicy = [
 ].join('; ') + ';';
 
 const nextConfig = {
-  eslint: { dirs: ['src'] },
-  experimental: {
-    serverComponentsExternalPackages: ['playwright-core'],
-  },
+  serverExternalPackages: ['playwright-core'],
   images: {
     remotePatterns: [
       { protocol: 'https', hostname: '**.supabase.co' },
