@@ -10,6 +10,35 @@ import { useAircraft, useFeaturedAircraft, useLatestAircraft, useDealers, useNew
 import { useRotatingPlaceholder, AI_SEARCH_EXAMPLES } from '../../lib/useRotatingPlaceholder';
 import { parseAiQuery } from '../../lib/parseAiQuery';
 
+// Buttons for the cold-start panel. min-height 48 keeps them above the 44px
+// touch-target floor on mobile, where these are the only two actions on the
+// page worth taking.
+const COLD_CTA_BASE = {
+  display: 'inline-flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  minHeight: 48,
+  padding: '0 26px',
+  borderRadius: 'var(--fs-radius)',
+  fontSize: 15,
+  fontWeight: 600,
+  letterSpacing: '-0.01em',
+  textDecoration: 'none',
+  whiteSpace: 'nowrap',
+};
+const COLD_CTA_PRIMARY = {
+  ...COLD_CTA_BASE,
+  background: 'var(--fs-ink)',
+  color: '#fff',
+  border: '1px solid var(--fs-ink)',
+};
+const COLD_CTA_SECONDARY = {
+  ...COLD_CTA_BASE,
+  background: 'var(--fs-bg-2)',
+  color: 'var(--fs-ink)',
+  border: '1px solid var(--fs-line)',
+};
+
 const HomePage = ({ setPage, setSelectedListing, savedIds, onSave, setSearchFilters, initialHomeData }) => {
   const [searchCat, setSearchCat] = useState("");
   const [searchMake, setSearchMake] = useState("");
@@ -34,6 +63,19 @@ const HomePage = ({ setPage, setSelectedListing, savedIds, onSave, setSearchFilt
   const displayNews = newsFromDB;
   const showFeaturedLoading = !hasServerData && featuredLoading;
   const showLatestLoading = !hasServerData && latestLoading;
+
+  // True only for a genuinely empty catalogue — everything settled, both
+  // rails empty, and the authoritative count agrees. Deliberately strict:
+  // a slow fetch or a Supabase outage returns empty arrays too, and telling
+  // a visitor "nothing is listed here" when we simply failed to load would
+  // be worse than the bare empty box this replaces. totalListings is the
+  // server-side count, so it's the tiebreaker.
+  const marketplaceIsEmpty =
+    !showFeaturedLoading &&
+    !showLatestLoading &&
+    featured.length === 0 &&
+    latest.length === 0 &&
+    totalListings === 0;
 
   const handleAiSearch = (query) => {
     if (!query.trim()) return;
@@ -113,6 +155,63 @@ const HomePage = ({ setPage, setSelectedListing, savedIds, onSave, setSearchFilt
         </div>
       </section>
 
+      {/* Cold start. Until the first listings land, the two rails below would
+          both render as bare dashed "nothing here" boxes stacked on top of
+          each other — the highest-traffic page on the site presenting two
+          dead ends in a row. A marketplace with no inventory yet can't show
+          inventory, but it can ask the visitor to become the thing it's
+          missing: a seller, or a buyer who's told the moment stock arrives.
+          Collapses back to the normal rails automatically on the first
+          listing. */}
+      {marketplaceIsEmpty ? (
+        <section className="fs-section">
+          <div className="fs-container">
+            {/* Deliberately not reusing .fs-detail-cta here: that class is
+                width:100% for the listing sidebar, and its secondary variant
+                is background:var(--fs-bg-2) — which would be invisible on a
+                tinted panel. Self-contained styles instead, sized as a real
+                pair of buttons. */}
+            <div style={{
+              border: '1px solid var(--fs-line)',
+              borderRadius: 'var(--fs-radius-lg, 16px)',
+              background: 'var(--fs-white, #fff)',
+              padding: '48px 32px',
+              textAlign: 'center',
+            }}>
+              <h2 className="fs-section-title" style={{ marginBottom: 10 }}>
+                The first aircraft listed here could be yours
+              </h2>
+              <p style={{
+                fontSize: 15, color: 'var(--fs-ink-3)', lineHeight: 1.6,
+                maxWidth: 520, margin: '0 auto 28px',
+              }}>
+                FlightSales is brand new. Listing is free for private sellers,
+                there&apos;s no commission on the sale, and dealers are verified
+                against the Australian Business Register.
+              </p>
+              <div style={{
+                display: 'flex', gap: 12, justifyContent: 'center',
+                flexWrap: 'wrap', alignItems: 'stretch',
+              }}>
+                <Link href="/sell" style={COLD_CTA_PRIMARY}>
+                  List your aircraft
+                </Link>
+                <Link href="/login" style={COLD_CTA_SECONDARY}>
+                  Get notified of new listings
+                </Link>
+              </div>
+              <p style={{
+                fontSize: 12, color: 'var(--fs-ink-3)', marginTop: 20,
+                maxWidth: 460, marginLeft: 'auto', marginRight: 'auto', lineHeight: 1.5,
+              }}>
+                Create a free account and save a search — we&apos;ll email you the
+                moment something matching it is listed.
+              </p>
+            </div>
+          </div>
+        </section>
+      ) : (
+      <>
       <section className="fs-section">
         <div className="fs-container">
           <div className="fs-section-header">
@@ -150,6 +249,8 @@ const HomePage = ({ setPage, setSelectedListing, savedIds, onSave, setSearchFilt
           )}
         </div>
       </section>
+      </>
+      )}
 
       {displayDealers.length > 0 && (
         <section className="fs-section">

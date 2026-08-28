@@ -20,7 +20,6 @@ export async function verifyTurnstileToken(token) {
   const secret = process.env.TURNSTILE_SECRET_KEY;
   if (!secret) {
     if (process.env.NODE_ENV === 'production') {
-      // eslint-disable-next-line no-console
       console.error('[turnstile] TURNSTILE_SECRET_KEY is not set — rejecting submission. Set it in the deploy environment.');
       return false;
     }
