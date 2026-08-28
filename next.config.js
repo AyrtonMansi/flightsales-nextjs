@@ -26,6 +26,11 @@ const contentSecurityPolicy = [
 
 const nextConfig = {
   serverExternalPackages: ['playwright-core'],
+  // Next 16 blocks cross-origin dev assets by default. Playwright runs against
+  // 127.0.0.1 while Next reports localhost, so explicitly allow the loopback
+  // origins used by the local/CI acceptance harness. This is dev-only and does
+  // not relax production CSP or response headers.
+  allowedDevOrigins: ['127.0.0.1', 'localhost'],
   images: {
     remotePatterns: [
       { protocol: 'https', hostname: '**.supabase.co' },
