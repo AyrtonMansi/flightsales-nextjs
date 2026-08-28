@@ -38,20 +38,21 @@ const INAPP = {
   'user.suspended': (v) => ({ title: 'Account suspended', body: v.reason || 'See email for details.', link: '/' }),
 };
 
-// Auth gate. Two valid callers:
-//   1. Server-to-server with `x-internal-token: ${INTERNAL_API_TOKEN}` —
-//      admin tabs in this app POST after a DB mutation; the token is
-//      also rotatable independent of any session.
-//   2. A real admin session — we read the supabase auth cookie, look up
-//      the profile, and require role='admin'. Nothing else gets in.
+// Auth gate. One valid caller: a real admin session. The admin tabs POST
+// here after a DB mutation, sending the signed-in admin's Supabase access
+// token as `Authorization: Bearer <jwt>` (see src/lib/authedFetch.js); we
+// verify that JWT and require profiles.role='admin'. Nothing else gets in.
 //
 // Without a gate, anyone with the URL can fire admin emails to any
 // address and insert forged notification rows. That's a phishing
 // foothold via our own infrastructure.
 async function isAuthorisedAdmin(req) {
-  const expected = process.env.INTERNAL_API_TOKEN;
-  if (expected && req.headers.get('x-internal-token') === expected) return true;
-
+  // The `x-internal-token` bypass that used to short-circuit this check has
+  // been removed — see the note in src/lib/requireAdmin.ts. It let anyone
+  // holding a world-readable value (committed to git history in a public
+  // repo) send platform email to arbitrary addresses and insert forged
+  // notification rows: a phishing foothold on our own infrastructure, which
+  // is exactly what this gate's comment says it exists to prevent.
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const anon = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
   if (!url || !anon) return false;

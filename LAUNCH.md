@@ -7,26 +7,37 @@ publicly live, plus the things that must be true before you do.
 
 ---
 
-## 🔴 Do this first: rotate two secrets
+## 🔴 Do this first: two secrets are public right now
 
 A previous version of this file had live values for `CRON_SECRET` and
-`INTERNAL_API_TOKEN` pasted into it, and that file is in the git history
-(commit `6a470d9`). Deleting them from the working copy does **not** remove
-them from history — anyone who can read the repo can still read them.
+`INTERNAL_API_TOKEN` pasted into it. That file is still in the git history
+(commit `6a470d9`), **and this repository is public on GitHub** — so those
+values are readable by anyone on the internet today. Deleting them from the
+working copy does not remove them from history.
 
-Generate new ones and update them in Vercel before launch:
+**`INTERNAL_API_TOKEN` has been removed from the code entirely.** It was an
+auth path that granted full admin — approve/reject/feature any listing,
+suspend or promote any user, approve dealer applications, send platform
+email to any address — to anyone presenting that one header value, and it
+was checked *before* any session lookup. API routes are not behind the
+pre-launch password wall (that's a client-side component), so it was live in
+production. Nothing in the app ever used it, so it was deleted rather than
+rotated. Remove the variable from Vercel too.
+
+**`CRON_SECRET` still needs rotating.** It is genuinely used — it's the only
+thing between the public internet and the three cron endpoints
+(expire-listings, saved-search-digest, onboarding-emails), and the current
+value is public.
 
 ```bash
-openssl rand -hex 32   # CRON_SECRET
-openssl rand -hex 32   # INTERNAL_API_TOKEN
+openssl rand -hex 32   # new CRON_SECRET -> set in Vercel, redeploy
 ```
 
-`CRON_SECRET` is the only thing standing between the public internet and
-your three cron endpoints (expire-listings, saved-search-digest,
-onboarding-emails). `INTERNAL_API_TOKEN` bypasses the admin auth gate.
+Also change `SITE_PASSWORD` if you still rely on the pre-launch gate — that
+value is in the history too.
 
-Also change `SITE_PASSWORD` if you care about the pre-launch gate — the
-current value is likewise in the history.
+Worth doing regardless: rotate the Supabase service-role key and check the
+`admin_audit` table for actions you don't recognise.
 
 ---
 
@@ -66,7 +77,7 @@ They're all idempotent — safe to re-run.
 | `SUPABASE_SERVICE_ROLE_KEY` | ✅ set |
 | `NEXT_PUBLIC_SITE_URL` | ✅ set |
 | `CRON_SECRET` | ✅ set — **rotate, see above** |
-| `INTERNAL_API_TOKEN` | ✅ set — **rotate, see above** |
+| ~~`INTERNAL_API_TOKEN`~~ | ❌ **removed from the code — delete it from Vercel** |
 | `RESEND_API_KEY` | ❌ **still needed** — no transactional email without it |
 | `EMAIL_FROM` / `EMAIL_REPLY_TO` / `EMAIL_BCC_ADMIN` | ✅ set |
 | `NEXT_PUBLIC_FS_ABN` | ❌ **still needed** — shown on the legal pages |

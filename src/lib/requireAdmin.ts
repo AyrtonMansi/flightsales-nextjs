@@ -1,12 +1,10 @@
 // Shared admin auth gate for /api/admin/* server routes.
 //
-// Two valid callers:
-//   1. Server-to-server with `x-internal-token: ${INTERNAL_API_TOKEN}`
-//      — useful for trusted internal callers (cron, build steps) so
-//      they don't need a user session.
-//   2. A real admin session — the browser sends its Supabase access token
-//      as `Authorization: Bearer <jwt>` (see src/lib/authedFetch.js); we
-//      verify that JWT, look up the profile, and require role='admin'.
+// One valid caller: a real admin session. The browser sends its Supabase
+// access token as `Authorization: Bearer <jwt>` (see src/lib/authedFetch.js);
+// we verify that JWT, look up the profile, and require role='admin'.
+//
+// There is deliberately no shared-secret bypass — see the note in the body.
 //
 // This previously tried to read a Supabase auth *cookie*, which never
 // worked: the browser client stores its session in localStorage, and
@@ -37,13 +35,27 @@ export async function requireAdmin(req: NextRequest): Promise<AdminAuthContext |
   const adminC = adminClient();
   if (!adminC) return null;
 
-  // Path 1: internal token.
-  const expected = process.env.INTERNAL_API_TOKEN;
-  if (expected && req.headers.get('x-internal-token') === expected) {
-    return { user: null, adminC };
-  }
+  // The `x-internal-token: ${INTERNAL_API_TOKEN}` bypass that used to sit
+  // here has been REMOVED. It granted full admin — approve/reject/feature
+  // any listing, suspend/promote any user, approve dealer applications —
+  // to anyone presenting a single shared header value, and it was checked
+  // BEFORE any session lookup.
+  //
+  // That value was committed to LAUNCH.md and is still readable in this
+  // repository's git history (commit 6a470d9). The repository is public,
+  // so the "secret" was world-readable, and API routes are not behind the
+  // pre-launch password wall (that's a client-side React component), which
+  // means the hole was live in production.
+  //
+  // Nothing in the codebase ever sent the header — grep for x-internal-token
+  // returns only the two places that checked it — so this is a pure removal
+  // with no caller to migrate. Deleting the path closes the hole immediately
+  // rather than depending on the token being rotated promptly.
+  //
+  // If a genuine server-to-server caller is needed later, give it its own
+  // credential with a narrow scope, not a global admin skeleton key.
 
-  // Path 2: verified user access token + profile.role check.
+  // Verified user access token + profile.role check.
   const user = await getBearerUser(req);
   if (!user) return null;
 
