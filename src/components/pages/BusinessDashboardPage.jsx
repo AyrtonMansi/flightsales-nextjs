@@ -1,296 +1,88 @@
 'use client';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Icons } from '../Icons';
-import ListingCard from '../ListingCard';
 import BulkImportTab from '../dealer/BulkImportTab';
 import AbnVerifyCard from '../dealer/AbnVerifyCard';
+import ListingEditModal from '../ListingEditModal';
 import { useMyListings, useMyEnquiries } from '../../lib/hooks';
-import { DEALER_PLANS } from '../../lib/pricing';
+import { showToast } from '../../lib/toast';
 
-// Verified-dealer dashboard. Differs from the private DashboardPage in
-// what the user is here to do: businesses sell + run a pipeline, they
-// don't shop. The sidebar drops "My Buying" entirely and adds Lead
-// Pipeline, Listing Performance, Subscription, Team.
-//
-// V1 is intentionally a stub — sections render real data where we
-// already have it (My Aircraft, Messages) and a clean "Coming soon"
-// for sections that need Stripe / analytics work (Subscription,
-// Performance, Team). Wiring those up is a separate sprint.
+const LEAD_STATES = ['new', 'contacted', 'negotiating', 'sold', 'archived', 'spam'];
+const LEAD_LABEL = { new: 'New', contacted: 'Contacted', replied: 'Contacted', negotiating: 'Negotiating', sold: 'Closed', archived: 'Archived', spam: 'Spam' };
 
-const BusinessDashboardPage = ({ user, setPage, signOut, onSelectListing }) => {
+function ago(date) {
+  if (!date) return '';
+  const ts = new Date(date).getTime();
+  if (!Number.isFinite(ts)) return '';
+  const hours = Math.max(0, Math.floor((Date.now() - ts) / 3600000));
+  if (hours < 1) return 'Just now';
+  if (hours < 24) return `${hours}h ago`;
+  return `${Math.floor(hours / 24)}d ago`;
+}
+
+function daysOld(date) {
+  if (!date) return 0;
+  const ts = new Date(date).getTime();
+  return Number.isFinite(ts) ? Math.max(0, Math.floor((Date.now() - ts) / 86400000)) : 0;
+}
+
+function Kpi({ label, value, detail, onClick }) {
+  const style = { border: '1px solid var(--fs-line)', borderRadius: 12, background: 'white', padding: '18px 20px', minWidth: 0, textAlign: 'left', fontFamily: 'var(--fs-font)' };
+  const body = <><strong style={{ display: 'block', fontSize: 28, letterSpacing: '-0.035em', lineHeight: 1 }}>{value}</strong><span style={{ display: 'block', marginTop: 7, fontSize: 13, color: 'var(--fs-ink-3)' }}>{label}</span>{detail && <span style={{ display: 'block', marginTop: 4, fontSize: 11, color: 'var(--fs-ink-4)' }}>{detail}</span>}</>;
+  return onClick ? <button type="button" onClick={onClick} style={{ ...style, cursor: 'pointer' }}>{body}</button> : <div style={style}>{body}</div>;
+}
+
+export default function BusinessDashboardPage({ user, setPage, signOut }) {
   const [activeTab, setActiveTab] = useState('overview');
-  const { listings: myListings = [] } = useMyListings(user?.id);
-  const { enquiries: myEnquiries = [] } = useMyEnquiries(user?.id);
+  const [leadFilter, setLeadFilter] = useState('open');
+  const [editingListing, setEditingListing] = useState(null);
+  const { listings: myListings = [], loading: listingsLoading, updateListingStatus, refetch: refetchListings } = useMyListings(user?.id);
+  const { enquiries: myEnquiries = [], loading: enquiriesLoading, updateStatus: updateEnquiryStatus } = useMyEnquiries(user?.id);
 
-  // ABN gate: business accounts must verify their ABN against the ABR
-  // before they can list. Verified active ABN auto-promotes to dealer
-  // role (handled server-side in /api/abn-verify); until then they see
-  // ONLY the verification card, no other tabs. This makes ABN the
-  // mandatory step-zero rather than a self-serve perk.
   const isBusinessAccount = user?.account_type === 'business';
   const abnVerified = !!user?.abn_verified_at;
-  const needsAbnGate = isBusinessAccount && !abnVerified;
-  if (needsAbnGate) {
-    return (
-      <>
-        <section className="fs-dash-hero">
-          <div className="fs-container fs-dash-hero-inner">
-            <div className="fs-dash-hero-id">
-              <div className="fs-dash-hero-avatar">
-                {user?.full_name?.[0]?.toUpperCase() || 'B'}
-              </div>
-              <div>
-                <span className="fs-dash-hero-eyebrow">One step to go</span>
-                <h1 className="fs-dash-hero-title">
-                  Verify your business
-                </h1>
-                <p className="fs-dash-hero-sub">
-                  We auto-verify against the Australian Business Register. Takes ~5 seconds.
-                </p>
-              </div>
-            </div>
-            <button className="fs-dash-hero-signout" onClick={async () => { await signOut?.(); setPage('home'); }}>
-              Sign out
-            </button>
-          </div>
-        </section>
-        <section className="fs-section" style={{ padding: '24px 0' }}>
-          <div className="fs-container" style={{ maxWidth: 760 }}>
-            <AbnVerifyCard user={user} />
-            <p style={{ marginTop: 16, fontSize: 13, color: 'var(--fs-ink-3)' }}>
-              Once your ABN is verified <strong>Active</strong>, you&apos;ll unlock the dealer dashboard
-              — listings, bulk import, lead pipeline. Refresh after verifying if the page
-              doesn&apos;t auto-advance.
-            </p>
-          </div>
-        </section>
-      </>
-    );
+  if (isBusinessAccount && !abnVerified) {
+    return <><section className="fs-dash-hero"><div className="fs-container fs-dash-hero-inner"><div className="fs-dash-hero-id"><div className="fs-dash-hero-avatar">{user?.full_name?.[0]?.toUpperCase() || 'B'}</div><div><span className="fs-dash-hero-eyebrow">Business verification</span><h1 className="fs-dash-hero-title">Verify your business</h1><p className="fs-dash-hero-sub">Verify your ABN before publishing dealer inventory.</p></div></div><button className="fs-dash-hero-signout" onClick={async () => { await signOut?.(); setPage('home'); }}>Sign out</button></div></section><section className="fs-section" style={{ padding: '24px 0 48px' }}><div className="fs-container" style={{ maxWidth: 760 }}><AbnVerifyCard user={user} /></div></section></>;
   }
 
-  const planLabel = (() => {
-    switch (user?.subscription_plan) {
-      case 'dealer_lite':       return 'Dealer Lite';
-      case 'pro':               return 'Pro';
-      case 'private_premium':   return 'Premium Private';
-      default:                  return 'Free';
-    }
-  })();
+  const enquiriesByListing = useMemo(() => myEnquiries.reduce((acc, e) => { const id = e.aircraft?.id || e.aircraft_id; if (id) acc[id] = (acc[id] || 0) + 1; return acc; }, {}), [myEnquiries]);
+  const activeListings = myListings.filter(l => l.status === 'active');
+  const pendingListings = myListings.filter(l => l.status === 'pending');
+  const newLeads = myEnquiries.filter(e => (e.status || 'new') === 'new');
+  const openLeads = myEnquiries.filter(e => !['sold','archived','spam'].includes(e.status || 'new'));
+  const totalViews = myListings.reduce((sum, l) => sum + Number(l.view_count || 0), 0);
+  const agedListings = activeListings.filter(l => daysOld(l.created_at) >= 45);
+  const leadsPerActive = activeListings.length ? (myEnquiries.length / activeListings.length).toFixed(1) : '—';
 
-  const stats = [
-    { label: 'Active listings', value: myListings.filter(l => l.status === 'active').length, icon: Icons.plane },
-    { label: 'Total views (30d)', value: myListings.reduce((a, l) => a + (l.view_count || 0), 0), icon: Icons.search },
-    { label: 'New enquiries', value: myEnquiries.filter(e => e.status === 'new').length, icon: Icons.mail },
-    { label: 'Days-to-sell avg', value: '—', icon: Icons.clock },
+  const tabs = [
+    { id: 'overview', label: 'Overview', icon: Icons.home },
+    { id: 'listings', label: 'Inventory', icon: Icons.plane, count: myListings.length },
+    { id: 'enquiries', label: 'Lead pipeline', icon: Icons.mail, count: newLeads.length },
+    { id: 'bulk', label: 'Bulk import', icon: Icons.file },
+    { id: 'business', label: 'Business profile', icon: Icons.user },
   ];
 
-  const sidebar = [
-    { id: 'overview',     label: 'Overview',         icon: Icons.home },
-    { section: 'Inventory', items: [
-      { id: 'listings',     label: 'My Aircraft',      icon: Icons.plane,  count: myListings.length },
-      { id: 'drafts',       label: 'Drafts',           icon: Icons.file },
-      { id: 'featured',     label: 'Featured slots',   icon: Icons.star },
-      { id: 'bulk',         label: 'Bulk import',      icon: Icons.file },
-    ]},
-    { section: 'Pipeline', items: [
-      { id: 'enquiries',    label: 'Lead pipeline',    icon: Icons.mail,   count: myEnquiries.filter(e => e.status === 'new').length },
-      { id: 'offers',       label: 'Offers',           icon: Icons.tag },
-    ]},
-    { section: 'Performance', items: [
-      { id: 'analytics',    label: 'Listing analytics', icon: Icons.search },
-      { id: 'market',       label: 'Market position',  icon: Icons.location },
-    ]},
-    { section: 'Account', items: [
-      { id: 'business',     label: 'Business profile', icon: Icons.user },
-      { id: 'subscription', label: 'Subscription',     icon: Icons.dollar },
-      { id: 'team',         label: 'Team members',     icon: Icons.user },
-      { id: 'notifications',label: 'Notifications',    icon: Icons.bell },
-    ]},
-  ];
+  const updateLead = async (id, status) => { try { await updateEnquiryStatus(id, status); showToast('Lead status updated'); } catch (err) { showToast(err?.message || 'Failed to update lead'); } };
+  const updateListing = async (id, status) => { try { await updateListingStatus(id, status); showToast('Listing status updated'); } catch (err) { showToast(err?.message || 'Failed to update listing'); } };
+  const businessName = user?.abn_business_name || user?.full_name || 'Dealer account';
 
-  return (
-    <>
-      <section className="fs-dash-hero">
-        <div className="fs-container fs-dash-hero-inner">
-          <div className="fs-dash-hero-id">
-            <div className="fs-dash-hero-avatar">
-              {user?.full_name?.[0]?.toUpperCase() || 'B'}
-            </div>
-            <div>
-              <span className="fs-dash-hero-eyebrow">
-                {Icons.shield} Verified business
-              </span>
-              <h1 className="fs-dash-hero-title">
-                {user?.full_name || 'Your business'}
-              </h1>
-              <p className="fs-dash-hero-sub">
-                Plan: <strong>{planLabel}</strong>
-                {user?.subscription_plan === 'hobby' && (
-                  <button
-                    type="button"
-                    className="fs-dash-hero-upgrade"
-                    onClick={() => setActiveTab('subscription')}
-                  >
-                    Upgrade →
-                  </button>
-                )}
-              </p>
-            </div>
-          </div>
-          <button className="fs-dash-hero-signout" onClick={async () => { await signOut?.(); setPage('home'); }}>
-            Sign out
-          </button>
-        </div>
-      </section>
+  return <>
+    <section className="fs-dash-hero"><div className="fs-container fs-dash-hero-inner"><div className="fs-dash-hero-id"><div className="fs-dash-hero-avatar">{businessName[0]?.toUpperCase() || 'B'}</div><div><span className="fs-dash-hero-eyebrow">{Icons.shield} Verified business</span><h1 className="fs-dash-hero-title">{businessName}</h1><p className="fs-dash-hero-sub">Inventory and lead operations</p></div></div><div className="fs-dash-hero-actions"><button type="button" className="fs-dash-hero-btn primary" onClick={() => setPage('sell')}>List aircraft</button><button className="fs-dash-hero-signout" onClick={async () => { await signOut?.(); setPage('home'); }}>Sign out</button></div></div></section>
 
-      <section className="fs-section" style={{ padding: '24px 0' }}>
-        <div className="fs-container fs-dash-shell">
-          {/* Sidebar */}
-          <aside className="fs-dash-sidebar">
-            <nav>
-              {sidebar.map((entry, i) => (
-                entry.section ? (
-                  <div key={i} className="fs-dash-sidebar-section">
-                    <p className="fs-dash-sidebar-section-label">{entry.section}</p>
-                    {entry.items.map(item => (
-                      <button
-                        key={item.id}
-                        onClick={() => setActiveTab(item.id)}
-                        className={`fs-dash-sidebar-item${activeTab === item.id ? ' on' : ''}`}
-                      >
-                        <span className="fs-dash-sidebar-icon" aria-hidden="true">{item.icon}</span>
-                        <span className="fs-dash-sidebar-label">{item.label}</span>
-                        {typeof item.count === 'number' && item.count > 0 && (
-                          <span className="fs-dash-sidebar-badge">{item.count}</span>
-                        )}
-                      </button>
-                    ))}
-                  </div>
-                ) : (
-                  <button
-                    key={entry.id}
-                    onClick={() => setActiveTab(entry.id)}
-                    className={`fs-dash-sidebar-item${activeTab === entry.id ? ' on' : ''}`}
-                  >
-                    <span className="fs-dash-sidebar-icon" aria-hidden="true">{entry.icon}</span>
-                    <span className="fs-dash-sidebar-label">{entry.label}</span>
-                  </button>
-                )
-              ))}
-            </nav>
-          </aside>
+    <section className="fs-section" style={{ padding: '24px 0 48px' }}><div className="fs-container fs-dash-shell">
+      <aside className="fs-dash-sidebar" aria-label="Dealer navigation"><nav style={{ border: '1px solid var(--fs-line)', borderRadius: 12, overflow: 'hidden', padding: 6, background: 'white' }}>{tabs.map(tab => <button key={tab.id} type="button" onClick={() => setActiveTab(tab.id)} className={`fs-dash-sidebar-item${activeTab === tab.id ? ' on' : ''}`} aria-current={activeTab === tab.id ? 'page' : undefined}><span className="fs-dash-sidebar-icon" aria-hidden="true">{tab.icon}</span><span className="fs-dash-sidebar-label">{tab.label}</span>{!!tab.count && <span className="fs-dash-sidebar-badge">{tab.count}</span>}</button>)}</nav></aside>
 
-          {/* Body */}
-          <div className="fs-dash-body">
-            {activeTab === 'overview' && (
-              <>
-                <h2 className="fs-section-title" style={{ marginBottom: 16 }}>Overview</h2>
-                <div className="fs-dash-stats">
-                  {stats.map(s => (
-                    <div key={s.label} className="fs-dash-stat">
-                      <div className="fs-dash-stat-icon">{s.icon}</div>
-                      <p className="fs-dash-stat-num">{s.value}</p>
-                      <p className="fs-dash-stat-label">{s.label}</p>
-                    </div>
-                  ))}
-                </div>
-                <div className="fs-dash-block">
-                  <h3 className="fs-dash-block-title">Recently listed</h3>
-                  {myListings.length === 0 ? (
-                    <p className="fs-dash-empty">No active listings yet. Click <strong>List Aircraft</strong> in the nav to add your first.</p>
-                  ) : (
-                    <div className="fs-grid">
-                      {myListings.slice(0, 3).map(l => (
-                        <ListingCard key={l.id} listing={l} onSave={() => {}} saved={false} />
-                      ))}
-                    </div>
-                  )}
-                </div>
-              </>
-            )}
+      <main className="fs-dash-body">
+        {activeTab === 'overview' && <><div style={{ marginBottom: 18 }}><h2 style={{ margin: 0, fontSize: 24, letterSpacing: '-0.025em' }}>Dealer overview</h2><p style={{ color: 'var(--fs-ink-3)', fontSize: 13, marginTop: 4 }}>What needs attention across inventory and buyer demand.</p></div><div className="fs-dash-overview-stats" style={{ marginBottom: 22 }}><Kpi value={activeListings.length} label="Active inventory" detail={pendingListings.length ? `${pendingListings.length} pending review` : undefined} onClick={() => setActiveTab('listings')} /><Kpi value={newLeads.length} label="New leads" detail={`${openLeads.length} open`} onClick={() => setActiveTab('enquiries')} /><Kpi value={totalViews.toLocaleString()} label="Listing views" /><Kpi value={leadsPerActive} label="Leads per listing" /></div><div className="fs-dash-overview-grid"><section className="fs-detail-specs" style={{ borderRadius: 12, padding: 0, overflow: 'hidden' }}><div style={{ padding: '16px 18px', borderBottom: '1px solid var(--fs-line)' }}><h3 style={{ margin: 0, fontSize: 15 }}>Action queue</h3><p style={{ marginTop: 2, fontSize: 12, color: 'var(--fs-ink-3)' }}>Operational items worth reviewing now.</p></div>{newLeads.length === 0 && pendingListings.length === 0 && agedListings.length === 0 ? <p style={{ padding: 20, margin: 0, color: 'var(--fs-ink-3)', fontSize: 13 }}>No outstanding actions.</p> : <>{newLeads.length > 0 && <button type="button" onClick={() => setActiveTab('enquiries')} style={{ width: '100%', border: 0, borderBottom: '1px solid var(--fs-line)', background: 'white', padding: '15px 18px', textAlign: 'left', cursor: 'pointer', display: 'flex', justifyContent: 'space-between' }}><span><strong>{newLeads.length} new {newLeads.length === 1 ? 'lead' : 'leads'}</strong><span style={{ display: 'block', fontSize: 12, color: 'var(--fs-ink-3)', marginTop: 2 }}>Review and progress buyer enquiries.</span></span><span>→</span></button>}{pendingListings.length > 0 && <button type="button" onClick={() => setActiveTab('listings')} style={{ width: '100%', border: 0, borderBottom: '1px solid var(--fs-line)', background: 'white', padding: '15px 18px', textAlign: 'left', cursor: 'pointer', display: 'flex', justifyContent: 'space-between' }}><span><strong>{pendingListings.length} pending {pendingListings.length === 1 ? 'listing' : 'listings'}</strong><span style={{ display: 'block', fontSize: 12, color: 'var(--fs-ink-3)', marginTop: 2 }}>Waiting for marketplace review.</span></span><span>→</span></button>}{agedListings.length > 0 && <button type="button" onClick={() => setActiveTab('listings')} style={{ width: '100%', border: 0, background: 'white', padding: '15px 18px', textAlign: 'left', cursor: 'pointer', display: 'flex', justifyContent: 'space-between' }}><span><strong>{agedListings.length} aged active {agedListings.length === 1 ? 'listing' : 'listings'}</strong><span style={{ display: 'block', fontSize: 12, color: 'var(--fs-ink-3)', marginTop: 2 }}>Listed for 45+ days; review presentation and price manually.</span></span><span>→</span></button>}</>}</section><section className="fs-detail-specs" style={{ borderRadius: 12, padding: 0, overflow: 'hidden' }}><div style={{ padding: '16px 18px', borderBottom: '1px solid var(--fs-line)' }}><h3 style={{ margin: 0, fontSize: 15 }}>Latest leads</h3></div>{myEnquiries.length === 0 ? <p style={{ padding: 20, margin: 0, color: 'var(--fs-ink-3)', fontSize: 13 }}>Buyer leads will appear here as enquiries arrive.</p> : myEnquiries.slice(0, 5).map(e => <button key={e.id} type="button" onClick={() => setActiveTab('enquiries')} style={{ width: '100%', border: 0, borderBottom: '1px solid var(--fs-line)', background: 'white', padding: '13px 18px', display: 'flex', justifyContent: 'space-between', gap: 12, textAlign: 'left', cursor: 'pointer' }}><span style={{ minWidth: 0 }}><strong style={{ display: 'block', fontSize: 13 }}>{e.name || 'Buyer'}</strong><span style={{ fontSize: 12, color: 'var(--fs-ink-3)', display: 'block', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>{e.aircraft?.title || 'Aircraft enquiry'}</span></span><span style={{ fontSize: 11, color: 'var(--fs-ink-4)', flexShrink: 0 }}>{ago(e.created_at)}</span></button>)}</section></div></>}
 
-            {activeTab === 'listings' && (
-              <>
-                <h2 className="fs-section-title" style={{ marginBottom: 16 }}>My aircraft</h2>
-                {myListings.length === 0 ? (
-                  <p className="fs-dash-empty">No listings yet.</p>
-                ) : (
-                  <div className="fs-grid">
-                    {myListings.map(l => (
-                      <ListingCard key={l.id} listing={l} onSave={() => {}} saved={false} />
-                    ))}
-                  </div>
-                )}
-              </>
-            )}
+        {activeTab === 'listings' && <><div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12, marginBottom: 18 }}><div><h2 style={{ margin: 0, fontSize: 24 }}>Inventory</h2><p style={{ fontSize: 13, color: 'var(--fs-ink-3)', marginTop: 4 }}>Manage listing status and performance signals.</p></div><button type="button" className="fs-nav-btn-primary" onClick={() => setPage('sell')}>Add aircraft</button></div>{listingsLoading ? <p className="fs-dash-empty">Loading inventory…</p> : myListings.length === 0 ? <div className="fs-detail-specs" style={{ padding: '44px 24px', textAlign: 'center', borderRadius: 12 }}><h3>No inventory yet</h3><p style={{ color: 'var(--fs-ink-3)', fontSize: 14, margin: '6px 0 18px' }}>Add one aircraft or import multiple listings.</p><div style={{ display: 'flex', justifyContent: 'center', gap: 8 }}><button className="fs-nav-btn-primary" onClick={() => setPage('sell')}>List aircraft</button><button className="fs-confirm-btn fs-confirm-btn-secondary" onClick={() => setActiveTab('bulk')}>Bulk import</button></div></div> : <div className="fs-admin-tablewrap"><table className="fs-admin-table"><thead><tr><th>Aircraft</th><th>Age</th><th>Views</th><th>Leads</th><th>Status</th><th style={{ textAlign: 'right' }}>Actions</th></tr></thead><tbody>{myListings.map(l => <tr key={l.id}><td><strong className="fs-admin-cell-strong">{l.title || 'Aircraft'}</strong><span className="fs-admin-cell-muted">{l.registration || l.location || ''}</span></td><td>{daysOld(l.created_at)}d</td><td>{Number(l.view_count || 0).toLocaleString()}</td><td>{enquiriesByListing[l.id] || 0}</td><td><select className="fs-sort-select" aria-label={`Status for ${l.title}`} value={l.status || 'pending'} onChange={e => updateListing(l.id, e.target.value)}><option value="pending">Pending</option><option value="active">Active</option><option value="sold">Sold</option><option value="archived">Archived</option></select></td><td style={{ textAlign: 'right' }}><button type="button" className="fs-confirm-btn fs-confirm-btn-secondary fs-confirm-btn-sm" onClick={() => setEditingListing(l)}>Edit</button></td></tr>)}</tbody></table></div>}</>}
 
-            {activeTab === 'enquiries' && (
-              <>
-                <h2 className="fs-section-title" style={{ marginBottom: 16 }}>Lead pipeline</h2>
-                <p className="fs-dash-empty" style={{ marginBottom: 16 }}>
-                  Visual Kanban (New → Replied → Negotiating → Closed) ships next.
-                  For now, your enquiries list:
-                </p>
-                {myEnquiries.length === 0 ? (
-                  <p className="fs-dash-empty">No enquiries yet.</p>
-                ) : (
-                  <ul className="fs-dash-enq-list">
-                    {myEnquiries.map(e => (
-                      <li key={e.id} className="fs-dash-enq-row">
-                        <span className="fs-dash-enq-status">{e.status || 'new'}</span>
-                        <span className="fs-dash-enq-name">{e.name || 'Anonymous'}</span>
-                        <span className="fs-dash-enq-message">{(e.message || '').slice(0, 80)}…</span>
-                      </li>
-                    ))}
-                  </ul>
-                )}
-              </>
-            )}
+        {activeTab === 'enquiries' && <><div className="fs-enq-head" style={{ marginBottom: 18 }}><div><h2 style={{ margin: 0, fontSize: 24 }}>Lead pipeline</h2><p style={{ color: 'var(--fs-ink-3)', fontSize: 13, marginTop: 4 }}>Move buyer enquiries from new to closed with explicit status.</p></div><div className="fs-enq-filters">{['open','new','contacted','negotiating','closed'].map(f => <button key={f} type="button" className={`fs-enq-filter${leadFilter === f ? ' on' : ''}`} onClick={() => setLeadFilter(f)}>{f}</button>)}</div></div>{enquiriesLoading ? <p className="fs-dash-empty">Loading leads…</p> : (() => { const rows = myEnquiries.filter(e => { const s = e.status || 'new'; if (leadFilter === 'open') return !['sold','archived','spam'].includes(s); if (leadFilter === 'closed') return ['sold','archived'].includes(s); if (leadFilter === 'contacted') return ['contacted','replied'].includes(s); return s === leadFilter; }); return rows.length === 0 ? <div className="fs-detail-specs" style={{ padding: '44px 24px', textAlign: 'center', borderRadius: 12 }}><h3>No leads in this stage</h3><p style={{ color: 'var(--fs-ink-3)', fontSize: 14, marginTop: 6 }}>Incoming enquiries will appear here automatically.</p></div> : <div className="fs-admin-tablewrap"><table className="fs-admin-table"><thead><tr><th>Buyer</th><th>Aircraft</th><th>Received</th><th>Contact</th><th>Status</th></tr></thead><tbody>{rows.map(e => <tr key={e.id}><td><strong className="fs-admin-cell-strong">{e.name || 'Buyer'}</strong><span className="fs-admin-cell-muted" style={{ maxWidth: 260 }}>{(e.message || '').slice(0, 90)}</span></td><td>{e.aircraft?.title || 'Listing unavailable'}</td><td className="fs-admin-cell-muted">{ago(e.created_at)}</td><td><div className="fs-admin-row-actions">{e.email && <a className="fs-confirm-btn fs-confirm-btn-secondary fs-confirm-btn-sm" href={`mailto:${e.email}?subject=${encodeURIComponent(`FlightSales enquiry — ${e.aircraft?.title || 'aircraft'}`)}`}>Email</a>}{e.phone && <a className="fs-confirm-btn fs-confirm-btn-secondary fs-confirm-btn-sm" href={`tel:${e.phone}`}>Call</a>}</div></td><td><select className="fs-sort-select" value={e.status || 'new'} onChange={ev => updateLead(e.id, ev.target.value)} aria-label={`Lead status for ${e.name || 'buyer'}`}>{LEAD_STATES.map(s => <option key={s} value={s}>{LEAD_LABEL[s]}</option>)}</select></td></tr>)}</tbody></table></div>; })()}</>}
 
-            {activeTab === 'subscription' && (
-              <>
-                <h2 className="fs-section-title" style={{ marginBottom: 8 }}>Subscription</h2>
-                <p style={{ color: 'var(--fs-ink-3)', marginBottom: 24 }}>
-                  Current plan: <strong>{planLabel}</strong> · Status: <strong>{user?.subscription_status || 'inactive'}</strong>
-                </p>
-                <div className="fs-dash-plans">
-                  {DEALER_PLANS.map(p => (
-                    <div key={p.key} className={`fs-dash-plan${user?.subscription_plan === p.key ? ' on' : ''}`}>
-                      <h4>{p.name}</h4>
-                      <p className="fs-dash-plan-price">{p.priceLabel}</p>
-                      <p className="fs-dash-plan-desc">{p.desc}</p>
-                      <button type="button" className="fs-form-submit" disabled>
-                        {user?.subscription_plan === p.key ? 'Current plan' : 'Stripe coming soon'}
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              </>
-            )}
-
-            {activeTab === 'bulk' && <BulkImportTab user={user} />}
-
-            {activeTab === 'business' && (
-              <>
-                <h2 className="fs-section-title" style={{ marginBottom: 16 }}>Business profile</h2>
-                <AbnVerifyCard user={user} />
-              </>
-            )}
-
-            {!['overview','listings','enquiries','subscription','bulk','business'].includes(activeTab) && (
-              <>
-                <h2 className="fs-section-title" style={{ marginBottom: 16 }}>{
-                  sidebar.flatMap(s => s.items || [s])
-                    .find(i => i.id === activeTab)?.label || 'Section'
-                }</h2>
-                <p className="fs-dash-empty">Coming soon. This section unlocks once we wire Stripe + analytics.</p>
-              </>
-            )}
-          </div>
-        </div>
-      </section>
-    </>
-  );
-};
-
-export default BusinessDashboardPage;
+        {activeTab === 'bulk' && <><div style={{ marginBottom: 18 }}><h2 style={{ margin: 0, fontSize: 24 }}>Bulk import</h2><p style={{ color: 'var(--fs-ink-3)', fontSize: 13, marginTop: 4 }}>Add inventory in volume using the existing import workflow.</p></div><BulkImportTab user={user} /></>}
+        {activeTab === 'business' && <><div style={{ marginBottom: 18 }}><h2 style={{ margin: 0, fontSize: 24 }}>Business profile</h2><p style={{ color: 'var(--fs-ink-3)', fontSize: 13, marginTop: 4 }}>Verified business identity used across FlightSales.</p></div><AbnVerifyCard user={user} /></>}
+      </main>
+    </div></section>
+    {editingListing && <ListingEditModal listing={editingListing} onClose={() => setEditingListing(null)} onSaved={() => refetchListings?.()} />}
+  </>;
+}
