@@ -363,7 +363,7 @@ export default function FlightSalesApp({
           column already carries "← Back to home"). */}
       {page !== 'home' && page !== 'detail' && page !== 'login' && <Breadcrumbs />}
 
-      {page === "home" && <HomePage setPage={setPageWrap} setSelectedListing={setSelectedListing} savedIds={savedIds} onSave={onSave} setSearchFilters={setSearchFilters} initialHomeData={initialHomeData} />}
+      {page === "home" && <HomePage setPage={setPageWrap} setSelectedListing={setSelectedListing} savedIds={savedIds} savedListings={savedListings} onSave={onSave} setSearchFilters={setSearchFilters} initialHomeData={initialHomeData} />}
       {page === "buy" && <BuyPage setSelectedListing={setSelectedListing} savedIds={savedIds} onSave={onSave} initialFilters={searchFilters} user={user} setPage={setPageWrap} />}
       {page === "detail" && <ListingDetail listing={selectedListing} onBack={() => setPageWrap("buy")} savedIds={savedIds} onSave={onSave} user={user} onSelectDealer={(d) => { setSelectedDealer(d); setPage("dealer-detail"); if (typeof window !== "undefined" && d?.id) { window.history.pushState({}, "", `/dealers/${d.id}`); } window.scrollTo(0, 0); }} />}
       {page === "sell" && <SellPage user={user} setPage={setPageWrap} />}
