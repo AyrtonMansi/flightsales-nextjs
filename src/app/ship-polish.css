@@ -1,0 +1,191 @@
+/* FlightSales launch polish — intentionally additive and low-specificity.
+   The hero/search block is not styled here. */
+
+.fs-home-first-section { padding-top: 64px; }
+
+.fs-home-launch-panel {
+  border-top: 1px solid var(--fs-line);
+  border-bottom: 1px solid var(--fs-line);
+  padding: 56px 0;
+  max-width: 760px;
+}
+.fs-home-kicker {
+  display: inline-block;
+  margin-bottom: 12px;
+  color: var(--fs-ink-3);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+.fs-home-launch-panel > p {
+  max-width: 590px;
+  margin: 12px 0 24px;
+  color: var(--fs-ink-3);
+  font-size: 15px;
+  line-height: 1.65;
+}
+.fs-home-launch-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+
+.fs-card-skeleton {
+  height: 350px;
+  border-radius: var(--fs-radius-lg);
+  background: linear-gradient(90deg, var(--fs-bg-2), var(--fs-bg-3), var(--fs-bg-2));
+  background-size: 200% 100%;
+  animation: fs-pulse 1.5s ease-in-out infinite;
+}
+.fs-home-empty {
+  padding: 42px 0;
+  border-top: 1px solid var(--fs-line);
+  border-bottom: 1px solid var(--fs-line);
+  color: var(--fs-ink-3);
+  font-size: 14px;
+}
+
+.fs-home-dealer-grid,
+.fs-home-news-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+}
+.fs-home-dealer-card {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  text-decoration: none;
+  color: inherit;
+  min-height: 118px;
+  transition: border-color 140ms ease, transform 140ms ease;
+}
+.fs-home-dealer-card:hover { border-color: var(--fs-line-2); transform: translateY(-1px); }
+.fs-home-dealer-meta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 8px;
+  color: var(--fs-ink-3);
+  font-size: 12px;
+}
+.fs-home-verified { display: inline-flex; align-items: center; gap: 4px; color: var(--fs-ink-2); }
+.fs-home-verified svg { width: 13px; height: 13px; }
+.fs-home-news-card { text-decoration: none; color: inherit; display: block; transition: transform 140ms ease, border-color 140ms ease; }
+.fs-home-news-card:hover { transform: translateY(-1px); border-color: var(--fs-line-2); }
+
+/* Listing cards: faster visual scan, less classifieds-table density. */
+.fs-card-refined {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+  border-radius: var(--fs-radius-lg);
+  overflow: hidden;
+  transition: transform 160ms var(--fs-ease-out), border-color 160ms ease;
+}
+.fs-card-refined:hover { transform: translateY(-2px); }
+.fs-card-actions {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.fs-card-icon-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 999px;
+  border: 1px solid rgba(0,0,0,.08);
+  background: rgba(255,255,255,.96);
+  color: var(--fs-ink);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  backdrop-filter: blur(6px);
+}
+.fs-card-icon-btn.is-saved { background: var(--fs-ink); color: #fff; }
+.fs-card-quicklook { opacity: 0; transition: opacity 140ms ease; }
+.fs-card-refined:hover .fs-card-quicklook,
+.fs-card-quicklook:focus-visible { opacity: 1; }
+.fs-card-fresh {
+  position: absolute;
+  left: 12px;
+  top: 12px;
+  padding: 6px 9px;
+  border-radius: 999px;
+  background: rgba(255,255,255,.95);
+  border: 1px solid rgba(0,0,0,.06);
+  color: var(--fs-ink-2);
+  font-size: 11px;
+  font-weight: 650;
+}
+.fs-card-body-refined { padding-top: 16px; }
+.fs-card-keyfacts {
+  display: flex;
+  gap: 8px 16px;
+  flex-wrap: wrap;
+  padding: 14px 0;
+  margin-top: 12px;
+  border-top: 1px solid var(--fs-line);
+  border-bottom: 1px solid var(--fs-line);
+  color: var(--fs-ink-3);
+  font-size: 12px;
+}
+.fs-card-keyfacts strong { color: var(--fs-ink); font-weight: 650; }
+.fs-card-sellerline { gap: 7px; min-width: 0; }
+.fs-card-seller-name { display: inline-flex; align-items: center; gap: 4px; min-width: 0; }
+.fs-card-verified-icon { display: inline-flex; }
+.fs-card-verified-icon svg { width: 13px; height: 13px; }
+.fs-card-location,
+.fs-card-age { color: var(--fs-ink-4); font-size: 11.5px; }
+.fs-card-location::before { content: '·'; margin-right: 7px; }
+.fs-card-age { margin-left: auto; white-space: nowrap; }
+
+/* Dealer directory gets a proper discovery control instead of a static wall. */
+.fs-dealer-directory-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+.fs-dealer-search {
+  width: min(420px, 100%);
+  min-height: 48px;
+  border: 1px solid var(--fs-line-2);
+  border-radius: var(--fs-radius);
+  padding: 0 15px;
+  font: inherit;
+  font-size: 16px;
+  background: #fff;
+  color: var(--fs-ink);
+}
+.fs-dealer-search:focus { outline: none; border-color: var(--fs-accent); box-shadow: 0 0 0 3px var(--fs-accent-ring); }
+.fs-dealer-count { color: var(--fs-ink-3); font-size: 13px; white-space: nowrap; }
+
+@media (max-width: 900px) {
+  .fs-home-dealer-grid,
+  .fs-home-news-grid { grid-template-columns: 1fr 1fr; }
+}
+
+@media (max-width: 640px) {
+  .fs-home-first-section { padding-top: 36px; }
+  .fs-home-launch-panel { padding: 36px 0; }
+  .fs-home-launch-actions { flex-direction: column; }
+  .fs-home-launch-actions a { width: 100%; }
+  .fs-home-dealer-grid,
+  .fs-home-news-grid { grid-template-columns: 1fr; }
+  .fs-card-icon-btn { width: 44px; height: 44px; }
+  .fs-card-quicklook { display: none; }
+  .fs-card-keyfacts { gap: 8px 12px; }
+  .fs-card-sellerline { flex-wrap: wrap; }
+  .fs-card-age { width: 100%; margin-left: 0; }
+  .fs-dealer-directory-toolbar { align-items: stretch; flex-direction: column; }
+  .fs-dealer-search { width: 100%; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fs-card-refined,
+  .fs-home-dealer-card,
+  .fs-home-news-card { transition: none; transform: none !important; }
+}
