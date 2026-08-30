@@ -1,4 +1,5 @@
 import './globals.css';
+import './ship-polish.css';
 import PasswordGate from '@/components/PasswordGate';
 import { isSiteGated } from '@/lib/siteGate';
 
@@ -10,9 +11,6 @@ export const metadata = {
   title: 'FlightSales.com.au | Australia\'s Aircraft Marketplace',
   description: 'Browse and list aircraft for sale across Australia. FlightSales connects buyers with aviation businesses and private sellers.',
   keywords: 'aircraft for sale, planes for sale australia, aviation marketplace, buy aircraft, sell aircraft, cessna, cirrus, piper, helicopter',
-  // While the password wall is up there is nothing behind it a crawler can
-  // reach, so indexing would only ever cache the gate itself. Flip to
-  // indexable automatically the moment the gate comes down.
   robots: GATED
     ? { index: false, follow: false }
     : {
