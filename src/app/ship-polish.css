@@ -163,9 +163,195 @@
 .fs-dealer-search:focus { outline: none; border-color: var(--fs-accent); box-shadow: 0 0 0 3px var(--fs-accent-ring); }
 .fs-dealer-count { color: var(--fs-ink-3); font-size: 13px; white-space: nowrap; }
 
+/* Homepage utility rails — Carsales-style thin product surfaces, not banners. */
+.fs-home-utility-stack {
+  background: #fff;
+  margin-top: -4px;
+}
+.fs-home-thin-section { background: #fff; }
+.fs-home-thin-section + .fs-home-thin-section .fs-home-thin-shell { border-top: 0; }
+.fs-home-thin-shell {
+  padding: 22px 0;
+  border-top: 1px solid var(--fs-line);
+  border-bottom: 1px solid var(--fs-line);
+}
+.fs-home-thin-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 14px;
+}
+.fs-home-thin-title-wrap {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+}
+.fs-home-thin-title-wrap h2 {
+  font: inherit;
+  font-size: 18px;
+  font-weight: 720;
+  letter-spacing: -0.02em;
+  color: var(--fs-ink);
+}
+.fs-home-thin-title-wrap span,
+.fs-home-thin-action {
+  color: var(--fs-ink-3);
+  font-size: 13px;
+}
+.fs-home-thin-action {
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  font-weight: 600;
+  text-decoration: none;
+  white-space: nowrap;
+}
+.fs-home-thin-action:hover { color: var(--fs-ink); }
+.fs-home-thin-action.is-muted { cursor: default; font-weight: 500; }
+.fs-home-thin-action.is-muted:hover { color: var(--fs-ink-3); }
+
+.fs-recent-search-row,
+.fs-saved-aircraft-row {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+.fs-recent-search-card {
+  min-height: 68px;
+  display: grid;
+  grid-template-columns: 38px minmax(0, 1fr) 22px;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  border: 1px solid var(--fs-line-2);
+  border-radius: var(--fs-radius-lg);
+  background: #fff;
+  color: var(--fs-ink);
+  text-align: left;
+  font: inherit;
+  cursor: pointer;
+  transition: border-color 140ms ease, transform 140ms ease, background 140ms ease;
+}
+.fs-recent-search-card:hover {
+  border-color: var(--fs-ink-4);
+  transform: translateY(-1px);
+  background: #fdfdfc;
+}
+.fs-recent-search-icon {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--fs-bg-2);
+  color: var(--fs-ink-3);
+}
+.fs-recent-search-text {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--fs-ink-2);
+  font-size: 14px;
+  font-weight: 540;
+}
+.fs-recent-search-arrow {
+  color: var(--fs-ink-4);
+  display: inline-flex;
+  justify-content: flex-end;
+}
+
+.fs-saved-aircraft-card {
+  min-height: 112px;
+  display: grid;
+  grid-template-columns: 110px minmax(0, 1fr) 24px;
+  align-items: center;
+  gap: 14px;
+  padding: 12px;
+  border: 1px solid var(--fs-line-2);
+  border-radius: var(--fs-radius-lg);
+  background: #fff;
+  color: inherit;
+  text-decoration: none;
+  transition: border-color 140ms ease, transform 140ms ease, background 140ms ease;
+}
+.fs-saved-aircraft-card:hover {
+  border-color: var(--fs-ink-4);
+  transform: translateY(-1px);
+  background: #fdfdfc;
+}
+.fs-saved-aircraft-thumb {
+  width: 110px;
+  border-radius: 10px;
+}
+.fs-saved-aircraft-copy { min-width: 0; }
+.fs-saved-aircraft-title {
+  color: var(--fs-ink);
+  font-size: 14px;
+  font-weight: 650;
+  line-height: 1.25;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.fs-saved-aircraft-price {
+  margin-top: 6px;
+  color: var(--fs-ink);
+  font-size: 14px;
+  font-weight: 700;
+}
+.fs-saved-aircraft-meta {
+  margin-top: 3px;
+  color: var(--fs-ink-4);
+  font-size: 12px;
+}
+.fs-saved-aircraft-heart {
+  color: var(--fs-accent-700);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.fs-saved-empty-strip {
+  min-height: 68px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  border: 1px solid var(--fs-line-2);
+  border-radius: var(--fs-radius-lg);
+  background: #fff;
+  color: var(--fs-ink-3);
+  font-size: 14px;
+}
+.fs-saved-empty-strip strong { color: var(--fs-ink); font-weight: 650; }
+.fs-saved-empty-icon {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--fs-bg-2);
+  color: var(--fs-ink-3);
+  flex: 0 0 auto;
+}
+
 @media (max-width: 900px) {
   .fs-home-dealer-grid,
   .fs-home-news-grid { grid-template-columns: 1fr 1fr; }
+  .fs-recent-search-row,
+  .fs-saved-aircraft-row {
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x proximity;
+    padding-bottom: 4px;
+    -webkit-overflow-scrolling: touch;
+  }
+  .fs-recent-search-card { min-width: 280px; scroll-snap-align: start; }
+  .fs-saved-aircraft-card { min-width: 330px; scroll-snap-align: start; }
 }
 
 @media (max-width: 640px) {
@@ -182,10 +368,17 @@
   .fs-card-age { width: 100%; margin-left: 0; }
   .fs-dealer-directory-toolbar { align-items: stretch; flex-direction: column; }
   .fs-dealer-search { width: 100%; }
+  .fs-home-thin-shell { padding: 18px 0; }
+  .fs-home-thin-head { margin-bottom: 12px; }
+  .fs-home-thin-title-wrap h2 { font-size: 17px; }
+  .fs-home-thin-action { font-size: 12px; }
+  .fs-saved-empty-strip { align-items: flex-start; line-height: 1.45; }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .fs-card-refined,
   .fs-home-dealer-card,
-  .fs-home-news-card { transition: none; transform: none !important; }
+  .fs-home-news-card,
+  .fs-recent-search-card,
+  .fs-saved-aircraft-card { transition: none; transform: none !important; }
 }
